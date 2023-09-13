@@ -1,0 +1,14 @@
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.csproj.AssemblyReference.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.AssemblyInfoInputs.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.AssemblyInfo.cs
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.csproj.CoreCompileInputs.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\bin\Debug\net6.0\Data.deps.json
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\bin\Debug\net6.0\Data.runtimeconfig.json
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\bin\Debug\net6.0\Data.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\bin\Debug\net6.0\Data.pdb
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\refint\Data.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.pdb
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.genruntimeconfig.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\ref\Data.dll

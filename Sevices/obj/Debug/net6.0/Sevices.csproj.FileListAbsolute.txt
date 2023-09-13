@@ -1,0 +1,15 @@
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\bin\Debug\net6.0\Sevices.deps.json
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\bin\Debug\net6.0\Sevices.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\bin\Debug\net6.0\Sevices.pdb
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\bin\Debug\net6.0\Data.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\bin\Debug\net6.0\Data.pdb
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.csproj.AssemblyReference.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.GeneratedMSBuildEditorConfig.editorconfig
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.AssemblyInfoInputs.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.AssemblyInfo.cs
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.csproj.CoreCompileInputs.cache
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.csproj.CopyComplete
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\refint\Sevices.dll
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\Sevices.pdb
+D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Sevices\obj\Debug\net6.0\ref\Sevices.dll
