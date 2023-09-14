@@ -48,15 +48,13 @@ namespace Data.Models
     }
     public class UserUpdateModel
     {
-        public Guid Id { get; set; }
+        public Guid id { get; set; }
         public string firstName { get; set; }
         public string? lastName { get; set; }
         public string address { get; set; }
         public string? image { get; set; }
         public DateTime dob { get; set; }
         public bool gender { get; set; } = true;
-        public bool? bookingStatus { get; set; }
-
 
     }
     public class BannedUserModel

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Data.Entities;
+using Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,8 @@ namespace Sevices.Mapping
     {
         public MapperProfile()
         {
+            CreateMap<UserCreateModel, User>();
+            CreateMap<User, UserModel>();
         }
     }
 }

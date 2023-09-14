@@ -33,6 +33,89 @@ namespace Sevices.Core.UserService
             _signInManager = signInManager;
             _roleManager = roleManager;
         }
+        public async Task<ResultModel> CreateAdmin(UserCreateModel model)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                if (!await _roleManager.RoleExistsAsync("Admin"))
+                {
+                    await _roleManager.CreateAsync(new Role { Description = "Role for Admin", Name = "Admin" });
+                }
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+                var user = new User
+                {
+                    UserName = model.userName,
+                    Email = model.email,
+                    firstName = model.firstName,
+                    lastName = model.lastName,
+                    address = model.address,
+                    PhoneNumber = model.phoneNumber,
+                    NormalizedEmail = model.email,
+                    dob = model.dob,
+                    banStatus = false,
+                    gender = true,
+                    image = model.image,
+                    roleID = role.Id
+                };
+                var userByPhone = _dbContext.User.Where(s => s.PhoneNumber == user.PhoneNumber).FirstOrDefault();
+                var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+                if (userByPhone != null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                }
+                else
+                {
+                    if (userByMail != null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                    }
+                    else
+                    {
+                        if (user.PhoneNumber.Length < 9 || user.PhoneNumber.Length > 10)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                        }
+                        else
+                        {
+                            var check = await _userManager.CreateAsync(user, model.password);
+
+                            if (check != null)
+                            {
+                                var userRole = new UserRole
+                                {
+                                    RoleId = role.Id,
+                                    UserId = user.Id
+                                };
+                                _dbContext.UserRoles.Add(userRole);
+                                await _dbContext.SaveChangesAsync();
+                                result.Succeed = true;
+                                result.Data = user.Id;
+                            }
+                            else
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Validate user wrong ";
+                            }
+                        }
+
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+
+        }
         public async Task<ResultModel> CreateWoker (UserCreateModel model)
         {
             var result = new ResultModel();
@@ -106,7 +189,6 @@ namespace Sevices.Core.UserService
                     }
 
                 }
-
 
             }
             catch (Exception ex)
@@ -295,6 +377,259 @@ namespace Sevices.Core.UserService
             }
             if (!string.IsNullOrEmpty(user.PhoneNumber)) claims.Add(new Claim("PhoneNumber", user.PhoneNumber));
             return claims;
+        }
+
+        public ResultModel Update(UserUpdateModel model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
+                //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
+                if (data != null)
+                {
+                    data.firstName = model.firstName;
+                    data.lastName = model.lastName;
+                    data.address = model.address;
+                    data.image = model.image;
+                    data.dob = model.dob;
+                    data.gender = model.gender;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                }
+                else
+                {
+                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> ChangePassword(UserUpdatePasswordModel model)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
+
+                //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
+                if (data != null)
+                {
+
+                    var check = await _userManager.CheckPasswordAsync(data, model.oldPassword);
+                    if (check != null)
+                    {
+                        var change = _userManager.ChangePasswordAsync(data, model.oldPassword, model.newPassword);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                    }
+
+                }
+                else
+                {
+                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdatePhone(UserUpdatePhoneModel model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
+                //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
+                if (data != null)
+                {
+                    data.PhoneNumber = model.phoneNumber;
+
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                    result.ErrorMessage = "Cập Nhật Số Điện Thoại Thành Công!";
+                }
+                else
+                {
+                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAll()
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User;
+                var view = _mapper.ProjectTo<UserModel>(data);
+                result.Data = view;
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetByEmail(string email)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Email == email && !s.banStatus == true);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<UserModel>(data).FirstOrDefault();
+                    resultModel.Data = view!;
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel GetByID(Guid id)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == id && s.banStatus != true);
+                if (data != null)
+                {
+
+                    var view = _mapper.ProjectTo<UserModel>(data).FirstOrDefault();
+                    resultModel.Data = view!;
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel GetUserRole(Guid id)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var role = _dbContext.UserRoles.Where(s => s.UserId == id).FirstOrDefault();
+                if (role != null)
+                {
+                    var data = _dbContext.Role.Where(s => s.Id == role.RoleId).FirstOrDefault();
+
+                    if (data != null)
+                    {
+                        resultModel.Data = data;
+                        resultModel.Succeed = true;
+                    }
+                    else
+                    {
+                        resultModel.ErrorMessage = "Role" + ErrorMessage.ID_NOT_EXISTED;
+                        resultModel.Succeed = false;
+                    }
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "UserRole" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel BannedUser(Guid id)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == id).FirstOrDefault();
+                if (data != null)
+                {
+                    data.banStatus = true;
+                    _dbContext.SaveChanges();
+                    var view = _mapper.Map<User, UserModel>(data);
+                    resultModel.Data = view;
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel UnBannedUser(Guid id)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == id).FirstOrDefault();
+                if (data != null)
+                {
+                    data.banStatus = false;
+                    _dbContext.SaveChanges();
+                    var view = _mapper.Map<User, UserModel>(data);
+                    resultModel.Data = view;
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
         }
     }
 }
