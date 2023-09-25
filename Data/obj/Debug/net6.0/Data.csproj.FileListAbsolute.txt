@@ -12,3 +12,17 @@ D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\refint\D
 D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.pdb
 D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\Data.genruntimeconfig.cache
 D:\FPTU\Capstone_BWM\WorkshopManagementSystem_BWM\Data\obj\Debug\net6.0\ref\Data.dll
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\bin\Debug\net6.0\Data.deps.json
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\bin\Debug\net6.0\Data.runtimeconfig.json
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\bin\Debug\net6.0\Data.dll
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\bin\Debug\net6.0\Data.pdb
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.csproj.AssemblyReference.cache
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.AssemblyInfoInputs.cache
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.AssemblyInfo.cs
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.csproj.CoreCompileInputs.cache
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.dll
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\refint\Data.dll
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.pdb
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\Data.genruntimeconfig.cache
+D:\GitHub Desktop\Capstone\Capstone_BWM_BE\Data\obj\Debug\net6.0\ref\Data.dll

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\WorkshopManagementSystem_BWM.props" />
+</Project>
