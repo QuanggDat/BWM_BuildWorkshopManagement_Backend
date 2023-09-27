@@ -7,28 +7,27 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class ItemCategoryModel
+    public class MaterialCategoryModel
     {
         public int categoryId { get; set; }
         public string name { get; set; }
         public bool IsDelete { get; set; }
     }
 
-    public class CreateItemCategoryModel
+    public class CreateMaterialCategoryModel
     {
         [Required] public string name { get; set; }
         public bool IsDelete { get; set; } = false;
     }
-
-    public class UpdateItemCategoryModel
+    public class UpdateMaterialCategoryModel
     {
         public int categoryId { get; set; }
         public string name { get; set; }
     }
 
-    public class DeleteItemCategoryModel
+    public class DeleteMaterialCategoryModel
     {
-        public int categoryId { get; set;}
+        public int categoryId { get; set; }
         public bool IsDelete { get; set; } = true;
     }
 }

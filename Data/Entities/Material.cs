@@ -12,6 +12,7 @@ namespace Data.Entities
     public class Material
     {
         [Key] public int materialId { get; set; }
+        public string image { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; } 
         [Column(TypeName = "nvarchar(500)")] public string sku { get; set; } 
         public DateTime importDate { get; set; }
@@ -20,6 +21,7 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")]
         public string supplier { get; set; } 
         public int amount { get; set; }
+        public double price { get; set; }
         public int categoryId { get; set; }
         [ForeignKey("categoryId")]
         public int itemId { get; set; }

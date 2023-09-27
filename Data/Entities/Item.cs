@@ -12,6 +12,7 @@ namespace Data.Entities
     public class Item
     {
         [Key] public int id { get; set; }
+        public string image { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; } = string.Empty;
         public int quantity { get; set; }
         public double mass { get; set; }
@@ -20,6 +21,7 @@ namespace Data.Entities
         public double width { get; set; }
         public double height { get; set; }
         public string description { get; set; }
+        public double price { get; set; }
         public int categoryId { get; set; }
         [ForeignKey("categoryId")]
         public bool isDeleted { get; set; }
