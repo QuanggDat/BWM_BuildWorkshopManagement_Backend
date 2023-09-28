@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230926212550_ItemAndMaterialDB")]
+    partial class ItemAndMaterialDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,10 +45,6 @@ namespace Data.Migrations
                     b.Property<double>("height")
                         .HasColumnType("float");
 
-                    b.Property<string>("image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -59,9 +57,6 @@ namespace Data.Migrations
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<double>("price")
-                        .HasColumnType("float");
 
                     b.Property<int>("quantity")
                         .HasColumnType("int");
@@ -120,10 +115,6 @@ namespace Data.Migrations
                     b.Property<int>("categoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("importDate")
                         .HasColumnType("datetime2");
 
@@ -140,9 +131,6 @@ namespace Data.Migrations
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<double>("price")
-                        .HasColumnType("float");
 
                     b.Property<string>("sku")
                         .IsRequired()
