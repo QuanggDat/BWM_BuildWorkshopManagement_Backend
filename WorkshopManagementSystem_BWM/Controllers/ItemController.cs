@@ -33,7 +33,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateItemCategory")]
         public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
         {
             var result = _itemService.UpdateItemCategory(model);
@@ -41,7 +41,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateItem")]
         public IActionResult UpdateItem(UpdateItemModel model)
         {
             var result = _itemService.UpdateItem(model);
@@ -49,7 +49,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("GetAllItem")]
         public async Task<ActionResult> GetAllItem()
         {
             var result = _itemService.GetAllItem();
@@ -57,7 +57,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("GetAllItemCategory")]
         public async Task<ActionResult> GetAllItemCategory()
         {
             var result = _itemService.GetAllItem();

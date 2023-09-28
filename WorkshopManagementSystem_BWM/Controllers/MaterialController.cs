@@ -31,7 +31,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateMaterialCategory")]
         public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
         {
             var result = _materialService.UpdateMaterialCategory(model);
@@ -39,7 +39,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateMaterial")]
         public IActionResult UpdateMaterial(UpdateMaterialModel model)
         {
             var result = _materialService.UpdateMaterial(model);
@@ -47,7 +47,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("GetAllMaterial")]
         public async Task<ActionResult> GetAllMaterial()
         {
             var result = _materialService.GetAllMaterial();
@@ -55,7 +55,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("GetAllMaterialCategory")]
         public async Task<ActionResult> GetAllMaterialCategory()
         {
             var result = _materialService.GetAllMaterial();

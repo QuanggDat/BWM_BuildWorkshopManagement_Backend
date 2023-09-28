@@ -62,7 +62,10 @@ namespace Sevices.Core.ItemService
                 var data = _dbContext.ItemCategory.Where(i => i.categoryId == model.categoryId).FirstOrDefault();
                 if (data != null)
                 {
-
+                    data.name = model.name;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.ItemCategory, ItemCategoryModel>(data);
                 }
                 else
                 {
@@ -85,7 +88,20 @@ namespace Sevices.Core.ItemService
                 var data = _dbContext.Item.Where(i => i.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
-
+                    data.image = model.image;
+                    data.name = model.name;
+                    data.mass = model.mass;
+                    data.length = model.lenghth;
+                    data.width = model.width;
+                    data.height = model.heighth;
+                    data.unit = model.unit;
+                    data.description = model.description;
+                    data.quantity = model.quantity;
+                    data.price = model.price;
+                    data.categoryId = model.categoryId;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.Item, ItemModel>(data);
                 }
                 else
                 {

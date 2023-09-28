@@ -63,7 +63,10 @@ namespace Sevices.Core.MaterialService
                 var data = _dbContext.MaterialCategory.Where(c => c.categoryId == model.categoryId).FirstOrDefault();
                 if (data != null)
                 {
-
+                    data.name = model.name;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
                 }
                 else
                 {
@@ -86,7 +89,17 @@ namespace Sevices.Core.MaterialService
                 var data = _dbContext.Material.Where(m => m.materialId == model.id).FirstOrDefault();
                 if (data != null)
                 {
-
+                    data.name = model.name;
+                    data.image = model.image;
+                    data.supplier = model.supplier;
+                    data.price = model.price;
+                    data.amount = model.amount;
+                    data.importPlace = model.importPlace;
+                    data.importDate = model.importDate;
+                    data.categoryId = model.categoryId;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
                 }
                 else
                 {
