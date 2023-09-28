@@ -11,7 +11,8 @@ namespace Data.Entities
 {
     public class Material
     {
-        [Key] public int materialId { get; set; }
+        [Key] 
+        public int materialId { get; set; }
         public string image { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; } 
         [Column(TypeName = "nvarchar(500)")] public string sku { get; set; } 
