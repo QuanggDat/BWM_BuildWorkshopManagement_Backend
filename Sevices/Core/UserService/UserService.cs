@@ -285,25 +285,15 @@ namespace Sevices.Core.UserService
 
             var result = new ResultModel();
 
-            var userByEmail = _dbContext.User.Where(s => s.Email == model.email).FirstOrDefault();
+            var userByPhoneNumber = _dbContext.User.Where(s => s.PhoneNumber == model.phoneNumber).FirstOrDefault();
 
-            if (userByEmail != null)
+            if (userByPhoneNumber != null)
             {
-                var user = await _userManager.FindByNameAsync(userByEmail.UserName);
+                var user = await _userManager.FindByNameAsync(userByPhoneNumber.UserName);
                 var check = await _signInManager.CheckPasswordSignInAsync(user, model.password, false);
                 if (!check.Succeeded)
-                {
-                    if (!user.EmailConfirmed)
-                    {
-                        result.Succeed = false;
-                        //await SendMailConfirm(user);
-                        result.ErrorMessage = "Email chưa được xác nhận. Vui lòng kiểm tra email để xác nhận!";
-                    }
-
-                    else
-                    {
-                        result.ErrorMessage = "Sai Mật Khẩu!";
-                    }
+                {               
+                        result.ErrorMessage = "Sai Mật Khẩu!";      
                 }
                 else
                 {
