@@ -4,8 +4,6 @@ using Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Sevices.Core.ItemService;
-using Sevices.Core.MaterialService;
 using Sevices.Core.UserService;
 using Sevices.Mapping;
 using System.Text;
@@ -45,8 +43,6 @@ namespace WorkshopManagementSystem_BWM.Extensions
         public static void AddBussinessService(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IItemService,  ItemService>();
-            services.AddScoped<IMaterialService, MaterialService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

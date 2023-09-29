@@ -99,7 +99,7 @@ namespace Sevices.Core.MaterialService
                     data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
+                    //result.Data = _mapper.Map<MaterialCategory, MaterialCategoryModel>(data);
                 }
                 else
                 {
