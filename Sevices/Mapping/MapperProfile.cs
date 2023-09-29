@@ -15,6 +15,10 @@ namespace Sevices.Mapping
         {
             CreateMap<UserCreateModel, User>();
             CreateMap<User, UserModel>();
+            CreateMap<Item, ItemModel>();
+            CreateMap<ItemCategory, ItemCategoryModel>();
+            CreateMap< MaterialCategory, MaterialCategoryModel> ();
+            CreateMap< Material, MaterialModel> ();
         }
     }
 }
