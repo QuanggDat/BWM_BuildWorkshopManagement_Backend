@@ -11,8 +11,8 @@ namespace Data.Entities
 {
     public class MaterialCategory
     {
-        [Key] public int categoryId { get; set; }
-        [Column(TypeName = "nvarchar(500)")] public string name { get; set; } 
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid categoryId { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
         public bool IsDeleted { get; set; }
 
         public ICollection<Material> Materials { get; set; }

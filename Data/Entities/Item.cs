@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Item : BaseEntity
+    public class Item
     {
-        // Những field nào không requie phải có data thì thêm dấu ? để khi gen db nó biết là có NOT NULL hay không (ví dụ field description)
-        // viết thường chữ đầu thì viết thường hết cho đồng bộ
+        [Key] public Guid id { get; set; }
         public string image { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; } = string.Empty;
         public int quantity { get; set; }
@@ -21,21 +20,15 @@ namespace Data.Entities
         public double length { get; set; }
         public double width { get; set; }
         public double height { get; set; }
-        public string? description { get; set; }
+        public string description { get; set; }
         public double price { get; set; }
+        [ForeignKey("categoryId")]
+        public Guid categoryId { get; set; }
+        [ForeignKey("areaId")]
+        public Guid areaId { get; set; }
         public bool isDeleted { get; set; }
         public bool status { get; set; }
 
-
-        //public int categoryId { get; set; }
-        //[ForeignKey("categoryId")]
-
-        // cách tổ chức khoá ngoại 
-        // khoá ngoại nên là tên bảng + đuôi Id cho rõ ràng
-        public Guid itemCategoryId { get; set; }
-        [ForeignKey("itemCategoryId")]
-        public virtual ItemCategory? itemCategory { get; set; }
-
-        //public ICollection<Material> materials { get; set; }
+        public ICollection<Connect1> Connect1 { get; set; }
     }
 }
