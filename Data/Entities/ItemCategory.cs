@@ -11,10 +11,10 @@ namespace Data.Entities
 {
     public class ItemCategory
     {
-        [Key] public int categoryId { get; set; }
+        [Key] public Guid categoryId { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
         public bool IsDeleted { get; set; }
 
-        public ICollection<Item> Items { get; set;}
+        public ICollection<Item> Items { get; set; }
     }
 }
