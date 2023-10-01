@@ -66,7 +66,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult DeleteItemCategory(int id)
+        public IActionResult DeleteItemCategory(Guid id)
         {
             var result = _itemService.DeleteCategory(id);
             if (result.Succeed) return Ok(result.Data);
@@ -74,9 +74,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult DeleteItem(int id)
+        public IActionResult DeleteItem(Guid id)
         {
             var result = _itemService.DeleteItem(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("ItemsPaging/")]
+        public IActionResult GetItemsPaging(int pageIndex = 1, int pageSize = 10) // để giá trị mặc định để khi không truyền data vào thì nó sẽ tự động lấy data mặc định
+        {
+            var result = _itemService.GetItemsPaging(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

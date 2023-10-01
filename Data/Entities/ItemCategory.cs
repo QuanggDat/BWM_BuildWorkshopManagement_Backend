@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ItemCategory
+    public class ItemCategory : BaseEntity
     {
-        [Key] public int categoryId { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool isDeleted { get; set; }
 
-        public ICollection<Item> Items { get; set;}
+        // 1 category có nhiều item
+        public virtual List<Item> items { get; set; } = new();
     }
 }

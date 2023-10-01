@@ -9,7 +9,7 @@ namespace Data.Models
 {
     public class ItemModel
     {
-        public int id { get; set; }
+        public Guid id { get; set; }
         public string image { get; set; }
         public string name { get; set; }
         public int quantity { get; set; }
@@ -42,7 +42,7 @@ namespace Data.Models
 
     public class UpdateItemModel
     {
-        public int id { get; set; }
+        public Guid id { get; set; }
         public string image { get; set; }
         public string name { get; set; }
         public int quantity { get; set; }
@@ -53,12 +53,12 @@ namespace Data.Models
         public double heighth { get; set; }
         public double price { get; set; }
         public string description { get; set; }
-        public int categoryId { get; set; }
+        public Guid itemCategoryId { get; set; }
     }
 
     public class DeleteItemModel
     {
-        public int id { get; set; }
+        public Guid id { get; set; }
         public bool IsDeleted { get; set; } = true;
     }
 }

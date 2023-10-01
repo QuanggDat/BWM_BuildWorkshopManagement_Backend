@@ -2,6 +2,7 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == model.categoryId).FirstOrDefault();
+                var data = _dbContext.ItemCategory.Where(i => i.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
                     data.name = model.name;
@@ -98,7 +99,7 @@ namespace Sevices.Core.ItemService
                     data.description = model.description;
                     data.quantity = model.quantity;
                     data.price = model.price;
-                    data.categoryId = model.categoryId;
+                    data.itemCategoryId = model.itemCategoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<Data.Entities.Item, ItemModel>(data);
@@ -152,7 +153,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel GetItemById(int id)
+        public ResultModel GetItemById(Guid id)
         {
             ResultModel resultModel = new ResultModel();
             try
@@ -178,12 +179,12 @@ namespace Sevices.Core.ItemService
             return resultModel;
         }
 
-        public ResultModel GetCategoryById(int id)
+        public ResultModel GetCategoryById(Guid id)
         {
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == id && i.IsDeleted != true);
+                var data = _dbContext.ItemCategory.Where(i => i.id == id && i.isDeleted != true);
                 if (data != null)
                 {
 
@@ -204,7 +205,7 @@ namespace Sevices.Core.ItemService
             return resultModel;
         }
 
-        public ResultModel DeleteItem(int id)
+        public ResultModel DeleteItem(Guid id)
         {
             ResultModel resultModel = new ResultModel();
             try
@@ -231,15 +232,15 @@ namespace Sevices.Core.ItemService
             return resultModel;
         }
 
-        public ResultModel DeleteCategory(int id)
+        public ResultModel DeleteCategory(Guid id)
         {
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == id).FirstOrDefault();
+                var data = _dbContext.ItemCategory.Where(i => i.id == id).FirstOrDefault();
                 if (data != null)
                 {
-                    data.IsDeleted = true;
+                    data.isDeleted = true;
                     _dbContext.SaveChanges();
                     var view = _mapper.Map<ItemCategory, ItemCategoryModel>(data);
                     resultModel.Data = view;
@@ -250,6 +251,34 @@ namespace Sevices.Core.ItemService
                     resultModel.ErrorMessage = "ItemCategory" + ErrorMessage.ID_NOT_EXISTED;
                     resultModel.Succeed = false;
                 }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        // DEMO
+        public ResultModel GetItemsPaging(int pageIndex, int pageSize)
+        {
+            var resultModel = new ResultModel();
+            try
+            {
+                var listData = _dbContext.Item.Where(x => !x.isDeleted).ToList(); // Luon luon .toList() neu muon lay ra 1 cai list, chu yeu de no convert ve dang List<object> de tuong tac du lieu de hon
+                                                                                  // .OrderBy(x => x.height) // sap xep theo asc
+                                                                                  // .OrderByDescending(x => x.length) // sap xep theo desc
+                                                                                  // trong linq con rat nhieu ham ho tro de lam nhieu viec khac, chiu kho xem them.
+                var listDataPaging = listData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                //.Skip((pageIndex - 1) * pageSize).Take(pageSize) la paging (pageIndex la vi tri trang (trang 1, trnag 2,...), pageSize la so luong row trong 1 trang
+                
+                resultModel.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<ItemModel>>(listDataPaging),
+                    Total = listData.Count
+                };
+                resultModel.Succeed = true;
+
             }
             catch (Exception ex)
             {
