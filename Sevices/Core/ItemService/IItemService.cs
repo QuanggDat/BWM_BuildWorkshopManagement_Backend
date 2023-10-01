@@ -13,11 +13,13 @@ namespace Sevices.Core.ItemService
         Task<ResultModel> CreateItem(CreateItemModel model);
         ResultModel GetAllCategory();
         ResultModel GetAllItem();
-        ResultModel GetItemById(int id);
-        ResultModel GetCategoryById(int id);
+        ResultModel GetItemById(Guid id);
+        ResultModel GetCategoryById(Guid id);
         ResultModel UpdateItemCategory(UpdateItemCategoryModel model);
         ResultModel UpdateItem(UpdateItemModel model);
-        ResultModel DeleteItem(int id);
-        ResultModel DeleteCategory(int id);
+        ResultModel DeleteItem(Guid id);
+        ResultModel DeleteCategory(Guid id);
+        // Demo
+        ResultModel GetItemsPaging(int pageIndex, int pageSize);
     }
 }
