@@ -11,24 +11,25 @@ namespace Data.Entities
 {
     public class Item
     {
-        [Key] public Guid id { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid id { get; set; }
+        [Column(TypeName = "nvarchar(500)")]
+        public string name { get; set; }
         public string image { get; set; }
-        [Column(TypeName = "nvarchar(500)")] public string name { get; set; } = string.Empty;
-        public int quantity { get; set; }
         public double mass { get; set; }
         public string unit { get; set; }
         public double length { get; set; }
         public double width { get; set; }
         public double height { get; set; }
+        public string technical { get; set; }
+        public string twoD { get; set; }
+        public string threeD { get; set; }
         public string description { get; set; }
         public double price { get; set; }
-        [ForeignKey("categoryId")]
-        public Guid categoryId { get; set; }
         [ForeignKey("areaId")]
         public Guid areaId { get; set; }
         public bool isDeleted { get; set; }
-        public bool status { get; set; }
-
-        public ICollection<Connect1> Connect1 { get; set; }
+        public ICollection<OrderDetail> OrderDetail { get; set; }
+        public ICollection<ItemMaterial> ItemMaterial { get; set; }
     }
 }

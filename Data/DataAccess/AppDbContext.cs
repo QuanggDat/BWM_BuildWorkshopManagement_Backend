@@ -17,7 +17,7 @@ namespace Data.DataAccess
         public DbSet<MaterialCategory> MaterialCategory { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<ItemCategory> ItemCategory { get; set; }
-        public DbSet<Connect1> Connect1 { get; set; }
+        public DbSet<ItemMaterial> Connect1 { get; set; }
         public DbSet<Floor> Floor { get; set; }
         public DbSet<Area> Area { get; set; }
 

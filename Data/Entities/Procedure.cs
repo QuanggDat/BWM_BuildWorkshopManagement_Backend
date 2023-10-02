@@ -11,7 +11,9 @@ namespace Data.Entities
 {
     public class Procedure
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; } = string.Empty;
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+        public Guid id { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] 
+        public string name { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ItemCategory
+    public class Group
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(500)")] 
         public string name { get; set; }
-        public bool IsDeleted { get; set; }
-        public ICollection<Item> Items { get; set; }
+        public int type { get; set; }
+        public int status { get; set; }
+        public ICollection<User> User { get; set; }
     }
 }
