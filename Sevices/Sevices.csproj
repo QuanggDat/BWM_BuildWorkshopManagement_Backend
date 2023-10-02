@@ -15,9 +15,4 @@
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\ItemService\" />
-    <Folder Include="Core\MaterialService\" />
-  </ItemGroup>
-
 </Project>
