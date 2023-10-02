@@ -22,5 +22,7 @@ namespace Data.Entities
         public bool isDeleted { get; set; }
         public DateTime dateCreated { get; set; } = DateTime.Now;
         public DateTime dateUpdated { get; set; } = DateTime.Now;
+
+        //public ICollection<User> Users { get; set; }
     }
 }

@@ -10,8 +10,9 @@ namespace Data.Entities
 {
     public class TaskType
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid id { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
         public string name { get; set; }
+
+        public ICollection<Task> Tasks { get; set; }
     }
 }

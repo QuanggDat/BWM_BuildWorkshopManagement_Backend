@@ -19,9 +19,13 @@ namespace Data.Entities
         public int productCompleted { get; set; }
         public int productFailed { get; set; }
         public string description { get; set; }
-        [ForeignKey("taskTypeId")]
-        public Guid taskTypeId { get; set; }
         public TaskStatus status { get; set; }
-        public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
+        public bool isDeleted { get; set; }
+        public Guid taskTypeId { get; set; }
+        public TaskType TaskType { get; set; }
+        public Guid orderId { get; set; }
+        public Order Order { get; set; }
+        
+        public virtual ICollection<User> Users { get; set; }
     }
 }

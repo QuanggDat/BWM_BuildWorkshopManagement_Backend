@@ -13,5 +13,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
         [Column(TypeName = "nvarchar(1000)")] public string name { get; set; } = string.Empty;
+
+        public ICollection<Item> Items { get; set;}
     }
 }

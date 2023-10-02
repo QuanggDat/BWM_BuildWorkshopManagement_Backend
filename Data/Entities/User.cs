@@ -19,5 +19,8 @@ namespace Data.Entities
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
+
+        public ICollection<Task> Tasks { get; set;}
+        //public ICollection<Notification> Notifications { get; set;}
     }
 }

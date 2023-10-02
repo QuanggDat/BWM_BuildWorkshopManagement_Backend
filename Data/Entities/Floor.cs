@@ -13,7 +13,8 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
         [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
+        public double price { get; set; }
 
-        public ICollection<Area> Area { get; set; }
+        public ICollection<Area> Areas { get; set; }
     }
 }

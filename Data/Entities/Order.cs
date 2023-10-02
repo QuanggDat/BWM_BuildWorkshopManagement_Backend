@@ -13,7 +13,7 @@ namespace Data.Entities
     public class Order
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
         public string customerName { get; set; }
         public DateTime orderDate { get; set; }
         public string description { get; set; }
@@ -22,6 +22,7 @@ namespace Data.Entities
         public string fileQuote { get; set; }
         public DateTime quoteDate { get; set; }
         public double totalPrice { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
+
+        public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }
