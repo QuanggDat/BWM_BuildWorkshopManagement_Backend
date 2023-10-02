@@ -22,6 +22,310 @@ namespace Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Data.Entities.Area", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("floorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("floorId");
+
+                    b.ToTable("Area");
+                });
+
+            modelBuilder.Entity("Data.Entities.Floor", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Floor");
+                });
+
+            modelBuilder.Entity("Data.Entities.Item", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ItemCategorycategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("areaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("height")
+                        .HasColumnType("float");
+
+                    b.Property<string>("image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("length")
+                        .HasColumnType("float");
+
+                    b.Property<double>("mass")
+                        .HasColumnType("float");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("technical")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("threeD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("twoD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("width")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("ItemCategorycategoryId");
+
+                    b.HasIndex("areaId");
+
+                    b.ToTable("Item");
+                });
+
+            modelBuilder.Entity("Data.Entities.ItemCategory", b =>
+                {
+                    b.Property<Guid>("categoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("categoryId");
+
+                    b.ToTable("ItemCategory");
+                });
+
+            modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("itemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("materialId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("itemId");
+
+                    b.HasIndex("materialId");
+
+                    b.ToTable("Connect1");
+                });
+
+            modelBuilder.Entity("Data.Entities.Material", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("MaterialCategoryid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(MAX)");
+
+                    b.Property<DateTime>("importDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("importPlace")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("materialId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("sku")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("supplier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("thickness")
+                        .HasColumnType("float");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.Property<string>("unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("MaterialCategoryid");
+
+                    b.ToTable("Material");
+                });
+
+            modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("MaterialCategory");
+                });
+
+            modelBuilder.Entity("Data.Entities.Order", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("customerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("fileContract")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("fileQuote")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("orderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("quoteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("Data.Entities.OrderDetail", b =>
+                {
+                    b.Property<Guid>("itemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("orderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("itemId");
+
+                    b.HasIndex("orderId");
+
+                    b.ToTable("OrderDetail");
+                });
+
             modelBuilder.Entity("Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -251,6 +555,73 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Data.Entities.Area", b =>
+                {
+                    b.HasOne("Data.Entities.Floor", null)
+                        .WithMany("Area")
+                        .HasForeignKey("floorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.Item", b =>
+                {
+                    b.HasOne("Data.Entities.ItemCategory", null)
+                        .WithMany("Item")
+                        .HasForeignKey("ItemCategorycategoryId");
+
+                    b.HasOne("Data.Entities.Area", null)
+                        .WithMany("Item")
+                        .HasForeignKey("areaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
+                {
+                    b.HasOne("Data.Entities.Item", "item")
+                        .WithMany("ItemMaterial")
+                        .HasForeignKey("itemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.Material", "material")
+                        .WithMany("ItemMaterial")
+                        .HasForeignKey("materialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("item");
+
+                    b.Navigation("material");
+                });
+
+            modelBuilder.Entity("Data.Entities.Material", b =>
+                {
+                    b.HasOne("Data.Entities.MaterialCategory", null)
+                        .WithMany("Material")
+                        .HasForeignKey("MaterialCategoryid");
+                });
+
+            modelBuilder.Entity("Data.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("Data.Entities.Item", "item")
+                        .WithMany("OrderDetail")
+                        .HasForeignKey("itemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.Order", "order")
+                        .WithMany("OrderDetail")
+                        .HasForeignKey("orderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("item");
+
+                    b.Navigation("order");
+                });
+
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.HasOne("Data.Entities.Role", "Role")
@@ -309,6 +680,43 @@ namespace Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.Area", b =>
+                {
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Data.Entities.Floor", b =>
+                {
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("Data.Entities.Item", b =>
+                {
+                    b.Navigation("ItemMaterial");
+
+                    b.Navigation("OrderDetail");
+                });
+
+            modelBuilder.Entity("Data.Entities.ItemCategory", b =>
+                {
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Data.Entities.Material", b =>
+                {
+                    b.Navigation("ItemMaterial");
+                });
+
+            modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
+                {
+                    b.Navigation("Material");
+                });
+
+            modelBuilder.Entity("Data.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetail");
                 });
 #pragma warning restore 612, 618
         }

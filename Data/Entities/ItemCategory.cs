@@ -15,6 +15,6 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
         public bool IsDeleted { get; set; }
 
-        public ICollection<Item> Items { get; set; }
+        public ICollection<Item> Item { get; set; }
     }
 }
