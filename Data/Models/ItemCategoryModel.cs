@@ -11,7 +11,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; }
-        public bool isDeleted { get; set; }
+        public bool isDeleted { get; set; } 
     }
 
     public class CreateItemCategoryModel

@@ -5,9 +5,13 @@ using Data.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace Sevices.Core.ItemService
 {
@@ -30,7 +34,15 @@ namespace Sevices.Core.ItemService
             result.Succeed = false;
             try
             {
-
+                var newCategory = new ItemCategory
+                {
+                    name = model.name,
+                    isDeleted = false
+                };
+                _dbContext.ItemCategory.Add(newCategory);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = newCategory.categoryId;
             }
             catch (Exception ex)
             {
@@ -45,7 +57,27 @@ namespace Sevices.Core.ItemService
             result.Succeed = false;
             try
             {
-
+                var newItem = new Item
+                {
+                    name = model.name,
+                    image=model.image,
+                    mass= model.mass,
+                    length=model.length,
+                    width=model.width,
+                    height=model.height,
+                    technical=model.technical,
+                    twoD=model.twoD,
+                    threeD=model.threeD,
+                    description=model.description,
+                    price=model.price,
+                    areaId=model.areaId,
+                    categoryId=model.categoryId,
+                    isDeleted = false
+                };
+                _dbContext.Item.Add(newItem);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = newItem.id;
             }
             catch (Exception ex)
             {
@@ -91,7 +123,6 @@ namespace Sevices.Core.ItemService
                     data.name = model.name;
                     data.image = model.image;
                     data.mass = model.mass;
-                    data.unit = model.unit;
                     data.length = model.length;
                     data.width = model.width;
                     data.height = model.height;
@@ -100,6 +131,7 @@ namespace Sevices.Core.ItemService
                     data.threeD = model.threeD;
                     data.description = model.description;
                     data.price = model.price;
+                    data.areaId = model.areaId;
                     data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
@@ -123,11 +155,13 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory;
-                var view = _mapper.ProjectTo<ItemCategoryModel>(data);
-                result.Data = view;
-                result.Succeed = true;
-
+                var data = _dbContext.ItemCategory.Where(i=> i.isDeleted != true);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<ItemCategoryModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
             }
             catch (Exception e)
             {
@@ -141,11 +175,13 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Item;
-                var view = _mapper.ProjectTo<ItemModel>(data);
-                result.Data = view;
-                result.Succeed = true;
-
+                var data = _dbContext.Item.Where(i => i.isDeleted != true);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<ItemModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
             }
             catch (Exception e)
             {

@@ -13,8 +13,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(1000)")]
-        public string name { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
         [Column(TypeName = "nvarchar(MAX)")] public string image { get; set; }
         public string color { get; set; }
         public string supplier { get; set; }

@@ -30,7 +30,15 @@ namespace Sevices.Core.MaterialService
             result.Succeed = false;
             try
             {
-
+                var newCategory = new MaterialCategory
+                {
+                    name = model.name,
+                    isDeleted = false
+                };
+                _dbContext.MaterialCategory.Add(newCategory);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = newCategory.id;
             }
             catch (Exception ex)
             {
@@ -45,7 +53,27 @@ namespace Sevices.Core.MaterialService
             result.Succeed = false;
             try
             {
-
+                var newMaterial = new Material
+                {
+                    name = model.name,
+                    image = model.image,
+                    color = model.color,
+                    supplier = model.supplier,
+                    thickness = model.thickness,
+                    unit = model.unit,
+                    sku = model.sku,
+                    importDate = model.importDate,
+                    importPlace = model.importPlace,
+                    amount = model.amount,
+                    price = model.price,
+                    totalPrice = model.totalPrice,
+                    categoryId = model.categoryId,
+                    isDeleted = false
+                };
+                _dbContext.Material.Add(newMaterial);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = newMaterial.id;
             }
             catch (Exception ex)
             {
@@ -118,11 +146,13 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.MaterialCategory;
-                var view = _mapper.ProjectTo<MaterialCategoryModel>(data);
-                result.Data = view;
-                result.Succeed = true;
-
+                var data = _dbContext.MaterialCategory.Where(i => i.isDeleted != true);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<MaterialCategoryModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
             }
             catch (Exception e)
             {
@@ -136,11 +166,13 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Material;
-                var view = _mapper.ProjectTo<MaterialModel>(data);
-                result.Data = view;
-                result.Succeed = true;
-
+                var data = _dbContext.Material.Where(i => i.isDeleted != true);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<MaterialModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
             }
             catch (Exception e)
             {

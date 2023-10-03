@@ -59,7 +59,23 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("GetAllItemCategory")]
         public async Task<ActionResult> GetAllItemCategory()
         {
-            var result = _itemService.GetAllItem();
+            var result = _itemService.GetAllCategory();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetItemCategoryById(Guid id)
+        {
+            var result = _itemService.GetCategoryById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetItemById(Guid id)
+        {
+            var result = _itemService.GetItemById(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

@@ -43,7 +43,7 @@ namespace Data.Models
         [Required] public double price { get; set; }
         [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid areaId { get; set; }
-        [Required] public int categoryId { get; set; }
+        [Required] public Guid categoryId { get; set; }
     }
 
     public class UpdateItemModel
