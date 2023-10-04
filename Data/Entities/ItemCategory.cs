@@ -11,7 +11,7 @@ namespace Data.Entities
 {
     public class ItemCategory
     {
-        [Key] public Guid categoryId { get; set; }
+        [Key] public Guid id { get; set; }
         [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
         public bool isDeleted { get; set; }
 

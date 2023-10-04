@@ -42,7 +42,7 @@ namespace Sevices.Core.ItemService
                 _dbContext.ItemCategory.Add(newCategory);
                 await _dbContext.SaveChangesAsync();
                 result.Succeed = true;
-                result.Data = newCategory.categoryId;
+                result.Data = newCategory.id;
             }
             catch (Exception ex)
             {
@@ -62,6 +62,7 @@ namespace Sevices.Core.ItemService
                     name = model.name,
                     image=model.image,
                     mass= model.mass,
+                    unit=model.unit,
                     length=model.length,
                     width=model.width,
                     height=model.height,
@@ -91,7 +92,7 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == model.id).FirstOrDefault();
+                var data = _dbContext.ItemCategory.Where(i => i.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
                     data.name = model.name;
@@ -123,6 +124,7 @@ namespace Sevices.Core.ItemService
                     data.name = model.name;
                     data.image = model.image;
                     data.mass = model.mass;
+                    data.unit=model.unit;
                     data.length = model.length;
                     data.width = model.width;
                     data.height = model.height;
@@ -221,7 +223,7 @@ namespace Sevices.Core.ItemService
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == id && i.isDeleted != true);
+                var data = _dbContext.ItemCategory.Where(i => i.id == id && i.isDeleted != true);
                 if (data != null)
                 {
 
@@ -274,7 +276,7 @@ namespace Sevices.Core.ItemService
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i => i.categoryId == id).FirstOrDefault();
+                var data = _dbContext.ItemCategory.Where(i => i.id == id).FirstOrDefault();
                 if (data != null)
                 {
                     data.isDeleted = true;

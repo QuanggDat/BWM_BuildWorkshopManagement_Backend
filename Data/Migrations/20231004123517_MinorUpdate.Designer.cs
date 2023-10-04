@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231004094600_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20231004123517_MinorUpdate")]
+    partial class MinorUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -98,9 +98,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ItemCategorycategoryId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
 
@@ -155,16 +152,16 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ItemCategorycategoryId");
-
                     b.HasIndex("areaId");
+
+                    b.HasIndex("categoryId");
 
                     b.ToTable("Item");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemCategory", b =>
                 {
-                    b.Property<Guid>("categoryId")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -175,7 +172,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
 
-                    b.HasKey("categoryId");
+                    b.HasKey("id");
 
                     b.ToTable("ItemCategory");
                 });
@@ -214,9 +211,6 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MaterialCategoryid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("amount")
@@ -270,7 +264,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("MaterialCategoryid");
+                    b.HasIndex("categoryId");
 
                     b.ToTable("Material");
                 });
@@ -826,21 +820,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
-                    b.HasOne("Data.Entities.ItemCategory", "ItemCategory")
-                        .WithMany("Items")
-                        .HasForeignKey("ItemCategorycategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.Entities.Area", "area")
                         .WithMany("Items")
                         .HasForeignKey("areaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ItemCategory");
+                    b.HasOne("Data.Entities.ItemCategory", "category")
+                        .WithMany("Items")
+                        .HasForeignKey("categoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("area");
+
+                    b.Navigation("category");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -864,13 +858,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
-                    b.HasOne("Data.Entities.MaterialCategory", "MaterialCategory")
+                    b.HasOne("Data.Entities.MaterialCategory", "category")
                         .WithMany("Materials")
-                        .HasForeignKey("MaterialCategoryid")
+                        .HasForeignKey("categoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("MaterialCategory");
+                    b.Navigation("category");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>

@@ -194,8 +194,7 @@ namespace Data.Migrations
                     price = table.Column<double>(type: "float", nullable: false),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false),
                     areaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItemCategorycategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -207,8 +206,8 @@ namespace Data.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Item_ItemCategory_ItemCategorycategoryId",
-                        column: x => x.ItemCategorycategoryId,
+                        name: "FK_Item_ItemCategory_categoryId",
+                        column: x => x.categoryId,
                         principalTable: "ItemCategory",
                         principalColumn: "categoryId",
                         onDelete: ReferentialAction.Cascade);
@@ -232,15 +231,14 @@ namespace Data.Migrations
                     price = table.Column<double>(type: "float", nullable: false),
                     totalPrice = table.Column<double>(type: "float", nullable: false),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MaterialCategoryid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Material", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Material_MaterialCategory_MaterialCategoryid",
-                        column: x => x.MaterialCategoryid,
+                        name: "FK_Material_MaterialCategory_categoryId",
+                        column: x => x.categoryId,
                         principalTable: "MaterialCategory",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -630,9 +628,9 @@ namespace Data.Migrations
                 column: "areaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Item_ItemCategorycategoryId",
+                name: "IX_Item_categoryId",
                 table: "Item",
-                column: "ItemCategorycategoryId");
+                column: "categoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemMaterial_itemId",
@@ -650,9 +648,9 @@ namespace Data.Migrations
                 column: "Proceduresid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Material_MaterialCategoryid",
+                name: "IX_Material_categoryId",
                 table: "Material",
-                column: "MaterialCategoryid");
+                column: "categoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_Taskid",

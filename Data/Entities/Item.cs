@@ -31,7 +31,7 @@ namespace Data.Entities
         public Area area { get; set; }
         [ForeignKey("categoryId")]
         public Guid categoryId { get; set; }
-        public ItemCategory ItemCategory { get; set; }
+        public ItemCategory category { get; set; }
 
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<ItemMaterial> ItemMaterials { get; set; }

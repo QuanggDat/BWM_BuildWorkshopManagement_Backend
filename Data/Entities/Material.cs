@@ -28,7 +28,7 @@ namespace Data.Entities
         public bool isDeleted { get; set; }
         [ForeignKey("categoryId")]
         public Guid categoryId { get; set; }
-        public MaterialCategory MaterialCategory { get; set; }
+        public MaterialCategory category { get; set; }
 
         public ICollection<ItemMaterial> ItemMaterials { get; set; }
     }
