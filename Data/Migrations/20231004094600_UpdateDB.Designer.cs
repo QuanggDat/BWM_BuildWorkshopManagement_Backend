@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231002213239_MinorUpdate")]
-    partial class MinorUpdate
+    [Migration("20231004094600_UpdateDB")]
+    partial class UpdateDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,8 +30,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("floorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -42,12 +42,10 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("floorId");
-
                     b.ToTable("Area");
                 });
 
-            modelBuilder.Entity("Data.Entities.Floor", b =>
+            modelBuilder.Entity("Data.Entities.Group", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -55,14 +53,43 @@ namespace Data.Migrations
 
                     b.Property<string>("name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("price")
-                        .HasColumnType("float");
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("type")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.ToTable("Floor");
+                    b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("Data.Entities.GroupMember", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("groupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("taskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("groupId");
+
+                    b.HasIndex("taskId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("GroupMember");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -266,6 +293,55 @@ namespace Data.Migrations
                     b.ToTable("MaterialCategory");
                 });
 
+            modelBuilder.Entity("Data.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Taskid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("dateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("dateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("seen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Taskid");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.Property<Guid>("id")
@@ -354,6 +430,70 @@ namespace Data.Migrations
                     b.ToTable("Procedure");
                 });
 
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("doingReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("doneReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("overviewReport")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("taskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("todoReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("taskId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Report");
+                });
+
+            modelBuilder.Entity("Data.Entities.Resource", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("reportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("reportId");
+
+                    b.ToTable("Resource");
+                });
+
             modelBuilder.Entity("Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -392,6 +532,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("completedTime")
                         .HasColumnType("datetime2");
 
@@ -422,9 +565,6 @@ namespace Data.Migrations
                     b.Property<int>("status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("taskTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("timeEnd")
                         .HasColumnType("datetime2");
 
@@ -433,26 +573,11 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("orderId");
 
-                    b.HasIndex("taskTypeId");
-
                     b.ToTable("Task");
-                });
-
-            modelBuilder.Entity("Data.Entities.TaskType", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("TaskType");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -474,6 +599,9 @@ namespace Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("Groupid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -535,6 +663,8 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Groupid");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -667,30 +797,31 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TaskUser", b =>
+            modelBuilder.Entity("Data.Entities.GroupMember", b =>
                 {
-                    b.Property<Guid>("Tasksid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Tasksid", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("TaskUser");
-                });
-
-            modelBuilder.Entity("Data.Entities.Area", b =>
-                {
-                    b.HasOne("Data.Entities.Floor", "floor")
-                        .WithMany("Areas")
-                        .HasForeignKey("floorId")
+                    b.HasOne("Data.Entities.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("groupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("floor");
+                    b.HasOne("Data.Entities.Task", "Task")
+                        .WithMany("GroupMemebers")
+                        .HasForeignKey("taskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -742,6 +873,21 @@ namespace Data.Migrations
                     b.Navigation("MaterialCategory");
                 });
 
+            modelBuilder.Entity("Data.Entities.Notification", b =>
+                {
+                    b.HasOne("Data.Entities.Task", null)
+                        .WithMany("Notifications")
+                        .HasForeignKey("Taskid");
+
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
@@ -761,27 +907,57 @@ namespace Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.HasOne("Data.Entities.Task", "Task")
+                        .WithMany("Reports")
+                        .HasForeignKey("taskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Data.Entities.Resource", b =>
+                {
+                    b.HasOne("Data.Entities.Report", "Report")
+                        .WithMany("Resource")
+                        .HasForeignKey("reportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("Data.Entities.Task", b =>
                 {
+                    b.HasOne("Data.Entities.User", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("UserId");
+
                     b.HasOne("Data.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("orderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.Entities.TaskType", "TaskType")
-                        .WithMany("Tasks")
-                        .HasForeignKey("taskTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Order");
-
-                    b.Navigation("TaskType");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
+                    b.HasOne("Data.Entities.Group", null)
+                        .WithMany("GroupMembers")
+                        .HasForeignKey("Groupid");
+
                     b.HasOne("Data.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("roleID");
@@ -855,29 +1031,14 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TaskUser", b =>
-                {
-                    b.HasOne("Data.Entities.Task", null)
-                        .WithMany()
-                        .HasForeignKey("Tasksid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Data.Entities.Area", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Data.Entities.Floor", b =>
+            modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.Navigation("Areas");
+                    b.Navigation("GroupMembers");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -907,7 +1068,21 @@ namespace Data.Migrations
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("Data.Entities.TaskType", b =>
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Data.Entities.Task", b =>
+                {
+                    b.Navigation("GroupMemebers");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Navigation("Tasks");
                 });

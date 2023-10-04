@@ -16,8 +16,8 @@ namespace Data.Entities
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
-        public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
+        public Guid? roleID { get; set; }
         public virtual Role? Role { get; set; }
 
         public ICollection<Task> Tasks { get; set;}

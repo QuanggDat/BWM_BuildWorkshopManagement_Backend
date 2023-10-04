@@ -14,6 +14,6 @@ namespace Data.Entities
         public string name { get; set; }
         public int type { get; set; }
         public int status { get; set; }
-        public ICollection<User> User { get; set; }
+        public ICollection<User> GroupMembers { get; set; }
     }
 }

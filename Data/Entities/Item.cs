@@ -26,8 +26,10 @@ namespace Data.Entities
         public string description { get; set; }
         public double price { get; set; }
         public bool isDeleted { get; set; }
+        [ForeignKey("areaId")]
         public Guid areaId { get; set; }
         public Area area { get; set; }
+        [ForeignKey("categoryId")]
         public Guid categoryId { get; set; }
         public ItemCategory ItemCategory { get; set; }
 

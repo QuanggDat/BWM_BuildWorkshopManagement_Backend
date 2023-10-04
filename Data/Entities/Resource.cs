@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
@@ -9,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Floor
+    public class Resource
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
-        public double price { get; set; }
+        public string link { get; set; }
 
-        public ICollection<Area> Areas { get; set; }
+        [ForeignKey("reportId")]
+        public Guid reportId { get; set; }
+        public Report Report { get; set; }
+
     }
 }

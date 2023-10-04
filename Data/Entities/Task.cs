@@ -21,11 +21,12 @@ namespace Data.Entities
         public string description { get; set; }
         public TaskStatus status { get; set; }
         public bool isDeleted { get; set; }
-        public Guid taskTypeId { get; set; }
-        public TaskType TaskType { get; set; }
+        [ForeignKey("orderId")]
         public Guid orderId { get; set; }
         public Order Order { get; set; }
-        
-        public virtual ICollection<User> Users { get; set; }
+
+        public virtual ICollection<Report> Reports { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual ICollection<GroupMember> GroupMemebers { get; set; } = new List<GroupMember>();
     }
 }
