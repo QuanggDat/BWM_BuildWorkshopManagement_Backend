@@ -15,9 +15,7 @@ namespace Data.Entities
         public Guid id { get; set; } 
         [Column(TypeName = "nvarchar(1000)")] 
         public string name { get; set; }
-        [ForeignKey("floorId")]
-        public Guid floorId { get; set; }
-
         public ICollection<Item> Item { get; set; }
+        public bool isDeleted { get; set; }
     }
 }

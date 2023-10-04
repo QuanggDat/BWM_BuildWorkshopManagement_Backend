@@ -8,10 +8,15 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class TaskType
+    public class ProcedureItem
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string name { get; set; }    
+        [ForeignKey("procedureId")]
+        public Guid procedureId { get; set; }
+        public Procedure Procedure { get; set; }
+        [ForeignKey("itemId")]
+        public Guid itemId { get; set; }
+        public Item Item { get; set; }
     }
 }

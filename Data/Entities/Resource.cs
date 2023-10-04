@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Group
+    public class Resource
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string name { get; set; }
-        public int type { get; set; }
-        public int status { get; set; }
-        public ICollection<GroupMember> GroupMember { get; set; }
+        public string link { get; set; }
+        [ForeignKey("reportId")]
+        public Guid reportId { get; set; }
     }
 }

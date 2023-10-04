@@ -28,8 +28,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("floorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -37,12 +37,10 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("floorId");
-
                     b.ToTable("Area");
                 });
 
-            modelBuilder.Entity("Data.Entities.Floor", b =>
+            modelBuilder.Entity("Data.Entities.Group", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -50,11 +48,43 @@ namespace Data.Migrations
 
                     b.Property<string>("name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("type")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.ToTable("Floor");
+                    b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("Data.Entities.GroupMember", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Taskid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("groupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Taskid");
+
+                    b.HasIndex("groupId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("GroupMember");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -68,6 +98,9 @@ namespace Data.Migrations
 
                     b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("code")
+                        .HasColumnType("int");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -130,7 +163,7 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("name")
@@ -169,7 +202,7 @@ namespace Data.Migrations
 
                     b.HasIndex("materialId");
 
-                    b.ToTable("Connect1");
+                    b.ToTable("ItemMaterial");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -255,6 +288,50 @@ namespace Data.Migrations
                     b.ToTable("MaterialCategory");
                 });
 
+            modelBuilder.Entity("Data.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("dateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("dateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("seen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("subject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("Notification");
+                });
+
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.Property<Guid>("id")
@@ -300,11 +377,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
-                    b.Property<Guid>("itemId")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("orderId")
@@ -319,11 +396,113 @@ namespace Data.Migrations
                     b.Property<double>("totalPrice")
                         .HasColumnType("float");
 
-                    b.HasKey("itemId");
+                    b.HasKey("id");
+
+                    b.HasIndex("itemId");
 
                     b.HasIndex("orderId");
 
                     b.ToTable("OrderDetail");
+                });
+
+            modelBuilder.Entity("Data.Entities.Procedure", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Procedure");
+                });
+
+            modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("itemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("procedureId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("itemId");
+
+                    b.HasIndex("procedureId");
+
+                    b.ToTable("ProcedureItem");
+                });
+
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("doingReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("doneReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("overviewReport")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("reporterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("taskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("todoReport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("reporterId");
+
+                    b.HasIndex("taskId");
+
+                    b.ToTable("Report");
+                });
+
+            modelBuilder.Entity("Data.Entities.Resource", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("reportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("reportId");
+
+                    b.ToTable("Resource");
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
@@ -356,6 +535,48 @@ namespace Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Task", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("completedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("orderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("productCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<int>("productFailed")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("timeEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("timeStart")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("orderId");
+
+                    b.ToTable("Task");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -439,6 +660,9 @@ namespace Data.Migrations
 
                     b.Property<Guid?>("roleID")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("skill")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -558,13 +782,27 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Area", b =>
+            modelBuilder.Entity("Data.Entities.GroupMember", b =>
                 {
-                    b.HasOne("Data.Entities.Floor", null)
-                        .WithMany("Area")
-                        .HasForeignKey("floorId")
+                    b.HasOne("Data.Entities.Task", null)
+                        .WithMany("GroupMember")
+                        .HasForeignKey("Taskid");
+
+                    b.HasOne("Data.Entities.Group", "Group")
+                        .WithMany("GroupMember")
+                        .HasForeignKey("groupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany("GroupMember")
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -606,23 +844,92 @@ namespace Data.Migrations
                         .HasForeignKey("MaterialCategoryid");
                 });
 
+            modelBuilder.Entity("Data.Entities.Notification", b =>
+                {
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("Data.Entities.Item", "item")
+                    b.HasOne("Data.Entities.Item", "Item")
                         .WithMany("OrderDetail")
                         .HasForeignKey("itemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.Entities.Order", "order")
+                    b.HasOne("Data.Entities.Order", "Order")
                         .WithMany("OrderDetail")
                         .HasForeignKey("orderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("item");
+                    b.Navigation("Item");
 
-                    b.Navigation("order");
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
+                {
+                    b.HasOne("Data.Entities.Item", "Item")
+                        .WithMany("ProcedureItem")
+                        .HasForeignKey("itemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.Procedure", "Procedure")
+                        .WithMany("ProcedureItem")
+                        .HasForeignKey("procedureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Procedure");
+                });
+
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.HasOne("Data.Entities.User", "reporter")
+                        .WithMany()
+                        .HasForeignKey("reporterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.Task", "Task")
+                        .WithMany()
+                        .HasForeignKey("taskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+
+                    b.Navigation("reporter");
+                });
+
+            modelBuilder.Entity("Data.Entities.Resource", b =>
+                {
+                    b.HasOne("Data.Entities.Report", null)
+                        .WithMany("Resource")
+                        .HasForeignKey("reportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.Task", b =>
+                {
+                    b.HasOne("Data.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("orderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -690,9 +997,9 @@ namespace Data.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Data.Entities.Floor", b =>
+            modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.Navigation("Area");
+                    b.Navigation("GroupMember");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -700,6 +1007,8 @@ namespace Data.Migrations
                     b.Navigation("ItemMaterial");
 
                     b.Navigation("OrderDetail");
+
+                    b.Navigation("ProcedureItem");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemCategory", b =>
@@ -720,6 +1029,26 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetail");
+                });
+
+            modelBuilder.Entity("Data.Entities.Procedure", b =>
+                {
+                    b.Navigation("ProcedureItem");
+                });
+
+            modelBuilder.Entity("Data.Entities.Report", b =>
+                {
+                    b.Navigation("Resource");
+                });
+
+            modelBuilder.Entity("Data.Entities.Task", b =>
+                {
+                    b.Navigation("GroupMember");
+                });
+
+            modelBuilder.Entity("Data.Entities.User", b =>
+                {
+                    b.Navigation("GroupMember");
                 });
 #pragma warning restore 612, 618
         }

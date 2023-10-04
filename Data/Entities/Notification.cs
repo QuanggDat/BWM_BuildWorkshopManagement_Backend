@@ -20,8 +20,18 @@ namespace Data.Entities
         public string description { get; set; }
         public string subject { get; set; }
         public string content { get; set; }
-        public bool isDeleted { get; set; }
         public DateTime dateCreated { get; set; } = DateTime.Now;
         public DateTime dateUpdated { get; set; } = DateTime.Now;
+        public bool isDeleted { get; set; }
+        /*
+        [ForeignKey("reportId")]
+        public Guid reportId { get; set; }
+        public Report Report { get; set; }
+        [ForeignKey("taskId")]
+        public Guid taskId { get; set; }
+        public Task Task { get; set; }
+        */
+
+
     }
 }

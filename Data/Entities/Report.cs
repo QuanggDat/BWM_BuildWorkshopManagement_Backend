@@ -12,6 +12,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        [ForeignKey("reporterId")]
         public Guid reporterId { get; set; }
         public virtual User reporter { get; set; } = null!;
         public string title { get; set; } = null!;
@@ -20,9 +21,11 @@ namespace Data.Entities
         public string? doingReport { get; set; } = null!;
         public string? todoReport { get; set; } = null!;
         public DateTime createdDate { get; set; }
-        public int period { get; set; }
+        public ICollection<Resource> Resource { get; set; }
+        [ForeignKey("taskId")]
+        public Guid taskId { get; set; }
+        public Task Task { get; set; }
 
-        
-       
+
     }
 }

@@ -13,6 +13,7 @@ namespace Data.Entities
         public string? lastName { get; set; }
         public string address { get; set; }
         public string? image { get; set; }
+        public string? skill { get; set; }
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
@@ -21,5 +22,6 @@ namespace Data.Entities
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
+        public ICollection<GroupMember> GroupMember { get; set; }
     }
 }

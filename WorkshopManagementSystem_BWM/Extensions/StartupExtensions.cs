@@ -100,12 +100,12 @@ namespace WorkshopManagementSystem_BWM.Extensions
                         OnAuthenticationFailed = context =>
                         {
                             Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
-                            return Task.CompletedTask;
+                            return System.Threading.Tasks.Task.CompletedTask;
                         },
                         OnTokenValidated = context =>
                         {
                             Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
-                            return Task.CompletedTask;
+                            return System.Threading.Tasks.Task.CompletedTask;
                         },
                         OnMessageReceived = context =>
                         {
@@ -118,7 +118,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
                                 // Read the token out of the query string
                                 context.Token = accessToken;
                             }
-                            return Task.CompletedTask;
+                            return System.Threading.Tasks.Task.CompletedTask;
                         }
                     };
                 });

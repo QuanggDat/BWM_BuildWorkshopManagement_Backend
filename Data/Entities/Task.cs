@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class WokerTask
+    public class Task
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
@@ -16,13 +16,13 @@ namespace Data.Entities
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public DateTime completedTime { get; set; }
-        public string createdBy { get; set; }
         public int productCompleted { get; set; }
         public int productFailed { get; set; }
         public string description { get; set; }
-        [ForeignKey("taskTypeId")]
-        public Guid taskTypeId { get; set;}
-        public TaskStatus status { get; set; }
-        public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
+        public bool isDeleted { get; set; }
+        [ForeignKey("orderId")]
+        public Guid orderId { get; set;}
+        public Order Order { get; set; }
+        public virtual ICollection<GroupMember> GroupMember { get; set; } = new List<GroupMember>();
     }
 }

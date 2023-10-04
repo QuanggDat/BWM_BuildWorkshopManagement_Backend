@@ -11,15 +11,15 @@ namespace Data.Entities
     public class OrderDetail
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]  
-        public Guid itemId { get; set; }
+        public Guid id { get; set; }
         public int quantity { get; set; }
         public double price { get; set; }
-        public double totalPrice { get; set; }
-        public Guid id { get; set; }
+        public double totalPrice { get; set; }       
         [ForeignKey("orderId")]
-        public Order order { get; set; }
         public Guid orderId { get; set; }
+        public Order Order { get; set; }        
         [ForeignKey("itemId")]
-        public Item item { get; set; }
+        public Guid itemId { get; set; }
+        public Item Item { get; set; }
     }
 }

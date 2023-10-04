@@ -15,5 +15,7 @@ namespace Data.Entities
         public Guid id { get; set; }
         [Column(TypeName = "nvarchar(1000)")] 
         public string name { get; set; }
+        public bool isDeleted { get; set; }
+        public ICollection<ProcedureItem> ProcedureItem { get; set; }
     }
 }
