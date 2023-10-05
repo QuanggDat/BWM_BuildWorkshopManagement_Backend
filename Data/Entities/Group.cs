@@ -12,12 +12,12 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public Guid nestId { get; set; }
-        public Guid userId { get; set; }
-        public virtual Squad Nest { get; set; } = null!;
-        public virtual User User { get; set; } = null!;
+        [ForeignKey("squadId")]
+        public Guid squadId { get; set; }
+        public virtual Squad Squad { get; set; } = null!;
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
         public virtual ManagerTask ManagerTask { get; set; } = null!;
+        public virtual ICollection<User> User { get; set; } = new List<User>();
     }
 }
