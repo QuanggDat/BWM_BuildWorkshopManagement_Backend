@@ -5,9 +5,13 @@ using Data.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace Sevices.Core.MaterialService
 {
@@ -51,6 +55,17 @@ namespace Sevices.Core.MaterialService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
+            //Validation
+            if (string.IsNullOrEmpty(model.name) || string.IsNullOrEmpty(model.supplier) || string.IsNullOrEmpty(model.sku) || model.importDate == null || string.IsNullOrEmpty(model.importPlace) || model.amount <= 0 || model.price <= 0)
+            {
+                result.ErrorMessage = "Thông tin nhập vào không hợp lệ.";
+                result.Succeed = false;
+                return result;
+            }
+
+            
+
             try
             {
                 var newMaterial = new Material
@@ -70,6 +85,9 @@ namespace Sevices.Core.MaterialService
                     categoryId = model.categoryId,
                     isDeleted = false
                 };
+                newMaterial.totalPrice = model.price * model.amount;
+                newMaterial.sku = $"{model.name[0]}-{newMaterial.supplier}-{model.thickness}";
+
                 _dbContext.Material.Add(newMaterial);
                 await _dbContext.SaveChangesAsync();
                 result.Succeed = true;
@@ -113,16 +131,29 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
+                //Validation
+                if (string.IsNullOrEmpty(model.name) || string.IsNullOrEmpty(model.supplier) || string.IsNullOrEmpty(model.sku) || model.importDate == null || string.IsNullOrEmpty(model.importPlace) || model.amount <= 0 || model.price <= 0)
+                {
+                    result.ErrorMessage = "Thông tin nhập vào không hợp lệ.";
+                    result.Succeed = false;
+                    return result;
+                }
+
                 var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
                     data.name = model.name;
                     data.image = model.image;
+                    data.color = model.color;
                     data.supplier = model.supplier;
-                    data.price = model.price;
-                    data.amount = model.amount;
-                    data.importPlace = model.importPlace;
+                    data.thickness = model.thickness;
+                    data.unit = model.unit;
+                    data.sku = model.sku;
                     data.importDate = model.importDate;
+                    data.importPlace = model.importPlace;
+                    data.amount = model.amount;
+                    data.price = model.price;
+                    data.totalPrice = model.totalPrice = model.price * model.amount;
                     data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;

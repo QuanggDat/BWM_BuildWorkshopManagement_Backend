@@ -59,7 +59,6 @@ namespace Data.Models
         [Required] public int amount { get; set; }
         [Required] public double price { get; set; }
         [Required] public double totalPrice { get; set; }
-        [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid categoryId { get; set; }
     }
 
