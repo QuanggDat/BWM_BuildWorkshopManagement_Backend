@@ -38,20 +38,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Group",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    type = table.Column<int>(type: "int", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Group", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemCategory",
                 columns: table => new
                 {
@@ -241,32 +227,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Task",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    completedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    productCompleted = table.Column<int>(type: "int", nullable: false),
-                    productFailed = table.Column<int>(type: "int", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Task", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Task_Order_orderId",
-                        column: x => x.orderId,
-                        principalTable: "Order",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -349,6 +309,56 @@ namespace Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ManagerTask",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    managerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    completedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ManagerTask", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ManagerTask_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ManagerTask_Order_orderId",
+                        column: x => x.orderId,
+                        principalTable: "Order",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Nest",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Nest", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Nest_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -459,34 +469,36 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupMember",
+                name: "Group",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    nestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Taskid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    managerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ManagerTaskid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupMember", x => x.id);
+                    table.PrimaryKey("PK_Group", x => x.id);
                     table.ForeignKey(
-                        name: "FK_GroupMember_AspNetUsers_userId",
+                        name: "FK_Group_AspNetUsers_userId",
                         column: x => x.userId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GroupMember_Group_groupId",
-                        column: x => x.groupId,
-                        principalTable: "Group",
+                        name: "FK_Group_ManagerTask_ManagerTaskid",
+                        column: x => x.ManagerTaskid,
+                        principalTable: "ManagerTask",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GroupMember_Task_Taskid",
-                        column: x => x.Taskid,
-                        principalTable: "Task",
-                        principalColumn: "id");
+                        name: "FK_Group_Nest_nestId",
+                        column: x => x.nestId,
+                        principalTable: "Nest",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -494,14 +506,14 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    nestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     reporterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     overviewReport = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     doneReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     doingReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     todoReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    taskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -513,9 +525,42 @@ namespace Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Report_Task_taskId",
-                        column: x => x.taskId,
-                        principalTable: "Task",
+                        name: "FK_Report_Nest_nestId",
+                        column: x => x.nestId,
+                        principalTable: "Nest",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WokerTask",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    completedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    productCompleted = table.Column<int>(type: "int", nullable: false),
+                    productFailed = table.Column<int>(type: "int", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Groupid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WokerTask", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_WokerTask_Group_Groupid",
+                        column: x => x.Groupid,
+                        principalTable: "Group",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_WokerTask_ManagerTask_managerTaskId",
+                        column: x => x.managerTaskId,
+                        principalTable: "ManagerTask",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -535,6 +580,31 @@ namespace Data.Migrations
                         name: "FK_Resource_Report_reportId",
                         column: x => x.reportId,
                         principalTable: "Report",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WokerTaskDetail",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    wokerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WokerTaskDetail", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_WokerTaskDetail_AspNetUsers_userId",
+                        column: x => x.userId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WokerTaskDetail_WokerTask_wokerTaskId",
+                        column: x => x.wokerTaskId,
+                        principalTable: "WokerTask",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -584,18 +654,18 @@ namespace Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupMember_groupId",
-                table: "GroupMember",
-                column: "groupId");
+                name: "IX_Group_ManagerTaskid",
+                table: "Group",
+                column: "ManagerTaskid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupMember_Taskid",
-                table: "GroupMember",
-                column: "Taskid");
+                name: "IX_Group_nestId",
+                table: "Group",
+                column: "nestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupMember_userId",
-                table: "GroupMember",
+                name: "IX_Group_userId",
+                table: "Group",
                 column: "userId");
 
             migrationBuilder.CreateIndex(
@@ -619,9 +689,24 @@ namespace Data.Migrations
                 column: "materialId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ManagerTask_orderId",
+                table: "ManagerTask",
+                column: "orderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ManagerTask_UserId",
+                table: "ManagerTask",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Material_MaterialCategoryid",
                 table: "Material",
                 column: "MaterialCategoryid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Nest_UserId",
+                table: "Nest",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notification_userId",
@@ -649,14 +734,14 @@ namespace Data.Migrations
                 column: "procedureId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Report_nestId",
+                table: "Report",
+                column: "nestId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Report_reporterId",
                 table: "Report",
                 column: "reporterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Report_taskId",
-                table: "Report",
-                column: "taskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Resource_reportId",
@@ -664,9 +749,24 @@ namespace Data.Migrations
                 column: "reportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Task_orderId",
-                table: "Task",
-                column: "orderId");
+                name: "IX_WokerTask_Groupid",
+                table: "WokerTask",
+                column: "Groupid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WokerTask_managerTaskId",
+                table: "WokerTask",
+                column: "managerTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WokerTaskDetail_userId",
+                table: "WokerTaskDetail",
+                column: "userId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WokerTaskDetail_wokerTaskId",
+                table: "WokerTaskDetail",
+                column: "wokerTaskId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -687,9 +787,6 @@ namespace Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "GroupMember");
-
-            migrationBuilder.DropTable(
                 name: "ItemMaterial");
 
             migrationBuilder.DropTable(
@@ -705,7 +802,7 @@ namespace Data.Migrations
                 name: "Resource");
 
             migrationBuilder.DropTable(
-                name: "Group");
+                name: "WokerTaskDetail");
 
             migrationBuilder.DropTable(
                 name: "Material");
@@ -720,6 +817,9 @@ namespace Data.Migrations
                 name: "Report");
 
             migrationBuilder.DropTable(
+                name: "WokerTask");
+
+            migrationBuilder.DropTable(
                 name: "MaterialCategory");
 
             migrationBuilder.DropTable(
@@ -729,16 +829,22 @@ namespace Data.Migrations
                 name: "ItemCategory");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Group");
 
             migrationBuilder.DropTable(
-                name: "Task");
+                name: "ManagerTask");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Nest");
 
             migrationBuilder.DropTable(
                 name: "Order");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
         }
     }
 }

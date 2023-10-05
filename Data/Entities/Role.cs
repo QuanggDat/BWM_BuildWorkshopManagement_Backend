@@ -9,6 +9,5 @@ namespace Data.Entities
     {
         [Column(TypeName = "varchar(350)")]
         public string Description { get; set; }
-
     }
 }

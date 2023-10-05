@@ -8,17 +8,15 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Group
+    public class WokerTaskDetail
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public Guid nestId { get; set; }
+        [ForeignKey("wokerTaskId")]
+        public Guid wokerTaskId { get; set; }
+        [ForeignKey("userId")]
         public Guid userId { get; set; }
-        public virtual Nest Nest { get; set; } = null!;
+        public virtual WokerTask WokerTask { get; set; } = null!;
         public virtual User User { get; set; } = null!;
-        [ForeignKey("managerId")]
-        public Guid managerId { get; set; }
-        public virtual ManagerTask ManagerTask { get; set; } = null!;
-        public virtual ICollection<WokerTask> WokerTask { get; set; } = new List<WokerTask>();
     }
 }

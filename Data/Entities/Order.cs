@@ -24,5 +24,6 @@ namespace Data.Entities
         public DateTime quoteDate { get; set;}
         public double totalPrice { get; set; }
         public ICollection<OrderDetail> OrderDetail { get; set; }
+        public virtual ICollection<ManagerTask> ManagerTask { get; set; } = new List<ManagerTask>();
     }
 }

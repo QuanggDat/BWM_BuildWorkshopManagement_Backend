@@ -8,10 +8,15 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Task
+    public class WokerTask
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        [ForeignKey("userId")]
+        public Guid userId { get; set; }
+        [ForeignKey("managerTaskId")]
+        public Guid managerTaskId { get; set; } 
+        public virtual ManagerTask ManagerTask { get; set; } = null!;
         public string name { get; set; }
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
@@ -20,9 +25,7 @@ namespace Data.Entities
         public int productFailed { get; set; }
         public string description { get; set; }
         public bool isDeleted { get; set; }
-        [ForeignKey("orderId")]
-        public Guid orderId { get; set;}
-        public Order Order { get; set; }
-        public virtual ICollection<GroupMember> GroupMember { get; set; } = new List<GroupMember>();
+        public virtual ICollection<WokerTaskDetail> WokerTaskDetail { get; set; } = new List<WokerTaskDetail>();
+
     }
 }

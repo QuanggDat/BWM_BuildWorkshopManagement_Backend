@@ -17,10 +17,10 @@ namespace Data.Entities
         public double totalPrice { get; set; }
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
-        public Item item { get; set; }
+        public Item Item { get; set; }
 
         [ForeignKey("materialId")]
         public Guid materialId { get; set; }
-        public Material material { get; set; }
+        public Material Material { get; set; }
     }
 }

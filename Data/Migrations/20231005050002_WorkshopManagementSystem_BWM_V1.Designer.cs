@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231004060057_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231005050002_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,31 +48,13 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("type")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Group");
-                });
-
-            modelBuilder.Entity("Data.Entities.GroupMember", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("ManagerTaskid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("Taskid")
+                    b.Property<Guid>("managerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("groupId")
+                    b.Property<Guid>("nestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("userId")
@@ -80,13 +62,13 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Taskid");
+                    b.HasIndex("ManagerTaskid");
 
-                    b.HasIndex("groupId");
+                    b.HasIndex("nestId");
 
                     b.HasIndex("userId");
 
-                    b.ToTable("GroupMember");
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -207,6 +189,50 @@ namespace Data.Migrations
                     b.ToTable("ItemMaterial");
                 });
 
+            modelBuilder.Entity("Data.Entities.ManagerTask", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("completedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("managerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("orderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("timeEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("timeStart")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("orderId");
+
+                    b.ToTable("ManagerTask");
+                });
+
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Property<Guid>("id")
@@ -288,6 +314,29 @@ namespace Data.Migrations
                     b.HasKey("id");
 
                     b.ToTable("MaterialCategory");
+                });
+
+            modelBuilder.Entity("Data.Entities.Nest", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nest");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -461,14 +510,14 @@ namespace Data.Migrations
                     b.Property<string>("doneReport")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("nestId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("overviewReport")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("reporterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("taskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("title")
@@ -480,9 +529,9 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("reporterId");
+                    b.HasIndex("nestId");
 
-                    b.HasIndex("taskId");
+                    b.HasIndex("reporterId");
 
                     b.ToTable("Report");
                 });
@@ -537,48 +586,6 @@ namespace Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Data.Entities.Task", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("completedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("orderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("productCompleted")
-                        .HasColumnType("int");
-
-                    b.Property<int>("productFailed")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("timeEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("timeStart")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("orderId");
-
-                    b.ToTable("Task");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -696,6 +703,77 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
+            modelBuilder.Entity("Data.Entities.WokerTask", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Groupid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("completedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("managerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("productCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<int>("productFailed")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("timeEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("timeStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("Groupid");
+
+                    b.HasIndex("managerTaskId");
+
+                    b.ToTable("WokerTask");
+                });
+
+            modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("wokerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("userId");
+
+                    b.HasIndex("wokerTaskId");
+
+                    b.ToTable("WokerTaskDetail");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -784,25 +862,29 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.GroupMember", b =>
+            modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.HasOne("Data.Entities.Task", null)
-                        .WithMany("GroupMember")
-                        .HasForeignKey("Taskid");
+                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                        .WithMany("Group")
+                        .HasForeignKey("ManagerTaskid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Data.Entities.Group", "Group")
-                        .WithMany("GroupMember")
-                        .HasForeignKey("groupId")
+                    b.HasOne("Data.Entities.Nest", "Nest")
+                        .WithMany("Group")
+                        .HasForeignKey("nestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.User", "User")
-                        .WithMany("GroupMember")
+                        .WithMany("Group")
                         .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Group");
+                    b.Navigation("ManagerTask");
+
+                    b.Navigation("Nest");
 
                     b.Navigation("User");
                 });
@@ -839,11 +921,33 @@ namespace Data.Migrations
                     b.Navigation("material");
                 });
 
+            modelBuilder.Entity("Data.Entities.ManagerTask", b =>
+                {
+                    b.HasOne("Data.Entities.User", null)
+                        .WithMany("ManagerTask")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("Data.Entities.Order", "Order")
+                        .WithMany("ManagerTask")
+                        .HasForeignKey("orderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.HasOne("Data.Entities.MaterialCategory", null)
                         .WithMany("Materials")
                         .HasForeignKey("MaterialCategoryid");
+                });
+
+            modelBuilder.Entity("Data.Entities.Nest", b =>
+                {
+                    b.HasOne("Data.Entities.User", null)
+                        .WithMany("Nest")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -897,21 +1001,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
-                    b.HasOne("Data.Entities.User", "reporter")
+                    b.HasOne("Data.Entities.Nest", "Nest")
+                        .WithMany()
+                        .HasForeignKey("nestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "Reporter")
                         .WithMany()
                         .HasForeignKey("reporterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.Entities.Task", "Task")
-                        .WithMany()
-                        .HasForeignKey("taskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Nest");
 
-                    b.Navigation("Task");
-
-                    b.Navigation("reporter");
+                    b.Navigation("Reporter");
                 });
 
             modelBuilder.Entity("Data.Entities.Resource", b =>
@@ -921,17 +1025,6 @@ namespace Data.Migrations
                         .HasForeignKey("reportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Data.Entities.Task", b =>
-                {
-                    b.HasOne("Data.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("orderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -956,6 +1049,40 @@ namespace Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.WokerTask", b =>
+                {
+                    b.HasOne("Data.Entities.Group", null)
+                        .WithMany("WokerTask")
+                        .HasForeignKey("Groupid");
+
+                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                        .WithMany("WokerTask")
+                        .HasForeignKey("managerTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ManagerTask");
+                });
+
+            modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>
+                {
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("userId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.WokerTask", "WokerTask")
+                        .WithMany("WokerTaskDetail")
+                        .HasForeignKey("wokerTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("WokerTask");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1001,7 +1128,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.Navigation("GroupMember");
+                    b.Navigation("WokerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -1018,6 +1145,13 @@ namespace Data.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("Data.Entities.ManagerTask", b =>
+                {
+                    b.Navigation("Group");
+
+                    b.Navigation("WokerTask");
+                });
+
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Navigation("ItemMaterial");
@@ -1028,8 +1162,15 @@ namespace Data.Migrations
                     b.Navigation("Materials");
                 });
 
+            modelBuilder.Entity("Data.Entities.Nest", b =>
+                {
+                    b.Navigation("Group");
+                });
+
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
+                    b.Navigation("ManagerTask");
+
                     b.Navigation("OrderDetail");
                 });
 
@@ -1043,14 +1184,18 @@ namespace Data.Migrations
                     b.Navigation("Resource");
                 });
 
-            modelBuilder.Entity("Data.Entities.Task", b =>
-                {
-                    b.Navigation("GroupMember");
-                });
-
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Navigation("GroupMember");
+                    b.Navigation("Group");
+
+                    b.Navigation("ManagerTask");
+
+                    b.Navigation("Nest");
+                });
+
+            modelBuilder.Entity("Data.Entities.WokerTask", b =>
+                {
+                    b.Navigation("WokerTaskDetail");
                 });
 #pragma warning restore 612, 618
         }

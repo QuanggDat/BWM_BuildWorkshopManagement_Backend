@@ -8,16 +8,13 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class GroupMember
+    public class Nest
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [ForeignKey("groupId")]
-        public Guid groupId { get; set; }
-        public virtual Group Group { get; set; } = null!;
-
-        [ForeignKey("userId")]
-        public Guid userId { get; set; }
-        public virtual User User { get; set; } = null!;
+        public string name { get; set; }
+        public bool isDeleted { get; set; }
+        public virtual ICollection<Group> Group { get; set; } = new List<Group>();
     }
 }
+

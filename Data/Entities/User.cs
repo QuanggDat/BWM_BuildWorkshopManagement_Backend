@@ -22,6 +22,8 @@ namespace Data.Entities
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
-        public ICollection<GroupMember> GroupMember { get; set; }
+        public virtual ICollection<Nest> Nest { get; set; } = new List<Nest>();
+        public virtual ICollection<Group> Group { get; set; } = new List<Group>();
+        public virtual ICollection<ManagerTask> ManagerTask { get; set; } = new List<ManagerTask>();
     }
 }

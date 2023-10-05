@@ -27,6 +27,7 @@ namespace Data.Entities
         public string threeD { get; set; }
         public string description { get; set; }
         public double price { get; set; }
+
         [ForeignKey("areaId")]
         public Guid areaId { get; set; }
         public bool isDeleted { get; set; }

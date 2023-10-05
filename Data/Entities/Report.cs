@@ -12,9 +12,12 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        [ForeignKey("managerTaskId")]
+        public Guid managerTaskId { get; set; }
+        public virtual ManagerTask ManagerTask { get; set; } = null!;
         [ForeignKey("reporterId")]
         public Guid reporterId { get; set; }
-        public virtual User reporter { get; set; } = null!;
+        public virtual User Reporter { get; set; } = null!;
         public string title { get; set; } = null!;
         public string overviewReport { get; set; } = null!;
         public string? doneReport { get; set; } = null!;
@@ -22,10 +25,6 @@ namespace Data.Entities
         public string? todoReport { get; set; } = null!;
         public DateTime createdDate { get; set; }
         public ICollection<Resource> Resource { get; set; }
-        [ForeignKey("taskId")]
-        public Guid taskId { get; set; }
-        public Task Task { get; set; }
-
-
+        
     }
 }

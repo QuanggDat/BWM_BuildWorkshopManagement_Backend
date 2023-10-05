@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231005051701_WorkshopManagementSystem_BWM_V2")]
+    partial class WorkshopManagementSystem_BWM_V2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -508,7 +510,7 @@ namespace Data.Migrations
                     b.Property<string>("doneReport")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("managerTaskId")
+                    b.Property<Guid>("nestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("overviewReport")
@@ -527,7 +529,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("managerTaskId");
+                    b.HasIndex("nestId");
 
                     b.HasIndex("reporterId");
 
@@ -999,9 +1001,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                    b.HasOne("Data.Entities.Nest", "Nest")
                         .WithMany()
-                        .HasForeignKey("managerTaskId")
+                        .HasForeignKey("nestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1011,7 +1013,7 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ManagerTask");
+                    b.Navigation("Nest");
 
                     b.Navigation("Reporter");
                 });
