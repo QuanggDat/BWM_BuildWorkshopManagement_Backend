@@ -14,7 +14,7 @@ namespace Data.Entities
         public Guid id { get; set; }
         public Guid nestId { get; set; }
         public Guid userId { get; set; }
-        public virtual Nest Nest { get; set; } = null!;
+        public virtual Squad Nest { get; set; } = null!;
         public virtual User User { get; set; } = null!;
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
