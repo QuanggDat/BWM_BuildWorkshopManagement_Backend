@@ -43,6 +43,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
         public static void AddBussinessService(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+  
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Enums
 {
-    public enum  OrderStatus
+    public enum OrderStatus
     {
         Pending = 0,
         Request = 1,

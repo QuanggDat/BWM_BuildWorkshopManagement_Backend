@@ -11,6 +11,8 @@ namespace Data.Entities
 {
     public class Item
     {
+        public Guid categoryId;
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
         [Column(TypeName = "nvarchar(500)")]
