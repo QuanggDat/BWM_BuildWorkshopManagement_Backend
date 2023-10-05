@@ -11,10 +11,11 @@ namespace Data.Entities
 {
     public class Item
     {
-        public Guid categoryId;
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        [ForeignKey("categoryId")]
+        public Guid categoryId;
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; }
         public int code { get; set; }

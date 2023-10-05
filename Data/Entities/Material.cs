@@ -29,7 +29,7 @@ namespace Data.Entities
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
         [ForeignKey("materialId")]
-        public Guid materialId { get; set; }
+        public Guid categoryId { get; set; }
         public ICollection<ItemMaterial> ItemMaterial { get; set; }
     }
 }
