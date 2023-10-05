@@ -11,13 +11,13 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; }
-        public bool isDelete { get; set; }
+        public bool isDeleted { get; set; } 
     }
 
     public class CreateItemCategoryModel
     {
         [Required] public string name { get; set; }
-        public bool isDelete { get; set; } = false;
+        public bool isDeleted { get; set; } = false;
     }
 
     public class UpdateItemCategoryModel
@@ -28,7 +28,7 @@ namespace Data.Models
 
     public class DeleteItemCategoryModel
     {
-        public Guid id { get; set; }
-        public bool isDelete { get; set; } = true;
+        public Guid id { get; set;}
+        public bool isDeleted { get; set; } = true;
     }
 }

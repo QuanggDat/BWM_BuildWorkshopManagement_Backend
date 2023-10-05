@@ -11,11 +11,11 @@ namespace Data.Entities
 {
     public class Area
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
-        public Guid id { get; set; } 
-        [Column(TypeName = "nvarchar(1000)")] 
-        public string name { get; set; }
-        public ICollection<Item> Item { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] public Guid id { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; } = string.Empty;
+        public double price { get; set; }
         public bool isDeleted { get; set; }
+
+        public ICollection<Item> Items { get; set; }
     }
 }

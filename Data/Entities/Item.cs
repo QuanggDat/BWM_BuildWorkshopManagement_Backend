@@ -13,9 +13,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(500)")]
-        public string name { get; set; }
-        public int code { get; set; }
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
         public string image { get; set; }
         public double mass { get; set; }
         public string unit { get; set; }
@@ -27,11 +25,16 @@ namespace Data.Entities
         public string threeD { get; set; }
         public string description { get; set; }
         public double price { get; set; }
+        public bool isDeleted { get; set; }
         [ForeignKey("areaId")]
         public Guid areaId { get; set; }
-        public bool isDeleted { get; set; }
-        public ICollection<ProcedureItem> ProcedureItem { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
-        public ICollection<ItemMaterial> ItemMaterial { get; set; }
+        public Area area { get; set; }
+        [ForeignKey("categoryId")]
+        public Guid categoryId { get; set; }
+        public ItemCategory category { get; set; }
+
+        public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<ItemMaterial> ItemMaterials { get; set; }
+        public ICollection<Procedure> Procedures { get; set; }
     }
 }

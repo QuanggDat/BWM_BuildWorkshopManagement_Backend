@@ -9,25 +9,25 @@ namespace Data.Models
 {
     public class MaterialCategoryModel
     {
-        public int categoryId { get; set; }
+        public Guid id { get; set; }
         public string name { get; set; }
-        public bool IsDelete { get; set; }
+        public bool isDeleted { get; set; }
     }
 
     public class CreateMaterialCategoryModel
     {
         [Required] public string name { get; set; }
-        public bool IsDelete { get; set; } = false;
+        public bool isDeleted { get; set; } = false;
     }
     public class UpdateMaterialCategoryModel
     {
-        public int categoryId { get; set; }
+        public Guid id { get; set; }
         public string name { get; set; }
     }
 
     public class DeleteMaterialCategoryModel
     {
-        public int categoryId { get; set; }
-        public bool IsDelete { get; set; } = true;
+        public Guid id { get; set; }
+        public bool isDeleted { get; set; } = true;
     }
 }

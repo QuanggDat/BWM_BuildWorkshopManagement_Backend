@@ -11,12 +11,10 @@ namespace Data.Entities
 {
     public class Material
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string name { get; set; }
-        [Column(TypeName = "nvarchar(1000)")]
-        public string image { get; set; }
-        [Column(TypeName = "nvarchar(1000)")]
+        [Column(TypeName = "nvarchar(1000)")] public string name { get; set; }
+        [Column(TypeName = "nvarchar(MAX)")] public string image { get; set; }
         public string color { get; set; }
         public string supplier { get; set; }
         public double thickness { get; set; }
@@ -28,8 +26,10 @@ namespace Data.Entities
         public double price { get; set; }
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
-        [ForeignKey("materialId")]
-        public Guid materialId { get; set; }
-        public ICollection<ItemMaterial> ItemMaterial { get; set; }
+        [ForeignKey("categoryId")]
+        public Guid categoryId { get; set; }
+        public MaterialCategory category { get; set; }
+
+        public ICollection<ItemMaterial> ItemMaterials { get; set; }
     }
 }

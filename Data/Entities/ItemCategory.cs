@@ -11,11 +11,10 @@ namespace Data.Entities
 {
     public class ItemCategory
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(500)")] 
-        public string name { get; set; }
+        [Key] public Guid id { get; set; }
+        [Column(TypeName = "nvarchar(500)")] public string name { get; set; }
         public bool isDeleted { get; set; }
+
         public ICollection<Item> Items { get; set; }
     }
 }

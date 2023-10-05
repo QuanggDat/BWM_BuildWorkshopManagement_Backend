@@ -13,15 +13,14 @@ namespace Data.Entities
         public string? lastName { get; set; }
         public string address { get; set; }
         public string? image { get; set; }
-        public string? skill { get; set; }
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
-        public Guid groupId { get; set; }
-        [ForeignKey("groupId")]
-        public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
+        public Guid? roleID { get; set; }
         public virtual Role? Role { get; set; }
-        public ICollection<GroupMember> GroupMember { get; set; }
+
+        public ICollection<Task> Tasks { get; set;}
+        //public ICollection<Notification> Notifications { get; set;}
     }
 }
