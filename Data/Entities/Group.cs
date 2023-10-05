@@ -19,6 +19,5 @@ namespace Data.Entities
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
         public virtual ManagerTask ManagerTask { get; set; } = null!;
-        public virtual ICollection<WokerTask> WokerTask { get; set; } = new List<WokerTask>();
     }
 }

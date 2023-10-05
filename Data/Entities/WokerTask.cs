@@ -23,6 +23,6 @@ namespace Data.Entities
         [ForeignKey("orderId")]
         public Guid orderId { get; set;}
         public Order Order { get; set; }
-        public virtual ICollection<WokerTaskDetail> GroupMember { get; set; } = new List<WokerTaskDetail>();
+        public virtual ICollection<WokerTaskDetail> WokerTaskDetail { get; set; } = new List<WokerTaskDetail>();
     }
 }
