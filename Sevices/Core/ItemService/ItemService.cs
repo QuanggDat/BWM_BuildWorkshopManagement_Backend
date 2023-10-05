@@ -157,7 +157,7 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.ItemCategory.Where(i=> i.isDeleted != true);
+                var data = _dbContext.ItemCategory.Where(i => i.isDeleted != true).OrderByDescending(i => i.name);
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<ItemCategoryModel>(data);
@@ -177,7 +177,7 @@ namespace Sevices.Core.ItemService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Item.Where(i => i.isDeleted != true);
+                var data = _dbContext.Item.Where(i => i.isDeleted != true).OrderByDescending(i=>i.name);
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<ItemModel>(data);
@@ -290,6 +290,49 @@ namespace Sevices.Core.ItemService
                     resultModel.ErrorMessage = "ItemCategory" + ErrorMessage.ID_NOT_EXISTED;
                     resultModel.Succeed = false;
                 }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel SortMaterialbyPrice()
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Item.Where(i => i.isDeleted != true).OrderByDescending(i => i.price);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<ItemModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetItemsPaging(int pageIndex, int pageSize)
+        {
+            var resultModel = new ResultModel();
+            try
+            {
+                var listData = _dbContext.Item.Where(x => !x.isDeleted).ToList(); 
+                var listDataPaging = listData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                resultModel.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<ItemModel>>(listDataPaging),
+                    Total = listData.Count
+                };
+                resultModel.Succeed = true;
+
             }
             catch (Exception ex)
             {

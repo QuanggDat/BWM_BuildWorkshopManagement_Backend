@@ -175,7 +175,7 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.MaterialCategory.Where(i => i.isDeleted != true);
+                var data = _dbContext.MaterialCategory.Where(i => i.isDeleted != true).OrderByDescending(i=>i.name);
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<MaterialCategoryModel>(data);
@@ -195,7 +195,7 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Material.Where(i => i.isDeleted != true);
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.importDate);
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<MaterialModel>(data);
@@ -308,6 +308,69 @@ namespace Sevices.Core.MaterialService
                     resultModel.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
                     resultModel.Succeed = false;
                 }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel SortMaterialbyPrice()
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i=>i.price);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<MaterialModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel SortMaterialbyThickness()
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.thickness);
+                if (data != null)
+                {
+                    var view = _mapper.ProjectTo<MaterialModel>(data);
+                    result.Data = view!;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetMaterialsPaging(int pageIndex, int pageSize)
+        {
+            var resultModel = new ResultModel();
+            try
+            {
+                var listData = _dbContext.Material.Where(x => !x.isDeleted).ToList();
+                var listDataPaging = listData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                resultModel.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<ItemModel>>(listDataPaging),
+                    Total = listData.Count
+                };
+                resultModel.Succeed = true;
+
             }
             catch (Exception ex)
             {
