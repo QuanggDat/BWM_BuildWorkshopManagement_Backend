@@ -10,7 +10,7 @@ namespace Data.Entities
         public string fullName { get; set; } = null!;
         public string? address { get; set; }
         public string? image { get; set; }
-        public string skill { get; set; } = null!;
+        public string? skill { get; set; } 
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
