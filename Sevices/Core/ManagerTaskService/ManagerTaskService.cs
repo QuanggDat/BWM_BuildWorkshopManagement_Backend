@@ -24,6 +24,7 @@ namespace Sevices.Core.ManagerTaskService
             _mapper = mapper;
             _configuration = configuration;
         }
+
         public async Task<ResultModel> CreatedManagerTask(CreateManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
@@ -63,7 +64,6 @@ namespace Sevices.Core.ManagerTaskService
                 name = model.name,
                 timeStart = model.timeStart,
                 timeEnd = model.timeEnd,
-                completedTime = model.completedTime,
                 description = model.description,
                 isDeleted = false
             };
@@ -82,5 +82,32 @@ namespace Sevices.Core.ManagerTaskService
             return result;
         }
 
+        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
+        {
+            var result = new List<ResponseManagerTaskModel>();
+            var managerTask = await _dbContext.ManagerTask.Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
+            if (managerTask == null) { 
+                return null; 
+            }
+          
+            foreach (var item in managerTask)
+            {
+                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                var tmp = new ResponseManagerTaskModel
+                {
+                    managerId = item.managerId,
+                    orderName = orderTmp.name,
+                    createdBy = orderTmp.assign.fullName,
+                    name = item.name,
+                    timeStart = item.timeStart,
+                    timeEnd = item.timeEnd,
+                    completedTime = item.completedTime,
+                    description = item.description,
+                    isDeleted = item.isDeleted,
+                };
+                result.Add(tmp);
+            }
+            return result;
+        }
     }
 }

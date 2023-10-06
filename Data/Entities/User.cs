@@ -7,13 +7,10 @@ namespace Data.Entities
 {
     public class User : IdentityUser<Guid>
     {
-        [Column(TypeName = "varchar(1000)")]
-        public string firstName { get; set; }
-        [Column(TypeName = "varchar(1000)")]
-        public string? lastName { get; set; }
-        public string address { get; set; }
+        public string fullName { get; set; } = null!;
+        public string? address { get; set; }
         public string? image { get; set; }
-        public string? skill { get; set; }
+        public string skill { get; set; } = null!;
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
@@ -22,8 +19,9 @@ namespace Data.Entities
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
-        public virtual ICollection<Squad> Squad { get; set; } = new List<Squad>();
-        public virtual ICollection<Group> Group { get; set; } = new List<Group>();
-        public virtual ICollection<ManagerTask> ManagerTask { get; set; } = new List<ManagerTask>();
+        public virtual List<Squad> Squads { get; set; } = new();
+        public virtual List<Group> Groups { get; set; } = new();
+        public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
+        public virtual List<Order> Orders { get; set; } = new();
     }
 }

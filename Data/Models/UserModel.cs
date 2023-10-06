@@ -32,9 +32,8 @@ namespace Data.Models
         [Required]
         public string email { get; set; }
         [Required]
-        public string firstName { get; set; }
+        public string fullName { get; set; } = null!;
 
-        public string? lastName { get; set; }
         [Required]
         public string address { get; set; }
 
@@ -49,8 +48,7 @@ namespace Data.Models
     public class UserUpdateModel
     {
         public Guid id { get; set; }
-        public string firstName { get; set; }
-        public string? lastName { get; set; }
+        public string fullName { get; set; } = null!;
         public string address { get; set; }
         public string? image { get; set; }
         public DateTime dob { get; set; }

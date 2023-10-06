@@ -23,13 +23,13 @@ namespace Data.Entities
         public string unit { get; set; } = null!;
         public string sku { get; set; } = null!;
         public DateTime importDate { get; set; }
-        public string importPlace { get; set; }
+        public string importPlace { get; set; } = null!;
         public int amount { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
         [ForeignKey("materialId")]
         public Guid categoryId { get; set; }
-        public ICollection<ItemMaterial> ItemMaterial { get; set; }
+        public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();
     }
 }

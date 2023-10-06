@@ -8,6 +8,6 @@ namespace Data.Entities
     public class Role : IdentityRole<Guid>
     {
         [Column(TypeName = "varchar(350)")]
-        public string Description { get; set; }
+        public string description { get; set; } = null!;
     }
 }

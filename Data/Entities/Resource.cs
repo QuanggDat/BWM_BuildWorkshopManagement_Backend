@@ -12,7 +12,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string link { get; set; }
+        public string link { get; set; } = null!;
         [ForeignKey("reportId")]
         public Guid reportId { get; set; }
     }

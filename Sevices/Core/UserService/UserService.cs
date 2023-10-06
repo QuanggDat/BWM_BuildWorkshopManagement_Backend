@@ -41,15 +41,14 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Admin"))
                 {
-                    await _roleManager.CreateAsync(new Role { Description = "Role for Admin", Name = "Admin" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Admin", Name = "Admin" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
                 var user = new User
                 {
                     UserName = model.userName,
                     Email = model.email,
-                    firstName = model.firstName,
-                    lastName = model.lastName,
+                    fullName = model.fullName,
                     address = model.address,
                     PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
@@ -124,15 +123,14 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Woker"))
                 {
-                    await _roleManager.CreateAsync(new Role { Description = "Role for Woker", Name = "Woker" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Woker", Name = "Woker" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Woker");
                 var user = new User
                 {
                     UserName = model.userName,
                     Email = model.email,
-                    firstName = model.firstName,
-                    lastName = model.lastName,
+                    fullName = model.fullName,
                     address = model.address,
                     PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
@@ -206,15 +204,14 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Factory"))
                 {
-                    await _roleManager.CreateAsync(new Role { Description = "Role for Factory", Name = "Factory" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Factory", Name = "Factory" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Factory");
                 var user = new User
                 {
                     UserName = model.userName,
                     Email = model.email,
-                    firstName = model.firstName,
-                    lastName = model.lastName,
+                    fullName = model.fullName,
                     address = model.address,
                     PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
@@ -355,9 +352,8 @@ namespace Sevices.Core.UserService
                 Expires_in = int.Parse(_configuration["Jwt:ExpireTimes"]) * 3600,
                 userID = user.Id.ToString(),
                 username = user.UserName,
-                firstName = user.firstName,
+                fullname = user.fullName,
                 PhoneNumber = user.PhoneNumber,
-                lastName = user.lastName,
                 Role = user.Role
             };
         }
@@ -367,8 +363,7 @@ namespace Sevices.Core.UserService
             var claims = new List<Claim> {
                 new Claim("UserId", user.Id.ToString()),
                 new Claim("Email", user.Email),
-                new Claim("FullName", user.firstName),
-
+                new Claim("FullName", user.fullName),
                 new Claim("UserName", user.UserName)
             };
             foreach (var role in roles)
@@ -388,8 +383,7 @@ namespace Sevices.Core.UserService
                 //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
                 if (data != null)
                 {
-                    data.firstName = model.firstName;
-                    data.lastName = model.lastName;
+                    data.fullName = model.fullName;
                     data.address = model.address;
                     data.image = model.image;
                     data.dob = model.dob;

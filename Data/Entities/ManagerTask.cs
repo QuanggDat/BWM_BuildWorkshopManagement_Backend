@@ -20,10 +20,10 @@ namespace Data.Entities
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; } 
         public DateTime timeEnd { get; set; }
-        public DateTime completedTime { get; set; }
+        public DateTime? completedTime { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; } 
-        public virtual ICollection<Group> Group { get; set; } = new List<Group>();
-        public virtual ICollection<WokerTask> WokerTask { get; set; } = new List<WokerTask>();
+        public virtual List<Group> Groups { get; set; } = new();
+        public virtual List<WokerTask> WokerTasks { get; set; } = new();
     }
 }

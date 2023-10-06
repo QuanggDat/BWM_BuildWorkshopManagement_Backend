@@ -21,6 +21,6 @@ namespace Data.Entities
 
         [ForeignKey("materialId")]
         public Guid materialId { get; set; }
-        public Material Material { get; set; }
+        public Material Material { get; set; } = null!;
     }
 }

@@ -23,15 +23,6 @@ namespace Data.Entities
         public DateTime dateCreated { get; set; } = DateTime.Now;
         public DateTime dateUpdated { get; set; } = DateTime.Now;
         public bool isDeleted { get; set; }
-        /*
-        [ForeignKey("reportId")]
-        public Guid reportId { get; set; }
-        public Report Report { get; set; }
-        [ForeignKey("taskId")]
-        public Guid taskId { get; set; }
-        public Task Task { get; set; }
-        */
-
 
     }
 }

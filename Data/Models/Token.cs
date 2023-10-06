@@ -14,9 +14,8 @@ namespace Data.Models
         public string userID { get; set; }
         public int Expires_in { get; set; }
         public string username { get; set; }
-        public string firstName { get; set; }
+        public string fullname { get; set; }
         public string PhoneNumber { get; set; }
-        public string lastName { get; set; }
         public Role Role { get; set; }
     }
 }

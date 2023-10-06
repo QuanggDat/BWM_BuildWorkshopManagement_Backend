@@ -17,7 +17,6 @@ namespace Data.Entities
         public virtual Squad Squad { get; set; } = null!;
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
-        public virtual ManagerTask ManagerTask { get; set; } = null!;
-        public virtual ICollection<User> User { get; set; } = new List<User>();
+        public virtual List<User> Users { get; set; } = new();
     }
 }

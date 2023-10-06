@@ -15,14 +15,14 @@ namespace Data.Entities
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
-        public DateTime completedTime { get; set; }
+        public DateTime? completedTime { get; set; }
         public int productCompleted { get; set; }
         public int productFailed { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
         [ForeignKey("orderId")]
         public Guid orderId { get; set;}
-        public Order Order { get; set; }
-        public virtual ICollection<WokerTaskDetail> WokerTaskDetail { get; set; } = new List<WokerTaskDetail>();
+        public Order Order { get; set; } = null!;
+        public virtual List<WokerTaskDetail> WokerTaskDetails { get; set; } = new();
     }
 }

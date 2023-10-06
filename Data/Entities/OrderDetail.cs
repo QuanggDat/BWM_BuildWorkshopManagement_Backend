@@ -17,7 +17,7 @@ namespace Data.Entities
         public double totalPrice { get; set; }       
         [ForeignKey("orderId")]
         public Guid orderId { get; set; }
-        public Order Order { get; set; }        
+        public Order Order { get; set; } = null!;
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
         public Item Item { get; set; } = null!;

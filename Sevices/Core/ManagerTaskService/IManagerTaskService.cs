@@ -10,5 +10,6 @@ namespace Sevices.Core.ManagerTaskService
     public interface IManagerTaskService
     {
         Task<ResultModel> CreatedManagerTask(CreateManagerTaskModel model);
+        Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId);
     }
 }

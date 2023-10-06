@@ -34,8 +34,8 @@ namespace Data.Entities
         [ForeignKey("areaId")]
         public Guid areaId { get; set; }
         public bool isDeleted { get; set; }
-        public ICollection<ProcedureItem> ProcedureItem { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
-        public ICollection<ItemMaterial> ItemMaterial { get; set; }
+        public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
+        public virtual List<OrderDetail> OrderDetails { get; set; } = new();
+        public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();
     }
 }

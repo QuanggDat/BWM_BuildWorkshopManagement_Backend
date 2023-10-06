@@ -16,6 +16,6 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(1000)")] 
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
-        public ICollection<ProcedureItem> ProcedureItem { get; set; }
+        public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
     }
 }

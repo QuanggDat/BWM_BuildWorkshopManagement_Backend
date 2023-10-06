@@ -16,6 +16,9 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;
+        [ForeignKey("assignToId")]
+        public Guid assignToId { get; set; }
+        public User assign { get; set; } = null!;
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 
@@ -23,7 +26,9 @@ namespace Data.Entities
         public string fileQuote { get; set; } = null!;
         public DateTime quoteDate { get; set;}
         public double totalPrice { get; set; }
-        public ICollection<OrderDetail> OrderDetail { get; set; }
-        public virtual ICollection<ManagerTask> ManagerTask { get; set; } = new List<ManagerTask>();
+        public DateTime? acceptanceDate { get; set; }
+        public virtual List<OrderDetail> OrderDetails { get; set; } = new();
+        public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
+
     }
 }

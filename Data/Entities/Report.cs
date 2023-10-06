@@ -23,8 +23,8 @@ namespace Data.Entities
         public string? doneReport { get; set; } = null!;
         public string? doingReport { get; set; } = null!;
         public string? todoReport { get; set; } = null!;
-        public DateTime createdDate { get; set; }
-        public ICollection<Resource> Resource { get; set; }
-        
+        public DateTime createdDate { get; set; }                   
+        public virtual List<Resource> Resources { get; set; } = new();
+
     }
 }
