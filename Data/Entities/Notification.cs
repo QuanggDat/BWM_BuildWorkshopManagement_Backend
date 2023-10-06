@@ -14,12 +14,12 @@ namespace Data.Entities
         public Guid id { get; set; }
         [ForeignKey("userId")]
         public Guid userId { get; set; }
-        public User User { get; set; }
+        public User User { get; set; } = null!;
         public bool seen { get; set; }
-        public string action { get; set; }
-        public string description { get; set; }
-        public string subject { get; set; }
-        public string content { get; set; }
+        public string action { get; set; } = null!;
+        public string? description { get; set; }
+        public string subject { get; set; } = null!;
+        public string content { get; set; } = null!;
         public DateTime dateCreated { get; set; } = DateTime.Now;
         public DateTime dateUpdated { get; set; } = DateTime.Now;
         public bool isDeleted { get; set; }

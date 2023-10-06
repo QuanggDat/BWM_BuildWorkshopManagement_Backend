@@ -16,12 +16,12 @@ namespace Data.Entities
         public Guid managerId { get; set; }
         [ForeignKey("orderId")]
         public Guid orderId { get; set; }
-        public Order Order { get; set; }
-        public string name { get; set; }
-        public DateTime timeStart { get; set; }
+        public Order Order { get; set; } = null!;
+        public string name { get; set; } = null!;
+        public DateTime timeStart { get; set; } 
         public DateTime timeEnd { get; set; }
         public DateTime completedTime { get; set; }
-        public string description { get; set; }
+        public string description { get; set; } = null!;
         public bool isDeleted { get; set; } 
         public virtual ICollection<Group> Group { get; set; } = new List<Group>();
         public virtual ICollection<WokerTask> WokerTask { get; set; } = new List<WokerTask>();

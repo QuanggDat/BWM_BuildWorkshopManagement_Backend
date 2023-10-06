@@ -99,7 +99,7 @@ namespace Sevices.Core.UserService
                             else
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Validate user wrong ";
+                                result.ErrorMessage = "Xác thực người dùng sai ";
                             }
                         }
 

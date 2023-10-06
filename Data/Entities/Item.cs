@@ -17,18 +17,18 @@ namespace Data.Entities
         [ForeignKey("categoryId")]
         public Guid categoryId;
         [Column(TypeName = "nvarchar(500)")]
-        public string name { get; set; }
+        public string name { get; set; } = null!;
         public int code { get; set; }
-        public string image { get; set; }
+        public string? image { get; set; } 
         public double mass { get; set; }
-        public string unit { get; set; }
+        public string unit { get; set; } = null!;
         public double length { get; set; }
         public double width { get; set; }
         public double height { get; set; }
-        public string technical { get; set; }
-        public string twoD { get; set; }
-        public string threeD { get; set; }
-        public string description { get; set; }
+        public string technical { get; set; } = null!;
+        public string twoD { get; set; } = null!;
+        public string threeD { get; set; } = null!;
+        public string description { get; set; } = null!;
         public double price { get; set; }
 
         [ForeignKey("areaId")]

@@ -20,6 +20,6 @@ namespace Data.Entities
         public Order Order { get; set; }        
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
-        public Item Item { get; set; }
+        public Item Item { get; set; } = null!;
     }
 }

@@ -12,13 +12,13 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string name { get; set; }
+        public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public DateTime completedTime { get; set; }
         public int productCompleted { get; set; }
         public int productFailed { get; set; }
-        public string description { get; set; }
+        public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
         [ForeignKey("orderId")]
         public Guid orderId { get; set;}

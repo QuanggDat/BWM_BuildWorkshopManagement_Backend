@@ -18,4 +18,5 @@ namespace Data.Models
         public object? Data { get; set; }
         public int Total { get; set; } = 0;
     }
+
 }

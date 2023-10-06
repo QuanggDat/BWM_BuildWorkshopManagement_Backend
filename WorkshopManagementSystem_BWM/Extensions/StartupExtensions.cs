@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Sevices.Core.ItemService;
+using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;
 using Sevices.Core.UserService;
 using Sevices.Mapping;
@@ -47,7 +48,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IItemService, ItemService>(); 
             services.AddScoped<IMaterialService, MaterialService>();
-
+            services.AddScoped<IManagerTaskService, ManagerTaskService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

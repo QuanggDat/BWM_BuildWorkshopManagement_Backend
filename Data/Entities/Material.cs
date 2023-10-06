@@ -13,15 +13,15 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
-        public string name { get; set; }
+        public string name { get; set; } = null!;
         [Column(TypeName = "nvarchar(1000)")]
-        public string image { get; set; }
+        public string image { get; set; } = null!;
         [Column(TypeName = "nvarchar(1000)")]
-        public string color { get; set; }
-        public string supplier { get; set; }
-        public double thickness { get; set; }
-        public string unit { get; set; }
-        public string sku { get; set; }
+        public string color { get; set; } = null!;
+        public string supplier { get; set; } = null!;
+        public double thickness { get; set; } 
+        public string unit { get; set; } = null!;
+        public string sku { get; set; } = null!;
         public DateTime importDate { get; set; }
         public string importPlace { get; set; }
         public int amount { get; set; }
