@@ -13,8 +13,9 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
         [ForeignKey("managerTaskId")]
-        public Guid managerTaskId { get; set; }
+        public Guid? managerTaskId { get; set; }
         public virtual ManagerTask ManagerTask { get; set; } = null!;
+
         [ForeignKey("reporterId")]
         public Guid reporterId { get; set; }
         public virtual User Reporter { get; set; } = null!;

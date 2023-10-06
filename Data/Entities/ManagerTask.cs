@@ -14,9 +14,12 @@ namespace Data.Entities
         public Guid id { get; set; }
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
+        public virtual User manager { get; set; } = null!;
+
         [ForeignKey("orderId")]
-        public Guid orderId { get; set; }
-        public Order Order { get; set; } = null!;
+        public Guid? orderId { get; set; }
+        public virtual Order Order { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; } 
         public DateTime timeEnd { get; set; }

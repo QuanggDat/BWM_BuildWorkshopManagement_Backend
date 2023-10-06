@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231005060310_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231006130557_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,25 +51,20 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ManagerTaskid")
+                    b.Property<Guid?>("ManagerTaskid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("managerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("nestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("userId")
+                    b.Property<Guid>("squadId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
 
                     b.HasIndex("ManagerTaskid");
 
-                    b.HasIndex("nestId");
-
-                    b.HasIndex("userId");
+                    b.HasIndex("squadId");
 
                     b.ToTable("Group");
                 });
@@ -97,7 +92,6 @@ namespace Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("image")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")
@@ -198,10 +192,7 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("completedTime")
+                    b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("description")
@@ -218,7 +209,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("orderId")
+                    b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("timeEnd")
@@ -229,7 +220,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("managerId");
 
                     b.HasIndex("orderId");
 
@@ -248,6 +239,9 @@ namespace Data.Migrations
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("categoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("color")
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
@@ -265,9 +259,6 @@ namespace Data.Migrations
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<Guid>("materialId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -319,29 +310,6 @@ namespace Data.Migrations
                     b.ToTable("MaterialCategory");
                 });
 
-            modelBuilder.Entity("Data.Entities.Nest", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Nest");
-                });
-
             modelBuilder.Entity("Data.Entities.Notification", b =>
                 {
                     b.Property<Guid>("id")
@@ -363,7 +331,6 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")
@@ -390,6 +357,15 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssignId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("acceptanceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("assignToId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("customerName")
@@ -425,6 +401,8 @@ namespace Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("AssignId");
 
                     b.ToTable("Order");
                 });
@@ -513,7 +491,7 @@ namespace Data.Migrations
                     b.Property<string>("doneReport")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("managerTaskId")
+                    b.Property<Guid?>("managerTaskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("overviewReport")
@@ -569,10 +547,6 @@ namespace Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("varchar(350)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -580,6 +554,10 @@ namespace Data.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("varchar(350)");
 
                     b.HasKey("Id");
 
@@ -589,6 +567,29 @@ namespace Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Squad", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Squad");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -645,7 +646,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("address")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("banStatus")
@@ -654,9 +654,9 @@ namespace Data.Migrations
                     b.Property<DateTime>("dob")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("firstName")
+                    b.Property<string>("fullName")
                         .IsRequired()
-                        .HasColumnType("varchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("gender")
                         .HasColumnType("bit");
@@ -667,13 +667,11 @@ namespace Data.Migrations
                     b.Property<string>("image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("lastName")
-                        .HasColumnType("varchar(1000)");
-
                     b.Property<Guid?>("roleID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("skill")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -712,13 +710,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("Groupid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("ManagerTaskid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("completedTime")
+                    b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("description")
@@ -749,8 +744,6 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Groupid");
-
                     b.HasIndex("ManagerTaskid");
 
                     b.HasIndex("orderId");
@@ -767,7 +760,7 @@ namespace Data.Migrations
                     b.Property<Guid>("userId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("wokerTaskId")
+                    b.Property<Guid?>("wokerTaskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
@@ -777,6 +770,21 @@ namespace Data.Migrations
                     b.HasIndex("wokerTaskId");
 
                     b.ToTable("WokerTaskDetail");
+                });
+
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.Property<Guid>("Groupsid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Groupsid", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("GroupUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -869,29 +877,17 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
-                        .WithMany("Group")
-                        .HasForeignKey("ManagerTaskid")
+                    b.HasOne("Data.Entities.ManagerTask", null)
+                        .WithMany("Groups")
+                        .HasForeignKey("ManagerTaskid");
+
+                    b.HasOne("Data.Entities.Squad", "Squad")
+                        .WithMany("Groups")
+                        .HasForeignKey("squadId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.Entities.Nest", "Nest")
-                        .WithMany("Group")
-                        .HasForeignKey("nestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.User", "User")
-                        .WithMany("Group")
-                        .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ManagerTask");
-
-                    b.Navigation("Nest");
-
-                    b.Navigation("User");
+                    b.Navigation("Squad");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -910,13 +906,13 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
-                        .WithMany("ItemMaterial")
+                        .WithMany("ItemMaterials")
                         .HasForeignKey("itemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.Material", "Material")
-                        .WithMany("ItemMaterial")
+                        .WithMany("ItemMaterials")
                         .HasForeignKey("materialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -928,17 +924,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany("ManagerTask")
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("Data.Entities.Order", "Order")
-                        .WithMany("ManagerTask")
-                        .HasForeignKey("orderId")
+                    b.HasOne("Data.Entities.User", "manager")
+                        .WithMany("ManagerTasks")
+                        .HasForeignKey("managerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Data.Entities.Order", "Order")
+                        .WithMany("ManagerTasks")
+                        .HasForeignKey("orderId");
+
                     b.Navigation("Order");
+
+                    b.Navigation("manager");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -946,13 +944,6 @@ namespace Data.Migrations
                     b.HasOne("Data.Entities.MaterialCategory", null)
                         .WithMany("Materials")
                         .HasForeignKey("MaterialCategoryid");
-                });
-
-            modelBuilder.Entity("Data.Entities.Nest", b =>
-                {
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany("Nest")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -966,16 +957,27 @@ namespace Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Data.Entities.Order", b =>
+                {
+                    b.HasOne("Data.Entities.User", "Assign")
+                        .WithMany("Orders")
+                        .HasForeignKey("AssignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assign");
+                });
+
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
-                        .WithMany("OrderDetail")
+                        .WithMany("OrderDetails")
                         .HasForeignKey("itemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.Order", "Order")
-                        .WithMany("OrderDetail")
+                        .WithMany("OrderDetails")
                         .HasForeignKey("orderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -988,13 +990,13 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
-                        .WithMany("ProcedureItem")
+                        .WithMany("ProcedureItems")
                         .HasForeignKey("itemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.Procedure", "Procedure")
-                        .WithMany("ProcedureItem")
+                        .WithMany("ProcedureItems")
                         .HasForeignKey("procedureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1008,9 +1010,7 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
                         .WithMany()
-                        .HasForeignKey("managerTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("managerTaskId");
 
                     b.HasOne("Data.Entities.User", "Reporter")
                         .WithMany()
@@ -1026,10 +1026,17 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Resource", b =>
                 {
                     b.HasOne("Data.Entities.Report", null)
-                        .WithMany("Resource")
+                        .WithMany("Resources")
                         .HasForeignKey("reportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.Squad", b =>
+                {
+                    b.HasOne("Data.Entities.User", null)
+                        .WithMany("Squads")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -1058,12 +1065,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
-                    b.HasOne("Data.Entities.Group", null)
-                        .WithMany("WokerTask")
-                        .HasForeignKey("Groupid");
-
                     b.HasOne("Data.Entities.ManagerTask", null)
-                        .WithMany("WokerTask")
+                        .WithMany("WokerTasks")
                         .HasForeignKey("ManagerTaskid");
 
                     b.HasOne("Data.Entities.Order", "Order")
@@ -1084,14 +1087,27 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Data.Entities.WokerTask", "WokerTask")
-                        .WithMany("GroupMember")
-                        .HasForeignKey("wokerTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("WokerTaskDetails")
+                        .HasForeignKey("wokerTaskId");
 
                     b.Navigation("User");
 
                     b.Navigation("WokerTask");
+                });
+
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.HasOne("Data.Entities.Group", null)
+                        .WithMany()
+                        .HasForeignKey("Groupsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1135,18 +1151,13 @@ namespace Data.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Data.Entities.Group", b =>
-                {
-                    b.Navigation("WokerTask");
-                });
-
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
-                    b.Navigation("ItemMaterial");
+                    b.Navigation("ItemMaterials");
 
-                    b.Navigation("OrderDetail");
+                    b.Navigation("OrderDetails");
 
-                    b.Navigation("ProcedureItem");
+                    b.Navigation("ProcedureItems");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemCategory", b =>
@@ -1156,14 +1167,14 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.Navigation("Group");
+                    b.Navigation("Groups");
 
-                    b.Navigation("WokerTask");
+                    b.Navigation("WokerTasks");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
-                    b.Navigation("ItemMaterial");
+                    b.Navigation("ItemMaterials");
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
@@ -1171,40 +1182,40 @@ namespace Data.Migrations
                     b.Navigation("Materials");
                 });
 
-            modelBuilder.Entity("Data.Entities.Nest", b =>
-                {
-                    b.Navigation("Group");
-                });
-
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
-                    b.Navigation("ManagerTask");
+                    b.Navigation("ManagerTasks");
 
-                    b.Navigation("OrderDetail");
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("Data.Entities.Procedure", b =>
                 {
-                    b.Navigation("ProcedureItem");
+                    b.Navigation("ProcedureItems");
                 });
 
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
-                    b.Navigation("Resource");
+                    b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("Data.Entities.Squad", b =>
+                {
+                    b.Navigation("Groups");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Navigation("Group");
+                    b.Navigation("ManagerTasks");
 
-                    b.Navigation("ManagerTask");
+                    b.Navigation("Orders");
 
-                    b.Navigation("Nest");
+                    b.Navigation("Squads");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
-                    b.Navigation("GroupMember");
+                    b.Navigation("WokerTaskDetails");
                 });
 #pragma warning restore 612, 618
         }
