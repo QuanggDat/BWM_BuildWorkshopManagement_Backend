@@ -18,7 +18,7 @@ namespace Data.Entities
         public string customerName { get; set; } = null!;
         [ForeignKey("assignToId")]
         public Guid assignToId { get; set; }
-        public User assign { get; set; } = null!;
+        public virtual User Assign { get; set; } = null!;
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 

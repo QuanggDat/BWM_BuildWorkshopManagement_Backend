@@ -81,9 +81,10 @@ namespace Sevices.Core.ManagerTaskService
             }
             return result;
         }
-
+        
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
         {
+
             var result = new List<ResponseManagerTaskModel>();
             var managerTask = await _dbContext.ManagerTask.Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
             if (managerTask == null) { 
@@ -97,7 +98,7 @@ namespace Sevices.Core.ManagerTaskService
                 {
                     managerId = item.managerId,
                     orderName = orderTmp.name,
-                    createdBy = orderTmp.assign.fullName,
+                    createdBy = orderTmp.Assign.fullName,
                     name = item.name,
                     timeStart = item.timeStart,
                     timeEnd = item.timeEnd,
@@ -109,5 +110,6 @@ namespace Sevices.Core.ManagerTaskService
             }
             return result;
         }
+        
     }
 }

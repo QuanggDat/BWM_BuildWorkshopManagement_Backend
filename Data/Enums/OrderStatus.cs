@@ -10,9 +10,10 @@ namespace Data.Enums
     {
         Pending = 0,
         Request = 1,
-        Approve = 2,
-        InProgress = 3,
-        Cancel = 4,
-        Completed = 5
+        Reject = 2,
+        Approve = 3,
+        InProgress = 4,
+        Cancel = 5,
+        Completed = 6
     }
 }

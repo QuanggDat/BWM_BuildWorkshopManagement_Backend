@@ -190,9 +190,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
@@ -210,7 +207,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("orderId")
+                    b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("timeEnd")
@@ -221,7 +218,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("managerId");
 
                     b.HasIndex("orderId");
 
@@ -360,11 +357,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AssignId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("acceptanceDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid>("assignId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("assignToId")
                         .HasColumnType("uniqueidentifier");
@@ -403,7 +400,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("assignId");
+                    b.HasIndex("AssignId");
 
                     b.ToTable("Order");
                 });
@@ -492,7 +489,7 @@ namespace Data.Migrations
                     b.Property<string>("doneReport")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("managerTaskId")
+                    b.Property<Guid?>("managerTaskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("overviewReport")
@@ -672,7 +669,6 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("skill")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -761,7 +757,7 @@ namespace Data.Migrations
                     b.Property<Guid>("userId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("wokerTaskId")
+                    b.Property<Guid?>("wokerTaskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
@@ -925,17 +921,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.HasOne("Data.Entities.User", null)
+                    b.HasOne("Data.Entities.User", "manager")
                         .WithMany("ManagerTasks")
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("Data.Entities.Order", "Order")
-                        .WithMany("ManagerTasks")
-                        .HasForeignKey("orderId")
+                        .HasForeignKey("managerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Data.Entities.Order", "Order")
+                        .WithMany("ManagerTasks")
+                        .HasForeignKey("orderId");
+
                     b.Navigation("Order");
+
+                    b.Navigation("manager");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -958,13 +956,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
-                    b.HasOne("Data.Entities.User", "assign")
+                    b.HasOne("Data.Entities.User", "Assign")
                         .WithMany("Orders")
-                        .HasForeignKey("assignId")
+                        .HasForeignKey("AssignId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("assign");
+                    b.Navigation("Assign");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -1009,9 +1007,7 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
                         .WithMany()
-                        .HasForeignKey("managerTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("managerTaskId");
 
                     b.HasOne("Data.Entities.User", "Reporter")
                         .WithMany()
@@ -1089,9 +1085,7 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.WokerTask", "WokerTask")
                         .WithMany("WokerTaskDetails")
-                        .HasForeignKey("wokerTaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("wokerTaskId");
 
                     b.Navigation("User");
 
