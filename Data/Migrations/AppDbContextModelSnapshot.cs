@@ -40,7 +40,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Area", (string)null);
+                    b.ToTable("Area");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
@@ -49,22 +49,14 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ManagerTaskid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("managerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("squadId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
 
-                    b.HasIndex("ManagerTaskid");
-
                     b.HasIndex("squadId");
 
-                    b.ToTable("Group", (string)null);
+                    b.ToTable("Group");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -73,14 +65,15 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ItemCategoryid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("code")
-                        .HasColumnType("int");
+                    b.Property<Guid>("categoryid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -129,11 +122,11 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ItemCategoryid");
-
                     b.HasIndex("areaId");
 
-                    b.ToTable("Item", (string)null);
+                    b.HasIndex("categoryid");
+
+                    b.ToTable("Item");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemCategory", b =>
@@ -151,7 +144,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ItemCategory", (string)null);
+                    b.ToTable("ItemCategory");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -181,7 +174,7 @@ namespace Data.Migrations
 
                     b.HasIndex("materialId");
 
-                    b.ToTable("ItemMaterial", (string)null);
+                    b.ToTable("ItemMaterial");
                 });
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
@@ -213,6 +206,9 @@ namespace Data.Migrations
                     b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("timeEnd")
                         .HasColumnType("datetime2");
 
@@ -227,16 +223,13 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("ManagerTask", (string)null);
+                    b.ToTable("ManagerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("MaterialCategoryid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("amount")
@@ -290,9 +283,9 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("MaterialCategoryid");
+                    b.HasIndex("categoryId");
 
-                    b.ToTable("Material", (string)null);
+                    b.ToTable("Material");
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
@@ -310,7 +303,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("MaterialCategory", (string)null);
+                    b.ToTable("MaterialCategory");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -353,7 +346,7 @@ namespace Data.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -407,7 +400,7 @@ namespace Data.Migrations
 
                     b.HasIndex("AssignId");
 
-                    b.ToTable("Order", (string)null);
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -419,6 +412,9 @@ namespace Data.Migrations
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
@@ -441,7 +437,7 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("OrderDetail", (string)null);
+                    b.ToTable("OrderDetail");
                 });
 
             modelBuilder.Entity("Data.Entities.Procedure", b =>
@@ -459,7 +455,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Procedure", (string)null);
+                    b.ToTable("Procedure");
                 });
 
             modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
@@ -480,7 +476,7 @@ namespace Data.Migrations
 
                     b.HasIndex("procedureId");
 
-                    b.ToTable("ProcedureItem", (string)null);
+                    b.ToTable("ProcedureItem");
                 });
 
             modelBuilder.Entity("Data.Entities.Report", b =>
@@ -521,7 +517,7 @@ namespace Data.Migrations
 
                     b.HasIndex("reporterId");
 
-                    b.ToTable("Report", (string)null);
+                    b.ToTable("Report");
                 });
 
             modelBuilder.Entity("Data.Entities.Resource", b =>
@@ -541,7 +537,7 @@ namespace Data.Migrations
 
                     b.HasIndex("reportId");
 
-                    b.ToTable("Resource", (string)null);
+                    b.ToTable("Resource");
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
@@ -582,9 +578,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -594,9 +587,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Squad", (string)null);
+                    b.ToTable("Squad");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -690,6 +681,8 @@ namespace Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("groupId");
+
                     b.HasIndex("roleID");
 
                     b.ToTable("AspNetUsers", (string)null);
@@ -742,6 +735,9 @@ namespace Data.Migrations
                     b.Property<int>("productFailed")
                         .HasColumnType("int");
 
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("timeEnd")
                         .HasColumnType("datetime2");
 
@@ -754,7 +750,7 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("WokerTask", (string)null);
+                    b.ToTable("WokerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>
@@ -775,22 +771,7 @@ namespace Data.Migrations
 
                     b.HasIndex("wokerTaskId");
 
-                    b.ToTable("WokerTaskDetail", (string)null);
-                });
-
-            modelBuilder.Entity("GroupUser", b =>
-                {
-                    b.Property<Guid>("Groupsid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Groupsid", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("GroupUser", (string)null);
+                    b.ToTable("WokerTaskDetail");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -883,10 +864,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("ManagerTaskid");
-
                     b.HasOne("Data.Entities.Squad", "Squad")
                         .WithMany("Groups")
                         .HasForeignKey("squadId")
@@ -898,15 +875,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
-                    b.HasOne("Data.Entities.ItemCategory", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ItemCategoryid");
-
-                    b.HasOne("Data.Entities.Area", null)
+                    b.HasOne("Data.Entities.Area", "area")
                         .WithMany("Items")
                         .HasForeignKey("areaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Data.Entities.ItemCategory", "category")
+                        .WithMany("Items")
+                        .HasForeignKey("categoryid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("area");
+
+                    b.Navigation("category");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -953,9 +936,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
-                    b.HasOne("Data.Entities.MaterialCategory", null)
+                    b.HasOne("Data.Entities.MaterialCategory", "Category")
                         .WithMany("Materials")
-                        .HasForeignKey("MaterialCategoryid");
+                        .HasForeignKey("categoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -1044,20 +1031,21 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Data.Entities.Squad", b =>
-                {
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany("Squads")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
+                    b.HasOne("Data.Entities.Group", "group")
+                        .WithMany("Users")
+                        .HasForeignKey("groupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("roleID");
 
                     b.Navigation("Role");
+
+                    b.Navigation("group");
                 });
 
             modelBuilder.Entity("Data.Entities.UserRole", b =>
@@ -1107,21 +1095,6 @@ namespace Data.Migrations
                     b.Navigation("WokerTask");
                 });
 
-            modelBuilder.Entity("GroupUser", b =>
-                {
-                    b.HasOne("Data.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("Groupsid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Data.Entities.Role", null)
@@ -1163,6 +1136,11 @@ namespace Data.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("Data.Entities.Group", b =>
+                {
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
                     b.Navigation("ItemMaterials");
@@ -1179,8 +1157,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.Navigation("Groups");
-
                     b.Navigation("WokerTasks");
                 });
 
@@ -1219,8 +1195,6 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Squads");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>

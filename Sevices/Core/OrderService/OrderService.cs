@@ -31,11 +31,13 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var listOrder = _dbContext.Order.OrderByDescending(x => x.orderDate)
-                                                .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listOrder = _dbContext.Order.OrderByDescending(x => x.orderDate).ToList();
+
+                var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<OrderModel>>(listOrder),
+                    Data = _mapper.Map<List<OrderModel>>(listOrderPaging),
                     Total = listOrder.Count
                 };
                 result.Succeed = true;
@@ -57,12 +59,13 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var listOrder = _dbContext.Order.Where(x => x.assignToId == userId && listStatus.Contains(x.status))
-                                                .OrderByDescending(x => x.orderDate)
-                                                .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listOrder = _dbContext.Order.Where(x => x.assignToId == userId && listStatus.Contains(x.status)).OrderByDescending(x => x.orderDate).ToList();
+
+                var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<OrderModel>>(listOrder),
+                    Data = _mapper.Map<List<OrderModel>>(listOrderPaging),
                     Total = listOrder.Count
                 };
                 result.Succeed = true;
@@ -80,8 +83,15 @@ namespace Sevices.Core.OrderService
             try
             {
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
-                result.Data = _mapper.Map<OrderModel>(order);
-                result.Succeed = true;
+                if (order == null)
+                {
+                    result.ErrorMessage = "Không tìm thấy thông tin Order!";
+                }
+                else
+                {
+                    result.Data = _mapper.Map<OrderModel>(order);
+                    result.Succeed = true;
+                }
             }
             catch (Exception ex)
             {

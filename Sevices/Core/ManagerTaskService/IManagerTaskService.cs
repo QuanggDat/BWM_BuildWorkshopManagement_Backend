@@ -12,5 +12,8 @@ namespace Sevices.Core.ManagerTaskService
         Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model);
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId);
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId);
+        Task<bool> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status);
+        Task<ResultModel> UpdateManagerTask(UpdateManagerTaskModel model);
+        Task<int> DeleteManagerTask(Guid taskManagerId);
     }
 }

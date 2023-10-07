@@ -28,8 +28,7 @@ namespace Data.Entities
         public DateTime? completedTime { get; set; }
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
-        public bool isDeleted { get; set; } 
-        public virtual List<Group> Groups { get; set; } = new();
+        public bool isDeleted { get; set; }
         public virtual List<WokerTask> WokerTasks { get; set; } = new();
     }
 }

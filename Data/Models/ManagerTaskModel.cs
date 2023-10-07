@@ -15,7 +15,8 @@ namespace Data.Models
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public string description { get; set; } = null!;
-        public bool isDeleted { get; set; }
+        public TaskStatus status { get; set; } 
+        public bool isDeleted { get; set; } = false;
     }
     public class ResponseManagerTaskModel
     {
@@ -29,7 +30,24 @@ namespace Data.Models
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public DateTime? completedTime { get; set; }
+        public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
+    }
+    public class UpdateManagerTaskModel
+    {
+        public Guid id { get; set; }
+        public Guid managerId { get; set; }
+        public Guid orderId { get; set; }
+        public string name { get; set; } = null!;
+        public DateTime timeStart { get; set; }
+        public DateTime timeEnd { get; set; }
+        public string description { get; set; } = null!;
+        
+    }
+    public class AssignMangerTaskModel
+    {
+        public Guid groupId { get; set; }
+        public Guid managerTaskId { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using Sevices.Core.ItemService;
 using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;
+using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderService;
 using Sevices.Core.UserService;
 using Sevices.Mapping;
@@ -53,6 +54,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IMaterialService, MaterialService>();
             services.AddScoped<IManagerTaskService, ManagerTaskService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {
