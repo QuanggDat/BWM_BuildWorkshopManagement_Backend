@@ -40,7 +40,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Area");
+                    b.ToTable("Area", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
@@ -64,7 +64,7 @@ namespace Data.Migrations
 
                     b.HasIndex("squadId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Group", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -133,7 +133,7 @@ namespace Data.Migrations
 
                     b.HasIndex("areaId");
 
-                    b.ToTable("Item");
+                    b.ToTable("Item", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ItemCategory", b =>
@@ -151,7 +151,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("ItemCategory");
+                    b.ToTable("ItemCategory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -181,7 +181,7 @@ namespace Data.Migrations
 
                     b.HasIndex("materialId");
 
-                    b.ToTable("ItemMaterial");
+                    b.ToTable("ItemMaterial", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
@@ -227,7 +227,7 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("ManagerTask");
+                    b.ToTable("ManagerTask", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -292,7 +292,7 @@ namespace Data.Migrations
 
                     b.HasIndex("MaterialCategoryid");
 
-                    b.ToTable("Material");
+                    b.ToTable("Material", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
@@ -310,7 +310,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("MaterialCategory");
+                    b.ToTable("MaterialCategory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -353,7 +353,7 @@ namespace Data.Migrations
 
                     b.HasIndex("userId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -407,7 +407,7 @@ namespace Data.Migrations
 
                     b.HasIndex("AssignId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -441,7 +441,7 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("OrderDetail");
+                    b.ToTable("OrderDetail", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Procedure", b =>
@@ -459,7 +459,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Procedure");
+                    b.ToTable("Procedure", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
@@ -480,7 +480,7 @@ namespace Data.Migrations
 
                     b.HasIndex("procedureId");
 
-                    b.ToTable("ProcedureItem");
+                    b.ToTable("ProcedureItem", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Report", b =>
@@ -521,7 +521,7 @@ namespace Data.Migrations
 
                     b.HasIndex("reporterId");
 
-                    b.ToTable("Report");
+                    b.ToTable("Report", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Resource", b =>
@@ -541,7 +541,7 @@ namespace Data.Migrations
 
                     b.HasIndex("reportId");
 
-                    b.ToTable("Resource");
+                    b.ToTable("Resource", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
@@ -596,7 +596,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Squad");
+                    b.ToTable("Squad", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
@@ -754,7 +754,7 @@ namespace Data.Migrations
 
                     b.HasIndex("orderId");
 
-                    b.ToTable("WokerTask");
+                    b.ToTable("WokerTask", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>
@@ -775,7 +775,7 @@ namespace Data.Migrations
 
                     b.HasIndex("wokerTaskId");
 
-                    b.ToTable("WokerTaskDetail");
+                    b.ToTable("WokerTaskDetail", (string)null);
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -790,7 +790,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("GroupUser");
+                    b.ToTable("GroupUser", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

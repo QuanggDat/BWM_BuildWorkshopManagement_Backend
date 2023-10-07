@@ -14,8 +14,6 @@ namespace Data.Entities
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [ForeignKey("categoryId")]
-        public Guid categoryId;
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
         public string code { get; set; }
@@ -33,6 +31,11 @@ namespace Data.Entities
 
         [ForeignKey("areaId")]
         public Guid areaId { get; set; }
+        public Area area { get; set; }
+        [ForeignKey("categoryId")]
+        public Guid categoryId;
+        public ItemCategory category { get; set; }
+
         public bool isDeleted { get; set; }
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
