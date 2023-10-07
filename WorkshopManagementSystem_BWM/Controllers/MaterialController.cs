@@ -1,7 +1,9 @@
 ﻿using Data.Models;
+using Data.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.MaterialService;
+using System.Drawing.Printing;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -57,17 +59,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetAllMaterial")]
-        public async Task<ActionResult> GetAllMaterial()
+        public async Task<ActionResult> GetAllMaterial(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetAllMaterial();
+            var result = _materialService.GetAllMaterial(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("GetAllMaterialCategory")]
-        public async Task<ActionResult> GetAllMaterialCategory()
+        public async Task<ActionResult> GetAllMaterialCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetAllCategory();
+            var result = _materialService.GetAllCategory(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

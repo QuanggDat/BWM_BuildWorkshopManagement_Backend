@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace Sevices.Core.MaterialService
 {
@@ -34,15 +36,32 @@ namespace Sevices.Core.MaterialService
             result.Succeed = false;
             try
             {
-                var newCategory = new MaterialCategory
+                //Validation
+                if (string.IsNullOrEmpty(model.name))
                 {
-                    name = model.name,
-                    isDeleted = false
-                };
-                _dbContext.MaterialCategory.Add(newCategory);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = newCategory.id;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Tên này không được để trống";
+                    return result;
+                }
+                bool nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
+                if (nameExists)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Tên này đã tồn tại.";
+                }
+
+                //Create Category
+                else {
+                    var newCategory = new MaterialCategory
+                    {
+                        name = model.name,
+                        isDeleted = false
+                    };
+                    _dbContext.MaterialCategory.Add(newCategory);
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = newCategory.id;
+                }
             }
             catch (Exception ex)
             {
@@ -55,17 +74,65 @@ namespace Sevices.Core.MaterialService
         {
             var result = new ResultModel();
             result.Succeed = false;
-
-            //Validation
-            if (string.IsNullOrEmpty(model.name) || string.IsNullOrEmpty(model.supplier) || string.IsNullOrEmpty(model.sku) || model.importDate == null || string.IsNullOrEmpty(model.importPlace) || model.amount <= 0 || model.price <= 0)
-            {
-                result.ErrorMessage = "Thông tin nhập vào không hợp lệ.";
-                result.Succeed = false;
-                return result;
-            }        
-
             try
             {
+                //Validation
+                if (string.IsNullOrEmpty(model.name))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Tên này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.color))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Màu này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.supplier))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Nguồn cung này không được để trống.";
+                    return result;
+                }
+                if (model.amount < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Độ dày không được âm.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.unit))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đơn vị này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.importPlace))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Nơi nhập này không được để trống.";
+                    return result;
+                }
+                if (model.amount < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Số lượng không được âm.";
+                    return result;
+                }
+                if (model.price < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Giá tiền không được âm.";
+                    return result;
+                }
+                if (model.categoryId == Guid.Empty)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không nhận được category";
+                    return result;
+                }
+
+                //Create Material 
                 var newMaterial = new Material
                 {
                     name = model.name,
@@ -106,10 +173,21 @@ namespace Sevices.Core.MaterialService
                 var data = _dbContext.MaterialCategory.Where(c => c.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
-                    data.name = model.name;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
+                    //Validation
+                    if (string.IsNullOrEmpty(model.name))
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Tên này không được để trống.";
+                        return result;
+                    }
+
+                    //Update Material Category
+                    else {
+                        data.name = model.name;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
+                    }
                 }
                 else
                 {
@@ -130,13 +208,62 @@ namespace Sevices.Core.MaterialService
             try
             {
                 //Validation
-                if (string.IsNullOrEmpty(model.name) || string.IsNullOrEmpty(model.supplier) || string.IsNullOrEmpty(model.sku) || model.importDate == null || string.IsNullOrEmpty(model.importPlace) || model.amount <= 0 || model.price <= 0)
+                if (string.IsNullOrEmpty(model.name))
                 {
-                    result.ErrorMessage = "Thông tin nhập vào không hợp lệ.";
                     result.Succeed = false;
+                    result.ErrorMessage = "Tên này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.color))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Màu này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.supplier))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Nguồn cung này không được để trống.";
+                    return result;
+                }
+                if (model.amount < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Độ dày không được âm.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.unit))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đơn vị này không được để trống.";
+                    return result;
+                }
+                if (string.IsNullOrEmpty(model.importPlace))
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Nơi nhập này không được để trống.";
+                    return result;
+                }
+                if (model.amount < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Số lượng không được âm.";
+                    return result;
+                }
+                if (model.price < 0)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Giá tiền không được âm.";
+                    return result;
+                }
+                if (model.categoryId == Guid.Empty)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không nhận được category";
                     return result;
                 }
 
+                //Update Material
                 var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
                 if (data != null)
                 {
@@ -175,22 +302,25 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                //Validation
-                if (model.amount <= 0 )
-                {
-                    result.ErrorMessage = "Số lượng không thể âm !!!";
-                    result.Succeed = false;
-                    return result;
-                }
-
                 var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
                 if (data != null)
-                {
-                    data.amount = model.amount;
-                    data.totalPrice=data.price * model.amount;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Material, MaterialModel>(data);
+                { 
+                    //Validation
+                    if (model.amount < 0)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Số lượng không được âm.";
+                        return result;
+                    }
+
+                    //Update Amount
+                    else {
+                        data.amount = model.amount;
+                        data.totalPrice = data.price * model.amount;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<Material, MaterialModel>(data);
+                    }
                 }
                 else
                 {
@@ -205,7 +335,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetAllCategory()
+        public ResultModel GetAllCategory(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
@@ -225,18 +355,18 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetAllMaterial()
+        public ResultModel GetAllMaterial(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.importDate);
-                if (data != null)
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.importDate).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
                 {
-                    var view = _mapper.ProjectTo<MaterialModel>(data);
-                    result.Data = view!;
-                    result.Succeed = true;
-                }
+                    Data = _mapper.Map<List<MaterialModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
             }
             catch (Exception e)
             {
@@ -389,29 +519,6 @@ namespace Sevices.Core.MaterialService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-
-        public ResultModel GetMaterialsPaging(int pageIndex, int pageSize)
-        {
-            var resultModel = new ResultModel();
-            try
-            {
-                var listData = _dbContext.Material.Where(x => !x.isDeleted).ToList();
-                var listDataPaging = listData.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                resultModel.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<ItemModel>>(listDataPaging),
-                    Total = listData.Count
-                };
-                resultModel.Succeed = true;
-
-            }
-            catch (Exception ex)
-            {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return resultModel;
         }
     }
 }

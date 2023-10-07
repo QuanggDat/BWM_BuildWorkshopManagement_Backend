@@ -11,8 +11,8 @@ namespace Sevices.Core.ItemService
     {
         Task<ResultModel> CreateCategory(CreateItemCategoryModel model);
         Task<ResultModel> CreateItem(CreateItemModel model);
-        ResultModel GetAllCategory();
-        ResultModel GetAllItem();
+        ResultModel GetAllCategory(int pageIndex, int pageSize);
+        ResultModel GetAllItem(int pageIndex, int pageSize);
         ResultModel GetItemById(Guid id);
         ResultModel GetCategoryById(Guid id);
         ResultModel UpdateItemCategory(UpdateItemCategoryModel model);

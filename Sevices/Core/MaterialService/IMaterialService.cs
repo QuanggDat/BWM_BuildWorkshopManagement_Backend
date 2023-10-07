@@ -11,8 +11,8 @@ namespace Sevices.Core.MaterialService
     {
         Task<ResultModel> CreateCategory(CreateMaterialCategoryModel model);
         Task<ResultModel> CreateMaterial(CreateMaterialModel model);
-        ResultModel GetAllCategory();
-        ResultModel GetAllMaterial();
+        ResultModel GetAllCategory(int pageIndex, int pageSize);
+        ResultModel GetAllMaterial(int pageIndex, int pageSize);
         ResultModel GetMaterialById(Guid id);
         ResultModel GetCategoryById(Guid id);
         ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model);
