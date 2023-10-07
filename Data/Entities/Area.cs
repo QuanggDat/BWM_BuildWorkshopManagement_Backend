@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Area
+    public class Area  
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }

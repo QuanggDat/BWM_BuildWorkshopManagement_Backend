@@ -14,7 +14,8 @@ namespace Data.Entities
         public Guid id { get; set; }
         public int quantity { get; set; }
         public double price { get; set; }
-        public double totalPrice { get; set; }       
+        public double totalPrice { get; set; }
+        public string description { get; set; } = null!;
         [ForeignKey("orderId")]
         public Guid orderId { get; set; }
         public Order Order { get; set; } = null!;

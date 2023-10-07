@@ -21,7 +21,9 @@ namespace Data.Entities
         public virtual Role? Role { get; set; }
         public virtual List<Squad> Squads { get; set; } = new();
         public virtual List<Group> Groups { get; set; } = new();
-        public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
+
+        //public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
+        //public virtual List<ManagerTask> CreateBy { get; set; } = new();
         public virtual List<Order> Orders { get; set; } = new();
     }
 }

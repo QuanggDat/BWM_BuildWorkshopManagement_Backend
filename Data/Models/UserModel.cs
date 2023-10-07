@@ -43,7 +43,7 @@ namespace Data.Models
         public string phoneNumber { get; set; }
         [Required]
         public bool gender { get; set; } = true;
-        public bool banStatus { get; set; }
+        public bool banStatus { get; set; } = false;
     }
     public class UserUpdateModel
     {

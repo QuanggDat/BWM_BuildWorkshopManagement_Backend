@@ -9,7 +9,8 @@ namespace Sevices.Core.ManagerTaskService
 {
     public interface IManagerTaskService
     {
-        Task<ResultModel> CreatedManagerTask(CreateManagerTaskModel model);
+        Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model);
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId);
+        Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId);
     }
 }

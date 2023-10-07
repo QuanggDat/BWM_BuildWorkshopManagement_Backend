@@ -20,9 +20,11 @@ namespace Data.Models
     public class ResponseManagerTaskModel
     {
         public Guid managerId { get; set; }
+        public string managerName { get; set; } = null!;
         public Guid orderId { get; set; }
-        public string orderName { get; set; } = null!;
-        public string createdBy { get; set; } = null!;
+        public string orderName { get; set; } = null!;    
+        public Guid? createdById { get; set; } = null!;
+        public string createByName { get; set; } = null!;
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }

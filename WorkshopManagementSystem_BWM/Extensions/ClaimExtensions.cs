@@ -22,7 +22,6 @@ namespace FitmarAgencyTemplate.Extensions
         public static Guid GetId(this ClaimsPrincipal user)
         {
             var claimType = "UserId";
-            var x = user.HasClaim(x => x.Type == claimType);
             var idClaim = user.Claims.FirstOrDefault(x => x.Type == claimType);
             if (idClaim != null)
             {
@@ -30,5 +29,6 @@ namespace FitmarAgencyTemplate.Extensions
             }
             throw new Exception("Invalid token");
         }
+
     }
 }

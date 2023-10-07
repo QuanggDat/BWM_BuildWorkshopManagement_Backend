@@ -18,6 +18,7 @@ namespace Data.Entities
         public DateTime? completedTime { get; set; }
         public int productCompleted { get; set; }
         public int productFailed { get; set; }
+        public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
         [ForeignKey("orderId")]

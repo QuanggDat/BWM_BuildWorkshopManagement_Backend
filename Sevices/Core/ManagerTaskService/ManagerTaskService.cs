@@ -25,7 +25,7 @@ namespace Sevices.Core.ManagerTaskService
             _configuration = configuration;
         }
 
-        public async Task<ResultModel> CreatedManagerTask(CreateManagerTaskModel model)
+        public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -36,12 +36,14 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = "Không nhận được order";
                 return result;
             }
+
             if (string.IsNullOrEmpty(model.name))
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Không nhận được tên công việc";
                 return result;
             }
+
             if (string.IsNullOrEmpty(model.description))
             {
                 result.Succeed = false;
@@ -49,7 +51,16 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
+            var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
+            if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                return result;
+            }
+
             var check = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.name == model.name && a.orderId == model.orderId && a.isDeleted == false);
+
             if (check != null)
             {
                 result.Succeed = false;
@@ -60,6 +71,7 @@ namespace Sevices.Core.ManagerTaskService
             var managerTask = new ManagerTask
             {
                 managerId = model.managerId,
+                createById = createById,
                 orderId = model.orderId,
                 name = model.name,
                 timeStart = model.timeStart,
@@ -94,11 +106,14 @@ namespace Sevices.Core.ManagerTaskService
             foreach (var item in managerTask)
             {
                 var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                var createByTmp = await _dbContext.User.FindAsync(item.createById);
                 var tmp = new ResponseManagerTaskModel
                 {
-                    managerId = item.managerId,
+                    createByName = createByTmp.fullName,
+                    managerName = managerTmp.fullName,
                     orderName = orderTmp.name,
-                    createdBy = orderTmp.Assign.fullName,
+                    createdById = item.createById,
                     name = item.name,
                     timeStart = item.timeStart,
                     timeEnd = item.timeEnd,
@@ -110,6 +125,70 @@ namespace Sevices.Core.ManagerTaskService
             }
             return result;
         }
-        
+
+        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
+        {
+            var result = new List<ResponseManagerTaskModel>();
+            var managerTask = await _dbContext.ManagerTask.Where(a => a.managerId == managerId && a.isDeleted == false).ToListAsync();
+            if (managerTask == null)
+            {
+                return null;
+            }
+
+            foreach (var item in managerTask)
+            {
+                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                var createByTmp = await _dbContext.User.FindAsync(item.createById);
+                var tmp = new ResponseManagerTaskModel
+                {
+                    createByName = createByTmp.fullName,
+                    managerName = managerTmp.fullName,
+                    orderName = orderTmp.name,
+                    createdById = item.createById,
+                    name = item.name,
+                    timeStart = item.timeStart,
+                    timeEnd = item.timeEnd,
+                    completedTime = item.completedTime,
+                    description = item.description,
+                    isDeleted = item.isDeleted,
+                };
+                result.Add(tmp);
+            }
+            return result;
+        }
+
+        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
+        {
+            var result = new List<ResponseManagerTaskModel>();
+            var managerTask = await _dbContext.ManagerTask.Where(a => a.createById == factoryId && a.isDeleted == false).ToListAsync();
+            if (managerTask == null)
+            {
+                return null;
+            }
+
+            foreach (var item in managerTask)
+            {
+                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                var createByTmp = await _dbContext.User.FindAsync(item.createById);
+                var tmp = new ResponseManagerTaskModel
+                {
+                    createByName = createByTmp.fullName,
+                    managerName = managerTmp.fullName,
+                    orderName = orderTmp.name,
+                    createdById = item.createById,
+                    name = item.name,
+                    timeStart = item.timeStart,
+                    timeEnd = item.timeEnd,
+                    completedTime = item.completedTime,
+                    description = item.description,
+                    isDeleted = item.isDeleted,
+                };
+                result.Add(tmp);
+            }
+            return result;
+        }
+
     }
 }

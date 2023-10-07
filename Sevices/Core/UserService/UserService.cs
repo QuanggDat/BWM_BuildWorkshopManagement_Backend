@@ -182,8 +182,7 @@ namespace Sevices.Core.UserService
                                 result.Succeed = false;
                                 result.ErrorMessage = "Validate user wrong ";
                             }
-                        }
-
+                        } 
                     }
 
                 }
@@ -290,17 +289,17 @@ namespace Sevices.Core.UserService
                 var check = await _signInManager.CheckPasswordSignInAsync(user, model.password, false);
                 if (!check.Succeeded)
                 {
-                    if (!user.EmailConfirmed)
-                    {
-                        result.Succeed = false;
+                    //if (!user.EmailConfirmed)
+                    //{
+                        //result.Succeed = false;
                         //await SendMailConfirm(user);
-                        result.ErrorMessage = "Email chưa được xác nhận. Vui lòng kiểm tra email để xác nhận!";
-                    }
+                        //result.ErrorMessage = "Email chưa được xác nhận. Vui lòng kiểm tra email để xác nhận!";
+                    //}
 
-                    else
-                    {
+                    //else
+                    //{
                         result.ErrorMessage = "Sai Mật Khẩu!";
-                    }
+                    //}
                 }
                 else
                 {

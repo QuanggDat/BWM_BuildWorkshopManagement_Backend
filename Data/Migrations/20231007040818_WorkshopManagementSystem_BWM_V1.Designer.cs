@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231006130557_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231007040818_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,6 +195,9 @@ namespace Data.Migrations
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -219,6 +222,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createById");
 
                     b.HasIndex("managerId");
 
@@ -412,6 +417,10 @@ namespace Data.Migrations
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
@@ -671,7 +680,6 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("skill")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -924,8 +932,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.HasOne("Data.Entities.User", "manager")
-                        .WithMany("ManagerTasks")
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
+                    b.HasOne("Data.Entities.User", "Manager")
+                        .WithMany()
                         .HasForeignKey("managerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -934,9 +946,11 @@ namespace Data.Migrations
                         .WithMany("ManagerTasks")
                         .HasForeignKey("orderId");
 
-                    b.Navigation("Order");
+                    b.Navigation("CreateBy");
 
-                    b.Navigation("manager");
+                    b.Navigation("Manager");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -1206,8 +1220,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Navigation("ManagerTasks");
-
                     b.Navigation("Orders");
 
                     b.Navigation("Squads");

@@ -18,7 +18,7 @@ namespace Data.Entities
         public Guid categoryId;
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
-        public int code { get; set; }
+        public string code { get; set; }
         public string? image { get; set; } 
         public double mass { get; set; }
         public string unit { get; set; } = null!;

@@ -106,7 +106,7 @@ namespace Data.Migrations
                     fullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    skill = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    skill = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     gender = table.Column<bool>(type: "bit", nullable: false),
                     banStatus = table.Column<bool>(type: "bit", nullable: false),
@@ -424,6 +424,7 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     managerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -435,6 +436,11 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ManagerTask", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ManagerTask_AspNetUsers_createById",
+                        column: x => x.createById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ManagerTask_AspNetUsers_managerId",
                         column: x => x.managerId,
@@ -456,6 +462,7 @@ namespace Data.Migrations
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
                     totalPrice = table.Column<double>(type: "float", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -708,6 +715,11 @@ namespace Data.Migrations
                 name: "IX_ItemMaterial_materialId",
                 table: "ItemMaterial",
                 column: "materialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ManagerTask_createById",
+                table: "ManagerTask",
+                column: "createById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ManagerTask_managerId",
