@@ -9,14 +9,23 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public  class OrderDetailModel
+    public class OrderDetailModel
     {
         public Guid id { get; set; }
         public int quantity { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
+        public string description { get; set; }
         public Guid orderId { get; set; }
         public Guid itemId { get; set; }
         public ItemModel? item { get; set; }
+    }
+
+    public class UpdateOrderDetailModel
+    {
+        public Guid id { get; set; }
+        public int quantity { get; set; }
+        public double price { get; set; }
+        public string description { get; set; }
     }
 }

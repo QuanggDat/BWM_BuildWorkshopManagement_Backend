@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 
 namespace Data.Entities
@@ -14,17 +15,11 @@ namespace Data.Entities
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
-<<<<<<< HEAD
 
-        [ForeignKey("squadId")]
-        public Guid squadId { get; set; }
-        public Squad squad { get; set; }
-
-        public Guid groupId { get; set; }
-=======
->>>>>>> QuangDat
         [ForeignKey("groupId")]
         public Guid groupId { get; set; }
+        public Group group { get; set; }
+
         [ForeignKey("roleID")]
         public Guid? roleID { get; set; }  
         public virtual Role? Role { get; set; }  

@@ -28,10 +28,6 @@ namespace Data.Entities
         public double price { get; set; }
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
-<<<<<<< HEAD
-=======
-
->>>>>>> a5922eddf45320e69aa25bcb30673b4c7d0a328b
         [ForeignKey("categoryId")]
         public Guid categoryId { get; set; }
         public MaterialCategory category { get; set; }
