@@ -48,6 +48,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPut("UpdateMaterialAmount")]
+        public IActionResult UpdateMaterialAmount(UpdateMaterialAmountModel model)
+        {
+            var result = _materialService.UpdateMaterialAmount(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("GetAllMaterial")]
         public async Task<ActionResult> GetAllMaterial()
         {

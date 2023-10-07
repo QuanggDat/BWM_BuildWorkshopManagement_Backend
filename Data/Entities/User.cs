@@ -14,6 +14,11 @@ namespace Data.Entities
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
+
+        [ForeignKey("squadId")]
+        public Guid squadId { get; set; }
+        public Squad squad { get; set; }
+
         public Guid groupId { get; set; }
         [ForeignKey("groupId")]
         public Guid? roleID { get; set; }

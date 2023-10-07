@@ -155,7 +155,42 @@ namespace Sevices.Core.MaterialService
                     data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
-                    //result.Data = _mapper.Map<MaterialCategory, MaterialCategoryModel>(data);
+                    result.Data = _mapper.Map<Material, MaterialModel>(data);
+                }
+                else
+                {
+                    result.ErrorMessage = "Material" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                //Validation
+                if (model.amount <= 0 )
+                {
+                    result.ErrorMessage = "Số lượng không thể âm !!!";
+                    result.Succeed = false;
+                    return result;
+                }
+
+                var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
+                if (data != null)
+                {
+                    data.amount = model.amount;
+                    data.totalPrice=data.price * model.amount;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Material, MaterialModel>(data);
                 }
                 else
                 {

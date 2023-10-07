@@ -62,6 +62,12 @@ namespace Data.Models
         [Required] public Guid categoryId { get; set; }
     }
 
+    public class UpdateMaterialAmountModel
+    {
+        public Guid id { get; set; }
+        [Required] public int amount { get; set; }
+    }
+
     public class DeleteMaterialModel
     {
         public Guid id { get; set; }
