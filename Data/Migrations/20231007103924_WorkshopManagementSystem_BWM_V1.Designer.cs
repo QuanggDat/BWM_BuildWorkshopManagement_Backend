@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231007095857_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231007103924_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,18 +51,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ManagerTaskid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("managerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("squadId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
-
-                    b.HasIndex("ManagerTaskid");
 
                     b.HasIndex("squadId");
 
@@ -75,10 +67,10 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ItemCategoryid")
+                    b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("areaId")
+                    b.Property<Guid>("categoryid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("code")
@@ -132,9 +124,9 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ItemCategoryid");
-
                     b.HasIndex("areaId");
+
+                    b.HasIndex("categoryid");
 
                     b.ToTable("Item");
                 });
@@ -242,9 +234,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("MaterialCategoryid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
@@ -296,7 +285,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("MaterialCategoryid");
+                    b.HasIndex("categoryId");
 
                     b.ToTable("Material");
                 });
@@ -877,10 +866,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("ManagerTaskid");
-
                     b.HasOne("Data.Entities.Squad", "Squad")
                         .WithMany("Groups")
                         .HasForeignKey("squadId")
@@ -892,15 +877,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
-                    b.HasOne("Data.Entities.ItemCategory", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ItemCategoryid");
-
-                    b.HasOne("Data.Entities.Area", null)
+                    b.HasOne("Data.Entities.Area", "area")
                         .WithMany("Items")
                         .HasForeignKey("areaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Data.Entities.ItemCategory", "category")
+                        .WithMany("Items")
+                        .HasForeignKey("categoryid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("area");
+
+                    b.Navigation("category");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -947,9 +938,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
-                    b.HasOne("Data.Entities.MaterialCategory", null)
+                    b.HasOne("Data.Entities.MaterialCategory", "Category")
                         .WithMany("Materials")
-                        .HasForeignKey("MaterialCategoryid");
+                        .HasForeignKey("categoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
@@ -1040,7 +1035,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.HasOne("Data.Entities.Group", null)
+                    b.HasOne("Data.Entities.Group", "group")
                         .WithMany("Users")
                         .HasForeignKey("groupId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1051,6 +1046,8 @@ namespace Data.Migrations
                         .HasForeignKey("roleID");
 
                     b.Navigation("Role");
+
+                    b.Navigation("group");
                 });
 
             modelBuilder.Entity("Data.Entities.UserRole", b =>
@@ -1162,8 +1159,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.Navigation("Groups");
-
                     b.Navigation("WokerTasks");
                 });
 

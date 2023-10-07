@@ -15,8 +15,6 @@ namespace Data.Entities
         [ForeignKey("squadId")]
         public Guid squadId { get; set; }
         public virtual Squad Squad { get; set; } = null!;
-        [ForeignKey("managerId")]
-        public Guid managerId { get; set; }
         public virtual List<User> Users { get; set; } = new();
     }
 }
