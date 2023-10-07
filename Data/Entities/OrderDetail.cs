@@ -16,11 +16,13 @@ namespace Data.Entities
         public double price { get; set; }
         public double totalPrice { get; set; }
         public string description { get; set; } = null!;
+        public bool isDeleted { get; set; }
         [ForeignKey("orderId")]
         public Guid orderId { get; set; }
         public Order Order { get; set; } = null!;
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
         public Item Item { get; set; } = null!;
+        
     }
 }
