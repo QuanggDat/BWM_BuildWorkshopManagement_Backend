@@ -17,6 +17,7 @@ namespace Sevices.Core.MaterialService
         ResultModel GetCategoryById(Guid id);
         ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model);
         ResultModel UpdateMaterial(UpdateMaterialModel model);
+        ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model);
         ResultModel DeleteMaterial(Guid id);
         ResultModel DeleteCategory(Guid id);
     }
