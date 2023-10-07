@@ -3,10 +3,13 @@ using Data.DataAccess;
 using Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Sevices.Core.ItemService;
 using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;
+using Sevices.Core.OrderService;
 using Sevices.Core.UserService;
 using Sevices.Mapping;
 using System.Text;
@@ -49,6 +52,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IItemService, ItemService>(); 
             services.AddScoped<IMaterialService, MaterialService>();
             services.AddScoped<IManagerTaskService, ManagerTaskService>();
+            services.AddScoped<IOrderService, OrderService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {
@@ -61,7 +65,13 @@ namespace WorkshopManagementSystem_BWM.Extensions
         }
         public static void AddJWTAuthentication(this IServiceCollection services, string key, string issuer)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services
+                .AddAuthorization()
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(jwtconfig =>
                 {
                     jwtconfig.SaveToken = true;
@@ -130,6 +140,36 @@ namespace WorkshopManagementSystem_BWM.Extensions
                 });
             /*services.AddAuthentication().AddTwoFactorRememberMeCookie();
             services.AddAuthentication().AddTwoFactorUserIdCookie();*/
+        }
+
+        public static void AddSwaggerWithAuthentication(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkshopManagementSystem_BWM_APP", Version = "1.0" }); opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
+                });
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                    {
+                          new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                          Array.Empty<string>()
+                    }
+                    });
+            });
         }
     }
 }
