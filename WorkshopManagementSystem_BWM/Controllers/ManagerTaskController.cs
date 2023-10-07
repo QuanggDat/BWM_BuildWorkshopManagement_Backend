@@ -61,6 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpDelete]
+
         public async Task<ActionResult> DeleteTask(Guid managerTaskId)
         {
             if (managerTaskId == null) return BadRequest("Không nhận được dữ liệu.");

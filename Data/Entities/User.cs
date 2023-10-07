@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 
 namespace Data.Entities
@@ -14,6 +15,7 @@ namespace Data.Entities
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
+
         
         public Guid groupId { get; set; }
         [ForeignKey("groupId")]
