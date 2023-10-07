@@ -79,8 +79,9 @@ namespace Data.Migrations
                     b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("code")
-                        .HasColumnType("int");
+                    b.Property<string>("code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -212,6 +213,9 @@ namespace Data.Migrations
 
                     b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("timeEnd")
                         .HasColumnType("datetime2");
@@ -420,6 +424,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
 
@@ -582,9 +589,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -593,8 +597,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Squad");
                 });
@@ -690,6 +692,8 @@ namespace Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("groupId");
+
                     b.HasIndex("roleID");
 
                     b.ToTable("AspNetUsers", (string)null);
@@ -742,6 +746,9 @@ namespace Data.Migrations
                     b.Property<int>("productFailed")
                         .HasColumnType("int");
 
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("timeEnd")
                         .HasColumnType("datetime2");
 
@@ -776,21 +783,6 @@ namespace Data.Migrations
                     b.HasIndex("wokerTaskId");
 
                     b.ToTable("WokerTaskDetail");
-                });
-
-            modelBuilder.Entity("GroupUser", b =>
-                {
-                    b.Property<Guid>("Groupsid")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Groupsid", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("GroupUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1044,15 +1036,14 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Data.Entities.Squad", b =>
-                {
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany("Squads")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
+                    b.HasOne("Data.Entities.Group", null)
+                        .WithMany("Users")
+                        .HasForeignKey("groupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("roleID");
@@ -1107,21 +1098,6 @@ namespace Data.Migrations
                     b.Navigation("WokerTask");
                 });
 
-            modelBuilder.Entity("GroupUser", b =>
-                {
-                    b.HasOne("Data.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("Groupsid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Data.Entities.Role", null)
@@ -1161,6 +1137,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Area", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Data.Entities.Group", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Data.Entities.Item", b =>
@@ -1219,8 +1200,6 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Squads");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
