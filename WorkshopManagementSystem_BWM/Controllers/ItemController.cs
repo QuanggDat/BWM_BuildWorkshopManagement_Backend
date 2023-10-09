@@ -18,6 +18,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _itemService = itemService;
         }
 
+        [HttpPost("SearchItem")]
+        public Task<ActionResult> SearchItem(string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _itemService.Search(search, pageIndex, pageSize);
+            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
+        }
+
         [HttpPost("CreateItem")]
         public async Task<ActionResult> CreateItem(CreateItemModel model)
         {

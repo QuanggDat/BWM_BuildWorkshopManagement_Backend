@@ -29,6 +29,26 @@ namespace Sevices.Core.ItemService
             _configuration = configuration;
         }
 
+        public ResultModel Search(string search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Item.Where(i => i.isDeleted != true && i.name.Contains(search)).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<ItemModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public async Task<ResultModel> CreateItem(CreateItemModel model)
         {
             var result = new ResultModel();

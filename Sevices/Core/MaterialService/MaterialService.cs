@@ -30,6 +30,27 @@ namespace Sevices.Core.MaterialService
             _configuration = configuration;
         }
 
+        //Search base on name and color of the material
+        public ResultModel Search(string search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Material.Where(m => m.isDeleted != true && m.name.Contains(search) || m.color.Contains(search)).OrderByDescending(i => i.importDate).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<MaterialModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public async Task<ResultModel> CreateMaterial(CreateMaterialModel model)
         {
             var result = new ResultModel();

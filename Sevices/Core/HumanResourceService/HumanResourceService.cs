@@ -25,6 +25,7 @@ namespace Sevices.Core.HumanResourceService
             _configuration = configuration;
         }
 
+        //When factory create new squad, fac will also assign the manager who will manage that squad 
         public async Task<ResultModel> CreateSquad(CreateSquadModel model)
         {
             var result = new ResultModel();
@@ -59,33 +60,7 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public ResultModel AddWorkerToGroup(AddWorkerToGroup model)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                if (data != null)
-                {
-                    //Update Item Category
-                    data.groupId = model.groupId;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                }
-                else
-                {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
+        //Manager will both can use this function.
         public async Task<ResultModel> AddGroup(AddGroupModel model)
         {
             var result = new ResultModel();
@@ -111,6 +86,61 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
+        //For factory role to see all squad in the factory.
+        public ResultModel GetAllSquad(int pageIndex, int pageSize)
+        {
+
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<SquadModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        //Need check again not complete. Fac and Manager can both use this function.
+        public ResultModel AddWorkerToGroup(AddWorkerToGroup model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
+                var group= _dbContext.Group.SingleOrDefault(g => g.id == model.groupId);
+                var squad = _dbContext.Squad.SingleOrDefault(g => g.id == group.squadId);
+                if (data != null)
+                {
+                    //Update GroupId
+                    data.groupId = model.groupId;
+                    group.member++;
+                    squad.member++;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<User, UserModel>(data);
+                }
+                else
+                {
+                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        //Need attention
         public async Task<ResultModel> UpdateSquad(UpdateSquadModel model)
         {
             ResultModel result = new ResultModel();
@@ -141,28 +171,6 @@ namespace Sevices.Core.HumanResourceService
                         result.Succeed = false;
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        //For factory role
-        public ResultModel GetAllSquad(int pageIndex, int pageSize)
-        {
-
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<SquadModel>>(data),
-                    Total = data.Count
-                };
-                result.Succeed = true;
             }
             catch (Exception e)
             {
@@ -253,6 +261,7 @@ namespace Sevices.Core.HumanResourceService
             return resultModel;
         }
 
+        //Not sure about this yet
         public ResultModel DeleteSquad(Guid id)
         {
             ResultModel resultModel = new ResultModel();
