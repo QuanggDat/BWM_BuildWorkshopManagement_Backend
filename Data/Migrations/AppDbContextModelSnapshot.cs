@@ -226,6 +226,27 @@ namespace Data.Migrations
                     b.ToTable("ManagerTask");
                 });
 
+            modelBuilder.Entity("Data.Entities.ManagerTaskGroup", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("groupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("managerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("groupId");
+
+                    b.HasIndex("managerTaskId");
+
+                    b.ToTable("ManagerTaskGroup");
+                });
+
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Property<Guid>("id")
@@ -936,6 +957,21 @@ namespace Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Data.Entities.ManagerTaskGroup", b =>
+                {
+                    b.HasOne("Data.Entities.Group", "Group")
+                        .WithMany("ManagerTaskGroups")
+                        .HasForeignKey("groupId");
+
+                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                        .WithMany("ManagerTaskGroups")
+                        .HasForeignKey("managerTaskId");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("ManagerTask");
+                });
+
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.HasOne("Data.Entities.MaterialCategory", "Category")
@@ -1146,6 +1182,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
+                    b.Navigation("ManagerTaskGroups");
+
                     b.Navigation("Users");
                 });
 
@@ -1165,6 +1203,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
+                    b.Navigation("ManagerTaskGroups");
+
                     b.Navigation("WokerTasks");
                 });
 

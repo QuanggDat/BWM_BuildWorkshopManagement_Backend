@@ -70,13 +70,32 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
-        [HttpPost("UpdateTaskManager")]
+
+        [HttpPut("UpdateTaskManager")]
         public async Task<ActionResult> UpdateManagerTask(UpdateManagerTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được đơn hàng!");
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var result = await _managerTaskService.UpdateManagerTask(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("AssignManagerTask")]
+        public async Task<ActionResult> AssignManagerTask(AssignManagerTaskModel model)
+        {
+            if (model == null) return BadRequest("Không nhận được dữ liệu.");
+            var result = await _managerTaskService.AssignManagerTask(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("UnAssignManagerTask")]
+        public async Task<ActionResult> UnAssignManagerTask(AssignManagerTaskModel model)
+        {
+            if (model == null) return BadRequest("Không nhận được dữ liệu.");
+            var result = await _managerTaskService.UnAssignManagerTask(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

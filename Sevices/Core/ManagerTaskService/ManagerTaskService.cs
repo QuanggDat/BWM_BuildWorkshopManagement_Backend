@@ -238,6 +238,7 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = "Không tìm thấy Mannager Task!";
                 return result;
             }
+
             try
             {
                 check.isDeleted = true;
@@ -246,12 +247,72 @@ namespace Sevices.Core.ManagerTaskService
                 result.Data = check.id;
 
             }
+
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
         }
-    
+
+        public async Task<ResultModel> AssignManagerTask(AssignManagerTaskModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var check = await _dbContext.ManagerTaskGroup.SingleOrDefaultAsync(x => x.groupId == model.groupId && x.managerTaskId == model.taskManagerId);
+            
+            if (check != null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Tổ đã được gắn vào task!";
+                return result;
+            }
+
+            var managerTaskGroup = new ManagerTaskGroup
+            {
+                groupId = model.groupId,
+                managerTaskId = model.taskManagerId,
+            };
+            try
+            {
+                await _dbContext.ManagerTaskGroup.AddAsync(managerTaskGroup);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = managerTaskGroup.id; 
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> UnAssignManagerTask(AssignManagerTaskModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            var check = await _dbContext.ManagerTaskGroup.SingleOrDefaultAsync(x => x.groupId == model.groupId && x.managerTaskId == model.taskManagerId);
+
+            if (check == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Tổ chưa được gắn vào task!";
+                return result;
+            }
+
+            try
+            {
+                _dbContext.ManagerTaskGroup.Remove(check);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = check.id;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
     }
 }

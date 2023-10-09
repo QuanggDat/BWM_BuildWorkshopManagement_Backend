@@ -16,5 +16,7 @@ namespace Sevices.Core.ManagerTaskService
         Task<bool> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status);
         Task<ResultModel> UpdateManagerTask(UpdateManagerTaskModel model);
         Task<ResultModel> DeleteManagerTask(Guid taskManagerId);
+        Task<ResultModel> AssignManagerTask(AssignManagerTaskModel assignManagerTaskModel);
+        Task<ResultModel> UnAssignManagerTask(AssignManagerTaskModel assignManagerTaskModel);
     }
 }
