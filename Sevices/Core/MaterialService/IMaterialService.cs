@@ -9,16 +9,13 @@ namespace Sevices.Core.MaterialService
 {
     public interface IMaterialService
     {
-        Task<ResultModel> CreateCategory(CreateMaterialCategoryModel model);
         Task<ResultModel> CreateMaterial(CreateMaterialModel model);
-        ResultModel GetAllCategory(int pageIndex, int pageSize);
         ResultModel GetAllMaterial(int pageIndex, int pageSize);
+        ResultModel SortMaterialbyThickness(int pageIndex, int pageSize);
+        ResultModel SortMaterialbyPrice(int pageIndex, int pageSize);
         ResultModel GetMaterialById(Guid id);
-        ResultModel GetCategoryById(Guid id);
-        ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model);
         ResultModel UpdateMaterial(UpdateMaterialModel model);
         ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model);
         ResultModel DeleteMaterial(Guid id);
-        ResultModel DeleteCategory(Guid id);
     }
 }

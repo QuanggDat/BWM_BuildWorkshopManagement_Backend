@@ -93,19 +93,19 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public ResultModel GetAllSquad()
+        public ResultModel GetAllSquad(int pageIndex, int pageSize)
         {
 
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(s => s.name);
-                if (data != null)
+                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
                 {
-                    var view = _mapper.ProjectTo<SquadModel>(data);
-                    result.Data = view!;
-                    result.Succeed = true;
-                }
+                    Data = _mapper.Map<List<SquadModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
             }
             catch (Exception e)
             {
@@ -165,6 +165,21 @@ namespace Sevices.Core.HumanResourceService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
+        }
+
+        public Task<ResultModel> AddGroup(AddGroupModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResultModel> AddWorkerToGroup(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResultModel GetGroupById(Guid id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

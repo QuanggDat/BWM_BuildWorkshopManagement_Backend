@@ -30,46 +30,6 @@ namespace Sevices.Core.MaterialService
             _configuration = configuration;
         }
 
-        public async Task<ResultModel> CreateCategory(CreateMaterialCategoryModel model)
-        {
-            var result = new ResultModel();
-            result.Succeed = false;
-            try
-            {
-                //Validation
-                if (string.IsNullOrEmpty(model.name))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống";
-                    return result;
-                }
-                bool nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
-                if (nameExists)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này đã tồn tại.";
-                }
-
-                //Create Category
-                else {
-                    var newCategory = new MaterialCategory
-                    {
-                        name = model.name,
-                        isDeleted = false
-                    };
-                    _dbContext.MaterialCategory.Add(newCategory);
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = newCategory.id;
-                }
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
-
         public async Task<ResultModel> CreateMaterial(CreateMaterialModel model)
         {
             var result = new ResultModel();
@@ -161,43 +121,6 @@ namespace Sevices.Core.MaterialService
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
-
-        public ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.MaterialCategory.Where(c => c.id == model.id).FirstOrDefault();
-                if (data != null)
-                {
-                    //Validation
-                    if (string.IsNullOrEmpty(model.name))
-                    {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Tên này không được để trống.";
-                        return result;
-                    }
-
-                    //Update Material Category
-                    else {
-                        data.name = model.name;
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
-                    }
-                }
-                else
-                {
-                    result.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }
@@ -335,26 +258,6 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetAllCategory(int pageIndex, int pageSize)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.MaterialCategory.Where(i => i.isDeleted != true).OrderByDescending(i=>i.name);
-                if (data != null)
-                {
-                    var view = _mapper.ProjectTo<MaterialCategoryModel>(data);
-                    result.Data = view!;
-                    result.Succeed = true;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
         public ResultModel GetAllMaterial(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
@@ -401,32 +304,6 @@ namespace Sevices.Core.MaterialService
             return resultModel;
         }
 
-        public ResultModel GetCategoryById(Guid id)
-        {
-            ResultModel resultModel = new ResultModel();
-            try
-            {
-                var data = _dbContext.MaterialCategory.Where(c => c.id == id && c.isDeleted != true);
-                if (data != null)
-                {
-
-                    var view = _mapper.ProjectTo<MaterialCategoryModel>(data).FirstOrDefault();
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return resultModel;
-        }
-
         public ResultModel DeleteMaterial(Guid id)
         {
             ResultModel resultModel = new ResultModel();
@@ -454,45 +331,18 @@ namespace Sevices.Core.MaterialService
             return resultModel;
         }
 
-        public ResultModel DeleteCategory(Guid id)
-        {
-            ResultModel resultModel = new ResultModel();
-            try
-            {
-                var data = _dbContext.MaterialCategory.Where(c => c.id == id).FirstOrDefault();
-                if (data != null)
-                {
-                    data.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    var view = _mapper.Map<MaterialCategory, MaterialCategoryModel>(data);
-                    resultModel.Data = view;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return resultModel;
-        }
-
-        public ResultModel SortMaterialbyPrice()
+        public ResultModel SortMaterialbyPrice(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i=>i.price);
-                if (data != null)
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i=>i.price).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
                 {
-                    var view = _mapper.ProjectTo<MaterialModel>(data);
-                    result.Data = view!;
-                    result.Succeed = true;
-                }
+                    Data = _mapper.Map<List<MaterialModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
             }
             catch (Exception e)
             {
@@ -501,18 +351,18 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel SortMaterialbyThickness()
+        public ResultModel SortMaterialbyThickness(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.thickness);
-                if (data != null)
+                var data = _dbContext.Material.Where(i => i.isDeleted != true).OrderByDescending(i => i.thickness).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
                 {
-                    var view = _mapper.ProjectTo<MaterialModel>(data);
-                    result.Data = view!;
-                    result.Succeed = true;
-                }
+                    Data = _mapper.Map<List<MaterialModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
             }
             catch (Exception e)
             {

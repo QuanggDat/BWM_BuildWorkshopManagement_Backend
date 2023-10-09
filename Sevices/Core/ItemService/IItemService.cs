@@ -9,15 +9,11 @@ namespace Sevices.Core.ItemService
 {
     public interface IItemService
     {
-        Task<ResultModel> CreateCategory(CreateItemCategoryModel model);
         Task<ResultModel> CreateItem(CreateItemModel model);
-        ResultModel GetAllCategory(int pageIndex, int pageSize);
         ResultModel GetAllItem(int pageIndex, int pageSize);
+        ResultModel SortItembyPrice(int pageIndex, int pageSize);
         ResultModel GetItemById(Guid id);
-        ResultModel GetCategoryById(Guid id);
-        ResultModel UpdateItemCategory(UpdateItemCategoryModel model);
         ResultModel UpdateItem(UpdateItemModel model);
         ResultModel DeleteItem(Guid id);
-        ResultModel DeleteCategory(Guid id);
     }
 }

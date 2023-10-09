@@ -78,4 +78,10 @@ namespace Data.Models
         public string email { get; set; }
         public string password { get; set; }
     }
+
+    public class AddWorkerToGroup
+    {
+        public Guid id { get; set; }
+        public Guid groupId { get; set; }
+    }
 }

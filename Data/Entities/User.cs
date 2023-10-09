@@ -17,7 +17,7 @@ namespace Data.Entities
         public bool banStatus { get; set; }
 
         
-        public Guid groupId { get; set; }
+        public Guid? groupId { get; set; }
         [ForeignKey("groupId")]
         public virtual Group? group { get; set; }
         

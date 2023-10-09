@@ -18,26 +18,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _materialService = materialService;
         }
 
-        [HttpPost("CreateMaterialCategory")]
-        public async Task<ActionResult> CreateMaterialCategory(CreateMaterialCategoryModel model)
-        {
-            var result = await _materialService.CreateCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
         [HttpPost("CreateMaterial")]
         public async Task<ActionResult> CreateMaterial(CreateMaterialModel model)
         {
             var result = await _materialService.CreateMaterial(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpPut("UpdateMaterialCategory")]
-        public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
-        {
-            var result = _materialService.UpdateMaterialCategory(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -59,41 +43,33 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetAllMaterial")]
-        public async Task<ActionResult> GetAllMaterial(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public Task<ActionResult> GetAllMaterial(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _materialService.GetAllMaterial(pageIndex, pageSize);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
-        [HttpGet("GetAllMaterialCategory")]
-        public async Task<ActionResult> GetAllMaterialCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        [HttpGet("SortMaterialbyPrice")]
+        public Task<ActionResult> SortMaterialbyPrice(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetAllCategory(pageIndex, pageSize);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            var result = _materialService.SortMaterialbyPrice(pageIndex, pageSize);
+            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetMaterialCategoryId(Guid id)
+        [HttpGet("SortMaterialbyThickness")]
+        public Task<ActionResult> SortMaterialbyThickness(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetCategoryById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            var result = _materialService.SortMaterialbyThickness(pageIndex, pageSize);
+            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetMaterialById(Guid id)
         {
             var result = _materialService.GetMaterialById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult DeleteMaterialCategory(Guid id)
-        {
-            var result = _materialService.DeleteCategory(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
