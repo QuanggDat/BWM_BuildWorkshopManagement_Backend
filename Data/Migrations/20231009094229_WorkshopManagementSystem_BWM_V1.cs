@@ -264,8 +264,9 @@ namespace Data.Migrations
                     dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     gender = table.Column<bool>(type: "bit", nullable: false),
                     banStatus = table.Column<bool>(type: "bit", nullable: false),
-                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     roleID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -293,6 +294,11 @@ namespace Data.Migrations
                         name: "FK_AspNetUsers_Group_groupId",
                         column: x => x.groupId,
                         principalTable: "Group",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Squad_squadId",
+                        column: x => x.squadId,
+                        principalTable: "Squad",
                         principalColumn: "id");
                 });
 
@@ -649,6 +655,11 @@ namespace Data.Migrations
                 name: "IX_AspNetUsers_roleID",
                 table: "AspNetUsers",
                 column: "roleID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_squadId",
+                table: "AspNetUsers",
+                column: "squadId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",

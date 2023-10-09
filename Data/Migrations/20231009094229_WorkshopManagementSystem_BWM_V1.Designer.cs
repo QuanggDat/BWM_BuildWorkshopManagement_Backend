@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231009061509_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231009094229_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -670,6 +670,9 @@ namespace Data.Migrations
                     b.Property<string>("skill")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("squadId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -683,6 +686,8 @@ namespace Data.Migrations
                     b.HasIndex("groupId");
 
                     b.HasIndex("roleID");
+
+                    b.HasIndex("squadId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1042,7 +1047,13 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("roleID");
 
+                    b.HasOne("Data.Entities.Squad", "Squad")
+                        .WithMany()
+                        .HasForeignKey("squadId");
+
                     b.Navigation("Role");
+
+                    b.Navigation("Squad");
 
                     b.Navigation("group");
                 });

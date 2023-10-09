@@ -13,8 +13,10 @@ namespace Sevices.Mapping
     {
         public MapperProfile()
         {
+            //User
             CreateMap<UserCreateModel, User>();
             CreateMap<User, UserModel>();
+
             CreateMap<Item, ItemModel>();
             CreateMap<ItemCategory, ItemCategoryModel>();
             CreateMap<Material, MaterialModel>();

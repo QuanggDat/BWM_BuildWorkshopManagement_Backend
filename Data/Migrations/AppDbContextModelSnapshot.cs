@@ -668,6 +668,9 @@ namespace Data.Migrations
                     b.Property<string>("skill")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("squadId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -681,6 +684,8 @@ namespace Data.Migrations
                     b.HasIndex("groupId");
 
                     b.HasIndex("roleID");
+
+                    b.HasIndex("squadId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1040,7 +1045,13 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("roleID");
 
+                    b.HasOne("Data.Entities.Squad", "Squad")
+                        .WithMany()
+                        .HasForeignKey("squadId");
+
                     b.Navigation("Role");
+
+                    b.Navigation("Squad");
 
                     b.Navigation("group");
                 });

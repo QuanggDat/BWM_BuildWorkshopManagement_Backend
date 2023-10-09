@@ -15,14 +15,18 @@ namespace Data.Entities
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public bool banStatus { get; set; }
-
-        public Guid? groupId { get; set; }
-        [ForeignKey("groupId")]
-        public virtual Group? group { get; set; }
         
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
+
+        public Guid? squadId { get; set; }
+        [ForeignKey("squadId")]
+        public virtual Squad? Squad { get; set; }
+
+        public Guid? groupId { get; set; }
+        [ForeignKey("groupId")]
+        public virtual Group? group { get; set; }
 
         public virtual List<Order> Orders { get; set; } = new();
     }
