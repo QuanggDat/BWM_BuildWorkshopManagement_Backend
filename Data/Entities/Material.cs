@@ -31,7 +31,6 @@ namespace Data.Entities
 
         [ForeignKey("categoryId")]
         public Guid categoryId { get; set; }
-
         public MaterialCategory Category { get; set; }
 
         public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();
