@@ -28,28 +28,7 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
-            result.Succeed = false;
-
-            if(model.orderId == Guid.Empty)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được đơn hàng";
-                return result;
-            }
-
-            if (string.IsNullOrEmpty(model.name))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được tên công việc";
-                return result;
-            }
-
-            if (string.IsNullOrEmpty(model.description))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được mô tả";
-                return result;
-            }
+            result.Succeed = false;          
 
             var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
@@ -108,27 +87,6 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
-            if (model.orderId == Guid.Empty)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được đơn hàng";
-                return result;
-            }
-
-            if (string.IsNullOrEmpty(model.name))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được tên công việc";
-                return result;
-            }
-
-            if (string.IsNullOrEmpty(model.description))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Không nhận được mô tả";
-                return result;
-            }
-
             var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
             {
@@ -159,7 +117,6 @@ namespace Sevices.Core.ManagerTaskService
 
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
         {
-
             var result = new List<ResponseManagerTaskModel>();
             var managerTask = await _dbContext.ManagerTask.Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
             if (managerTask == null) { 
@@ -268,23 +225,32 @@ namespace Sevices.Core.ManagerTaskService
 
             return true;
         }
-        public async Task<int> DeleteManagerTask(Guid taskManagerId)
+
+        public async Task<ResultModel> DeleteManagerTask(Guid taskManagerId)
         {
+            ResultModel result = new ResultModel();
+            result.Succeed = false; 
+
             var check = await _dbContext.ManagerTask.FindAsync(taskManagerId);
             if (check == null)
             {
-                return 1;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                return result;
             }
             try
             {
                 check.isDeleted = true;
                 await _dbContext.SaveChangesAsync();
-                return 2;
+                result.Succeed = true;
+                result.Data = check.id;
+
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return 0;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
+            return result;
         }
     
     }

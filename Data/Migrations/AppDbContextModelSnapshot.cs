@@ -355,9 +355,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("AssignId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("acceptanceDate")
                         .HasColumnType("datetime2");
 
@@ -398,7 +395,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("AssignId");
+                    b.HasIndex("assignToId");
 
                     b.ToTable("Order");
                 });
@@ -659,7 +656,7 @@ namespace Data.Migrations
                     b.Property<bool>("gender")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("groupId")
+                    b.Property<Guid?>("groupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("image")
@@ -670,6 +667,9 @@ namespace Data.Migrations
 
                     b.Property<string>("skill")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("squadId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -684,6 +684,8 @@ namespace Data.Migrations
                     b.HasIndex("groupId");
 
                     b.HasIndex("roleID");
+
+                    b.HasIndex("squadId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -958,13 +960,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
-                    b.HasOne("Data.Entities.User", "Assign")
+                    b.HasOne("Data.Entities.User", "AssignTo")
                         .WithMany("Orders")
-                        .HasForeignKey("AssignId")
+                        .HasForeignKey("assignToId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Assign");
+                    b.Navigation("AssignTo");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -1024,26 +1026,32 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Resource", b =>
                 {
-                    b.HasOne("Data.Entities.Report", null)
+                    b.HasOne("Data.Entities.Report", "Report")
                         .WithMany("Resources")
                         .HasForeignKey("reportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Report");
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.HasOne("Data.Entities.Group", "group")
                         .WithMany("Users")
-                        .HasForeignKey("groupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("groupId");
 
                     b.HasOne("Data.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("roleID");
 
+                    b.HasOne("Data.Entities.Squad", "Squad")
+                        .WithMany()
+                        .HasForeignKey("squadId");
+
                     b.Navigation("Role");
+
+                    b.Navigation("Squad");
 
                     b.Navigation("group");
                 });

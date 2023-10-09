@@ -10,8 +10,9 @@ namespace Sevices.Core.UserService
     public interface IUserService
     {
         Task<ResultModel> CreateAdmin(UserCreateModel model);
-        Task<ResultModel> CreateWoker(UserCreateModel model);
         Task<ResultModel> CreateFactory(UserCreateModel model);
+        Task<ResultModel> CreateManager(UserCreateModel model);
+        Task<ResultModel> CreateWoker(UserCreateModel model);
         Task<ResultModel> Login(LoginModel model);
         ResultModel Update(UserUpdateModel model);
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);

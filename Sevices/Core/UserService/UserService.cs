@@ -46,11 +46,10 @@ namespace Sevices.Core.UserService
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
                 var user = new User
                 {
-                    UserName = model.userName,
                     Email = model.email,
                     fullName = model.fullName,
                     address = model.address,
-                    PhoneNumber = model.phoneNumber,
+                    UserName = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -58,7 +57,7 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleID = role.Id
                 };
-                var userByPhone = _dbContext.User.Where(s => s.PhoneNumber == user.PhoneNumber).FirstOrDefault();
+                var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
                 if (userByPhone != null)
                 {
@@ -74,7 +73,7 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (user.PhoneNumber.Length < 9 || user.PhoneNumber.Length > 10)
+                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
                         {
                             result.Succeed = false;
                             result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
@@ -115,86 +114,7 @@ namespace Sevices.Core.UserService
             return result;
 
         }
-        public async Task<ResultModel> CreateWoker (UserCreateModel model)
-        {
-            var result = new ResultModel();
-            result.Succeed = false;
-            try
-            {
-                if (!await _roleManager.RoleExistsAsync("Woker"))
-                {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Woker", Name = "Woker" });
-                }
-                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Woker");
-                var user = new User
-                {
-                    UserName = model.userName,
-                    Email = model.email,
-                    fullName = model.fullName,
-                    address = model.address,
-                    PhoneNumber = model.phoneNumber,
-                    NormalizedEmail = model.email,
-                    dob = model.dob,
-                    banStatus = false,
-                    gender = true,
-                    image = model.image,
-                    roleID = role.Id
-                };
-                var userByPhone = _dbContext.User.Where(s => s.PhoneNumber == user.PhoneNumber).FirstOrDefault();
-                var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
-                if (userByPhone != null)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
-                }
-                else
-                {
-                    if (userByMail != null)
-                    {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Email Đã Tồn Tại!";
-                    }
-                    else
-                    {
-                        if (user.PhoneNumber.Length < 9 || user.PhoneNumber.Length > 10)
-                        {
-                            result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
-                        }
-                        else
-                        {
-                            var check = await _userManager.CreateAsync(user, model.password);
 
-                            if (check != null)
-                            {
-                                var userRole = new UserRole
-                                {
-                                    RoleId = role.Id,
-                                    UserId = user.Id
-                                };
-                                _dbContext.UserRoles.Add(userRole);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = user.Id;
-                            }
-                            else
-                            {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Validate user wrong ";
-                            }
-                        } 
-                    }
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-
-        }
         public async Task<ResultModel> CreateFactory(UserCreateModel model)
         {
             var result = new ResultModel();
@@ -208,11 +128,10 @@ namespace Sevices.Core.UserService
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Factory");
                 var user = new User
                 {
-                    UserName = model.userName,
                     Email = model.email,
                     fullName = model.fullName,
                     address = model.address,
-                    PhoneNumber = model.phoneNumber,
+                    UserName = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -220,7 +139,7 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleID = role.Id
                 };
-                var userByPhone = _dbContext.User.Where(s => s.PhoneNumber == user.PhoneNumber).FirstOrDefault();
+                var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
                 if (userByPhone != null)
                 {
@@ -236,7 +155,7 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (user.PhoneNumber.Length < 9 || user.PhoneNumber.Length > 10)
+                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
                         {
                             result.Succeed = false;
                             result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
@@ -266,8 +185,6 @@ namespace Sevices.Core.UserService
                     }
 
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -276,30 +193,179 @@ namespace Sevices.Core.UserService
             return result;
 
         }
+
+        public async Task<ResultModel> CreateManager(UserCreateModel model)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                if (!await _roleManager.RoleExistsAsync("Manager"))
+                {
+                    await _roleManager.CreateAsync(new Role { description = "Role for Manager", Name = "Manager" });
+                }
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Manager");
+                var user = new User
+                {
+                    Email = model.email,
+                    fullName = model.fullName,
+                    address = model.address,
+                    UserName = model.phoneNumber,
+                    NormalizedEmail = model.email,
+                    dob = model.dob,
+                    banStatus = false,
+                    gender = true,
+                    image = model.image,
+                    roleID = role.Id
+                };
+                var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+                var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+                if (userByPhone != null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                }
+                else
+                {
+                    if (userByMail != null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                    }
+                    else
+                    {
+                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                        }
+                        else
+                        {
+                            var check = await _userManager.CreateAsync(user, model.password);
+
+                            if (check != null)
+                            {
+                                var userRole = new UserRole
+                                {
+                                    RoleId = role.Id,
+                                    UserId = user.Id
+                                };
+                                _dbContext.UserRoles.Add(userRole);
+                                await _dbContext.SaveChangesAsync();
+                                result.Succeed = true;
+                                result.Data = user.Id;
+                            }
+                            else
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Validate user wrong ";
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> CreateWoker(UserCreateModel model)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                if (!await _roleManager.RoleExistsAsync("Woker"))
+                {
+                    await _roleManager.CreateAsync(new Role { description = "Role for Woker", Name = "Woker" });
+                }
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Woker");
+                var user = new User
+                {
+                    Email = model.email,
+                    fullName = model.fullName,
+                    address = model.address,
+                    UserName = model.phoneNumber,
+                    NormalizedEmail = model.email,
+                    dob = model.dob,
+                    banStatus = false,
+                    gender = true,
+                    image = model.image,
+                    roleID = role.Id
+                };
+                var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+                var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+                if (userByPhone != null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                }
+                else
+                {
+                    if (userByMail != null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                    }
+                    else
+                    {
+                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                        }
+                        else
+                        {
+                            var check = await _userManager.CreateAsync(user, model.password);
+
+                            if (check != null)
+                            {
+                                var userRole = new UserRole
+                                {
+                                    RoleId = role.Id,
+                                    UserId = user.Id
+                                };
+                                _dbContext.UserRoles.Add(userRole);
+                                await _dbContext.SaveChangesAsync();
+                                result.Succeed = true;
+                                result.Data = user.Id;
+                            }
+                            else
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Validate user wrong ";
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+        
         public async Task<ResultModel> Login(LoginModel model)
         {
 
             var result = new ResultModel();
 
-            var userByEmail = _dbContext.User.Where(s => s.Email == model.email).FirstOrDefault();
+            var userByPhone = _dbContext.User.Where(s => s.UserName == model.phoneNumber).FirstOrDefault();
 
-            if (userByEmail != null)
+            if (userByPhone != null)
             {
-                var user = await _userManager.FindByNameAsync(userByEmail.UserName);
+                var user = await _userManager.FindByNameAsync(userByPhone.UserName);
                 var check = await _signInManager.CheckPasswordSignInAsync(user, model.password, false);
                 if (!check.Succeeded)
-                {
-                    //if (!user.EmailConfirmed)
-                    //{
-                        //result.Succeed = false;
-                        //await SendMailConfirm(user);
-                        //result.ErrorMessage = "Email chưa được xác nhận. Vui lòng kiểm tra email để xác nhận!";
-                    //}
-
-                    //else
-                    //{
+                {                  
                         result.ErrorMessage = "Sai Mật Khẩu!";
-                    //}
                 }
                 else
                 {
@@ -350,9 +416,8 @@ namespace Sevices.Core.UserService
                 Token_type = "Bearer",
                 Expires_in = int.Parse(_configuration["Jwt:ExpireTimes"]) * 3600,
                 userID = user.Id.ToString(),
-                username = user.UserName,
-                fullname = user.fullName,
-                PhoneNumber = user.PhoneNumber,
+                fullName = user.fullName,
+                PhoneNumber = user.UserName,
                 Role = user.Role
             };
         }
