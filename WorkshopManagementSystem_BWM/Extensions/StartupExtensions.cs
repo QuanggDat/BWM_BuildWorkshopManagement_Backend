@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sevices.Core.CategoryService;
+using Sevices.Core.HumanResourceService;
 using Sevices.Core.ItemService;
 using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;
@@ -55,6 +57,8 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IManagerTaskService, ManagerTaskService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderDetailService, OrderDetailService>();
+            services.AddScoped<IHumanResourceService, HumanResourceService>();
+            services.AddScoped<ICategoryService, CategoryService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

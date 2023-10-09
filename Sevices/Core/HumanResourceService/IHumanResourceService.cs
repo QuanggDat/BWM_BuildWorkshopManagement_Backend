@@ -10,8 +10,11 @@ namespace Sevices.Core.HumanResourceService
     public interface IHumanResourceService
     {
         Task<ResultModel> CreateSquad(CreateSquadModel model);
-        ResultModel GetAllSquad();
+        Task<ResultModel> AddGroup(AddGroupModel model);
+        Task<ResultModel> AddWorkerToGroup(Guid id);
+        ResultModel GetAllSquad(int pageIndex, int pageSize);
         ResultModel GetSquadById(Guid id);
+        ResultModel GetGroupById(Guid id);
         Task<ResultModel> UpdateSquadAsync(UpdateSquadModel model);
         ResultModel DeleteSquad(Guid id);
     }
