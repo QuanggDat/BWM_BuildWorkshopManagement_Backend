@@ -42,6 +42,8 @@ namespace Sevices.Core.HumanResourceService
                     var newSquad = new Squad
                     {
                         name = model.name,
+                        member = 1,
+                        managerId=model.managerId,
                         isDeleted = false
                     };
                     _dbContext.Squad.Add(newSquad);
@@ -57,7 +59,59 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public async Task<ResultModel> UpdateSquadAsync(UpdateSquadModel model)
+        public ResultModel AddWorkerToGroup(AddWorkerToGroup model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
+                if (data != null)
+                {
+                    //Update Item Category
+                    data.groupId = model.groupId;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<User, UserModel>(data);
+                }
+                else
+                {
+                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> AddGroup(AddGroupModel model)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var newGroup = new Group
+                {
+                    name = model.name,
+                    member = 0,
+                    squadId = model.squadId,
+                    isDeleted = false
+                };
+                _dbContext.Group.Add(newGroup);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = newGroup.id;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> UpdateSquad(UpdateSquadModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -75,6 +129,8 @@ namespace Sevices.Core.HumanResourceService
                     if (data != null)
                     {
                         data.name = model.name;
+                        data.member = 1;
+                        data.managerId = model.managerId;
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = _mapper.Map<Squad, SquadModel>(data);
@@ -93,6 +149,7 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
+        //For factory role
         public ResultModel GetAllSquad(int pageIndex, int pageSize)
         {
 
@@ -123,13 +180,69 @@ namespace Sevices.Core.HumanResourceService
                 if (data != null)
                 {
 
-                    var view = _mapper.ProjectTo<SquadModel>(data).FirstOrDefault();
+                    var view = _mapper.ProjectTo<GroupModel>(data).FirstOrDefault();
                     resultModel.Data = view!;
                     resultModel.Succeed = true;
                 }
                 else
                 {
                     resultModel.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.Group.Where(g => g.squadId == id && g.isDeleted != true).OrderByDescending(g => g.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (data != null)
+                {
+                    resultModel.Data = new PagingModel()
+                    {
+                        Data = _mapper.Map<List<SquadModel>>(data),
+                        Total = data.Count
+                    };
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
+                    resultModel.Succeed = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel GetUserByGroupId(Guid id, int pageIndex, int pageSize)
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(u => u.groupId == id && u.banStatus != true).OrderByDescending(g => g.fullName).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (data != null)
+                {
+                    resultModel.Data = new PagingModel()
+                    {
+                        Data = _mapper.Map<List<UserModel>>(data),
+                        Total = data.Count
+                    };
+                    resultModel.Succeed = true;
+                }
+                else
+                {
+                    resultModel.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
                     resultModel.Succeed = false;
                 }
             }
@@ -165,21 +278,6 @@ namespace Sevices.Core.HumanResourceService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
-        }
-
-        public Task<ResultModel> AddGroup(AddGroupModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ResultModel> AddWorkerToGroup(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ResultModel GetGroupById(Guid id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

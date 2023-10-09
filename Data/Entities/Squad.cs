@@ -13,7 +13,13 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
         public string name { get; set; } = null!;
+        public int member { get; set; }
         public bool isDeleted { get; set; }
+
+        [ForeignKey("managerId")]
+        public Guid managerId { get; set; }
+        public User manager { get; set; }
+
         public virtual List<Group> Groups { get; set; } = new();
     }
 }

@@ -49,6 +49,16 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("member")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("squadId")
                         .HasColumnType("uniqueidentifier");
 
@@ -74,6 +84,9 @@ namespace Data.Migrations
                     b.Property<string>("code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("depth")
+                        .HasColumnType("float");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -116,9 +129,6 @@ namespace Data.Migrations
                     b.Property<string>("unit")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("width")
-                        .HasColumnType("float");
 
                     b.HasKey("id");
 
@@ -599,11 +609,19 @@ namespace Data.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("managerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("member")
+                        .HasColumnType("int");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("managerId");
 
                     b.ToTable("Squad");
                 });
@@ -689,9 +707,6 @@ namespace Data.Migrations
                     b.Property<string>("skill")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("squadId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -705,8 +720,6 @@ namespace Data.Migrations
                     b.HasIndex("groupId");
 
                     b.HasIndex("roleID");
-
-                    b.HasIndex("squadId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1071,6 +1084,17 @@ namespace Data.Migrations
                     b.Navigation("Report");
                 });
 
+            modelBuilder.Entity("Data.Entities.Squad", b =>
+                {
+                    b.HasOne("Data.Entities.User", "manager")
+                        .WithMany("Squads")
+                        .HasForeignKey("managerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("manager");
+                });
+
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.HasOne("Data.Entities.Group", "group")
@@ -1081,13 +1105,7 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("roleID");
 
-                    b.HasOne("Data.Entities.Squad", "Squad")
-                        .WithMany()
-                        .HasForeignKey("squadId");
-
                     b.Navigation("Role");
-
-                    b.Navigation("Squad");
 
                     b.Navigation("group");
                 });
@@ -1243,6 +1261,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("Squads");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
