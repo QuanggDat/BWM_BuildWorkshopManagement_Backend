@@ -10,6 +10,7 @@ namespace Sevices.Core.MaterialService
     public interface IMaterialService
     {
         Task<ResultModel> CreateMaterial(CreateMaterialModel model);
+        ResultModel Search(string search, int pageIndex, int pageSize);
         ResultModel GetAllMaterial(int pageIndex, int pageSize);
         ResultModel SortMaterialbyThickness(int pageIndex, int pageSize);
         ResultModel SortMaterialbyPrice(int pageIndex, int pageSize);
