@@ -12,7 +12,9 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-
+        public string name { get; set; }
+        public int member { get; set; }
+        public bool isDeleted { get; set; }
         [ForeignKey("squadId")]
         public Guid squadId { get; set; }
         public virtual Squad Squad { get; set; } = null!;

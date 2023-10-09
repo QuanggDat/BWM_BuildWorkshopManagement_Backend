@@ -11,11 +11,12 @@ namespace Sevices.Core.HumanResourceService
     {
         Task<ResultModel> CreateSquad(CreateSquadModel model);
         Task<ResultModel> AddGroup(AddGroupModel model);
-        Task<ResultModel> AddWorkerToGroup(Guid id);
+        ResultModel AddWorkerToGroup(AddWorkerToGroup model);
         ResultModel GetAllSquad(int pageIndex, int pageSize);
         ResultModel GetSquadById(Guid id);
-        ResultModel GetGroupById(Guid id);
-        Task<ResultModel> UpdateSquadAsync(UpdateSquadModel model);
+        ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize);
+        ResultModel GetUserByGroupId(Guid id, int pageIndex, int pageSize);
+        Task<ResultModel> UpdateSquad(UpdateSquadModel model);
         ResultModel DeleteSquad(Guid id);
     }
 }

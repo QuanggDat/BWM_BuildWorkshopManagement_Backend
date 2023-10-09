@@ -66,7 +66,7 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Chiều cao không được âm.";
                     return result;
                 }
-                if (model.width < 0)
+                if (model.depth < 0)
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Chiều rộng không được âm.";
@@ -117,7 +117,7 @@ namespace Sevices.Core.ItemService
                     mass= model.mass,
                     unit=model.unit,
                     length=model.length,
-                    width=model.width,
+                    depth=model.depth,
                     height=model.height,
                     technical=model.technical,
                     twoD=model.twoD,
@@ -176,7 +176,7 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Chiều cao không được âm.";
                     return result;
                 }
-                if (model.width < 0)
+                if (model.depth < 0)
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Chiều rộng không được âm.";
@@ -228,7 +228,7 @@ namespace Sevices.Core.ItemService
                     data.mass = model.mass;
                     data.unit=model.unit;
                     data.length = model.length;
-                    data.width = model.width;
+                    data.depth = model.depth;
                     data.height = model.height;
                     data.technical = model.technical;
                     data.twoD = model.twoD;

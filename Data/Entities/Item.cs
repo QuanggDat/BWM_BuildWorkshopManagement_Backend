@@ -18,11 +18,11 @@ namespace Data.Entities
         public string name { get; set; } = null!;
         public string code { get; set; }
         public string? image { get; set; } 
-        public double mass { get; set; }
-        public string unit { get; set; } = null!;
         public double length { get; set; }
-        public double width { get; set; }
+        public double depth { get; set; }
         public double height { get; set; }
+        public string unit { get; set; } = null!;
+        public double mass { get; set; }
         public string technical { get; set; } = null!;
         public string twoD { get; set; } = null!;
         public string threeD { get; set; } = null!;

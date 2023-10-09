@@ -12,11 +12,11 @@ namespace Data.Models
         public Guid id { get; set; }
         public string name { get; set; }
         public string image { get; set; }
-        public double mass { get; set; }
-        public string unit { get; set; }
         public double length { get; set; }
-        public double width { get; set; }
+        public double depth { get; set; }
         public double height { get; set; }
+        public string unit { get; set; }
+        public double mass { get; set; }
         public string technical { get; set; }
         public string twoD { get; set; }
         public string threeD { get; set; }
@@ -31,11 +31,11 @@ namespace Data.Models
     {
         [Required] public string name { get; set; }
         public string image { get; set; }
-        [Required] public double mass { get; set; }
-        [Required] public string unit { get; set; }
         [Required] public double length { get; set; }
-        [Required] public double width { get; set; }
+        [Required] public double depth { get; set; }
         [Required] public double height { get; set; }
+        [Required] public string unit { get; set; }
+        [Required] public double mass { get; set; }
         public string technical { get; set; }
         public string twoD { get; set; }
         public string threeD { get; set; }
@@ -51,11 +51,11 @@ namespace Data.Models
         public Guid id { get; set; }
         [Required] public string name { get; set; }
         public string image { get; set; }
-        [Required] public double mass { get; set; }
-        [Required] public string unit { get; set; }
         [Required] public double length { get; set; }
-        [Required] public double width { get; set; }
+        [Required] public double depth { get; set; }
         [Required] public double height { get; set; }
+        [Required] public string unit { get; set; }
+        [Required] public double mass { get; set; }
         public string technical { get; set; }
         public string twoD { get; set; }
         public string threeD { get; set; }
