@@ -509,6 +509,29 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ManagerTaskGroup",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ManagerTaskGroup", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ManagerTaskGroup_Group_groupId",
+                        column: x => x.groupId,
+                        principalTable: "Group",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_ManagerTaskGroup_ManagerTask_managerTaskId",
+                        column: x => x.managerTaskId,
+                        principalTable: "ManagerTask",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Report",
                 columns: table => new
                 {
@@ -709,6 +732,16 @@ namespace Data.Migrations
                 column: "orderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ManagerTaskGroup_groupId",
+                table: "ManagerTaskGroup",
+                column: "groupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ManagerTaskGroup_managerTaskId",
+                table: "ManagerTaskGroup",
+                column: "managerTaskId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Material_categoryId",
                 table: "Material",
                 column: "categoryId");
@@ -798,6 +831,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemMaterial");
+
+            migrationBuilder.DropTable(
+                name: "ManagerTaskGroup");
 
             migrationBuilder.DropTable(
                 name: "Notification");

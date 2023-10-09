@@ -27,7 +27,7 @@ namespace Data.Entities
         public Guid? groupId { get; set; }
         [ForeignKey("groupId")]
         public virtual Group? group { get; set; }
-
+        
         public virtual List<Order> Orders { get; set; } = new();
     }
 }

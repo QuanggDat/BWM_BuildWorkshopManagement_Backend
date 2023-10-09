@@ -11,8 +11,8 @@ namespace Data.Entities
     public class WokerTaskDetail
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public Guid id { get; set; }
+
         [ForeignKey("wokerTaskId")]
         public Guid? wokerTaskId { get; set; }
         public virtual WokerTask WokerTask { get; set; } = null!;

@@ -45,9 +45,10 @@ namespace Data.Models
         public string description { get; set; } = null!;
         
     }
-    public class AssignMangerTaskModel
+    public class AssignManagerTaskModel
     {
         public Guid groupId { get; set; }
-        public Guid managerTaskId { get; set; }
+        public Guid taskManagerId { get; set; }
     }
+
 }

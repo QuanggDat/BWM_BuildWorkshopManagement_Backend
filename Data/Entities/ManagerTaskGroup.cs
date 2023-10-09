@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Group
+    public class ManagerTaskGroup
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
-        [ForeignKey("squadId")]
-        public Guid squadId { get; set; }
-        public virtual Squad Squad { get; set; } = null!;
+        [ForeignKey("managerTaskId")]
+        public Guid? managerTaskId { get; set; }
+        public virtual ManagerTask ManagerTask { get; set; } = null!;
 
-        public virtual List<User> Users { get; set; } = new();
-        public virtual List<ManagerTaskGroup> ManagerTaskGroups { get; set; } = new();
+        [ForeignKey("groupId")]
+        public Guid? groupId { get; set; }
+        public virtual Group Group { get; set; } = null!;
     }
 }

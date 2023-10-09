@@ -16,9 +16,9 @@ namespace Data.DataAccess
         public DbSet<ItemCategory> ItemCategory { get; set; }
         public DbSet<ItemMaterial> ItemMaterial { get; set; }
         public DbSet<ManagerTask> ManagerTask { get; set; }
+        public DbSet<ManagerTaskGroup> ManagerTaskGroup { get; set; }
         public DbSet<Material> Material { get; set; }
-        public DbSet<MaterialCategory> MaterialCategory { get; set; }
-        public DbSet<Squad> Squad { get; set; }
+        public DbSet<MaterialCategory> MaterialCategory { get; set; }      
         public DbSet<Notification> Notification { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
@@ -27,10 +27,12 @@ namespace Data.DataAccess
         public DbSet<Report> Report { get; set; }
         public DbSet<Resource> Resource { get; set; }
         public DbSet<Role> Role { get; set; }
+        public DbSet<Squad> Squad { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }       
         public DbSet<WokerTask> WokerTask { get; set; }
         public DbSet<WokerTaskDetail> WokerTaskDetail { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

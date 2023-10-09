@@ -75,5 +75,6 @@ namespace Sevices.Core.OrderDetailService
             }
             return result;
         }
+
     }
 }

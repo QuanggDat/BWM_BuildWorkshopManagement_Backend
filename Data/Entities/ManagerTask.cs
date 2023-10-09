@@ -32,7 +32,7 @@ namespace Data.Entities
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
-
+        public virtual List<ManagerTaskGroup> ManagerTaskGroups { get; set; } = new();
         public virtual List<WokerTask> WokerTasks { get; set; } = new();
     }
 }
