@@ -264,7 +264,7 @@ namespace Data.Migrations
                     dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     gender = table.Column<bool>(type: "bit", nullable: false),
                     banStatus = table.Column<bool>(type: "bit", nullable: false),
-                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     roleID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -293,8 +293,7 @@ namespace Data.Migrations
                         name: "FK_AspNetUsers_Group_groupId",
                         column: x => x.groupId,
                         principalTable: "Group",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -416,7 +415,6 @@ namespace Data.Migrations
                     name = table.Column<string>(type: "nvarchar(500)", nullable: false),
                     customerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     assignToId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AssignId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     orderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
@@ -430,8 +428,8 @@ namespace Data.Migrations
                 {
                     table.PrimaryKey("PK_Order", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Order_AspNetUsers_AssignId",
-                        column: x => x.AssignId,
+                        name: "FK_Order_AspNetUsers_assignToId",
+                        column: x => x.assignToId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -710,9 +708,9 @@ namespace Data.Migrations
                 column: "userId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_AssignId",
+                name: "IX_Order_assignToId",
                 table: "Order",
-                column: "AssignId");
+                column: "assignToId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetail_itemId",

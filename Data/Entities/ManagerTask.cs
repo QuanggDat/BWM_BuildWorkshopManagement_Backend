@@ -12,9 +12,11 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+
         [ForeignKey("managerId")]
         public Guid managerId { get; set; }
         public virtual User Manager { get; set; } = null!;
+
         [ForeignKey("createById")]
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
@@ -22,6 +24,7 @@ namespace Data.Entities
         [ForeignKey("orderId")]
         public Guid? orderId { get; set; }
         public virtual Order Order { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; } 
         public DateTime timeEnd { get; set; }
@@ -29,6 +32,7 @@ namespace Data.Entities
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
+
         public virtual List<WokerTask> WokerTasks { get; set; } = new();
     }
 }

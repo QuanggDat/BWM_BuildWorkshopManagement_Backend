@@ -21,9 +21,11 @@ namespace Data.Entities
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
+
         [ForeignKey("orderId")]
         public Guid orderId { get; set;}
         public Order Order { get; set; } = null!;
+
         public virtual List<WokerTaskDetail> WokerTaskDetails { get; set; } = new();
     }
 }

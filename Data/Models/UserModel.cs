@@ -12,36 +12,33 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string? phoneNumber { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string email { get; set; }
+        public string fullName { get; set; }
+        public string? email { get; set; }
         public string address { get; set; }
         public string? image { get; set; }
         public DateTime dob { get; set; }
         public bool gender { get; set; }
         public Guid? roleId { get; set; }
         public Role? Role { get; set; }
+        public Guid? groupId { get; set; }
+        public Role Group { get; set; }
         //public virtual string Email { get; set; }
-        public bool banStatus { get; set; }
+        public bool banStatus { get; set; }    
     }
+
     public class UserCreateModel
     {
-        public string userName { get; set; }
+        public string phoneNumber { get; set; }
         [Required]
         public string password { get; set; }
         [Required]
         public string email { get; set; }
         [Required]
         public string fullName { get; set; } = null!;
-
         [Required]
         public string address { get; set; }
-
         public string? image { get; set; }
-
         public DateTime dob { get; set; }
-        public string phoneNumber { get; set; }
-        [Required]
         public bool gender { get; set; } = true;
         public bool banStatus { get; set; } = false;
     }
@@ -75,7 +72,7 @@ namespace Data.Models
     }
     public class LoginModel
     {
-        public string email { get; set; }
+        public string phoneNumber { get; set; }
         public string password { get; set; }
     }
 }

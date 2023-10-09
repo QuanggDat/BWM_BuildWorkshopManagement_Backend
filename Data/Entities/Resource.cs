@@ -15,5 +15,6 @@ namespace Data.Entities
         public string link { get; set; } = null!;
         [ForeignKey("reportId")]
         public Guid reportId { get; set; }
+        public Report Report { get; set; } = null!;
     }
 }

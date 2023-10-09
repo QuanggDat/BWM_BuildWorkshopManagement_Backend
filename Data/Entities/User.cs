@@ -16,8 +16,7 @@ namespace Data.Entities
         public bool gender { get; set; }
         public bool banStatus { get; set; }
 
-        
-        public Guid groupId { get; set; }
+        public Guid? groupId { get; set; }
         [ForeignKey("groupId")]
         public virtual Group? group { get; set; }
         
@@ -25,9 +24,6 @@ namespace Data.Entities
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
 
-
-        //public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
-        //public virtual List<ManagerTask> CreateBy { get; set; } = new();
         public virtual List<Order> Orders { get; set; } = new();
     }
 }

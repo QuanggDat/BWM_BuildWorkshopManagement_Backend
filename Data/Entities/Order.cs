@@ -16,9 +16,11 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;
+
         [ForeignKey("assignToId")]
         public Guid assignToId { get; set; }
-        public virtual User Assign { get; set; } = null!;
+        public virtual User AssignTo { get; set; } = null!;
+
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 
@@ -27,6 +29,7 @@ namespace Data.Entities
         public DateTime quoteDate { get; set;}
         public double totalPrice { get; set; }
         public DateTime? acceptanceDate { get; set; }
+
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
         public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
 
