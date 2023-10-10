@@ -17,6 +17,11 @@ namespace Data.Entities
         public string name { get; set; } = null!;
         public double price { get; set; }
         public bool isDeleted { get; set; }
+
+        [ForeignKey("parentId")]
+        public Guid? parentId { get; set; }
+        public virtual Area? parent { get; set; } = null!;
+
         public virtual List<Item> Items { get; set; } = new();
     }
 }
