@@ -16,10 +16,7 @@ namespace Data.Entities
         public int member { get; set; }
         public bool isDeleted { get; set; }
 
-        [ForeignKey("managerId")]
-        public Guid managerId { get; set; }
-        public User manager { get; set; }
-
+        public virtual List<User> Users { get; set; } = new();
         public virtual List<Group> Groups { get; set; } = new();
     }
 }

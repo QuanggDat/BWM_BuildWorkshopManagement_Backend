@@ -23,8 +23,11 @@ namespace Data.Entities
         public Guid? groupId { get; set; }
         [ForeignKey("groupId")]
         public virtual Group? group { get; set; }
-        
+
+        public Guid? squadId { get; set; }
+        [ForeignKey("squadId")]
+        public virtual Squad? Squad { get; set; }
+
         public virtual List<Order> Orders { get; set; } = new();
-        public virtual List<Squad> Squads { get; set; } =new();
     }
 }

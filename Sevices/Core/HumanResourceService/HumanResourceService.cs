@@ -44,7 +44,6 @@ namespace Sevices.Core.HumanResourceService
                     {
                         name = model.name,
                         member = 1,
-                        managerId=model.managerId,
                         isDeleted = false
                     };
                     _dbContext.Squad.Add(newSquad);
@@ -160,7 +159,6 @@ namespace Sevices.Core.HumanResourceService
                     {
                         data.name = model.name;
                         data.member = 1;
-                        data.managerId = model.managerId;
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = _mapper.Map<Squad, SquadModel>(data);
