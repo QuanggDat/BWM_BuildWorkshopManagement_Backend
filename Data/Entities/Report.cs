@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,11 +22,13 @@ namespace Data.Entities
         public Guid reporterId { get; set; }
         public virtual User Reporter { get; set; } = null!;
 
+        public ReportType reportType { get; set; }
+        
         public string title { get; set; } = null!;
-        public string overviewReport { get; set; } = null!;
-        public string? doneReport { get; set; } = null!;
-        public string? doingReport { get; set; } = null!;
-        public string? todoReport { get; set; } = null!;
+        public string? content { get; set; } = null!;
+
+        public ReportStatus? reportStatus { get; set; }
+
         public DateTime createdDate { get; set; }                   
         public virtual List<Resource> Resources { get; set; } = new();
 

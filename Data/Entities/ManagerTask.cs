@@ -25,6 +25,10 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public virtual Order Order { get; set; } = null!;
 
+        [ForeignKey("groupId")]
+        public Guid? groupId { get; set; }
+        public virtual Group? Group { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; } 
         public DateTime timeEnd { get; set; }
@@ -32,7 +36,7 @@ namespace Data.Entities
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
-        public virtual List<ManagerTaskGroup> ManagerTaskGroups { get; set; } = new();
+
         public virtual List<WokerTask> WokerTasks { get; set; } = new();
     }
 }

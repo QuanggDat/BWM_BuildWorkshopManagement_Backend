@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Data.Enums
 {
-    public enum ReportStatus
+    public enum ReportType
     {
-        complete = 0,
-        uncomplete = 1,
+        progressReports = 0,
+        reportProblem = 1,
     }
 }

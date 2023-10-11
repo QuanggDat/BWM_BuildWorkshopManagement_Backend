@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public  class GroupModel
+    public class GroupModel
     {
         public Guid id {  get; set; }
         public string name { get; set; }

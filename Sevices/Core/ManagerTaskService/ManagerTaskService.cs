@@ -15,14 +15,10 @@ namespace Sevices.Core.ManagerTaskService
     public class ManagerTaskService : IManagerTaskService
     {
         private readonly AppDbContext _dbContext;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public ManagerTaskService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public ManagerTaskService(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
-            _configuration = configuration;
         }
 
         public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
@@ -211,19 +207,32 @@ namespace Sevices.Core.ManagerTaskService
             return result;
         }
 
-        public async Task<bool> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status)
+        public async Task<ResultModel> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status)
         {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
             var task = await _dbContext.ManagerTask.FindAsync(taskManagerId);
             if (task == null)
             {
-                return false;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                return result;
             }
 
-            task.status = status;
+            try
+            {
+                task.status = status;
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = task.id;
 
-            await _dbContext.SaveChangesAsync();
+            }
 
-            return true;
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
         }
 
         public async Task<ResultModel> DeleteManagerTask(Guid taskManagerId)
@@ -253,8 +262,48 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
+        }        
+
+        public async Task<ResultModel> AssignManagerTask(Guid taskManagerId, Guid groupId)
+        {
+
+            ResultModel result = new ResultModel();
+
+            result.Succeed = false;
+            var task = await _dbContext.ManagerTask.FindAsync(taskManagerId);
+            if (task == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                return result;
+            }
+
+            var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId );
+
+            if (check != null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Tổ không hợp lệ!";
+                return result;
+            }
+
+            try
+            {
+                task.groupId = groupId;
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = task.id;
+
+            }
+
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
         }
 
+        /*
         public async Task<ResultModel> AssignManagerTask(AssignManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
@@ -287,7 +336,7 @@ namespace Sevices.Core.ManagerTaskService
             }
             return result;
         }
-
+        
         public async Task<ResultModel> UnAssignManagerTask(AssignManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
@@ -314,5 +363,7 @@ namespace Sevices.Core.ManagerTaskService
             }
             return result;
         }
+        */
+
     }
 }

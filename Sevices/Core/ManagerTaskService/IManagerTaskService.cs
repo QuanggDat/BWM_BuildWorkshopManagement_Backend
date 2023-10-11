@@ -13,10 +13,10 @@ namespace Sevices.Core.ManagerTaskService
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId);
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId);
         Task<List<ResponseManagerTaskModel>> GetManagerTaskByFactory(Guid managerId);
-        Task<bool> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status);
+        Task<ResultModel> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status);
         Task<ResultModel> UpdateManagerTask(UpdateManagerTaskModel model);
         Task<ResultModel> DeleteManagerTask(Guid taskManagerId);
-        Task<ResultModel> AssignManagerTask(AssignManagerTaskModel assignManagerTaskModel);
-        Task<ResultModel> UnAssignManagerTask(AssignManagerTaskModel assignManagerTaskModel);
+        Task<ResultModel> AssignManagerTask(Guid taskManagerId, Guid groupId);
+
     }
 }

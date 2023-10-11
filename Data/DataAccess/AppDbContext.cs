@@ -16,7 +16,6 @@ namespace Data.DataAccess
         public DbSet<ItemCategory> ItemCategory { get; set; }
         public DbSet<ItemMaterial> ItemMaterial { get; set; }
         public DbSet<ManagerTask> ManagerTask { get; set; }
-        public DbSet<ManagerTaskGroup> ManagerTaskGroup { get; set; }
         public DbSet<Material> Material { get; set; }
         public DbSet<MaterialCategory> MaterialCategory { get; set; }      
         public DbSet<Notification> Notification { get; set; }

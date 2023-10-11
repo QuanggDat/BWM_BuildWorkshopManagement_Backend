@@ -453,6 +453,7 @@ namespace Data.Migrations
                     managerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -475,6 +476,11 @@ namespace Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ManagerTask_Group_groupId",
+                        column: x => x.groupId,
+                        principalTable: "Group",
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_ManagerTask_Order_orderId",
                         column: x => x.orderId,
@@ -513,40 +519,16 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ManagerTaskGroup",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ManagerTaskGroup", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_ManagerTaskGroup_Group_groupId",
-                        column: x => x.groupId,
-                        principalTable: "Group",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "FK_ManagerTaskGroup_ManagerTask_managerTaskId",
-                        column: x => x.managerTaskId,
-                        principalTable: "ManagerTask",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Report",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     reporterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    reportType = table.Column<int>(type: "int", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    overviewReport = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    doneReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    doingReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    todoReport = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    reportStatus = table.Column<int>(type: "int", nullable: true),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -726,6 +708,11 @@ namespace Data.Migrations
                 column: "createById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ManagerTask_groupId",
+                table: "ManagerTask",
+                column: "groupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ManagerTask_managerId",
                 table: "ManagerTask",
                 column: "managerId");
@@ -734,16 +721,6 @@ namespace Data.Migrations
                 name: "IX_ManagerTask_orderId",
                 table: "ManagerTask",
                 column: "orderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ManagerTaskGroup_groupId",
-                table: "ManagerTaskGroup",
-                column: "groupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ManagerTaskGroup_managerTaskId",
-                table: "ManagerTaskGroup",
-                column: "managerTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Material_categoryId",
@@ -835,9 +812,6 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ItemMaterial");
-
-            migrationBuilder.DropTable(
-                name: "ManagerTaskGroup");
 
             migrationBuilder.DropTable(
                 name: "Notification");

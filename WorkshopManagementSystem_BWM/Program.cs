@@ -26,6 +26,16 @@ builder.Services.AddBussinessService();
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 builder.Services.AddSwaggerWithAuthentication();
 
+builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+{
+    builder
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()
+        .WithOrigins("*");
+
+}));
+
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 var app = builder.Build();
 
@@ -37,6 +47,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//app cors
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 app.UseAuthentication();

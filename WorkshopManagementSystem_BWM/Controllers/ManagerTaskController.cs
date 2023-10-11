@@ -56,16 +56,20 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result == null) return BadRequest("Không tìm thấy công việc");
             return Ok(result);
         }
-        [HttpPut("{managerId}")]
+
+        [HttpPut("{managerTaskId}")]
         public async Task<ActionResult> UpdateTaskStatus(Guid managerTaskId, TaskStatus status)
         {
-            var success = await _managerTaskService.UpdateManagerTaskStatus(managerTaskId, status);
-            return Ok(success);
+            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
+            var result = await _managerTaskService.UpdateManagerTaskStatus(managerTaskId, status);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
         }
 
         [HttpDelete]
         public async Task<ActionResult> DeleteTask(Guid managerTaskId)
         {
+            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
             var result = await _managerTaskService.DeleteManagerTask(managerTaskId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
@@ -82,23 +86,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("AssignManagerTask")]
-        public async Task<ActionResult> AssignManagerTask(AssignManagerTaskModel model)
+        [HttpPut]
+        public async Task<ActionResult> AssignManagerTask(Guid managerTaskId, Guid groupId)
         {
-            if (model == null) return BadRequest("Không nhận được dữ liệu.");
-            var result = await _managerTaskService.AssignManagerTask(model);
+            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
+            if (groupId == Guid.Empty) return BadRequest("Không nhận được groupId!");
+            var result = await _managerTaskService.AssignManagerTask(managerTaskId, groupId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpPut("UnAssignManagerTask")]
-        public async Task<ActionResult> UnAssignManagerTask(AssignManagerTaskModel model)
-        {
-            if (model == null) return BadRequest("Không nhận được dữ liệu.");
-            var result = await _managerTaskService.UnAssignManagerTask(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
+        }       
     }
 }

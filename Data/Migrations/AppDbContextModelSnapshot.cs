@@ -203,6 +203,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("groupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -229,32 +232,13 @@ namespace Data.Migrations
 
                     b.HasIndex("createById");
 
+                    b.HasIndex("groupId");
+
                     b.HasIndex("managerId");
 
                     b.HasIndex("orderId");
 
                     b.ToTable("ManagerTask");
-                });
-
-            modelBuilder.Entity("Data.Entities.ManagerTaskGroup", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("groupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("managerTaskId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("groupId");
-
-                    b.HasIndex("managerTaskId");
-
-                    b.ToTable("ManagerTaskGroup");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -513,30 +497,26 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("doingReport")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("doneReport")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("managerTaskId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("overviewReport")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("reportStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("reportType")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("reporterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("todoReport")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
@@ -953,6 +933,10 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("createById");
 
+                    b.HasOne("Data.Entities.Group", "Group")
+                        .WithMany("ManagerTasks")
+                        .HasForeignKey("groupId");
+
                     b.HasOne("Data.Entities.User", "Manager")
                         .WithMany()
                         .HasForeignKey("managerId")
@@ -965,24 +949,11 @@ namespace Data.Migrations
 
                     b.Navigation("CreateBy");
 
+                    b.Navigation("Group");
+
                     b.Navigation("Manager");
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Data.Entities.ManagerTaskGroup", b =>
-                {
-                    b.HasOne("Data.Entities.Group", "Group")
-                        .WithMany("ManagerTaskGroups")
-                        .HasForeignKey("groupId");
-
-                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
-                        .WithMany("ManagerTaskGroups")
-                        .HasForeignKey("managerTaskId");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("ManagerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -1195,7 +1166,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
-                    b.Navigation("ManagerTaskGroups");
+                    b.Navigation("ManagerTasks");
 
                     b.Navigation("Users");
                 });
@@ -1216,8 +1187,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>
                 {
-                    b.Navigation("ManagerTaskGroups");
-
                     b.Navigation("WokerTasks");
                 });
 
