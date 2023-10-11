@@ -16,11 +16,17 @@ namespace Data.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    parentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Area", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Area_Area_parentId",
+                        column: x => x.parentId,
+                        principalTable: "Area",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -622,6 +628,11 @@ namespace Data.Migrations
                         principalTable: "WokerTask",
                         principalColumn: "id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Area_parentId",
+                table: "Area",
+                column: "parentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

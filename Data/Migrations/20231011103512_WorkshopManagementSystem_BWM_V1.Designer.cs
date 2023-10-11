@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231010073151_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231011103512_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +37,15 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid?>("parentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("price")
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("parentId");
 
                     b.ToTable("Area");
                 });
@@ -878,6 +883,15 @@ namespace Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Area", b =>
+                {
+                    b.HasOne("Data.Entities.Area", "parent")
+                        .WithMany()
+                        .HasForeignKey("parentId");
+
+                    b.Navigation("parent");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>

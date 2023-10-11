@@ -35,10 +35,15 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid?>("parentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("price")
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("parentId");
 
                     b.ToTable("Area");
                 });
@@ -876,6 +881,15 @@ namespace Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.Area", b =>
+                {
+                    b.HasOne("Data.Entities.Area", "parent")
+                        .WithMany()
+                        .HasForeignKey("parentId");
+
+                    b.Navigation("parent");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
