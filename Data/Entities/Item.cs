@@ -29,12 +29,13 @@ namespace Data.Entities
         public string description { get; set; } = null!;
         public double price { get; set; }
 
-        [ForeignKey("areaId")]
+        //[ForeignKey("areaId")]
         public Guid areaId { get; set; }
-        public Area area { get; set; }
+        //public Area area { get; set; }
+
         [ForeignKey("categoryId")]
-        public Guid categoryId;
-        public ItemCategory category { get; set; }
+        public Guid? categoryId;
+        public ItemCategory? category { get; set; }
 
         public bool isDeleted { get; set; }
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();

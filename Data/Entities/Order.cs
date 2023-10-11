@@ -26,7 +26,7 @@ namespace Data.Entities
         public OrderStatus status { get; set; } 
         public string fileContract { get; set; } = null!;
         public string fileQuote { get; set; } = null!;
-        public DateTime quoteDate { get; set;}
+        public DateTime? quoteDate { get; set;}
         public double totalPrice { get; set; }
         public DateTime? acceptanceDate { get; set; }
 

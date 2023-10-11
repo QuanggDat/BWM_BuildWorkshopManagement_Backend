@@ -22,7 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("AllWithPaging")]
         public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _orderService.GetAllWithPaging( pageIndex, pageSize);
+            var result = _orderService.GetAllWithPaging(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -35,7 +35,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
-        
+
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
         {

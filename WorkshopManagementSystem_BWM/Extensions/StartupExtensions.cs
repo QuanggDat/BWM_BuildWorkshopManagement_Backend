@@ -15,6 +15,7 @@ using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderService;
 using Sevices.Core.ReportService;
 using Sevices.Core.UserService;
+using Sevices.Core.UtilsService;
 using Sevices.Mapping;
 using System.Text;
 using System.Text.Json;
@@ -61,6 +62,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IHumanResourceService, HumanResourceService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IUtilsService, UtilsService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {
