@@ -14,6 +14,7 @@ namespace Sevices.Core.MaterialService
         ResultModel GetAllMaterial(int pageIndex, int pageSize);
         ResultModel SortMaterialbyThickness(int pageIndex, int pageSize);
         ResultModel SortMaterialbyPrice(int pageIndex, int pageSize);
+        ResultModel GetAllMaterialByCategoryId(Guid id, int pageIndex, int pageSize);
         ResultModel GetMaterialById(Guid id);
         ResultModel UpdateMaterial(UpdateMaterialModel model);
         ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model);

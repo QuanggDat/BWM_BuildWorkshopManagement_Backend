@@ -299,6 +299,26 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
+        public ResultModel GetAllMaterialByCategoryId(Guid id, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.Material.Where(i => i.isDeleted != true && i.categoryId==id).OrderByDescending(i => i.importDate).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<MaterialModel>>(data),
+                    Total = data.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetMaterialById(Guid id)
         {
             ResultModel resultModel = new ResultModel();

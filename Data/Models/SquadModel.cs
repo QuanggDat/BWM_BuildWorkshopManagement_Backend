@@ -19,7 +19,6 @@ namespace Data.Models
     {
         public string name { get; set; }
         public int member { get; set; } = 1;
-        public Guid managerId { get; set; }
         public bool isDeleted { get; set; } = false;
     }
 
@@ -27,7 +26,6 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; }
-        public Guid managerId { get; set; }
     }
 
     public class DeleteSquadModel

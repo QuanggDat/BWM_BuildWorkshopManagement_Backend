@@ -24,7 +24,7 @@ namespace Data.Models
         public double price { get; set; }
         public bool isDeleted { get; set; }
         public Guid areaId { get; set; }
-        public Guid categoryId { get; set; }
+        //public Guid categoryId { get; set; }
     }
 
     public class CreateItemModel
@@ -43,7 +43,7 @@ namespace Data.Models
         [Required] public double price { get; set; }
         [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid areaId { get; set; }
-        [Required] public Guid categoryId { get; set; }
+        //[Required] public Guid categoryId { get; set; }
     }
 
     public class UpdateItemModel
@@ -62,7 +62,7 @@ namespace Data.Models
         public string description { get; set; }
         [Required] public double price { get; set; }
         [Required] public Guid areaId { get; set; }
-        [Required] public Guid categoryId { get; set; }
+        //[Required] public Guid categoryId { get; set; }
     }
 
     public class DeleteItemModel

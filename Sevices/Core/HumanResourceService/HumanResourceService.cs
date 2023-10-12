@@ -25,15 +25,15 @@ namespace Sevices.Core.HumanResourceService
             _configuration = configuration;
         }
 
-        //When factory create new squad, fac will also assign the manager who will manage that squad 
+        //Factory will create new squad 
         public async Task<ResultModel> CreateSquad(CreateSquadModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
             try
             {
-                bool nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
-                if (nameExists)
+                var nameExists = _dbContext.Squad.Select(s => s.name == model.name && !s.isDeleted).Distinct().ToList();
+                if (nameExists.Any())
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Tổ tên này đã tồn tại.";
@@ -43,7 +43,7 @@ namespace Sevices.Core.HumanResourceService
                     var newSquad = new Squad
                     {
                         name = model.name,
-                        member = 1,
+                        member = 0,
                         isDeleted = false
                     };
                     _dbContext.Squad.Add(newSquad);
@@ -59,28 +59,97 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        //Manager will both can use this function.
-        public async Task<ResultModel> AddGroup(AddGroupModel model)
+        //Factory and Manager can both use this 
+        public async Task<ResultModel> CreateGroup(CreateGroupModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
             try
             {
-                var newGroup = new Group
-                {
-                    name = model.name,
-                    member = 0,
-                    squadId = model.squadId,
-                    isDeleted = false
-                };
-                _dbContext.Group.Add(newGroup);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = newGroup.id;
+                    var newGroup = new Group
+                    {
+                        name = model.name,
+                        member = 0,
+                        squadId = model.squadId,
+                        isDeleted = false
+                    };
+                    _dbContext.Group.Add(newGroup);
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = newGroup.id;
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        //Fac and Manager can both use this function.
+        public ResultModel AddWorkerToSquad(AddWorkerToSquad model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
+                    var squad = _dbContext.Squad.SingleOrDefault(g => g.id == data.squadId);
+                    if (data != null)
+                    {
+                        //Update GroupId
+                        data.squadId = model.squadId;
+                        //squad.member++;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<User, UserModel>(data);
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                        result.Succeed = false;
+                    }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        //Need check again not complete. Fac and Manager can both use this function.
+        public ResultModel AddWorkerToGroup(AddWorkerToGroup model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
+                if (data.squadId != null)
+                {
+                    //var group = _dbContext.Group.SingleOrDefault(g => g.id == model.groupId);
+                    //var squad = _dbContext.Squad.SingleOrDefault(g => g.id == group.squadId);
+                    if (data != null)
+                    {
+                        //Update GroupId
+                        data.groupId = model.groupId;
+                        //group.member++;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<User, UserModel>(data);
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
+                        result.Succeed = false;
+                    }
+                }
+                else
+                {
+                    result.ErrorMessage = "Thành viên này chưa nằm trong squad.";
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }
@@ -107,39 +176,75 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        //Need check again not complete. Fac and Manager can both use this function.
-        public ResultModel AddWorkerToGroup(AddWorkerToGroup model)
+        //For Factory role
+        public async Task<List<HumanResources>> GetAllUser()
         {
-            ResultModel result = new ResultModel();
-            try
+            var result = new List<HumanResources>();
+            var data = await _dbContext.User.Where(u => u.banStatus != false).ToListAsync();
+            if (data == null)
             {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                var group= _dbContext.Group.SingleOrDefault(g => g.id == model.groupId);
-                var squad = _dbContext.Squad.SingleOrDefault(g => g.id == group.squadId);
-                if (data != null)
-                {
-                    //Update GroupId
-                    data.groupId = model.groupId;
-                    group.member++;
-                    squad.member++;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                }
-                else
-                {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
+                return null;
             }
-            catch (Exception e)
+
+            foreach (var info in data)
             {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                var role = await _dbContext.Role.FindAsync(info.roleID);
+                var squad = await _dbContext.Squad.FindAsync(info.squadId);
+                var group = await _dbContext.Group.FindAsync(info.groupId);
+                if (role != null && squad != null && group != null)
+                {
+                    var stuff = new HumanResources
+                    {
+                        fullName = info.fullName,
+                        image = info.image,
+                        roleName = role.Name,
+                        squadName = squad.name,
+                        groupName = group.name,
+                        banStatus = info.banStatus,
+                    };
+                    result.Add(stuff);
+                }
             }
             return result;
         }
 
-        //Need attention
+        //public ResultModel GetAllUserBySquadId(Guid id)
+        //{
+
+        //    ResultModel result = new ResultModel();
+        //    try
+        //    {
+        //        var data = _dbContext.User.Where(s => s.banStatus != true && s.squadId==id).OrderByDescending(s => s.fullName);
+        //        var view = _mapper.ProjectTo<UserModel>(data);
+        //        result.Data = view;
+        //        result.Succeed = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        //    }
+        //    return result;
+        //}
+
+        //public ResultModel GetAllUserByGroupId(Guid id)
+        //{
+
+        //    ResultModel result = new ResultModel();
+        //    try
+        //    {
+        //        var data = _dbContext.User.Where(s => s.banStatus != true && s.groupId == id).OrderByDescending(s => s.fullName);
+        //        var view = _mapper.ProjectTo<UserModel>(data);
+        //        result.Data = view;
+        //        result.Succeed = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        //    }
+        //    return result;
+        //}
+
+        //Need attention for Update Squad and Group
         public async Task<ResultModel> UpdateSquad(UpdateSquadModel model)
         {
             ResultModel result = new ResultModel();
@@ -158,17 +263,44 @@ namespace Sevices.Core.HumanResourceService
                     if (data != null)
                     {
                         data.name = model.name;
-                        data.member = 1;
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = _mapper.Map<Squad, SquadModel>(data);
                     }
                     else
                     {
-                        result.ErrorMessage = "ItemCategory" + ErrorMessage.ID_NOT_EXISTED;
+                        result.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
                         result.Succeed = false;
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> UpdateGroup(UpdateGroupModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var data = _dbContext.Group.Where(s => s.id == model.id).FirstOrDefault();
+                    if (data != null)
+                    {
+                        data.name = model.name;
+                        data.squadId = model.squadId;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<Group, GroupModel>(data);
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Group" + ErrorMessage.ID_NOT_EXISTED;
+                        result.Succeed = false;
+                    }
             }
             catch (Exception e)
             {
