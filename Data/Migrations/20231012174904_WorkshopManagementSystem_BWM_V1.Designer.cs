@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231012024122_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231012174904_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,9 +85,6 @@ namespace Data.Migrations
                     b.Property<Guid>("areaId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("categoryid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -141,27 +138,7 @@ namespace Data.Migrations
 
                     b.HasIndex("areaId");
 
-                    b.HasIndex("categoryid");
-
                     b.ToTable("Item");
-                });
-
-            modelBuilder.Entity("Data.Entities.ItemCategory", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("ItemCategory");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -916,12 +893,6 @@ namespace Data.Migrations
                         .HasForeignKey("areaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Data.Entities.ItemCategory", "category")
-                        .WithMany("Items")
-                        .HasForeignKey("categoryid");
-
-                    b.Navigation("category");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
@@ -1200,11 +1171,6 @@ namespace Data.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("ProcedureItems");
-                });
-
-            modelBuilder.Entity("Data.Entities.ItemCategory", b =>
-                {
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Data.Entities.ManagerTask", b =>

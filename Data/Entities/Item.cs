@@ -33,9 +33,9 @@ namespace Data.Entities
         public Guid areaId { get; set; }
         //public Area area { get; set; }
 
-        [ForeignKey("categoryId")]
-        public Guid? categoryId;
-        public ItemCategory? category { get; set; }
+        //[ForeignKey("categoryId")]
+        //public Guid? categoryId;
+        //public ItemCategory? category { get; set; }
 
         public bool isDeleted { get; set; }
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();

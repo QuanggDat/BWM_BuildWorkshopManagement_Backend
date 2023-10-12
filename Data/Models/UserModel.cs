@@ -87,4 +87,20 @@ namespace Data.Models
         public Guid id { get; set; }
         public Guid groupId { get; set; }
     }
+
+    public class AddWorkerToSquad
+    {
+        public Guid id { get; set; }
+        public Guid squadId { get; set; }
+    }
+
+    public class HumanResources
+    {
+        public string fullName { get; set; }
+        public string image { get; set; }
+        public string roleName { get; set; }
+        public string squadName { get; set; }
+        public string groupName { get; set; }
+        public bool banStatus { get; set; }
+    }
 }

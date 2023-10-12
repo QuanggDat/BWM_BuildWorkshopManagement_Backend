@@ -122,12 +122,12 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Không nhận được area";
                     return result;
                 }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
+                //if (model.categoryId == Guid.Empty)
+                //{
+                //    result.Succeed = false;
+                //    result.ErrorMessage = "Không nhận được category";
+                //    return result;
+                //}
 
                 //Create Item
                 var newItem = new Item
@@ -145,7 +145,7 @@ namespace Sevices.Core.ItemService
                     description=model.description,
                     price=model.price,
                     areaId=model.areaId,
-                    categoryId=model.categoryId,
+                    //categoryId=model.categoryId,
                     isDeleted = false
                 };
                 _dbContext.Item.Add(newItem);
@@ -232,12 +232,12 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Không nhận được area";
                     return result;
                 }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
+                //if (model.categoryId == Guid.Empty)
+                //{
+                //    result.Succeed = false;
+                //    result.ErrorMessage = "Không nhận được category";
+                //    return result;
+                //}
 
                 //Update Item
                 var data = _dbContext.Item.Where(i => i.id == model.id).FirstOrDefault();
@@ -256,7 +256,7 @@ namespace Sevices.Core.ItemService
                     data.description = model.description;
                     data.price = model.price;
                     data.areaId = model.areaId;
-                    data.categoryId = model.categoryId;
+                    //data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<Item, ItemModel>(data);

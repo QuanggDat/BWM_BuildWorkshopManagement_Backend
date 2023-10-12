@@ -18,13 +18,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost("CreateItemCategory")]
-        public async Task<ActionResult> CreateItemCategory(CreateItemCategoryModel model)
-        {
-            var result = await _categoryService.CreateItemCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
+        //[HttpPost("CreateItemCategory")]
+        //public async Task<ActionResult> CreateItemCategory(CreateItemCategoryModel model)
+        //{
+        //    var result = await _categoryService.CreateItemCategory(model);
+        //    if (result.Succeed) return Ok(result.Data);
+        //    return BadRequest(result.ErrorMessage);
+        //}
 
         [HttpPost("CreateMaterialCategory")]
         public async Task<ActionResult> CreateMaterialCategory(CreateMaterialCategoryModel model)
@@ -34,13 +34,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("UpdateItemCategory")]
-        public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
-        {
-            var result = _categoryService.UpdateItemCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
+        //[HttpPut("UpdateItemCategory")]
+        //public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
+        //{
+        //    var result = _categoryService.UpdateItemCategory(model);
+        //    if (result.Succeed) return Ok(result.Data);
+        //    return BadRequest(result.ErrorMessage);
+        //}
 
         [HttpPut("UpdateMaterialCategory")]
         public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
@@ -50,13 +50,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("GetAllItemCategory")]
-        public Task<ActionResult> GetAllItemCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
-        {
-            var result = _categoryService.GetAllItemCategory(pageIndex, pageSize);
-            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
-            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
-        }
+        //[HttpGet("GetAllItemCategory")]
+        //public Task<ActionResult> GetAllItemCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        //{
+        //    var result = _categoryService.GetAllItemCategory(pageIndex, pageSize);
+        //    if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+        //    return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
+        //}
 
         [HttpGet("GetAllMaterialCategory")]
         public Task<ActionResult> GetAllMaterialCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
@@ -66,13 +66,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetItemCategoryById(Guid id)
-        {
-            var result = _categoryService.GetItemCategoryById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
+        //[HttpGet("[action]/{id}")]
+        //public IActionResult GetItemCategoryById(Guid id)
+        //{
+        //    var result = _categoryService.GetItemCategoryById(id);
+        //    if (result.Succeed) return Ok(result.Data);
+        //    return BadRequest(result.ErrorMessage);
+        //}
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetMaterialCategoryById(Guid id)
@@ -82,13 +82,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
-        public IActionResult DeleteItemCategory(Guid id)
-        {
-            var result = _categoryService.DeleteItemCategory(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
+        //[HttpGet("[action]/{id}")]
+        //public IActionResult DeleteItemCategory(Guid id)
+        //{
+        //    var result = _categoryService.DeleteItemCategory(id);
+        //    if (result.Succeed) return Ok(result.Data);
+        //    return BadRequest(result.ErrorMessage);
+        //}
 
         [HttpGet("[action]/{id}")]
         public IActionResult DeleteMaterialCategory(Guid id)

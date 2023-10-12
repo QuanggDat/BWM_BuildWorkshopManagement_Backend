@@ -16,6 +16,6 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")] 
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
-        public virtual List<Item> Items { get; set; } = new();
+        //public virtual List<Item> Items { get; set; } = new();
     }
 }

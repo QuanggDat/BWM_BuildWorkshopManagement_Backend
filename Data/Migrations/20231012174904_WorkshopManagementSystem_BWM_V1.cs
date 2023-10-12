@@ -45,19 +45,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemCategory",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemCategory", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MaterialCategory",
                 columns: table => new
                 {
@@ -98,27 +85,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Item",
                 columns: table => new
                 {
@@ -137,7 +103,6 @@ namespace Data.Migrations
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
                     areaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    categoryid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -149,11 +114,27 @@ namespace Data.Migrations
                         principalTable: "Area",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Item_ItemCategory_categoryid",
-                        column: x => x.categoryid,
-                        principalTable: "ItemCategory",
-                        principalColumn: "id");
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -704,11 +685,6 @@ namespace Data.Migrations
                 column: "areaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Item_categoryid",
-                table: "Item",
-                column: "categoryid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ItemMaterial_itemId",
                 table: "ItemMaterial",
                 column: "itemId");
@@ -869,9 +845,6 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Area");
-
-            migrationBuilder.DropTable(
-                name: "ItemCategory");
 
             migrationBuilder.DropTable(
                 name: "ManagerTask");
