@@ -8,7 +8,7 @@ namespace Data.Enums
 {
     public enum ReportStatus
     {
-        complete = 0,
-        uncomplete = 1,
+        Complete = 0,
+        Uncomplete = 1,
     }
 }

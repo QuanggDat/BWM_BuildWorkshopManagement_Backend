@@ -24,9 +24,24 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
-            result.Succeed = false;          
+            result.Succeed = false;
+
+            var check1 = await _dbContext.User.FindAsync(model.managerId);
+            if (check1 == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "managerId không hợp lệ!";
+                return result;
+            }
 
             var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
+            if (orderTmp == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "orderId không hợp lệ!";
+                return result;
+            }
+
             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
             {
                 result.Succeed = false;
@@ -83,7 +98,23 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
+            var check1 = await _dbContext.User.FindAsync(model.managerId);
+            if (check1 == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "managerId không hợp lệ!";
+                return result;
+            }
+
             var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
+
+            if (orderTmp == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "orderId không hợp lệ!";
+                return result;
+            }
+
             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
             {
                 result.Succeed = false;
@@ -278,12 +309,19 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
-            var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId );
+            var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId);
 
-            if (check != null)
+            if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Tổ không hợp lệ!";
+                result.ErrorMessage = "Nhóm không hợp lệ!";
+                return result;
+            }
+
+            if (check.isDeleted == true)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Nhóm đã xoá!";
                 return result;
             }
 

@@ -18,7 +18,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _managerTaskService = managerTaskService;
         }
 
-        [HttpPost("CreateTaskManager")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CreateManagerTask(CreateManagerTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được đơn hàng!");
@@ -39,7 +39,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetManagerTaskByManagerId")]
+        [HttpGet("[action]")]
         public async Task<ActionResult<ManagerTask>> GetManagerTaskByManagerId()
         {
             var userId = User.GetId();         
@@ -48,34 +48,16 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetManagerTaskByFactory")]
+        [HttpGet("[action]")]
         public async Task<ActionResult<ManagerTask>> GetManagerTaskByFactory()
         {
             var userId = User.GetId();
             var result = await _managerTaskService.GetManagerTaskByFactory(userId);
             if (result == null) return BadRequest("Không tìm thấy công việc");
             return Ok(result);
-        }
+        }        
 
-        [HttpPut("{managerTaskId}")]
-        public async Task<ActionResult> UpdateTaskStatus(Guid managerTaskId, TaskStatus status)
-        {
-            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
-            var result = await _managerTaskService.UpdateManagerTaskStatus(managerTaskId, status);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult> DeleteTask(Guid managerTaskId)
-        {
-            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
-            var result = await _managerTaskService.DeleteManagerTask(managerTaskId);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpPut("UpdateTaskManager")]
+        [HttpPut("[action]")]
         public async Task<ActionResult> UpdateManagerTask(UpdateManagerTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được đơn hàng!");
@@ -86,11 +68,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("[action]/{managerTaskId}")]
+        public async Task<ActionResult> UpdateTaskStatus(Guid managerTaskId, TaskStatus status)
+        {
+            var result = await _managerTaskService.UpdateManagerTaskStatus(managerTaskId, status);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpDelete("[action]/{managerTaskId}")]
+        public async Task<ActionResult> DeleteTask(Guid managerTaskId)
+        {
+            var result = await _managerTaskService.DeleteManagerTask(managerTaskId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("[action]/{managerTaskId}/{groupId}")]
         public async Task<ActionResult> AssignManagerTask(Guid managerTaskId, Guid groupId)
         {
-            if (managerTaskId == Guid.Empty) return BadRequest("Không nhận managerTaskId!");
-            if (groupId == Guid.Empty) return BadRequest("Không nhận được groupId!");
             var result = await _managerTaskService.AssignManagerTask(managerTaskId, groupId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);

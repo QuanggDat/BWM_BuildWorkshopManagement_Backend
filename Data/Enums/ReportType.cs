@@ -8,7 +8,7 @@ namespace Data.Enums
 {
     public enum ReportType
     {
-        progressReports = 0,
-        reportProblem = 1,
+        ProgressReport = 0,
+        ProblemReport = 1,
     }
 }

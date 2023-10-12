@@ -10,6 +10,6 @@ namespace Sevices.Core.ReportService
 {
     public interface IReportService
     {
-        public Task<ResultModel> CreateTeamReport(Guid reporterId, CreateReportModel model);
+        public Task<ResultModel> CreateReport(Guid reporterId, CreateReportModel model);
     }
 }
