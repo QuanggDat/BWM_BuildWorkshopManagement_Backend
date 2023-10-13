@@ -30,7 +30,7 @@ namespace Data.Entities
         public double price { get; set; }
 
         //[ForeignKey("areaId")]
-        public Guid areaId { get; set; }
+        //public Guid areaId { get; set; }
         //public Area area { get; set; }
 
         //[ForeignKey("categoryId")]

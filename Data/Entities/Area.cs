@@ -21,7 +21,7 @@ namespace Data.Entities
         [ForeignKey("parentId")]
         public Guid? parentId { get; set; }
         public virtual Area? parent { get; set; } = null!;
-
-        public virtual List<Item> Items { get; set; } = new();
+        public virtual List<OrderDetail> OrderDetails { get; set; } = new();
+        //public virtual List<Item> Items { get; set; } = new();
     }
 }

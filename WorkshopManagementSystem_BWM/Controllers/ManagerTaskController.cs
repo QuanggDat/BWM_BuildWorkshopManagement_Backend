@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> CreateManagerTask(CreateManagerTaskModel model)
         {
-            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được đơn hàng!");
+            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id!");
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
@@ -31,16 +31,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
         
         [HttpGet("[action]/{orderId}")]
-        public async Task<ActionResult<ManagerTask>> GetManagerTaskByOrderId(Guid orderId)
+        public async Task<ActionResult> GetManagerTaskByOrderId(Guid orderId)
         {
-            if (orderId == Guid.Empty) return BadRequest("Không nhận được dữ liệu!");
             var result = await _managerTaskService.GetManagerTaskByOrderId(orderId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<ManagerTask>> GetManagerTaskByManagerId()
+        public async Task<ActionResult> GetManagerTaskByManagerId()
         {
             var userId = User.GetId();         
             var result = await _managerTaskService.GetManagerTaskByManagerId(userId);
@@ -49,7 +48,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<ManagerTask>> GetManagerTaskByFactory()
+        public async Task<ActionResult> GetManagerTaskByFactory()
         {
             var userId = User.GetId();
             var result = await _managerTaskService.GetManagerTaskByFactory(userId);

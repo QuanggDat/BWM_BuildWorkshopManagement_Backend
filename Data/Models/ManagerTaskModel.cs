@@ -14,9 +14,7 @@ namespace Data.Models
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
-        public string description { get; set; } = null!;
-        public TaskStatus status { get; set; } 
-        public bool isDeleted { get; set; } = false;
+        public string description { get; set; } = null!;        
     }
     public class ResponseManagerTaskModel
     {

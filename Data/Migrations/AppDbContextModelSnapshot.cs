@@ -80,9 +80,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("areaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -133,8 +130,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
-
-                    b.HasIndex("areaId");
 
                     b.ToTable("Item");
                 });
@@ -486,6 +481,9 @@ namespace Data.Migrations
                     b.Property<string>("content")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("contentReviews")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
 
@@ -641,6 +639,7 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("banStatus")
@@ -653,8 +652,8 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("gender")
-                        .HasColumnType("bit");
+                    b.Property<int>("gender")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("groupId")
                         .HasColumnType("uniqueidentifier");
@@ -884,15 +883,6 @@ namespace Data.Migrations
                     b.Navigation("Squad");
                 });
 
-            modelBuilder.Entity("Data.Entities.Item", b =>
-                {
-                    b.HasOne("Data.Entities.Area", null)
-                        .WithMany("Items")
-                        .HasForeignKey("areaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
@@ -977,7 +967,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
                     b.HasOne("Data.Entities.Area", "area")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("areaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1152,7 +1142,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Area", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>

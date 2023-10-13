@@ -53,7 +53,7 @@ namespace Sevices.Core.UserService
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
-                    gender = true,
+                    gender = model.gender,
                     image = model.image,
                     roleID = role.Id
                 };
@@ -135,7 +135,7 @@ namespace Sevices.Core.UserService
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
-                    gender = true,
+                    gender = model.gender,
                     image = model.image,
                     roleID = role.Id
                 };
@@ -214,7 +214,7 @@ namespace Sevices.Core.UserService
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
-                    gender = true,
+                    gender = model.gender,
                     image = model.image,
                     roleID = role.Id
                 };
@@ -293,7 +293,7 @@ namespace Sevices.Core.UserService
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
-                    gender = true,
+                    gender = model.gender,
                     image = model.image,
                     roleID = role.Id
                 };

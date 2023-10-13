@@ -67,7 +67,7 @@ namespace Sevices.Core.ManagerTaskService
                 timeStart = model.timeStart,
                 timeEnd = model.timeEnd,
                 description = model.description,
-                status = model.status,
+                status = 0,
                 isDeleted = false
             };
 

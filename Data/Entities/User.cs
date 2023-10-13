@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Data.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
@@ -9,11 +10,11 @@ namespace Data.Entities
     public class User : IdentityUser<Guid>
     {
         public string fullName { get; set; } = null!;
-        public string? address { get; set; }
+        public string address { get; set; }
         public string? image { get; set; }
         public string? skill { get; set; } 
         public DateTime dob { get; set; }
-        public bool gender { get; set; }
+        public Gender gender { get; set; } 
         public bool banStatus { get; set; }
         
         public Guid? roleID { get; set; }

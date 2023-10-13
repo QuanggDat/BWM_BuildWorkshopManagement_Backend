@@ -188,7 +188,7 @@ namespace Sevices.Core.OrderService
                                         threeD = "",
                                         twoD = "",
                                         technical = "",
-                                        areaId = area.id,
+                                        //areaId = area.id,
                                     };
                                     _dbContext.Item.Add(itemNew);
 

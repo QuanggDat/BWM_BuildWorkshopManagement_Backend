@@ -23,7 +23,7 @@ namespace Data.Models
         public string description { get; set; }
         public double price { get; set; }
         public bool isDeleted { get; set; }
-        public Guid areaId { get; set; }
+        //public Guid areaId { get; set; }
         //public Guid categoryId { get; set; }
     }
 

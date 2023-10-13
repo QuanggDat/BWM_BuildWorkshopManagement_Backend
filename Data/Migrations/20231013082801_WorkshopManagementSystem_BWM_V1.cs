@@ -45,6 +45,31 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Item",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(500)", nullable: false),
+                    code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    length = table.Column<double>(type: "float", nullable: false),
+                    depth = table.Column<double>(type: "float", nullable: false),
+                    height = table.Column<double>(type: "float", nullable: false),
+                    unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    mass = table.Column<double>(type: "float", nullable: false),
+                    technical = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    twoD = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    threeD = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    price = table.Column<double>(type: "float", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Item", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MaterialCategory",
                 columns: table => new
                 {
@@ -82,38 +107,6 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Squad", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Item",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    length = table.Column<double>(type: "float", nullable: false),
-                    depth = table.Column<double>(type: "float", nullable: false),
-                    height = table.Column<double>(type: "float", nullable: false),
-                    unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    mass = table.Column<double>(type: "float", nullable: false),
-                    technical = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    twoD = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    threeD = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    price = table.Column<double>(type: "float", nullable: false),
-                    areaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Item", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Item_Area_areaId",
-                        column: x => x.areaId,
-                        principalTable: "Area",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,27 +162,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Group",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    member = table.Column<int>(type: "int", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Group", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Group_Squad_squadId",
-                        column: x => x.squadId,
-                        principalTable: "Squad",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProcedureItem",
                 columns: table => new
                 {
@@ -210,6 +182,27 @@ namespace Data.Migrations
                         name: "FK_ProcedureItem_Procedure_procedureId",
                         column: x => x.procedureId,
                         principalTable: "Procedure",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Group",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    member = table.Column<int>(type: "int", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Group", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Group_Squad_squadId",
+                        column: x => x.squadId,
+                        principalTable: "Squad",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -248,11 +241,11 @@ namespace Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     fullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     skill = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     dob = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    gender = table.Column<bool>(type: "bit", nullable: false),
+                    gender = table.Column<int>(type: "int", nullable: false),
                     banStatus = table.Column<bool>(type: "bit", nullable: false),
                     roleID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -520,8 +513,9 @@ namespace Data.Migrations
                     reportType = table.Column<int>(type: "int", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     reportStatus = table.Column<int>(type: "int", nullable: true),
-                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    contentReviews = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -680,11 +674,6 @@ namespace Data.Migrations
                 column: "squadId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Item_areaId",
-                table: "Item",
-                column: "areaId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ItemMaterial_itemId",
                 table: "ItemMaterial",
                 column: "itemId");
@@ -829,6 +818,9 @@ namespace Data.Migrations
                 name: "Material");
 
             migrationBuilder.DropTable(
+                name: "Area");
+
+            migrationBuilder.DropTable(
                 name: "Item");
 
             migrationBuilder.DropTable(
@@ -842,9 +834,6 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "MaterialCategory");
-
-            migrationBuilder.DropTable(
-                name: "Area");
 
             migrationBuilder.DropTable(
                 name: "ManagerTask");

@@ -144,7 +144,7 @@ namespace Sevices.Core.ItemService
                     threeD=model.threeD,
                     description=model.description,
                     price=model.price,
-                    areaId=model.areaId,
+                    //areaId=model.areaId,
                     //categoryId=model.categoryId,
                     isDeleted = false
                 };
@@ -255,7 +255,7 @@ namespace Sevices.Core.ItemService
                     data.threeD = model.threeD;
                     data.description = model.description;
                     data.price = model.price;
-                    data.areaId = model.areaId;
+                    //data.areaId = model.areaId;
                     //data.categoryId = model.categoryId;
                     _dbContext.SaveChanges();
                     result.Succeed = true;

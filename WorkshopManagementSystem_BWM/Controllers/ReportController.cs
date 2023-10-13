@@ -28,5 +28,21 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("[action]/{reportId}")]
+        public async Task<ActionResult> GetReportByReportId(Guid reportId)
+        {
+            var result = await _reportService.GetReportByReportId(reportId);
+            if (result == null) return BadRequest("Không tìm thấy reportId");
+            return Ok(result);
+        }
+
+        [HttpPut("[action]")]
+        public async Task<ActionResult> ReviewsReport(ReviewsReportModel model)
+        {
+            var result = await _reportService.ReviewsReport(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }

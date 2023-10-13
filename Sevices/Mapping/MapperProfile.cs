@@ -19,7 +19,7 @@ namespace Sevices.Mapping
 
             //Item
             CreateMap<Item, ItemModel>();
-            CreateMap<ItemCategory, ItemCategoryModel>();
+            //CreateMap<ItemCategory, ItemCategoryModel>();
 
             //Material
             CreateMap<Material, MaterialModel>();
