@@ -20,7 +20,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _orderDetailService = orderDetailService;
         }
 
-        [HttpGet("OrderIdWithPaging")]
+        [HttpGet("GetByOrderIdWithPaging")]
         public IActionResult GetByOrderIdWithPaging(Guid orderId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _orderDetailService.GetByOrderIdWithPaging(orderId, pageIndex, pageSize);

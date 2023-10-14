@@ -19,7 +19,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet("AllWithPaging")]
+        [HttpGet("GetAllWithPaging")]
         public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _orderService.GetAllWithPaging(pageIndex, pageSize);
@@ -27,7 +27,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("QuotesByUserWithPaging")]
+        [HttpGet("GetQuotesByUserWithPaging")]
         public IActionResult GetQuotesByUserWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var userId = User.GetId();
@@ -52,7 +52,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("Status/{status}/{id}")]
+        [HttpPut("UpdateStatus/{status}/{id}")]
         public IActionResult UpdateStatus(OrderStatus status, Guid id)
         {
             var result = _orderService.UpdateStatus(id, status);

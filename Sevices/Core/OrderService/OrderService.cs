@@ -10,6 +10,7 @@ using OfficeOpenXml;
 using Sevices.Core.UtilsService;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -256,6 +257,9 @@ namespace Sevices.Core.OrderService
                 if (status == OrderStatus.Request)
                 {
                     order.quoteDate = DateTime.Now;
+                }else if (status == OrderStatus.Completed)
+                {
+                    order.acceptanceDate = DateTime.Now;
                 }
                 order.status = status;
 
@@ -272,6 +276,29 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel ExportQuoteToPDF(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
+                if (order == null)
+                {
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn đặt hàng!";
+                }
+                else
+                {
+
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+
+        }
 
         #region PRIVATE 
         private static async Task<ConvertOrderExcelModel> ConvertExcelToListOrder(string url)
