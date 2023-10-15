@@ -24,7 +24,7 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
         {
             ResultModel result = new ResultModel();
-            result.Succeed = false;
+            result.Succeed = false;            
 
             var check1 = await _dbContext.User.FindAsync(model.managerId);
             if (check1 == null)
@@ -56,7 +56,14 @@ namespace Sevices.Core.ManagerTaskService
                 result.Succeed = false;
                 result.ErrorMessage = "Công việc đã được tạo";
                 return result;
-            }               
+            }
+
+            if (model.timeStart > model.timeEnd)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
+                return result;
+            }
 
             var managerTask = new ManagerTask
             {
@@ -119,6 +126,13 @@ namespace Sevices.Core.ManagerTaskService
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                return result;
+            }
+
+            if (model.timeStart > model.timeEnd)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
                 return result;
             }
 

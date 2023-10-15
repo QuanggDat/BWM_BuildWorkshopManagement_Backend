@@ -153,7 +153,9 @@ namespace Sevices.Core.ReportService
                 .Include(x => x.Resources)                
                 .Include(x => x.ManagerTask)                
                     .ThenInclude(x => x.CreateBy)
-       
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.Order)              
+
                 .Where(x => x.id == reportId)
                 .SingleOrDefaultAsync();
 
@@ -170,7 +172,8 @@ namespace Sevices.Core.ReportService
 
                 result = new ResponseReportModel
                 {
-                    id = report.id,
+                    orderName = report.ManagerTask.Order.name,
+                    managerTaskName = report.ManagerTask.name,                  
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -200,7 +203,8 @@ namespace Sevices.Core.ReportService
 
                 result = new ResponseReportModel
                 {
-                    id = report.id,
+                    orderName = report.ManagerTask.Order.name,
+                    managerTaskName = report.ManagerTask.name,                    
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -255,22 +259,98 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public async Task<List<ResponseReportModel>> GetTeamReportsByManagerTaskId(Guid managerTaskId)
+        public async Task<List<ResponseReportModel>> GetProgressReportsByManagerId(Guid managerId)
         {
-            var report = await _dbContext.Report
+            var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
                 .Include(x => x.Resources)                
                 .Include(x => x.ManagerTask)                
                     .ThenInclude(x => x.CreateBy)
-       
-                .Where(x => x.managerTaskId == managerTaskId)
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.Order)
+                .Where(x => x.ManagerTask.managerId == managerId && x.reportType == Data.Enums.ReportType.ProgressReport)
+                .ToListAsync();
+            
+            if (checkReport == null)
+            {
+                return new List<ResponseReportModel>();
+            }            
+
+            var list = checkReport.Select(report => new ResponseReportModel
+            {
+                orderName = report.ManagerTask.Order.name,
+                managerTaskName = report.ManagerTask.name,
+                title = report.title,
+                content = report.content,
+                createdDate = report.createdDate,
+                reportStatus = report.reportStatus,
+                contentReviews = report.contentReviews,
+
+                reporter = new Reporter
+                {
+                    id = report.Reporter.Id,
+                    fullName = report.Reporter.fullName,
+                    phoneNumber = report.Reporter.UserName,
+                    email = report.Reporter.Email,
+                },
+
+                reviewer = new Reviewer
+                {
+                    id = report.ManagerTask.CreateBy.Id,
+                    fullName = report.ManagerTask.CreateBy.fullName,
+                },
+            }).ToList();
+
+            var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+            return sortedList;
+        }
+
+        public async Task<List<ResponseReportModel>> GetProblemReportsByManagerId(Guid managerId)
+        {
+            var checkReport = await _dbContext.Report
+                .Include(x => x.Reporter)
+                .Include(x => x.Resources)
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.CreateBy)
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.Order)
+                .Where(x => x.ManagerTask.managerId == managerId && x.reportType == Data.Enums.ReportType.ProblemReport)
                 .ToListAsync();
 
-            if (report == null)
+            if (checkReport == null)
             {
                 return new List<ResponseReportModel>();
             }
-            return null;
+
+            var list = checkReport.Select(report => new ResponseReportModel
+            {
+                orderName = report.ManagerTask.Order.name,
+                managerTaskName = report.ManagerTask.name,
+                title = report.title,
+                content = report.content,
+                createdDate = report.createdDate,
+                contentReviews = report.contentReviews,
+
+                reporter = new Reporter
+                {
+                    id = report.Reporter.Id,
+                    fullName = report.Reporter.fullName,
+                    phoneNumber = report.Reporter.UserName,
+                    email = report.Reporter.Email,
+                },
+
+                reviewer = new Reviewer
+                {
+                    id = report.ManagerTask.CreateBy.Id,
+                    fullName = report.ManagerTask.CreateBy.fullName,
+                },
+
+                resource = report.Resources.Select(x => x.link).ToList()
+
+            }).ToList();
+
+            var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+            return sortedList;
         }
     }
 }

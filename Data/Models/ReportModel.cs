@@ -25,6 +25,8 @@ namespace Data.Models
         {
             public Guid id { get; set; }
             public Guid? managerTaskId { get; set; }
+            public string orderName { get; set; } = null!;
+            public string managerTaskName { get; set; } = null!;
             public ReportType reportType { get; set; }
             public string title { get; set; } = null!;
             public string? content { get; set; } = null!;

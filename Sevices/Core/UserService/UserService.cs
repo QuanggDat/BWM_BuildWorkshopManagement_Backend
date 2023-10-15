@@ -37,6 +37,14 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
+            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                return result;
+            }
+
             try
             {
                 if (!await _roleManager.RoleExistsAsync("Admin"))
@@ -119,6 +127,14 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
+            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                return result;
+            }
+
             try
             {
                 if (!await _roleManager.RoleExistsAsync("Factory"))
@@ -198,6 +214,14 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
+           
+            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                return result;
+            }
+
             try
             {
                 if (!await _roleManager.RoleExistsAsync("Manager"))
@@ -277,6 +301,14 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
+            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                return result;
+            }
+
             try
             {
                 if (!await _roleManager.RoleExistsAsync("Woker"))

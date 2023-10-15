@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data.Enums;
+using Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Sevices.Core.ReportService
         Task<ResultModel> CreateReport(Guid reporterId, CreateReportModel model);
         Task<ResponseReportModel?> GetReportByReportId(Guid reportId);
         Task<ResultModel> ReviewsReport(ReviewsReportModel model);
-        Task<List<ResponseReportModel>> GetTeamReportsByManagerTaskId(Guid managerTaskId);
+        Task<List<ResponseReportModel>> GetProgressReportsByManagerId(Guid managerId);
+        Task<List<ResponseReportModel>> GetProblemReportsByManagerId(Guid managerId);
     }
 }
