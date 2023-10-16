@@ -1,9 +1,5 @@
 using Data.DataAccess;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using OfficeOpenXml;
-using System.Text;
 using WorkshopManagementSystem_BWM.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,7 +32,6 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 
 }));
 
-ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,6 +48,7 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 app.UseAuthentication();
+app.UseStaticFiles();
 
 app.MapControllers();
 

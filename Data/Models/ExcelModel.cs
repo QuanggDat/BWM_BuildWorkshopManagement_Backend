@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aspose.Cells;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -41,5 +42,11 @@ namespace Data.Models
         public double mass { get; set; } = 0;
         public int quantity { get; set; } = 0;
         public string description { get; set; }
+    }
+
+    public class ExcelAssignModel
+    {
+        public int RowData { get; set; }
+        public Worksheet Worksheet { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace Sevices.Mapping
             // Order
             CreateMap<Order, OrderModel>().ReverseMap();
             CreateMap<Order, CreateOrderModel>().ReverseMap();
+            CreateMap<Order, QuoteMaterialOrderModel>().ReverseMap();
 
             // Order Detail
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();

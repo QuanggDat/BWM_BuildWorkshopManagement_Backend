@@ -19,4 +19,12 @@ namespace Data.Models
         public int Total { get; set; } = 0;
     }
 
+    public class FileResultModel
+    {
+        public string? ErrorMessage { get; set; }
+        public byte[]? Data { get; set; }
+        public bool Succeed { get; set; } = false;
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
+    }
 }

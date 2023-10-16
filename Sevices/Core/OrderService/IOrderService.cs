@@ -1,10 +1,5 @@
 ﻿using Data.Enums;
 using Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sevices.Core.OrderService
 {
@@ -13,7 +8,9 @@ namespace Sevices.Core.OrderService
         ResultModel GetAllWithPaging(int pageIndex, int pageSize);
         ResultModel GetQuotesByUserWithPaging(Guid userId, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
+        ResultModel GetQuoteMaterialById(Guid id);
         Task<ResultModel> Create(CreateOrderModel model);
         ResultModel UpdateStatus(Guid id, OrderStatus status);
+        FileResultModel ExportQuoteToPDF(Guid id);
     }
 }

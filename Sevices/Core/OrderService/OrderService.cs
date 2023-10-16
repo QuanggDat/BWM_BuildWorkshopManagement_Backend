@@ -1,20 +1,13 @@
-﻿using AutoMapper;
+﻿using Aspose.Cells;
+using Aspose.Cells.Rendering;
+using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
 using Data.Utils;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml;
 using Sevices.Core.UtilsService;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sevices.Core.OrderService
 {
@@ -105,6 +98,56 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel GetQuoteMaterialById(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
+                if (order == null)
+                {
+                    result.ErrorMessage = "Không tìm thấy thông tin Order!";
+                }
+                else
+                {
+                    var res = _mapper.Map<QuoteMaterialOrderModel>(order);
+                    var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
+                    var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material).Where(x => listItemId.Contains(x.itemId)).ToList();
+
+                    var hashMap = new Dictionary<Guid, QuoteMaterialModel>();
+                    foreach (var itemMate in listItemMaterial)
+                    {
+                        if (hashMap.ContainsKey(itemMate.materialId))
+                        {
+                            hashMap[itemMate.materialId].quantity += itemMate.quantity;
+                            hashMap[itemMate.materialId].totalPrice = hashMap[itemMate.materialId].quantity * hashMap[itemMate.materialId].price;
+                        }
+                        else
+                        {
+                            hashMap.Add(itemMate.materialId, new()
+                            {
+                                materialId = itemMate.materialId,
+                                name = itemMate.Material.name,
+                                sku = itemMate.Material.sku,
+                                quantity = itemMate.quantity,
+                                price = itemMate.price,
+                                totalPrice = itemMate.totalPrice,
+                            });
+                        }
+                    }
+
+                    res.listQuoteMaterial = hashMap.Values.ToList();
+                    result.Data = res;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public async Task<ResultModel> Create(CreateOrderModel model)
         {
             var result = new ResultModel();
@@ -123,11 +166,11 @@ namespace Sevices.Core.OrderService
                     var listCodeErr = new List<string>();
                     if (converData.ListCodeItem.Any())
                     {
-                         listCodeErr = converData.ListCodeItem.Where(x => !listItem.Any(i => i.code.ToUpper() == x)).ToList();
+                        listCodeErr = converData.ListCodeItem.Where(x => !listItem.Any(i => i.code.ToUpper() == x)).ToList();
                         result.ErrorMessage = "Những mã sản phẩm không tìm thấy trong hệ thống: " + string.Join(", ", listCodeErr);
                     }
 
-                    if(!listCodeErr.Any())
+                    if (!listCodeErr.Any())
                     {
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
@@ -257,7 +300,8 @@ namespace Sevices.Core.OrderService
                 if (status == OrderStatus.Request)
                 {
                     order.quoteDate = DateTime.Now;
-                }else if (status == OrderStatus.Completed)
+                }
+                else if (status == OrderStatus.Completed)
                 {
                     order.acceptanceDate = DateTime.Now;
                 }
@@ -276,9 +320,9 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel ExportQuoteToPDF(Guid id)
+        public FileResultModel ExportQuoteToPDF(Guid id)
         {
-            var result = new ResultModel();
+            var result = new FileResultModel();
             try
             {
                 var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
@@ -288,8 +332,98 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
+                    var listAreaTd = order.OrderDetails.Select(x => x.areaId).Distinct().ToList();
+                    var listArea = _dbContext.Area.Where(x => listAreaTd.Contains(x.id)).ToList();
 
-                    result.Succeed = true;
+                    var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
+                    var worksheet = workbook.Worksheets.FirstOrDefault();
+                    worksheet.Cells.SetRowHeight(4, 25);
+
+                    var rowCount = worksheet?.Cells?.MaxDataRow ?? 0;
+                    var colCount = worksheet?.Cells?.MaxDataColumn ?? 0;
+                    var rowDataBegin = -1;
+                    var rowData = -1;
+
+                    for (var row = 0; row <= rowCount; row++)
+                    {
+                        var cellValue = worksheet?.Cells[row, 0]?.Value?.ToString();
+                        if (FnUtils.Remove_VN_Accents(cellValue)?.ToUpper() == "PHAN HOAN THIEN NOI THAT")
+                        {
+                            rowDataBegin = row + 1;
+                            rowData = row + 1;
+                            break;
+                        }
+
+                        cellValue = worksheet?.Cells[row, 1]?.Value?.ToString();
+                        if (FnUtils.Remove_VN_Accents(cellValue)?.ToUpper() == "KHACH HANG:")
+                        {
+                            worksheet.Cells[row, 1].Value = $"Khách hàng: {order.customerName?.ToUpper()}";
+                        }
+                    }
+
+                    if (rowData > -1)
+                    {
+                        var listFloorId = listArea.Select(x => x.parentId).Distinct().ToList();
+
+                        if (listFloorId.Count > 1)
+                        {
+                            var listFloor = _dbContext.Area.Where(x => listFloorId.Contains(x.id)).ToList();
+                            for (var i = 0; i < listFloor.Count; i++)
+                            {
+                                var floor = listFloor[i];
+                                // STT
+                                var cell = worksheet.Cells[rowData, 0];
+                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
+                                cell.Value = FnUtils.NumToAlphabets(i + 1);
+                                // Name
+                                worksheet.Cells.Merge(rowData, 1, 1, 9);
+                                cell = worksheet.Cells[rowData, 1];
+                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle(), true));
+                                cell.Value = floor.name;
+                                // Price
+                                cell = worksheet.Cells[rowData, 10];
+                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
+                                cell.Value = $"{floor.price:n0}";
+
+                                // Others
+                                cell = worksheet.Cells[rowData, 11];
+                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
+
+                                rowData++;
+
+                                var listAreaByFloor = listArea.Where(x => x.parentId == floor.id).ToList();
+                                rowData = AssignDataIntoWorkbook(worksheet, rowData, listAreaByFloor, order.OrderDetails);
+                            }
+                        }
+                        else
+                        {
+                            rowData = AssignDataIntoWorkbook(worksheet, rowData, listArea, order.OrderDetails);
+                        }
+
+                        var range = worksheet.Cells.CreateRange(rowDataBegin, 0, rowData - rowDataBegin, 12);
+                        FnExcel.ApplyRangeCommonStyle(range, workbook.CreateCellsColor());
+
+                        worksheet.AutoFitRows();
+
+                        using var pdfStream = new MemoryStream();
+                        var pdfOptions = new PdfSaveOptions
+                        {
+                            AllColumnsInOnePagePerSheet = true,
+                            Compliance = PdfCompliance.PdfA1b
+                        };
+
+                        workbook.Save(pdfStream, pdfOptions);
+
+                        result.Data = pdfStream.ToArray();
+                        result.Succeed = true;
+                        result.FileName = $"JAMA - BG - {order.customerName}.pdf";
+                        result.ContentType = "application/pdf";
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Template lỗi!";
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -320,30 +454,32 @@ namespace Sevices.Core.OrderService
                     {
                         // đọc file excel vừa tải về
                         var stream = response.Content.ReadAsStream();
-                        var excelPackage = new ExcelPackage(stream);
+                        var workbook = new Workbook(stream);
 
-                        var worksheet = excelPackage?.Workbook?.Worksheets?.FirstOrDefault();
+                        var worksheet = workbook.Worksheets.FirstOrDefault();
 
-                        int rowCount = worksheet?.Dimension?.Rows ?? 0;
-                        int colCount = worksheet?.Dimension?.Columns ?? 0;
+                        int rowCount = worksheet?.Cells?.MaxDataRow ?? 0;
+                        int colCount = worksheet?.Cells?.MaxDataColumn ?? 0;
 
-                        int rowStart = 14;
+                        var isDataBegin = false;
+                        var hasItem = false;
 
-                        bool isHasItem = false;
+                        // chuyển đổi data từ excle sang obj
+                        var listFromExcel = new List<OrderExcelModel>();
 
-                        if (rowCount >= rowStart + 2)
+                        OrderExcelModel floor = null!;
+                        OrderChildrenExcelModel area = null!;
+
+                        for (var row = 0; row <= rowCount; row++)
                         {
-                            // chuyển đổi data từ excle sang obj
-                            var listFromExcel = new List<OrderExcelModel>();
-
-                            OrderExcelModel floor = null!;
-                            OrderChildrenExcelModel area = null!;
-
-                            for (var row = rowStart; row <= rowCount; row++)
+                            var cellColA = worksheet?.Cells[row, 0]?.Value?.ToString() ?? "";
+                            if (FnUtils.Remove_VN_Accents(cellColA) == "TONG CONG")
                             {
-                                var cellColA = worksheet?.Cells[row, 1]?.Value?.ToString() ?? "";
-                                var cellColB = worksheet?.Cells[row, 2]?.Value?.ToString() ?? "";
-
+                                isDataBegin = true;
+                            }
+                            else if (isDataBegin)
+                            {
+                                var cellColB = worksheet?.Cells[row, 1]?.Value?.ToString() ?? "";
 
                                 if (FnUtils.IsAlphabetOnly(cellColA) && !FnUtils.IsFirstWordValid(cellColB, "TANG") && !FnUtils.IsFirstWordValid(cellColB, "PHONG")) break;
 
@@ -367,26 +503,24 @@ namespace Sevices.Core.OrderService
                                 }
                                 else
                                 {
-                                    isHasItem = true;
-
                                     var listError = new List<string>();
 
                                     // name
-                                    var cellName = worksheet?.Cells[row, 3]?.Value?.ToString() ?? "";
+                                    var cellName = worksheet?.Cells[row, 2]?.Value?.ToString() ?? "";
                                     // length
-                                    var cellLength = worksheet?.Cells[row, 5]?.Value?.ToString() ?? "";
+                                    var cellLength = worksheet?.Cells[row, 4]?.Value?.ToString() ?? "";
                                     // depth
-                                    var cellDepth = worksheet?.Cells[row, 6]?.Value?.ToString() ?? "";
+                                    var cellDepth = worksheet?.Cells[row, 5]?.Value?.ToString() ?? "";
                                     // height
-                                    var cellHeight = worksheet?.Cells[row, 7]?.Value?.ToString() ?? "";
+                                    var cellHeight = worksheet?.Cells[row, 6]?.Value?.ToString() ?? "";
                                     // unit
-                                    var cellUnit = worksheet?.Cells[row, 8]?.Value?.ToString() ?? "";
+                                    var cellUnit = worksheet?.Cells[row, 7]?.Value?.ToString() ?? "";
                                     // mass
-                                    var cellMass = worksheet?.Cells[row, 9]?.Value?.ToString() ?? "";
+                                    var cellMass = worksheet?.Cells[row, 8]?.Value?.ToString() ?? "";
                                     // quantity
-                                    var cellQty = worksheet?.Cells[row, 10]?.Value?.ToString() ?? "";
+                                    var cellQty = worksheet?.Cells[row, 9]?.Value?.ToString() ?? "";
                                     // description
-                                    var cellDescr = worksheet?.Cells[row, 11]?.Value?.ToString() ?? "";
+                                    var cellDescr = worksheet?.Cells[row, 10]?.Value?.ToString() ?? "";
 
                                     // Nếu ko có mã sản phẩm => kiểm tra lỗi các thuộc tính còn lại
                                     if (string.IsNullOrWhiteSpace(cellColB))
@@ -426,14 +560,20 @@ namespace Sevices.Core.OrderService
                                         description = cellDescr,
 
                                     });
+                                    hasItem = true;
                                 }
                             }
-                            result.ListConverted = listFromExcel;
+
                         }
 
-                        if (!isHasItem)
+
+                        if (!hasItem)
                         {
                             result.Error = "Vui lòng thêm sản phẩm vào file báo giá để tạo đơn đặt hàng!";
+                        }
+                        else
+                        {
+                            result.ListConverted = listFromExcel;
                         }
                     }
                     else
@@ -447,6 +587,89 @@ namespace Sevices.Core.OrderService
                 result.Error = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
+        }
+
+        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Data.Entities.Area> listArea, List<OrderDetail> listDetail)
+        {
+            for (var a = 0; a < listArea.Count; a++)
+            {
+                var area = listArea[a];
+                // STT
+                var cell = worksheet.Cells[rowData, 0];
+                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
+                cell.Value = FnUtils.NumToRomanNum(a + 1);
+                // Name
+                worksheet.Cells.Merge(rowData, 1, 1, 9);
+                cell = worksheet.Cells[rowData, 1];
+                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle(), true));
+                cell.Value = area.name;
+                // Price
+                cell = worksheet.Cells[rowData, 10];
+                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
+                cell.Value = $"{area.price:n0}";
+                // Others
+                cell = worksheet.Cells[rowData, 11];
+                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
+
+                rowData++;
+
+                var listDetailByArea = listDetail.Where(x => x.areaId == area.id).ToList();
+                for (var d = 0; d < listDetailByArea.Count; d++)
+                {
+                    var detail = listDetailByArea[d];
+                    // STT
+                    cell = worksheet.Cells[rowData, 0];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = d + 1;
+                    // Hạng mục
+                    cell = worksheet.Cells[rowData, 1];
+                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), true));
+                    cell.Value = detail.Item?.name;
+                    // Hình ảnh minh hoạ
+                    cell = worksheet.Cells[rowData, 2];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    //cell.Value = ;
+                    // Dài
+                    cell = worksheet.Cells[rowData, 3];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.Item?.length:n0}";
+                    // Sâu
+                    cell = worksheet.Cells[rowData, 4];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.Item?.depth:n0}";
+                    // Cao
+                    cell = worksheet.Cells[rowData, 5];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.Item?.height:n0}";
+                    // ĐVT
+                    cell = worksheet.Cells[rowData, 6];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = detail.Item?.unit;
+                    // KL
+                    cell = worksheet.Cells[rowData, 7];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.Item?.mass:n0}";
+                    // SL
+                    cell = worksheet.Cells[rowData, 8];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = detail.quantity;
+                    // Đơn giá
+                    cell = worksheet.Cells[rowData, 9];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.price:n0}";
+                    // Thành tiền
+                    cell = worksheet.Cells[rowData, 10];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    cell.Value = $"{detail.totalPrice:n0}";
+                    // Ghi chú vật liệu
+                    cell = worksheet.Cells[rowData, 11];
+                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle()));
+                    cell.Value = detail.description;
+
+                    rowData++;
+                }
+            }
+            return rowData;
         }
         #endregion
 

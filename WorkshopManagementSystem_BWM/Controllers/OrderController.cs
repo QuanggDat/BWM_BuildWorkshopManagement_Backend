@@ -44,6 +44,23 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("GetQuoteMaterialById/{id}")]
+        public IActionResult GetQuoteMaterialById(Guid id)
+        {
+            var result = _orderService.GetQuoteMaterialById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("ExportQuoteAsPDF/{id}")]
+        public IActionResult ExportQuoteAsPDF(Guid id)
+        {
+            var result = _orderService.ExportQuoteToPDF(id);
+            if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName); 
+            return BadRequest(result.ErrorMessage);
+            
+        }
+
         [HttpPost]
         public async Task<ActionResult> Create(CreateOrderModel model)
         {
