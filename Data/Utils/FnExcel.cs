@@ -17,7 +17,7 @@ namespace Data.Utils
             style = ApplyDefaultStyle(style);
             if (isName)
             {
-                style.HorizontalAlignment = TextAlignmentType.Center;
+                style.HorizontalAlignment = TextAlignmentType.Left;
             }
             style.ForegroundColor = Color.FromArgb(250, 188, 140);
             style.Pattern = BackgroundType.Solid;
@@ -30,7 +30,7 @@ namespace Data.Utils
             style = ApplyDefaultStyle(style);
             if (isName)
             {
-                style.HorizontalAlignment = TextAlignmentType.Center;
+                style.HorizontalAlignment = TextAlignmentType.Left;
             }
             style.ForegroundColor = Color.FromArgb(184, 220, 232);
             style.Pattern = BackgroundType.Solid;
