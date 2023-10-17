@@ -1,7 +1,9 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Drawing;
+using SkiaSharp;
+using System.Drawing.Drawing2D;
 
 namespace Data.Utils
 {
@@ -137,6 +139,35 @@ namespace Data.Utils
             }
 
             return result;
+        }
+
+        // Sua kich tuoc hinh
+        public static Image ResizeImage(Image img, int max = 300)
+        {
+            double w = img.Width;
+            double h = img.Height;
+            double ratio = w / h;
+
+            w = max;
+            h = Math.Round(w / ratio, 0);
+
+            var bmp = new Bitmap((Int32)w, (Int32)h);
+            try
+            {
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    g.DrawImage(img, 0, 0, (Int32)w, (Int32)h);
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Bitmap faild");
+            }
+            return bmp;
         }
     }
 }

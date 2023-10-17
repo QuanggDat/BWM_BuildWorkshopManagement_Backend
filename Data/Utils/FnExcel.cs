@@ -38,15 +38,16 @@ namespace Data.Utils
             return style;
         }
 
-        public static Style ApplyWrapTextStyle(Style style, bool isBold = false)
+        public static Style ApplyWrapTextStyle(Style style, bool isBold = false, bool shrinkToFit = false)
         {
             style = ApplyDefaultStyle(style);
             style.HorizontalAlignment = TextAlignmentType.Left;
             style.IsTextWrapped = true;
             style.Font.IsBold = isBold;
+            style.ShrinkToFit = shrinkToFit;
             return style;
         }
-
+        
         public static void ApplyRangeCommonStyle(Aspose.Cells.Range range, CellsColor borderColor)
         {
             borderColor.Color = Color.Black;

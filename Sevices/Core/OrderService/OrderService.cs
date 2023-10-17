@@ -8,6 +8,10 @@ using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Sevices.Core.UtilsService;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Printing;
+using System.IO;
 
 namespace Sevices.Core.OrderService
 {
@@ -114,17 +118,17 @@ namespace Sevices.Core.OrderService
                     var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
                     var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material).Where(x => listItemId.Contains(x.itemId)).ToList();
 
-                    var hashMap = new Dictionary<Guid, QuoteMaterialModel>();
+                    var dict = new Dictionary<Guid, QuoteMaterialModel>();
                     foreach (var itemMate in listItemMaterial)
                     {
-                        if (hashMap.ContainsKey(itemMate.materialId))
+                        if (dict.ContainsKey(itemMate.materialId))
                         {
-                            hashMap[itemMate.materialId].quantity += itemMate.quantity;
-                            hashMap[itemMate.materialId].totalPrice = hashMap[itemMate.materialId].quantity * hashMap[itemMate.materialId].price;
+                            dict[itemMate.materialId].quantity += itemMate.quantity;
+                            dict[itemMate.materialId].totalPrice = dict[itemMate.materialId].quantity * dict[itemMate.materialId].price;
                         }
                         else
                         {
-                            hashMap.Add(itemMate.materialId, new()
+                            dict.Add(itemMate.materialId, new()
                             {
                                 materialId = itemMate.materialId,
                                 name = itemMate.Material.name,
@@ -136,7 +140,7 @@ namespace Sevices.Core.OrderService
                         }
                     }
 
-                    res.listQuoteMaterial = hashMap.Values.ToList();
+                    res.listQuoteMaterial = dict.Values.ToList();
                     result.Data = res;
                     result.Succeed = true;
                 }
@@ -320,7 +324,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public FileResultModel ExportQuoteToPDF(Guid id)
+        public async Task<FileResultModel> ExportQuoteToPDF(Guid id)
         {
             var result = new FileResultModel();
             try
@@ -332,12 +336,16 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
+                    var dictItemImage = order.OrderDetails.Select(x => x.Item).Where(x => !string.IsNullOrWhiteSpace(x?.image))
+                                                            .DistinctBy(x => x?.id).ToDictionary(x => x!.id, y => y?.image!);
+
+                    var dictItemImgStream = await FetchListImageItem(dictItemImage);
+
                     var listAreaTd = order.OrderDetails.Select(x => x.areaId).Distinct().ToList();
                     var listArea = _dbContext.Area.Where(x => listAreaTd.Contains(x.id)).ToList();
 
                     var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
                     var worksheet = workbook.Worksheets.FirstOrDefault();
-                    worksheet.Cells.SetRowHeight(4, 25);
 
                     var rowCount = worksheet?.Cells?.MaxDataRow ?? 0;
                     var colCount = worksheet?.Cells?.MaxDataColumn ?? 0;
@@ -392,18 +400,16 @@ namespace Sevices.Core.OrderService
                                 rowData++;
 
                                 var listAreaByFloor = listArea.Where(x => x.parentId == floor.id).ToList();
-                                rowData = AssignDataIntoWorkbook(worksheet, rowData, listAreaByFloor, order.OrderDetails);
+                                rowData = AssignDataIntoWorkbook(worksheet, rowData, listAreaByFloor, order.OrderDetails, dictItemImgStream);
                             }
                         }
                         else
                         {
-                            rowData = AssignDataIntoWorkbook(worksheet, rowData, listArea, order.OrderDetails);
+                            rowData = AssignDataIntoWorkbook(worksheet, rowData, listArea, order.OrderDetails, dictItemImgStream);
                         }
 
                         var range = worksheet.Cells.CreateRange(rowDataBegin, 0, rowData - rowDataBegin, 12);
                         FnExcel.ApplyRangeCommonStyle(range, workbook.CreateCellsColor());
-
-                        worksheet.AutoFitRows();
 
                         using var pdfStream = new MemoryStream();
                         var pdfOptions = new PdfSaveOptions
@@ -589,7 +595,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Data.Entities.Area> listArea, List<OrderDetail> listDetail)
+        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Data.Entities.Area> listArea, List<OrderDetail> listDetail, Dictionary<Guid, Stream> dictItemImage)
         {
             for (var a = 0; a < listArea.Count; a++)
             {
@@ -616,7 +622,26 @@ namespace Sevices.Core.OrderService
                 var listDetailByArea = listDetail.Where(x => x.areaId == area.id).ToList();
                 for (var d = 0; d < listDetailByArea.Count; d++)
                 {
+                    var isAutoFitRow = true;
+
                     var detail = listDetailByArea[d];
+                    // Check Hình ảnh đầu tiên để xem có cần auto fit row hay shink to fit
+                    // Hình ảnh minh hoạ
+                    cell = worksheet.Cells[rowData, 2];
+                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                    if (detail.Item != null && !string.IsNullOrWhiteSpace(detail.Item.image) && dictItemImage.ContainsKey(detail.Item.id))
+                    {
+
+                        var image = Image.FromStream(dictItemImage[detail.Item.id]);
+                        image = FnUtils.ResizeImage(image);
+                        worksheet.Cells.SetRowHeightPixel(rowData, image.Height + 10);
+
+                        var streamImg = new MemoryStream();
+                        image.Save(streamImg, ImageFormat.Jpeg);
+                        worksheet.Pictures.Add(rowData, 2, streamImg);
+
+                        isAutoFitRow = false;
+                    }
                     // STT
                     cell = worksheet.Cells[rowData, 0];
                     cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
@@ -625,10 +650,6 @@ namespace Sevices.Core.OrderService
                     cell = worksheet.Cells[rowData, 1];
                     cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), true));
                     cell.Value = detail.Item?.name;
-                    // Hình ảnh minh hoạ
-                    cell = worksheet.Cells[rowData, 2];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    //cell.Value = ;
                     // Dài
                     cell = worksheet.Cells[rowData, 3];
                     cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
@@ -663,13 +684,47 @@ namespace Sevices.Core.OrderService
                     cell.Value = $"{detail.totalPrice:n0}";
                     // Ghi chú vật liệu
                     cell = worksheet.Cells[rowData, 11];
-                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle()));
+                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), false, !isAutoFitRow));
                     cell.Value = detail.description;
+
+                    if (isAutoFitRow)
+                    {
+                        worksheet.AutoFitRow(rowData);
+                    }
 
                     rowData++;
                 }
+                worksheet.Cells.SetColumnWidthPixel(2, 300);
+
             }
             return rowData;
+        }
+
+        private static async Task<Dictionary<Guid, Stream>> FetchListImageItem(Dictionary<Guid, string> dictItemImage)
+        {
+            var res = new Dictionary<Guid, Stream>();
+            var listTask = new List<Task>();
+            var httpClient = new HttpClient();
+
+            foreach (var item in dictItemImage)
+            {
+                var task = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var response = await httpClient.GetAsync(item.Value);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var stream = response.Content.ReadAsStream();
+                            res.Add(item.Key, stream);
+                        }
+                    }
+                    catch (Exception) { }
+                });
+                listTask.Add(task);
+            }
+            await Task.WhenAll(listTask);
+            return res;
         }
         #endregion
 

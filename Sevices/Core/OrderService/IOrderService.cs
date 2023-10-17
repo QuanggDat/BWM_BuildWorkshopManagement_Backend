@@ -11,6 +11,6 @@ namespace Sevices.Core.OrderService
         ResultModel GetQuoteMaterialById(Guid id);
         Task<ResultModel> Create(CreateOrderModel model);
         ResultModel UpdateStatus(Guid id, OrderStatus status);
-        FileResultModel ExportQuoteToPDF(Guid id);
+        Task<FileResultModel> ExportQuoteToPDF(Guid id);
     }
 }

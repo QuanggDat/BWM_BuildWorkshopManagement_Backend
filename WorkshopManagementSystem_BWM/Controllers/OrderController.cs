@@ -53,12 +53,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("ExportQuoteAsPDF/{id}")]
-        public IActionResult ExportQuoteAsPDF(Guid id)
+        public async Task<IActionResult> ExportQuoteAsPDF(Guid id)
         {
-            var result = _orderService.ExportQuoteToPDF(id);
+            var result = await _orderService.ExportQuoteToPDF(id);
             if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName); 
             return BadRequest(result.ErrorMessage);
-            
         }
 
         [HttpPost]
