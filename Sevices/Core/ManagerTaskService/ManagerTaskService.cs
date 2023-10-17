@@ -58,7 +58,7 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
-            if (model.timeStart > model.timeEnd)
+            if (model.startTime > model.endTime)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
@@ -71,8 +71,8 @@ namespace Sevices.Core.ManagerTaskService
                 createById = createById,
                 orderId = model.orderId,
                 name = model.name,
-                timeStart = model.timeStart,
-                timeEnd = model.timeEnd,
+                startTime = model.startTime,
+                endTime = model.endTime,
                 description = model.description,
                 status = 0,
                 isDeleted = false
@@ -129,7 +129,7 @@ namespace Sevices.Core.ManagerTaskService
                 return result;
             }
 
-            if (model.timeStart > model.timeEnd)
+            if (model.startTime > model.endTime)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
@@ -139,8 +139,8 @@ namespace Sevices.Core.ManagerTaskService
             managerTask.orderId = model.orderId;
             managerTask.managerId = model.managerId;
             managerTask.name = model.name;
-            managerTask.timeStart = model.timeStart;
-            managerTask.timeEnd = model.timeEnd;
+            managerTask.startTime = model.startTime;
+            managerTask.endTime = model.endTime;
             managerTask.description = model.description;          
 
             try
@@ -176,8 +176,8 @@ namespace Sevices.Core.ManagerTaskService
                     orderName = orderTmp.name,
                     createdById = item.createById,
                     name = item.name,
-                    timeStart = item.timeStart,
-                    timeEnd = item.timeEnd,
+                    startTime = item.startTime,
+                    endTime = item.endTime,
                     status = item.status,
                     completedTime = item.completedTime,
                     description = item.description,
@@ -209,8 +209,8 @@ namespace Sevices.Core.ManagerTaskService
                     orderName = orderTmp.name,
                     createdById = item.createById,
                     name = item.name,
-                    timeStart = item.timeStart,
-                    timeEnd = item.timeEnd,
+                    startTime = item.startTime,
+                    endTime = item.endTime,
                     status = item.status,
                     description = item.description,
                     isDeleted = item.isDeleted,
@@ -241,8 +241,8 @@ namespace Sevices.Core.ManagerTaskService
                     orderName = orderTmp.name,
                     createdById = item.createById,
                     name = item.name,
-                    timeStart = item.timeStart,
-                    timeEnd = item.timeEnd,
+                    startTime = item.startTime,
+                    endTime = item.endTime,
                     status = item.status,
                     description = item.description,
                     isDeleted = item.isDeleted,

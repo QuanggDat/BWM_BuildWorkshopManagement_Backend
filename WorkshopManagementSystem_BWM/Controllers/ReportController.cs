@@ -38,24 +38,26 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> ReviewsReport(ReviewsReportModel model)
+        public async Task<ActionResult> ReportResponse(ReviewsReportModel model)
         {
-            var result = await _reportService.ReviewsReport(model);
+            var result = await _reportService.ReportResponse(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{managerId}")]
-        public async Task<ActionResult> GetProgressReportsByManagerId(Guid managerId)
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetProgressReportsByManagerId()
         {
+            var managerId = User.GetId();
             var result = await _reportService.GetProgressReportsByManagerId(managerId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);
         }
 
-        [HttpGet("[action]/{managerId}")]
-        public async Task<ActionResult> GetProblemReportsByManagerId(Guid managerId)
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetProblemReportsByManagerId()
         {
+            var managerId = User.GetId();
             var result = await _reportService.GetProblemReportsByManagerId(managerId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);

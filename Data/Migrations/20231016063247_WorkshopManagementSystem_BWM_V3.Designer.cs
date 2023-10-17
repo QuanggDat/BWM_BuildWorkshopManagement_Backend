@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231016063247_WorkshopManagementSystem_BWM_V3")]
+    partial class WorkshopManagementSystem_BWM_V3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -481,6 +483,9 @@ namespace Data.Migrations
                     b.Property<string>("content")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("contentReviews")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
 
@@ -498,9 +503,6 @@ namespace Data.Migrations
 
                     b.Property<Guid>("reporterId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("responseContent")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("title")
                         .IsRequired()

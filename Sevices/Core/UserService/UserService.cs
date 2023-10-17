@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,12 +34,23 @@ namespace Sevices.Core.UserService
             _signInManager = signInManager;
             _roleManager = roleManager;
         }
+        
         public async Task<ResultModel> CreateAdmin(UserCreateModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            if (!IsValidEmail(model.email))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Email không hợp lệ !";
+                return result;
+            }
+
+            var ageDifference = DateTime.Now - model.dob;
+            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+            if (age < 18 || age > 60)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Người này không trong độ tuổi lao động";
@@ -128,10 +140,20 @@ namespace Sevices.Core.UserService
             var result = new ResultModel();
             result.Succeed = false;
 
-            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            var ageDifference = DateTime.Now - model.dob;
+            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+            if (age < 18 || age > 60)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                return result;
+            }
+
+            if (!IsValidEmail(model.email))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Email không hợp lệ !";
                 return result;
             }
 
@@ -214,8 +236,18 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
-           
-            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+
+            if (!IsValidEmail(model.email))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Email không hợp lệ !";
+                return result;
+            }
+
+            var ageDifference = DateTime.Now - model.dob;
+            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+            if (age < 18 || age > 60)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Người này không trong độ tuổi lao động";
@@ -302,7 +334,17 @@ namespace Sevices.Core.UserService
             var result = new ResultModel();
             result.Succeed = false;
 
-            if (model.dob >= new DateTime(2005, 1, 1) && model.dob <= new DateTime(1966, 1, 1))
+            if (!IsValidEmail(model.email))
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Email không hợp lệ !";
+                return result;
+            }
+
+            var ageDifference = DateTime.Now - model.dob;
+            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+            if (age < 18 || age > 60)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Người này không trong độ tuổi lao động";
@@ -383,7 +425,19 @@ namespace Sevices.Core.UserService
             }
             return result;
         }
-        
+        static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var mailAddress = new MailAddress(email);
+                return true; // Nếu không có lỗi ngoại lệ, email là hợp lệ
+            }
+            catch
+            {
+                return false; // Nếu có lỗi ngoại lệ, email không hợp lệ
+            }
+        }
+
         public async Task<ResultModel> Login(LoginModel model)
         {
 

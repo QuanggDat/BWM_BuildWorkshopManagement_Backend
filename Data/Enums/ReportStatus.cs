@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Data.Enums
 {
     public enum ReportStatus
-    {
-        Complete = 0,
-        Uncomplete = 1,
+    {        
+        Uncomplete = 0,
+        Complete = 1,
     }
 }

@@ -12,8 +12,8 @@ namespace Data.Models
         public Guid managerId { get; set; }
         public Guid orderId { get; set; }
         public string name { get; set; } = null!;
-        public DateTime timeStart { get; set; }
-        public DateTime timeEnd { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
         public string description { get; set; } = null!;        
     }
     public class ResponseManagerTaskModel
@@ -25,8 +25,8 @@ namespace Data.Models
         public Guid? createdById { get; set; } = null!;
         public string createByName { get; set; } = null!;
         public string name { get; set; } = null!;
-        public DateTime timeStart { get; set; }
-        public DateTime timeEnd { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
@@ -38,8 +38,8 @@ namespace Data.Models
         public Guid managerId { get; set; }
         public Guid orderId { get; set; }
         public string name { get; set; } = null!;
-        public DateTime timeStart { get; set; }
-        public DateTime timeEnd { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
         public string description { get; set; } = null!;
         
     }

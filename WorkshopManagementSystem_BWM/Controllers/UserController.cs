@@ -71,6 +71,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
@@ -78,6 +79,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet("{email}")]
         public IActionResult GetByEmail(string email)
         {
@@ -85,6 +87,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet("[action]/{id}")]
         public IActionResult GetById(Guid id)
         {
@@ -92,6 +95,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet("[action]/{id}")]
         public IActionResult GetUserRole(Guid id)
         {
@@ -99,6 +103,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpPut]
         public IActionResult Update(UserUpdateModel model)
         {
@@ -106,6 +111,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet("[action]/{id}")]
         public IActionResult BanUser(Guid id)
         {
@@ -113,6 +119,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpGet("[action]/{id}")]
         public IActionResult UnBanUser(Guid id)
         {
@@ -120,6 +127,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpPut("[action]")]
         public IActionResult UpdatePhone(UserUpdatePhoneModel model)
         {
@@ -127,6 +135,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
         [HttpPost("ChangePassword")]
         public async Task<ActionResult> ChangePassword([FromBody] UserUpdatePasswordModel model)
         {
