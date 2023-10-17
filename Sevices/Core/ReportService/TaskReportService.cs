@@ -11,11 +11,11 @@ using static Data.Models.ReportModel;
 
 namespace Sevices.Core.ReportService
 {
-    public class ReportService : IReportService
+    public class TaskReportService : ITaskReportService
     {
         private readonly AppDbContext _dbContext;
 
-        public ReportService(AppDbContext dbContext)
+        public TaskReportService(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -146,7 +146,7 @@ namespace Sevices.Core.ReportService
             return now >= managerTask.startTime && now <= managerTask.endTime;
         }
         
-        public async Task<ResponseReportModel?> GetReportByReportId(Guid reportId)
+        public async Task<ResponseReportModel?> GetReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)

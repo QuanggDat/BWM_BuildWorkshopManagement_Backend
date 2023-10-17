@@ -31,7 +31,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]/{reportId}")]
         public async Task<ActionResult> GetReportByReportId(Guid reportId)
         {
-            var result = await _orderReportService.GetOrderReportByReportId(reportId);
+            var result = await _orderReportService.GetOrderReportById(reportId);
             if (result == null) return BadRequest("Không tìm thấy reportId");
             return Ok(result);
         }

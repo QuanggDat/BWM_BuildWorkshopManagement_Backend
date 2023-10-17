@@ -22,9 +22,9 @@ namespace Data.Entities
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
 
-        [ForeignKey("orderId")]
-        public Guid orderId { get; set;}
-        public Order Order { get; set; } = null!;
+        [ForeignKey("managerTaskId")]
+        public Guid managerTaskId { get; set;}
+        public ManagerTask ManagerTask { get; set; } = null!;
 
         public virtual List<WokerTaskDetail> WokerTaskDetails { get; set; } = new();
     }

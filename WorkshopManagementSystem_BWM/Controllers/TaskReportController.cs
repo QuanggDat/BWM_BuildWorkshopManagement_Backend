@@ -9,11 +9,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReportController : ControllerBase
+    public class TaskReportController : ControllerBase
     {
-        private readonly IReportService _reportService;
+        private readonly ITaskReportService _reportService;
 
-        public ReportController(IReportService reportService)
+        public TaskReportController(ITaskReportService reportService)
         {
             _reportService = reportService;
         }
@@ -32,7 +32,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]/{reportId}")]
         public async Task<ActionResult> GetReportByReportId(Guid reportId)
         {
-            var result = await _reportService.GetReportByReportId(reportId);
+            var result = await _reportService.GetReportById(reportId);
             if (result == null) return BadRequest("Không tìm thấy reportId");
             return Ok(result);
         }

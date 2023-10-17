@@ -126,7 +126,7 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
-        public async Task<ResponseOrderReportModel?> GetOrderReportByReportId(Guid reportId)
+        public async Task<ResponseOrderReportModel?> GetOrderReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)
