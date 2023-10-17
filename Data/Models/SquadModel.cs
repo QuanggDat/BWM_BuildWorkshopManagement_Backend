@@ -11,7 +11,6 @@ namespace Data.Models
         public Guid id {  get; set; }
         public string name { get; set; }
         public int member { get; set; }
-        public Guid managerId { get; set; }
         public bool isDeleted { get; set; }
     }
 
