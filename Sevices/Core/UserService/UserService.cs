@@ -777,9 +777,9 @@ namespace Sevices.Core.UserService
         }
 
         //For Factory role
-        public async Task<List<HumanResources>> GetAllHumanResource()
+        public async Task<List<HumanResourceModel>> GetAllUserWithSquadAndGroup()
         {
-            var result = new List<HumanResources>();
+            var result = new List<HumanResourceModel>();
             var data = await _dbContext.User.Where(u => u.banStatus != false).ToListAsync();
             if (data == null)
             {
@@ -793,7 +793,7 @@ namespace Sevices.Core.UserService
                 var group = await _dbContext.Group.FindAsync(info.groupId);
                 if (role != null && squad != null && group != null)
                 {
-                    var stuff = new HumanResources
+                    var stuff = new HumanResourceModel
                     {
                         fullName = info.fullName,
                         image = info.image,
@@ -807,5 +807,22 @@ namespace Sevices.Core.UserService
             }
             return result;
         }
+
+        //public async Task<List<HumanResources>> GetAllHumanResource()
+        //{
+        //    var result = new List<HumanResources>();
+        //    var data = await _dbContext.User.Include(r => r.Role).Include(s => s.Squad).Include(g => g.group).Where(u => u.banStatus != false).Select(u => new HumanResources
+        //    {
+        //        fullName = u.fullName,
+        //        image = u.image,
+        //        roleName = u.Role.Name,
+        //        groupName = u.group.name,
+        //        squadName = u.Squad.name,
+        //        banStatus = u.banStatus
+        //    }).ToListAsync();
+
+        //    return result;
+        //}
+
     }
 }

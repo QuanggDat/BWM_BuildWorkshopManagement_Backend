@@ -12,8 +12,8 @@ namespace Sevices.Core.HumanResourceService
         Task<ResultModel> CreateGroup(CreateGroupModel model);
         ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize);
         ResultModel GetAllUserByGroupId(Guid id);
-        ResultModel AddWorkerToGroup(WorkerToGroup model);
-        ResultModel RemoveWorkerFromGroup(WorkerToGroup model);
+        ResultModel AddWorkerToGroup(AddWorkerToGroupModel model);
+        ResultModel RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model);
         ResultModel UpdateGroup(UpdateGroupModel model);
         ResultModel DeleteGroup(Guid id);
     }

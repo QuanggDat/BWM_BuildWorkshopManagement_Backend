@@ -143,5 +143,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("GetAllUserWithSquadandGroup")]
+        public async Task<ActionResult<HumanResourceModel>> GetAllUserWithSquadAndGroup()
+        {
+            var result = await _userService.GetAllUserWithSquadAndGroup();
+            if (result == null) return BadRequest("Không tìm thấy nhân công");
+            return Ok(result);
+        }
     }
 }

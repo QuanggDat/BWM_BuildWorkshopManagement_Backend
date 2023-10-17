@@ -90,26 +90,38 @@ namespace Data.Models
 
     }
 
-    public class WorkerToGroup
+    public class AddWorkerToGroupModel
     {
         public Guid id { get; set; }
         public Guid groupId { get; set; }
     }
 
-    public class ManagerToSquad
+    public class RemoveWorkerFromGroupModel
+    {
+        public Guid id { get; set; }
+        public Guid groupId { get; set; }
+    }
+
+    public class AddWorkerToSquadModel
+    {
+        public Guid id { get; set; }
+        public Guid squadId { get; set; }
+    }
+
+    public class RemoveWorkerFromSquadModel
+    {
+        public Guid id { get; set; }
+        public Guid squadId { get; set; }
+    }
+
+    public class AddManagerToSquadModel
     {
         public Guid id { get; set; }
         public Guid roleId { get; set; }
         public Guid squadId { get; set; }
     }
 
-    public class WorkerToSquad
-    {
-        public Guid id { get; set; }
-        public Guid squadId { get; set; }
-    }
-
-    public class HumanResources
+    public class HumanResourceModel
     {
         public string fullName { get; set; }
         public string image { get; set; } 

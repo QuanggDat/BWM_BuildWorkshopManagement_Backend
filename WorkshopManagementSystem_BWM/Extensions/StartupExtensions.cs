@@ -15,6 +15,7 @@ using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderReportService;
 using Sevices.Core.OrderService;
 using Sevices.Core.ReportService;
+using Sevices.Core.SquadService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
 using Sevices.Mapping;
