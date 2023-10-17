@@ -90,13 +90,20 @@ namespace Data.Models
 
     }
 
-    public class AddWorkerToGroup
+    public class WorkerToGroup
     {
         public Guid id { get; set; }
         public Guid groupId { get; set; }
     }
 
-    public class AddWorkerToSquad
+    public class ManagerToSquad
+    {
+        public Guid id { get; set; }
+        public Guid roleId { get; set; }
+        public Guid squadId { get; set; }
+    }
+
+    public class WorkerToSquad
     {
         public Guid id { get; set; }
         public Guid squadId { get; set; }

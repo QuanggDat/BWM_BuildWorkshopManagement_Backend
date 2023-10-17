@@ -23,5 +23,6 @@ namespace Sevices.Core.UserService
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
+        Task<List<HumanResources>> GetAllHumanResource();
     }
 }

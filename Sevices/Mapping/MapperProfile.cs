@@ -32,6 +32,10 @@ namespace Sevices.Mapping
 
             // Order Detail
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
+
+            //HumanResources
+            CreateMap<Squad, SquadModel>();
+            CreateMap<Group, GroupModel>();
         }
     }
 }
