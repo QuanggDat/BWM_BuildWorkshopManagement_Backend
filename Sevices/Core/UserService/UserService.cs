@@ -775,5 +775,37 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
+
+        //For Factory role
+        public async Task<List<HumanResources>> GetAllHumanResource()
+        {
+            var result = new List<HumanResources>();
+            var data = await _dbContext.User.Where(u => u.banStatus != false).ToListAsync();
+            if (data == null)
+            {
+                return null;
+            }
+
+            foreach (var info in data)
+            {
+                var role = await _dbContext.Role.FindAsync(info.roleID);
+                var squad = await _dbContext.Squad.FindAsync(info.squadId);
+                var group = await _dbContext.Group.FindAsync(info.groupId);
+                if (role != null && squad != null && group != null)
+                {
+                    var stuff = new HumanResources
+                    {
+                        fullName = info.fullName,
+                        image = info.image,
+                        roleName = role.Name,
+                        squadName = squad.name,
+                        groupName = group.name,
+                        banStatus = info.banStatus,
+                    };
+                    result.Add(stuff);
+                }
+            }
+            return result;
+        }
     }
 }
