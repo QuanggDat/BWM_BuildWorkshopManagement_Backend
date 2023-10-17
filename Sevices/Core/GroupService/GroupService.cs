@@ -133,7 +133,7 @@ namespace Sevices.Core.HumanResourceService
         }
 
         //Need check again not complete. Fac and Manager can both use this function.
-        public ResultModel AddWorkerToGroup(WorkerToGroup model)
+        public ResultModel AddWorkerToGroup(AddWorkerToGroupModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -163,7 +163,7 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public ResultModel RemoveWorkerFromGroup(WorkerToGroup model)
+        public ResultModel RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
             ResultModel result = new ResultModel();
             try
