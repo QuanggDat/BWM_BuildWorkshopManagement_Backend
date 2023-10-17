@@ -10,9 +10,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sevices.Core.HumanResourceService
+namespace Sevices.Core.SquadService
 {
-     public class SquadService : ISquadService
+    public class SquadService : ISquadService
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -56,7 +56,7 @@ namespace Sevices.Core.HumanResourceService
                 if (data != null)
                 {
 
-                    var view = _mapper.ProjectTo<UserModel>(data).OrderByDescending(s=>s.fullName).ToList();
+                    var view = _mapper.ProjectTo<UserModel>(data).OrderByDescending(s => s.fullName).ToList();
                     resultModel.Data = view!;
                     resultModel.Succeed = true;
                 }
@@ -80,7 +80,7 @@ namespace Sevices.Core.HumanResourceService
             result.Succeed = false;
             try
             {
-                var nameExists =await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
+                var nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
                 if (nameExists)
                 {
                     result.Succeed = false;
@@ -143,16 +143,16 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public ResultModel AddManagerToSquad(WorkerToSquad model)
+        public ResultModel AddManagerToSquad(AddWorkerToSquadModel model)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Include(r=>r.Role).Where(i => i.Id == model.id).FirstOrDefault();
+                var data = _dbContext.User.Include(r => r.Role).Where(i => i.Id == model.id).FirstOrDefault();
                 var squad = _dbContext.Squad.SingleOrDefault(g => g.id == model.squadId);
                 if (data != null && squad != null)
                 {
-                    if(data.Role !=null && data.Role.Name == "Manager")
+                    if (data.Role != null && data.Role.Name == "Manager")
                     {
                         //Update GroupId
                         data.squadId = model.squadId;
@@ -182,22 +182,22 @@ namespace Sevices.Core.HumanResourceService
         }
 
         //Fac and Manager can both use this function.
-        public ResultModel AddWorkerToSquad(WorkerToSquad model)
+        public ResultModel AddWorkerToSquad(AddWorkerToSquadModel model)
         {
             ResultModel result = new ResultModel();
             try
             {
                 var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
                 var squad = _dbContext.Squad.SingleOrDefault(g => g.id == model.squadId);
-                if (data != null && squad !=null)
+                if (data != null && squad != null)
                 {
                     //Update GroupId
                     data.squadId = model.squadId;
-                    squad.member+=1;
+                    squad.member += 1;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<User, UserModel>(data);
-                    result.Data=_mapper.Map<Squad, SquadModel>(squad);
+                    result.Data = _mapper.Map<Squad, SquadModel>(squad);
                 }
                 else
                 {
@@ -212,7 +212,7 @@ namespace Sevices.Core.HumanResourceService
             return result;
         }
 
-        public ResultModel RemoveWorkerFromSquad(WorkerToSquad model)
+        public ResultModel RemoveWorkerFromSquad(RemoveWorkerFromSquadModel model)
         {
             ResultModel result = new ResultModel();
             try
