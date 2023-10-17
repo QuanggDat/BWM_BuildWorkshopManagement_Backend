@@ -137,13 +137,13 @@ namespace Sevices.Core.ReportService
         private bool CanSendProgressReport(ManagerTask managerTask)
         {
             var now = DateTime.Now;
-            return now >= managerTask.timeEnd;
+            return now >= managerTask.endTime;
         }
 
         private bool CanSendProblemReport(ManagerTask managerTask)
         {
             var now = DateTime.Now;
-            return now >= managerTask.timeStart && now <= managerTask.timeEnd;
+            return now >= managerTask.startTime && now <= managerTask.endTime;
         }
         
         public async Task<ResponseReportModel?> GetReportByReportId(Guid reportId)
@@ -178,7 +178,7 @@ namespace Sevices.Core.ReportService
                     content = report.content,
                     createdDate = report.createdDate,
                     reportStatus = report.reportStatus,
-                    contentReviews = report.contentReviews,
+                    responseContent = report.responseContent,
 
                     reporter = new Reporter
                     {
@@ -208,7 +208,7 @@ namespace Sevices.Core.ReportService
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    contentReviews = report.contentReviews,
+                    responseContent = report.responseContent,
 
                     reporter = new Reporter
                     {
@@ -232,30 +232,69 @@ namespace Sevices.Core.ReportService
             return result;
         }
             
-        public async Task<ResultModel> ReviewsReport(ReviewsReportModel model)
+        public async Task<ResultModel> ReportResponse(ReviewsReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
-            var report = await _dbContext.Report.FindAsync(model.reportId) ;
+            var report = await _dbContext.Report.Include(x => x.ManagerTask)
+                .Where(x => x.id == model.reportId).SingleOrDefaultAsync() ;
+
             if (report == null)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy reportId!";
                 return result;
             }
-            try
+
+            if (report.reportType == Data.Enums.ReportType.ProgressReport)
             {
-                report.reportStatus = model.reportStatus;
-                report.contentReviews = model.contentReviews;
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = report.id;
+                if (report.reportStatus == Data.Enums.ReportStatus.Complete)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Báo cáo này đã hoàn thành";
+                    return result;
+                }
+
+                var managerTask = await _dbContext.ManagerTask
+                    .FindAsync(report.managerTaskId);
+
+                try
+                {
+                    report.reportStatus = model.reportStatus;
+                    report.responseContent = model.responseContent;
+
+                    if (managerTask != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                    {
+                        managerTask.completedTime = DateTime.Now;
+                        managerTask.status = (TaskStatus)Data.Enums.TaskStatus.Completed;
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = report.id;
+                }
+
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
             }
 
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            if (report.reportType == Data.Enums.ReportType.ProblemReport)
+            {                
+                try
+                {                    
+                    report.responseContent = model.responseContent;                    
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = report.id;
+                }
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
             }
+
             return result;
         }
 
@@ -268,7 +307,7 @@ namespace Sevices.Core.ReportService
                     .ThenInclude(x => x.CreateBy)
                 .Include(x => x.ManagerTask)
                     .ThenInclude(x => x.Order)
-                .Where(x => x.ManagerTask.managerId == managerId && x.reportType == Data.Enums.ReportType.ProgressReport)
+                .Where(x => x.reporterId == managerId && x.reportType == Data.Enums.ReportType.ProgressReport)
                 .ToListAsync();
             
             if (checkReport == null)
@@ -284,7 +323,7 @@ namespace Sevices.Core.ReportService
                 content = report.content,
                 createdDate = report.createdDate,
                 reportStatus = report.reportStatus,
-                contentReviews = report.contentReviews,
+                responseContent = report.responseContent,
 
                 reporter = new Reporter
                 {
@@ -314,7 +353,7 @@ namespace Sevices.Core.ReportService
                     .ThenInclude(x => x.CreateBy)
                 .Include(x => x.ManagerTask)
                     .ThenInclude(x => x.Order)
-                .Where(x => x.ManagerTask.managerId == managerId && x.reportType == Data.Enums.ReportType.ProblemReport)
+                .Where(x => x.reporterId == managerId && x.reportType == Data.Enums.ReportType.ProblemReport)
                 .ToListAsync();
 
             if (checkReport == null)
@@ -329,7 +368,7 @@ namespace Sevices.Core.ReportService
                 title = report.title,
                 content = report.content,
                 createdDate = report.createdDate,
-                contentReviews = report.contentReviews,
+                responseContent = report.responseContent,
 
                 reporter = new Reporter
                 {

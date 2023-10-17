@@ -30,8 +30,8 @@ namespace Data.Entities
         public virtual Group? Group { get; set; } = null!;
 
         public string name { get; set; } = null!;
-        public DateTime timeStart { get; set; } 
-        public DateTime timeEnd { get; set; }
+        public DateTime startTime { get; set; } 
+        public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;

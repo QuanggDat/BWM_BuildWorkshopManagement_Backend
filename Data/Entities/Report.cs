@@ -14,6 +14,10 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
+        [ForeignKey("orderId")]
+        public Guid? orderId { get; set; }
+        public virtual Order Order { get; set; } = null!;
+
         [ForeignKey("managerTaskId")]
         public Guid? managerTaskId { get; set; }
         public virtual ManagerTask ManagerTask { get; set; } = null!;
@@ -28,9 +32,8 @@ namespace Data.Entities
 
         public DateTime createdDate { get; set; }
         public ReportStatus? reportStatus { get; set; }
-        public string? contentReviews { get; set; } = null!;
+        public string? responseContent { get; set; } = null!;
 
         public virtual List<Resource> Resources { get; set; } = new();
-
     }
 }
