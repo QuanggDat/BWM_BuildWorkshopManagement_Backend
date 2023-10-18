@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231016043152_WorkshopManagementSystem_BWM_V2")]
-    partial class WorkshopManagementSystem_BWM_V2
+    [Migration("20231018055527_WorkshopManagementSystem_BWM_V1")]
+    partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -182,6 +182,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("endTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid?>("groupId")
                         .HasColumnType("uniqueidentifier");
 
@@ -198,14 +201,11 @@ namespace Data.Migrations
                     b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("startTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("status")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("timeEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("timeStart")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("id");
 
@@ -483,9 +483,6 @@ namespace Data.Migrations
                     b.Property<string>("content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("contentReviews")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
 
@@ -503,6 +500,9 @@ namespace Data.Migrations
 
                     b.Property<Guid>("reporterId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("responseContent")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("title")
                         .IsRequired()
@@ -717,11 +717,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ManagerTaskid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -730,12 +730,12 @@ namespace Data.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("managerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("orderId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("productCompleted")
                         .HasColumnType("int");
@@ -754,9 +754,9 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ManagerTaskid");
+                    b.HasIndex("createById");
 
-                    b.HasIndex("orderId");
+                    b.HasIndex("managerTaskId");
 
                     b.ToTable("WokerTask");
                 });
@@ -1087,17 +1087,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", null)
-                        .WithMany("WokerTasks")
-                        .HasForeignKey("ManagerTaskid");
-
-                    b.HasOne("Data.Entities.Order", "Order")
+                    b.HasOne("Data.Entities.User", "CreateBy")
                         .WithMany()
-                        .HasForeignKey("orderId")
+                        .HasForeignKey("createById");
+
+                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                        .WithMany("WokerTasks")
+                        .HasForeignKey("managerTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("CreateBy");
+
+                    b.Navigation("ManagerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>

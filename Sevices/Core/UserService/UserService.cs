@@ -38,24 +38,7 @@ namespace Sevices.Core.UserService
         public async Task<ResultModel> CreateAdmin(UserCreateModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;
-
-            if (!IsValidEmail(model.email))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Email không hợp lệ !";
-                return result;
-            }
-
-            var ageDifference = DateTime.Now - model.dob;
-            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
-
-            if (age < 18 || age > 60)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Người này không trong độ tuổi lao động";
-                return result;
-            }
+            result.Succeed = false;                       
 
             try
             {
@@ -86,76 +69,74 @@ namespace Sevices.Core.UserService
                 }
                 else
                 {
-                    if (userByMail != null)
+                    if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                        result.ErrorMessage = "Email không hợp lệ !";
+                        return result;
                     }
                     else
                     {
-                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        if (userByMail != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                            result.ErrorMessage = "Email Đã Tồn Tại!";
                         }
                         else
                         {
-                            var check = await _userManager.CreateAsync(user, model.password);
-
-                            if (check != null)
+                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
                             {
-                                var userRole = new UserRole
-                                {
-                                    RoleId = role.Id,
-                                    UserId = user.Id
-                                };
-                                _dbContext.UserRoles.Add(userRole);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = user.Id;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                             }
                             else
                             {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Xác thực người dùng sai ";
+                                var ageDifference = DateTime.Now - model.dob;
+                                int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+                                if (age < 18 || age > 60)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    return result;
+                                }
+                                else
+                                {
+                                    var check = await _userManager.CreateAsync(user, model.password);
+                                    if (check != null)
+                                    {
+                                        var userRole = new UserRole
+                                        {
+                                            RoleId = role.Id,
+                                            UserId = user.Id
+                                        };
+                                        _dbContext.UserRoles.Add(userRole);
+                                        await _dbContext.SaveChangesAsync();
+                                        result.Succeed = true;
+                                        result.Data = user.Id;
+                                    }
+                                    else
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                    }
+                                }                            
                             }
                         }
-
-                    }
-
+                    }                
                 }
-
-
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-
         }
 
         public async Task<ResultModel> CreateFactory(UserCreateModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;
-
-            var ageDifference = DateTime.Now - model.dob;
-            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
-
-            if (age < 18 || age > 60)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Người này không trong độ tuổi lao động";
-                return result;
-            }
-
-            if (!IsValidEmail(model.email))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Email không hợp lệ !";
-                return result;
-            }
+            result.Succeed = false;            
 
             try
             {
@@ -179,6 +160,7 @@ namespace Sevices.Core.UserService
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+
                 if (userByPhone != null)
                 {
                     result.Succeed = false;
@@ -186,42 +168,61 @@ namespace Sevices.Core.UserService
                 }
                 else
                 {
-                    if (userByMail != null)
+                    if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                        result.ErrorMessage = "Email không hợp lệ !";
+                        return result;
                     }
                     else
                     {
-                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        if (userByMail != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                            result.ErrorMessage = "Email Đã Tồn Tại!";
                         }
                         else
                         {
-                            var check = await _userManager.CreateAsync(user, model.password);
-                            if (check != null)
+                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
                             {
-                                var userRole = new UserRole
-                                {
-                                    RoleId = role.Id,
-                                    UserId = user.Id
-                                };
-                                _dbContext.UserRoles.Add(userRole);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = user.Id;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                             }
                             else
                             {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Validate user wrong ";
+                                var ageDifference = DateTime.Now - model.dob;
+                                int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+                                if (age < 18 || age > 60)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    return result;
+                                }
+                                else
+                                {
+                                    var check = await _userManager.CreateAsync(user, model.password);
+                                    if (check != null)
+                                    {
+                                        var userRole = new UserRole
+                                        {
+                                            RoleId = role.Id,
+                                            UserId = user.Id
+                                        };
+                                        _dbContext.UserRoles.Add(userRole);
+                                        await _dbContext.SaveChangesAsync();
+                                        result.Succeed = true;
+                                        result.Data = user.Id;
+                                    }
+                                    else
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                    }
+                                }
                             }
                         }
-
                     }
-
                 }
             }
             catch (Exception ex)
@@ -236,23 +237,6 @@ namespace Sevices.Core.UserService
         {
             var result = new ResultModel();
             result.Succeed = false;
-
-            if (!IsValidEmail(model.email))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Email không hợp lệ !";
-                return result;
-            }
-
-            var ageDifference = DateTime.Now - model.dob;
-            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
-
-            if (age < 18 || age > 60)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Người này không trong độ tuổi lao động";
-                return result;
-            }
 
             try
             {
@@ -276,6 +260,7 @@ namespace Sevices.Core.UserService
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+
                 if (userByPhone != null)
                 {
                     result.Succeed = false;
@@ -283,44 +268,62 @@ namespace Sevices.Core.UserService
                 }
                 else
                 {
-                    if (userByMail != null)
+                    if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                        result.ErrorMessage = "Email không hợp lệ !";
+                        return result;
                     }
                     else
                     {
-                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        if (userByMail != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                            result.ErrorMessage = "Email Đã Tồn Tại!";
                         }
                         else
                         {
-                            var check = await _userManager.CreateAsync(user, model.password);
-
-                            if (check != null)
+                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
                             {
-                                var userRole = new UserRole
-                                {
-                                    RoleId = role.Id,
-                                    UserId = user.Id
-                                };
-                                _dbContext.UserRoles.Add(userRole);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = user.Id;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                             }
                             else
                             {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Validate user wrong ";
+                                var ageDifference = DateTime.Now - model.dob;
+                                int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+                                if (age < 18 || age > 60)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    return result;
+                                }
+                                else
+                                {
+                                    var check = await _userManager.CreateAsync(user, model.password);
+                                    if (check != null)
+                                    {
+                                        var userRole = new UserRole
+                                        {
+                                            RoleId = role.Id,
+                                            UserId = user.Id
+                                        };
+                                        _dbContext.UserRoles.Add(userRole);
+                                        await _dbContext.SaveChangesAsync();
+                                        result.Succeed = true;
+                                        result.Data = user.Id;
+                                    }
+                                    else
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                    }
+                                }
                             }
                         }
                     }
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -332,24 +335,7 @@ namespace Sevices.Core.UserService
         public async Task<ResultModel> CreateWoker(UserCreateModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;
-
-            if (!IsValidEmail(model.email))
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Email không hợp lệ !";
-                return result;
-            }
-
-            var ageDifference = DateTime.Now - model.dob;
-            int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
-
-            if (age < 18 || age > 60)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Người này không trong độ tuổi lao động";
-                return result;
-            }
+            result.Succeed = false;            
 
             try
             {
@@ -380,44 +366,62 @@ namespace Sevices.Core.UserService
                 }
                 else
                 {
-                    if (userByMail != null)
+                    if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Đã Tồn Tại!";
+                        result.ErrorMessage = "Email không hợp lệ !";
+                        return result;
                     }
                     else
                     {
-                        if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                        if (userByMail != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                            result.ErrorMessage = "Email Đã Tồn Tại!";
                         }
                         else
                         {
-                            var check = await _userManager.CreateAsync(user, model.password);
-
-                            if (check != null)
+                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
                             {
-                                var userRole = new UserRole
-                                {
-                                    RoleId = role.Id,
-                                    UserId = user.Id
-                                };
-                                _dbContext.UserRoles.Add(userRole);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = user.Id;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                             }
                             else
                             {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Validate user wrong ";
+                                var ageDifference = DateTime.Now - model.dob;
+                                int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
+
+                                if (age < 18 || age > 60)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    return result;
+                                }
+                                else
+                                {
+                                    var check = await _userManager.CreateAsync(user, model.password);
+                                    if (check != null)
+                                    {
+                                        var userRole = new UserRole
+                                        {
+                                            RoleId = role.Id,
+                                            UserId = user.Id
+                                        };
+                                        _dbContext.UserRoles.Add(userRole);
+                                        await _dbContext.SaveChangesAsync();
+                                        result.Succeed = true;
+                                        result.Data = user.Id;
+                                    }
+                                    else
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                    }
+                                }
                             }
                         }
                     }
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -425,6 +429,7 @@ namespace Sevices.Core.UserService
             }
             return result;
         }
+
         static bool IsValidEmail(string email)
         {
             try

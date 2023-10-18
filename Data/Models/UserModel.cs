@@ -125,13 +125,9 @@ namespace Data.Models
     {
         public string fullName { get; set; }
         public string image { get; set; } 
-
         public string roleName { get; set; } 
-
         public string squadName { get; set; } 
-
         public string groupName { get; set; } 
-
         public bool banStatus { get; set; } 
 
     }

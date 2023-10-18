@@ -35,48 +35,54 @@ namespace Sevices.Core.OrderReportService
                 result.ErrorMessage = "Không tìm thấy đơn hàng";
                 return result;
             }
-
-            if (order.status != Data.Enums.OrderStatus.InProgress)
+            else
             {
-                result.Succeed = false;
-                result.ErrorMessage = "Đơn hàng đang không tiến hành";
-                return result;
-            }
-            var checkReport = await _dbContext.Report
-           .AnyAsync(x => x.orderId == model.orderId);
+                if (order.status != Data.Enums.OrderStatus.InProgress)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                    return result;
+                }
+                else
+                {
+                    var checkReport = await _dbContext.Report.AnyAsync(x => x.orderId == model.orderId);
 
-            if (checkReport == true)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
-                return result;
-            }
+                    if (checkReport == true)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
+                        return result;
+                    }
+                    else
+                    {
+                        var report = new Report
 
-            var report = new Report
+                        {
+                            orderId = model.orderId,
+                            title = model.title,
+                            content = model.content,
+                            reporterId = reporterId,
+                            reportStatus = model.reportStatus,
+                            createdDate = DateTime.Now,
+                        };
 
-            {
-                orderId = model.orderId,
-                title = model.title,
-                content = model.content,
-                reporterId = reporterId,
-                reportStatus = model.reportStatus,
-                createdDate = DateTime.Now,
-            };
+                        try
+                        {
+                            await _dbContext.Report.AddAsync(report);
+                            await _dbContext.SaveChangesAsync();
+                            result.Succeed = true;
+                            result.Data = report.id;
+                        }
 
-            try
-            {
-                await _dbContext.Report.AddAsync(report);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = report.id;
-            }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
 
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-
-            return result;
+                        return result;
+                    }                 
+                }          
+            }       
         }
 
         public async Task<ResultModel> ReviewsOrderReport(ReviewsOrderReportModel model)
@@ -92,41 +98,45 @@ namespace Sevices.Core.OrderReportService
                 result.ErrorMessage = "Không tìm thấy reportId!";
                 return result;
             }
-
-            if (report.reportStatus == Data.Enums.ReportStatus.Complete)
+            else
             {
-                result.Succeed = false;
-                result.ErrorMessage = "Báo cáo này đã hoàn thành";
-                return result;
-            }
-
-            var order = await _dbContext.Order
-                .FindAsync(report.orderId);
-
-            try
-            {
-                report.reportStatus = model.reportStatus;
-                report.responseContent = model.contentReviews;
-
-                if (order != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                 {
-                    order.acceptanceDate = DateTime.Now;
-                    order.status = Data.Enums.OrderStatus.Completed;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Báo cáo này đã hoàn thành";
+                    return result;
                 }
+                else
+                {
+                    var order = await _dbContext.Order
+                    .FindAsync(report.orderId);
 
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = report.id;
-            }
+                    try
+                    {
+                        report.reportStatus = model.reportStatus;
+                        report.responseContent = model.contentReviews;
 
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
+                        if (order != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                        {
+                            order.acceptanceDate = DateTime.Now;
+                            order.status = Data.Enums.OrderStatus.Completed;
+                        }
+
+                        await _dbContext.SaveChangesAsync();
+                        result.Succeed = true;
+                        result.Data = report.id;
+                    }
+
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                    return result;
+                }          
+            }          
         }
 
-        public async Task<ResponseOrderReportModel?> GetOrderReportByReportId(Guid reportId)
+        public async Task<ResponseOrderReportModel?> GetOrderReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -138,27 +148,28 @@ namespace Sevices.Core.OrderReportService
             {
                 return null;
             }
-
-            var reporter = report.Reporter;
-
-            return new ResponseOrderReportModel
+            else
             {
-                orderName = report.Order.name,
-                title = report.title,
-                content = report.content,
-                createdDate = report.createdDate,
-                reportStatus = report.reportStatus,
-                responseContent = report.responseContent,
+                var reporter = report.Reporter;
 
-                reporter = new Reporter
+                return new ResponseOrderReportModel
                 {
-                    id = reporter.Id,
-                    fullName = reporter.fullName,
-                    phoneNumber = reporter.UserName,
-                    email = reporter.Email,
-                },
-               
-            };
+                    orderName = report.Order.name,
+                    title = report.title,
+                    content = report.content,
+                    createdDate = report.createdDate,
+                    reportStatus = report.reportStatus,
+                    responseContent = report.responseContent,
+
+                    reporter = new Reporter
+                    {
+                        id = reporter.Id,
+                        fullName = reporter.fullName,
+                        phoneNumber = reporter.UserName,
+                        email = reporter.Email,
+                    },
+                };
+            }
         }
 
         public async Task<List<ResponseOrderReportModel>> GetOrderReportsByFactoryId(Guid factoryId)
@@ -173,28 +184,30 @@ namespace Sevices.Core.OrderReportService
             {
                 return new List<ResponseOrderReportModel>();
             }
-
-            var list = checkReport.Select(report => new ResponseOrderReportModel
+            else
             {
-                orderName = report.Order.name,
-                title = report.title,
-                content = report.content,
-                createdDate = report.createdDate,
-                reportStatus = report.reportStatus,
-                responseContent = report.responseContent,
-
-                reporter = new Reporter
+                var list = checkReport.Select(report => new ResponseOrderReportModel
                 {
-                    id = report.Reporter.Id,
-                    fullName = report.Reporter.fullName,
-                    phoneNumber = report.Reporter.UserName,
-                    email = report.Reporter.Email,
-                },
-               
-            }).ToList();
+                    orderName = report.Order.name,
+                    title = report.title,
+                    content = report.content,
+                    createdDate = report.createdDate,
+                    reportStatus = report.reportStatus,
+                    responseContent = report.responseContent,
 
-            var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
-            return sortedList;
+                    reporter = new Reporter
+                    {
+                        id = report.Reporter.Id,
+                        fullName = report.Reporter.fullName,
+                        phoneNumber = report.Reporter.UserName,
+                        email = report.Reporter.Email,
+                    },
+
+                }).ToList();
+
+                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+                return sortedList;
+            }         
         }
     }
 }

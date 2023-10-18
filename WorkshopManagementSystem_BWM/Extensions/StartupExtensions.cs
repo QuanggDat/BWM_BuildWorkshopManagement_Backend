@@ -18,6 +18,7 @@ using Sevices.Core.ReportService;
 using Sevices.Core.SquadService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
+using Sevices.Core.WokerTaskService;
 using Sevices.Mapping;
 using System.Text;
 using System.Text.Json;
@@ -64,9 +65,10 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<ISquadService, SquadService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<ITaskReportService, TaskReportService>();
             services.AddScoped<IUtilsService, UtilsService>();
             services.AddScoped<IOrderReportService, OrderReportService>();
+            services.AddScoped<IWokerTaskService, WokerTaskService>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

@@ -11,7 +11,7 @@ namespace Sevices.Core.OrderReportService
     public interface IOrderReportService
     {
         Task<ResultModel> CreateOrderReport(Guid reporterId, CreateOrderReportModel model);
-        Task<ResponseOrderReportModel?> GetOrderReportByReportId(Guid reportId);
+        Task<ResponseOrderReportModel?> GetOrderReportById(Guid reportId);
         Task<ResultModel> ReviewsOrderReport(ReviewsOrderReportModel model);
         Task<List<ResponseOrderReportModel>> GetOrderReportsByFactoryId(Guid managerId);    
     }

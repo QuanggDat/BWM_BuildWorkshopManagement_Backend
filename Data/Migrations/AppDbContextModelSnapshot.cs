@@ -715,11 +715,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ManagerTaskid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
                         .IsRequired()
@@ -728,12 +728,12 @@ namespace Data.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("managerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("orderId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("productCompleted")
                         .HasColumnType("int");
@@ -752,9 +752,9 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ManagerTaskid");
+                    b.HasIndex("createById");
 
-                    b.HasIndex("orderId");
+                    b.HasIndex("managerTaskId");
 
                     b.ToTable("WokerTask");
                 });
@@ -1085,17 +1085,19 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
-                    b.HasOne("Data.Entities.ManagerTask", null)
-                        .WithMany("WokerTasks")
-                        .HasForeignKey("ManagerTaskid");
-
-                    b.HasOne("Data.Entities.Order", "Order")
+                    b.HasOne("Data.Entities.User", "CreateBy")
                         .WithMany()
-                        .HasForeignKey("orderId")
+                        .HasForeignKey("createById");
+
+                    b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
+                        .WithMany("WokerTasks")
+                        .HasForeignKey("managerTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("CreateBy");
+
+                    b.Navigation("ManagerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTaskDetail", b =>

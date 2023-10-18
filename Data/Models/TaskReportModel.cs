@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class ReportModel
+    public class TaskReportModel
     {
-        public class CreateReportModel
+        public class CreateTaskReportModel
         {
             public Guid? managerTaskId { get; set; }
             public ReportType reportType { get; set; }
@@ -22,7 +22,7 @@ namespace Data.Models
 
         }
 
-        public class UpdateReportModel
+        public class UpdateTaskReportModel
         {
             public Guid? managerTaskId { get; set; }
             public ReportType reportType { get; set; }
@@ -32,7 +32,7 @@ namespace Data.Models
             public List<string>? resource { get; set; }
         }
 
-        public class ResponseReportModel
+        public class ResponseTaskReportModel
         {
             public Guid id { get; set; }
             public Guid? managerTaskId { get; set; }

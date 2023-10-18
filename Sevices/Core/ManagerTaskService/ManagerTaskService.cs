@@ -26,70 +26,81 @@ namespace Sevices.Core.ManagerTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;            
 
-            var check1 = await _dbContext.User.FindAsync(model.managerId);
-            if (check1 == null)
+            var check = await _dbContext.User.FindAsync(model.managerId);
+            if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "managerId không hợp lệ!";
+                result.ErrorMessage = "ManagerId không hợp lệ!";
                 return result;
             }
-
-            var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
-            if (orderTmp == null)
+            else
             {
-                result.Succeed = false;
-                result.ErrorMessage = "orderId không hợp lệ!";
-                return result;
-            }
+                var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
+                if (orderTmp == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "OrderId không hợp lệ!";
+                    return result;
+                }
+                else 
+                {
+                    var check1 = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.name == model.name && a.orderId == model.orderId && a.isDeleted == false);
 
-            if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Đơn hàng đang không tiến hành";
-                return result;
-            }
+                    if (check1 != null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Công việc đã được tạo";
+                        return result;
+                    }
+                    else 
+                    {
+                        if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                            return result;
+                        }
 
-            var check = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.name == model.name && a.orderId == model.orderId && a.isDeleted == false);
+                        else
+                        {
+                            if (model.startTime >= model.endTime)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                return result;
+                            }
+                            else
+                            {
+                                var managerTask = new ManagerTask
+                                {
+                                    managerId = model.managerId,
+                                    createById = createById,
+                                    orderId = model.orderId,
+                                    name = model.name,
+                                    startTime = model.startTime,
+                                    endTime = model.endTime,
+                                    description = model.description,
+                                    status = 0,
+                                    isDeleted = false
+                                };
 
-            if (check != null)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Công việc đã được tạo";
-                return result;
-            }
-
-            if (model.startTime > model.endTime)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
-                return result;
-            }
-
-            var managerTask = new ManagerTask
-            {
-                managerId = model.managerId,
-                createById = createById,
-                orderId = model.orderId,
-                name = model.name,
-                startTime = model.startTime,
-                endTime = model.endTime,
-                description = model.description,
-                status = 0,
-                isDeleted = false
-            };
-
-            try
-            {
-                await _dbContext.ManagerTask.AddAsync(managerTask);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = managerTask.id;
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
+                                try
+                                {
+                                    await _dbContext.ManagerTask.AddAsync(managerTask);
+                                    await _dbContext.SaveChangesAsync();
+                                    result.Succeed = true;
+                                    result.Data = managerTask.id;
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                }
+                                return result;
+                            }                           
+                        }                       
+                    }         
+                }               
+            }           
         }
 
         public async Task<ResultModel> UpdateManagerTask(UpdateManagerTaskModel model)
@@ -101,59 +112,38 @@ namespace Sevices.Core.ManagerTaskService
             if (managerTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                result.ErrorMessage = "Không tìm thấy MannagerTask!";
                 return result;
             }
+            else
+            {                                               
+                if (model.startTime > model.endTime)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
+                    return result;
+                }
+                else
+                {
+                    managerTask.name = model.name;
+                    managerTask.startTime = model.startTime;
+                    managerTask.endTime = model.endTime;
+                    managerTask.status = model.status;
+                    managerTask.description = model.description;
 
-            var check1 = await _dbContext.User.FindAsync(model.managerId);
-            if (check1 == null)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "managerId không hợp lệ!";
-                return result;
-            }
-
-            var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
-
-            if (orderTmp == null)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "orderId không hợp lệ!";
-                return result;
-            }
-
-            if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Đơn hàng đang không tiến hành";
-                return result;
-            }
-
-            if (model.startTime > model.endTime)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
-                return result;
-            }
-
-            managerTask.orderId = model.orderId;
-            managerTask.managerId = model.managerId;
-            managerTask.name = model.name;
-            managerTask.startTime = model.startTime;
-            managerTask.endTime = model.endTime;
-            managerTask.description = model.description;          
-
-            try
-            {
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = managerTask.id;
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
+                    try
+                    {
+                        await _dbContext.SaveChangesAsync();
+                        result.Succeed = true;
+                        result.Data = managerTask.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                    return result;
+                }             
+            }      
         }
 
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
@@ -163,29 +153,32 @@ namespace Sevices.Core.ManagerTaskService
             if (managerTask == null) { 
                 return null; 
             }
-          
-            foreach (var item in managerTask)
+            else
             {
-                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
-                var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                var tmp = new ResponseManagerTaskModel
+                foreach (var item in managerTask)
                 {
-                    createByName = createByTmp.fullName,
-                    managerName = managerTmp.fullName,
-                    orderName = orderTmp.name,
-                    createdById = item.createById,
-                    name = item.name,
-                    startTime = item.startTime,
-                    endTime = item.endTime,
-                    status = item.status,
-                    completedTime = item.completedTime,
-                    description = item.description,
-                    isDeleted = item.isDeleted,
-                };
-                result.Add(tmp);
+                    var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var createByTmp = await _dbContext.User.FindAsync(item.createById);
+                    var tmp = new ResponseManagerTaskModel
+                    {
+                        createByName = createByTmp.fullName,
+                        managerName = managerTmp.fullName,
+                        orderName = orderTmp.name,
+                        createdById = item.createById,
+                        name = item.name,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        completedTime = item.completedTime,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
+                    };
+                    result.Add(tmp);
+                }
+                return result;
             }
-            return result;
+            
         }
 
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
@@ -196,28 +189,30 @@ namespace Sevices.Core.ManagerTaskService
             {
                 return null;
             }
-
-            foreach (var item in managerTask)
+            else
             {
-                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
-                var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                var tmp = new ResponseManagerTaskModel
+                foreach (var item in managerTask)
                 {
-                    createByName = createByTmp.fullName,
-                    managerName = managerTmp.fullName,
-                    orderName = orderTmp.name,
-                    createdById = item.createById,
-                    name = item.name,
-                    startTime = item.startTime,
-                    endTime = item.endTime,
-                    status = item.status,
-                    description = item.description,
-                    isDeleted = item.isDeleted,
-                };
-                result.Add(tmp);
+                    var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var createByTmp = await _dbContext.User.FindAsync(item.createById);
+                    var tmp = new ResponseManagerTaskModel
+                    {
+                        createByName = createByTmp.fullName,
+                        managerName = managerTmp.fullName,
+                        orderName = orderTmp.name,
+                        createdById = item.createById,
+                        name = item.name,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
+                    };
+                    result.Add(tmp);
+                }
+                return result;
             }
-            return result;
         }
 
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
@@ -228,28 +223,31 @@ namespace Sevices.Core.ManagerTaskService
             {
                 return null;
             }
-
-            foreach (var item in managerTask)
+            else
             {
-                var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                var managerTmp = await _dbContext.User.FindAsync(item.managerId);
-                var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                var tmp = new ResponseManagerTaskModel
+                foreach (var item in managerTask)
                 {
-                    createByName = createByTmp.fullName,
-                    managerName = managerTmp.fullName,
-                    orderName = orderTmp.name,
-                    createdById = item.createById,
-                    name = item.name,
-                    startTime = item.startTime,
-                    endTime = item.endTime,
-                    status = item.status,
-                    description = item.description,
-                    isDeleted = item.isDeleted,
-                };
-                result.Add(tmp);
+                    var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
+                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var createByTmp = await _dbContext.User.FindAsync(item.createById);
+                    var tmp = new ResponseManagerTaskModel
+                    {
+                        createByName = createByTmp.fullName,
+                        managerName = managerTmp.fullName,
+                        orderName = orderTmp.name,
+                        createdById = item.createById,
+                        name = item.name,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
+                    };
+                    result.Add(tmp);
+                }
+                return result;
             }
-            return result;
+            
         }
 
         public async Task<ResultModel> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status)
@@ -263,21 +261,24 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = "Không tìm thấy Mannager Task!";
                 return result;
             }
-
-            try
+            else
             {
-                task.status = status;
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = task.id;
+                try
+                {
+                    task.status = status;
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = task.id;
 
-            }
+                }
 
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
+                return result;
             }
-            return result;
+            
         }
 
         public async Task<ResultModel> DeleteManagerTask(Guid taskManagerId)
@@ -292,21 +293,23 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = "Không tìm thấy Mannager Task!";
                 return result;
             }
-
-            try
+            else
             {
-                check.isDeleted = true;
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = check.id;
+                try
+                {
+                    check.isDeleted = true;
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = check.id;
 
-            }
+                }
 
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
+                return result;
+            } 
         }        
 
         public async Task<ResultModel> AssignManagerTask(Guid taskManagerId, Guid groupId)
@@ -322,37 +325,40 @@ namespace Sevices.Core.ManagerTaskService
                 result.ErrorMessage = "Không tìm thấy Mannager Task!";
                 return result;
             }
-
-            var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId);
-
-            if (check == null)
+            else
             {
-                result.Succeed = false;
-                result.ErrorMessage = "Nhóm không hợp lệ!";
-                return result;
+                var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId);
+                if (check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Nhóm không hợp lệ!";
+                    return result;
+                }
+                else
+                {
+                    if (check.isDeleted == true)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Nhóm đã xoá!";
+                        return result;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            task.groupId = groupId;
+                            await _dbContext.SaveChangesAsync();
+                            result.Succeed = true;
+                            result.Data = task.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
+                        return result;
+                    }
+                }
             }
-
-            if (check.isDeleted == true)
-            {
-                result.Succeed = false;
-                result.ErrorMessage = "Nhóm đã xoá!";
-                return result;
-            }
-
-            try
-            {
-                task.groupId = groupId;
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = task.id;
-
-            }
-
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
         }
 
         /*
