@@ -35,11 +35,10 @@ namespace Data.Models
     public class UpdateManagerTaskModel
     {
         public Guid id { get; set; }
-        public Guid managerId { get; set; }
-        public Guid orderId { get; set; }
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
+        public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         
     }

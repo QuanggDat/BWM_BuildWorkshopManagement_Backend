@@ -59,7 +59,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public async Task<ActionResult> UpdateManagerTask(UpdateManagerTaskModel model)
         {
-            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được đơn hàng!");
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var result = await _managerTaskService.UpdateManagerTask(model);

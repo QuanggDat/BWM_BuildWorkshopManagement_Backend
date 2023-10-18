@@ -4,17 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Data.Models.WokerTaskModel;
 
 namespace Sevices.Core.WokerTaskService
 {
     public interface IWokerTaskService
     {
-        Task<ResultModel> CreateTask(Guid userId, CreateTaskRequest request);
-        Task<ResultModel> UpdateTask(UpdateTaskRequest request);
-        Task<ResultModel> DeleteTask(Guid taskId);
-        Task<ResultModel> AssignTask(AssignTaskRequest request);
-        Task<ResultModel> UnAssignTask(AssignTaskRequest request);
-        Task<ResultModel<TaskResponse>> GetAllTask(Guid projectId);
-        Task<bool> UpdateTaskStatus(Guid taskId, ProjectTaskStatus status);
+        Task<ResultModel> CreateWokerTask(Guid userId, CreateWokerTaskModel model);
+        Task<ResultModel> UpdateWokerTask(UpdateWokerTaskModel model);
+        Task<ResultModel> DeleteWokerTask(Guid wokerTaskId);
+        Task<ResultModel> AssignWokerTask(AssignWokerTaskModel model);
+        Task<ResultModel> UnAssignWokerTask(AssignWokerTaskModel model);
+        Task <List<WokerTaskResponseModel>> GetAllWokerTask(Guid managerTaskId);
+        Task<ResultModel> UpdateWokerTaskStatus(Guid wokerTaskId, TaskStatus status);
     }
 }

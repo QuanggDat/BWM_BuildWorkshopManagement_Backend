@@ -16,6 +16,48 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+        }       
+
+        [HttpPost("CreateMaterialCategory")]
+        public async Task<ActionResult> CreateMaterialCategory(CreateMaterialCategoryModel model)
+        {
+            var result = await _categoryService.CreateMaterialCategory(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        
+
+        [HttpPut("UpdateMaterialCategory")]
+        public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
+        {
+            var result = _categoryService.UpdateMaterialCategory(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }       
+
+        [HttpGet("GetAllMaterialCategory")]
+        public Task<ActionResult> GetAllMaterialCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _categoryService.GetAllMaterialCategory(pageIndex, pageSize);
+            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
+        }    
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetMaterialCategoryById(Guid id)
+        {
+            var result = _categoryService.GetMaterialCategoryById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+       
+        [HttpGet("[action]/{id}")]
+        public IActionResult DeleteMaterialCategory(Guid id)
+        {
+            var result = _categoryService.DeleteMaterialCategory(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
         }
 
         //[HttpPost("CreateItemCategory")]
@@ -26,14 +68,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         //    return BadRequest(result.ErrorMessage);
         //}
 
-        [HttpPost("CreateMaterialCategory")]
-        public async Task<ActionResult> CreateMaterialCategory(CreateMaterialCategoryModel model)
-        {
-            var result = await _categoryService.CreateMaterialCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
         //[HttpPut("UpdateItemCategory")]
         //public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
         //{
@@ -41,14 +75,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         //    if (result.Succeed) return Ok(result.Data);
         //    return BadRequest(result.ErrorMessage);
         //}
-
-        [HttpPut("UpdateMaterialCategory")]
-        public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
-        {
-            var result = _categoryService.UpdateMaterialCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
 
         //[HttpGet("GetAllItemCategory")]
         //public Task<ActionResult> GetAllItemCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
@@ -58,14 +84,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         //    return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         //}
 
-        [HttpGet("GetAllMaterialCategory")]
-        public Task<ActionResult> GetAllMaterialCategory(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
-        {
-            var result = _categoryService.GetAllMaterialCategory(pageIndex, pageSize);
-            if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
-            return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
-        }
-
         //[HttpGet("[action]/{id}")]
         //public IActionResult GetItemCategoryById(Guid id)
         //{
@@ -74,14 +92,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         //    return BadRequest(result.ErrorMessage);
         //}
 
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetMaterialCategoryById(Guid id)
-        {
-            var result = _categoryService.GetMaterialCategoryById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
         //[HttpGet("[action]/{id}")]
         //public IActionResult DeleteItemCategory(Guid id)
         //{
@@ -89,13 +99,5 @@ namespace WorkshopManagementSystem_BWM.Controllers
         //    if (result.Succeed) return Ok(result.Data);
         //    return BadRequest(result.ErrorMessage);
         //}
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult DeleteMaterialCategory(Guid id)
-        {
-            var result = _categoryService.DeleteMaterialCategory(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
     }
 }

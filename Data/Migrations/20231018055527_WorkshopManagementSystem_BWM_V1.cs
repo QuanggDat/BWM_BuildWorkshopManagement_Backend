@@ -434,8 +434,8 @@ namespace Data.Migrations
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    startTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    endTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     completedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     status = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -508,6 +508,7 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     reporterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     reportType = table.Column<int>(type: "int", nullable: false),
@@ -515,7 +516,7 @@ namespace Data.Migrations
                     content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     reportStatus = table.Column<int>(type: "int", nullable: true),
-                    contentReviews = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    responseContent = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -531,6 +532,11 @@ namespace Data.Migrations
                         column: x => x.managerTaskId,
                         principalTable: "ManagerTask",
                         principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_Report_Order_orderId",
+                        column: x => x.orderId,
+                        principalTable: "Order",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -538,6 +544,7 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -547,21 +554,20 @@ namespace Data.Migrations
                     status = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ManagerTaskid = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WokerTask", x => x.id);
                     table.ForeignKey(
-                        name: "FK_WokerTask_ManagerTask_ManagerTaskid",
-                        column: x => x.ManagerTaskid,
-                        principalTable: "ManagerTask",
-                        principalColumn: "id");
+                        name: "FK_WokerTask_AspNetUsers_createById",
+                        column: x => x.createById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_WokerTask_Order_orderId",
-                        column: x => x.orderId,
-                        principalTable: "Order",
+                        name: "FK_WokerTask_ManagerTask_managerTaskId",
+                        column: x => x.managerTaskId,
+                        principalTable: "ManagerTask",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -749,6 +755,11 @@ namespace Data.Migrations
                 column: "managerTaskId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Report_orderId",
+                table: "Report",
+                column: "orderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Report_reporterId",
                 table: "Report",
                 column: "reporterId");
@@ -759,14 +770,14 @@ namespace Data.Migrations
                 column: "reportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WokerTask_ManagerTaskid",
+                name: "IX_WokerTask_createById",
                 table: "WokerTask",
-                column: "ManagerTaskid");
+                column: "createById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WokerTask_orderId",
+                name: "IX_WokerTask_managerTaskId",
                 table: "WokerTask",
-                column: "orderId");
+                column: "managerTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WokerTaskDetail_userId",

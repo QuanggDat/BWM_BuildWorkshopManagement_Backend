@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231017074237_WorkshopManagementSystem_BWM_V5")]
-    partial class WorkshopManagementSystem_BWM_V5
+    [Migration("20231018055527_WorkshopManagementSystem_BWM_V1")]
+    partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -720,6 +720,9 @@ namespace Data.Migrations
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -750,6 +753,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createById");
 
                     b.HasIndex("managerTaskId");
 
@@ -1082,11 +1087,17 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
                     b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
                         .WithMany("WokerTasks")
                         .HasForeignKey("managerTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreateBy");
 
                     b.Navigation("ManagerTask");
                 });

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Data.Models.ReportModel;
+using static Data.Models.TaskReportModel;
 
 namespace Sevices.Core.ReportService
 {
@@ -20,7 +20,7 @@ namespace Sevices.Core.ReportService
             _dbContext = dbContext;
         }
 
-        public async Task<ResultModel> CreateReport(Guid reporterId, CreateReportModel model)
+        public async Task<ResultModel> CreateTaskReport(Guid reporterId, CreateTaskReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -36,117 +36,122 @@ namespace Sevices.Core.ReportService
                 result.ErrorMessage = "Không tìm thấy Manager Task";
                 return result;
             }
-
-            if (model.reportType == Data.Enums.ReportType.ProgressReport)
+            else
             {
-                
-                var canSendReport = CanSendProgressReport(managerTask);
-
-                if (!canSendReport)
+                if (model.reportType == Data.Enums.ReportType.ProgressReport)
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
-                    return result;
-                }
+                    var canSendReport = CanSendProgressTaskReport(managerTask);
+                    var checkReport = await _dbContext.Report.AnyAsync(x => x.managerTaskId == model.managerTaskId || x.reportType == Data.Enums.ReportType.ProgressReport);
 
-                var checkReport = await _dbContext.Report
-               .AnyAsync(x => x.managerTaskId == model.managerTaskId || x.reportType == Data.Enums.ReportType.ProgressReport);
-                
-                if (checkReport == true)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Báo cáo tiến độ cho công việc này đã được thực hiện!";
-                    return result;
-                }                
-
-                var report = new Report
-
-                {
-                    managerTaskId = model.managerTaskId,
-                    title = model.title,
-                    content = model.content,
-                    reporterId = reporterId,
-                    reportType = model.reportType,
-                    reportStatus = model.reportStatus,
-                    createdDate = DateTime.Now,                   
-                };
-
-                try
-                {
-                    await _dbContext.Report.AddAsync(report);
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = report.id;
-                }
-                catch (Exception ex)
-                {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-            }
-
-            if (model.reportType == Data.Enums.ReportType.ProblemReport)
-            {
-                var canSendReport = CanSendProblemReport(managerTask);
-
-                if (!canSendReport)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
-                    return result;
-                }
-
-                var report = new Report
-                {
-                    managerTaskId = model.managerTaskId,
-                    title = model.title,
-                    content = model.content,
-                    reporterId = reporterId,
-                    reportType = model.reportType,
-                    createdDate = DateTime.Now,
-                };
-
-                try
-                {
-                    await _dbContext.Report.AddAsync(report);
-                    if(model.resource != null) 
+                    if (checkReport == true)
                     {
-                        foreach (var resource in model.resource)
-                        {
-                            await _dbContext.Resource.AddAsync(new Resource
-                            {
-                                reportId = report.id,
-                                link = resource
-                            });
-                        }
+                        result.Succeed = false;
+                        result.ErrorMessage = "Báo cáo tiến độ cho công việc này đã được thực hiện!";
+                        return result;
                     }
                     
-                    await _dbContext.SaveChangesAsync();
+                    else
+                    {
+                        if (!canSendReport)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
+                            return result;
+                        }
+                        else
+                        {
+                            var report = new Report
+                            {
+                                managerTaskId = model.managerTaskId,
+                                title = model.title,
+                                content = model.content,
+                                reporterId = reporterId,
+                                reportType = model.reportType,
+                                reportStatus = model.reportStatus,
+                                createdDate = DateTime.Now,
+                            };
 
-                    result.Succeed = true;
-                    result.Data = report.id;
+                            try
+                            {
+                                await _dbContext.Report.AddAsync(report);
+                                await _dbContext.SaveChangesAsync();
+                                result.Succeed = true;
+                                result.Data = report.id;
+                            }
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
+                        }             
+                    }                 
                 }
 
-                catch (Exception ex)
+                else
                 {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }                
-            }
-            return result;
+                    var canSendReport = CanSendProblemTaskReport(managerTask);
+
+                    if (!canSendReport)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
+                        return result;
+                    }
+                    else
+                    {
+                        var report = new Report
+                        {
+                            managerTaskId = model.managerTaskId,
+                            title = model.title,
+                            content = model.content,
+                            reporterId = reporterId,
+                            reportType = model.reportType,
+                            createdDate = DateTime.Now,
+                        };
+
+                        try
+                        {
+                            await _dbContext.Report.AddAsync(report);
+                            if (model.resource != null)
+                            {
+                                foreach (var resource in model.resource)
+                                {
+                                    await _dbContext.Resource.AddAsync(new Resource
+                                    {
+                                        reportId = report.id,
+                                        link = resource
+                                    });
+                                }
+                            }
+
+                            await _dbContext.SaveChangesAsync();
+
+                            result.Succeed = true;
+                            result.Data = report.id;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
+                    }                 
+                }
+                return result;
+            }      
         }        
 
-        private bool CanSendProgressReport(ManagerTask managerTask)
+        private bool CanSendProgressTaskReport(ManagerTask managerTask)
         {
             var now = DateTime.Now;
             return now >= managerTask.endTime;
         }
 
-        private bool CanSendProblemReport(ManagerTask managerTask)
+        private bool CanSendProblemTaskReport(ManagerTask managerTask)
         {
             var now = DateTime.Now;
             return now >= managerTask.startTime && now <= managerTask.endTime;
         }
         
-        public async Task<ResponseReportModel?> GetReportById(Guid reportId)
+        public async Task<ResponseTaskReportModel?> GetTaskReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -163,14 +168,14 @@ namespace Sevices.Core.ReportService
             {
                 return null;
             }
-            ResponseReportModel result = null;
 
+            ResponseTaskReportModel result = null;
             if (report.reportType == Data.Enums.ReportType.ProgressReport)
             {
                 var reviewer = report.ManagerTask.CreateBy;
                 var reporter = report.Reporter;
 
-                result = new ResponseReportModel
+                result = new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.name,                  
@@ -196,12 +201,12 @@ namespace Sevices.Core.ReportService
                 };
             }
 
-            if (report.reportType == Data.Enums.ReportType.ProblemReport)
+            else 
             {
                 var reviewer = report.ManagerTask.CreateBy;
                 var reporter = report.Reporter;
 
-                result = new ResponseReportModel
+                result = new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.name,                    
@@ -228,11 +233,10 @@ namespace Sevices.Core.ReportService
                     
                 };               
             }
-
             return result;
         }
             
-        public async Task<ResultModel> ReportResponse(ReviewsReportModel model)
+        public async Task<ResultModel> TaskReportResponse(ReviewsReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -245,60 +249,63 @@ namespace Sevices.Core.ReportService
                 result.ErrorMessage = "Không tìm thấy reportId!";
                 return result;
             }
-
-            if (report.reportType == Data.Enums.ReportType.ProgressReport)
+            else
             {
-                if (report.reportStatus == Data.Enums.ReportStatus.Complete)
+                if (report.reportType == Data.Enums.ReportType.ProgressReport)
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Báo cáo này đã hoàn thành";
-                    return result;
-                }
-
-                var managerTask = await _dbContext.ManagerTask
-                    .FindAsync(report.managerTaskId);
-
-                try
-                {
-                    report.reportStatus = model.reportStatus;
-                    report.responseContent = model.responseContent;
-
-                    if (managerTask != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                    if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                     {
-                        managerTask.completedTime = DateTime.Now;
-                        managerTask.status = (TaskStatus)Data.Enums.TaskStatus.Completed;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Báo cáo này đã hoàn thành";
+                        return result;
                     }
+                    else
+                    {
+                        var managerTask = await _dbContext.ManagerTask
+                        .FindAsync(report.managerTaskId);
 
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = report.id;
+                        try
+                        {
+                            report.reportStatus = model.reportStatus;
+                            report.responseContent = model.responseContent;
+
+                            if (managerTask != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                            {
+                                managerTask.completedTime = DateTime.Now;
+                                managerTask.status = (TaskStatus)Data.Enums.TaskStatus.Completed;
+                            }
+
+                            await _dbContext.SaveChangesAsync();
+                            result.Succeed = true;
+                            result.Data = report.id;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
+                    }             
                 }
 
-                catch (Exception ex)
+                else
                 {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    try
+                    {
+                        report.responseContent = model.responseContent;
+                        await _dbContext.SaveChangesAsync();
+                        result.Succeed = true;
+                        result.Data = report.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
                 }
-            }
-
-            if (report.reportType == Data.Enums.ReportType.ProblemReport)
-            {                
-                try
-                {                    
-                    report.responseContent = model.responseContent;                    
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = report.id;
-                }
-                catch (Exception ex)
-                {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-            }
-
-            return result;
+                return result;
+            }                  
         }
 
-        public async Task<List<ResponseReportModel>> GetProgressReportsByManagerId(Guid managerId)
+        public async Task<List<ResponseTaskReportModel>> GetProgressTaskReportsByManagerId(Guid managerId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -312,39 +319,42 @@ namespace Sevices.Core.ReportService
             
             if (checkReport == null)
             {
-                return new List<ResponseReportModel>();
-            }            
-
-            var list = checkReport.Select(report => new ResponseReportModel
+                return new List<ResponseTaskReportModel>();
+            }
+            else
             {
-                orderName = report.ManagerTask.Order.name,
-                managerTaskName = report.ManagerTask.name,
-                title = report.title,
-                content = report.content,
-                createdDate = report.createdDate,
-                reportStatus = report.reportStatus,
-                responseContent = report.responseContent,
-
-                reporter = new Reporter
+                var list = checkReport.Select(report => new ResponseTaskReportModel
                 {
-                    id = report.Reporter.Id,
-                    fullName = report.Reporter.fullName,
-                    phoneNumber = report.Reporter.UserName,
-                    email = report.Reporter.Email,
-                },
+                    orderName = report.ManagerTask.Order.name,
+                    managerTaskName = report.ManagerTask.name,
+                    title = report.title,
+                    content = report.content,
+                    createdDate = report.createdDate,
+                    reportStatus = report.reportStatus,
+                    responseContent = report.responseContent,
 
-                reviewer = new Reviewer
-                {
-                    id = report.ManagerTask.CreateBy.Id,
-                    fullName = report.ManagerTask.CreateBy.fullName,
-                },
-            }).ToList();
+                    reporter = new Reporter
+                    {
+                        id = report.Reporter.Id,
+                        fullName = report.Reporter.fullName,
+                        phoneNumber = report.Reporter.UserName,
+                        email = report.Reporter.Email,
+                    },
 
-            var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
-            return sortedList;
+                    reviewer = new Reviewer
+                    {
+                        id = report.ManagerTask.CreateBy.Id,
+                        fullName = report.ManagerTask.CreateBy.fullName,
+                    },
+                }).ToList();
+
+                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+                return sortedList;
+            }
+            
         }
 
-        public async Task<List<ResponseReportModel>> GetProblemReportsByManagerId(Guid managerId)
+        public async Task<List<ResponseTaskReportModel>> GetProblemTaskReportsByManagerId(Guid managerId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -358,38 +368,40 @@ namespace Sevices.Core.ReportService
 
             if (checkReport == null)
             {
-                return new List<ResponseReportModel>();
+                return new List<ResponseTaskReportModel>();
             }
-
-            var list = checkReport.Select(report => new ResponseReportModel
+            else
             {
-                orderName = report.ManagerTask.Order.name,
-                managerTaskName = report.ManagerTask.name,
-                title = report.title,
-                content = report.content,
-                createdDate = report.createdDate,
-                responseContent = report.responseContent,
-
-                reporter = new Reporter
+                var list = checkReport.Select(report => new ResponseTaskReportModel
                 {
-                    id = report.Reporter.Id,
-                    fullName = report.Reporter.fullName,
-                    phoneNumber = report.Reporter.UserName,
-                    email = report.Reporter.Email,
-                },
+                    orderName = report.ManagerTask.Order.name,
+                    managerTaskName = report.ManagerTask.name,
+                    title = report.title,
+                    content = report.content,
+                    createdDate = report.createdDate,
+                    responseContent = report.responseContent,
 
-                reviewer = new Reviewer
-                {
-                    id = report.ManagerTask.CreateBy.Id,
-                    fullName = report.ManagerTask.CreateBy.fullName,
-                },
+                    reporter = new Reporter
+                    {
+                        id = report.Reporter.Id,
+                        fullName = report.Reporter.fullName,
+                        phoneNumber = report.Reporter.UserName,
+                        email = report.Reporter.Email,
+                    },
 
-                resource = report.Resources.Select(x => x.link).ToList()
+                    reviewer = new Reviewer
+                    {
+                        id = report.ManagerTask.CreateBy.Id,
+                        fullName = report.ManagerTask.CreateBy.fullName,
+                    },
 
-            }).ToList();
+                    resource = report.Resources.Select(x => x.link).ToList()
 
-            var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
-            return sortedList;
+                }).ToList();
+
+                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+                return sortedList;
+            }        
         }
     }
 }

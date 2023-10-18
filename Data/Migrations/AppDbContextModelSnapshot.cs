@@ -718,6 +718,9 @@ namespace Data.Migrations
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -748,6 +751,8 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createById");
 
                     b.HasIndex("managerTaskId");
 
@@ -1080,11 +1085,17 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
                 {
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
                     b.HasOne("Data.Entities.ManagerTask", "ManagerTask")
                         .WithMany("WokerTasks")
                         .HasForeignKey("managerTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreateBy");
 
                     b.Navigation("ManagerTask");
                 });

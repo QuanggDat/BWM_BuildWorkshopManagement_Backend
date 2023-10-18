@@ -12,6 +12,11 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+
+        [ForeignKey("createById")]
+        public Guid? createById { get; set; }
+        public virtual User CreateBy { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
