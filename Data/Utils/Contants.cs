@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Data.Utils
 {
+    public class ConstRole
+    {
+        public const string Admin = "Admin";
+    }
+
     public class ConstPaging
     {
         public const int Index = 1;
