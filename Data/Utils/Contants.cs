@@ -10,6 +10,9 @@ namespace Data.Utils
     public class ConstRole
     {
         public const string Admin = "Admin";
+        public const string Factory = "Factory";
+        public const string Manager = "Manager";
+        public const string Worker = "Worker";
     }
 
     public class ConstPaging
