@@ -1,7 +1,7 @@
 ﻿using Data.Enums;
 using Data.Models;
 using Data.Utils;
-using FitmarAgencyTemplate.Extensions;
+using WorkshopManagementSystem_BWM.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderService;
@@ -22,6 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("GetAllWithPaging")]
         public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
+            var r = User.GetRole();
             var result = _orderService.GetAllWithPaging(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);

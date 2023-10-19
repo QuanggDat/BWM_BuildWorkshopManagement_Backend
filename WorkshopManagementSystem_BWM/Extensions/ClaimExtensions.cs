@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace FitmarAgencyTemplate.Extensions
+namespace WorkshopManagementSystem_BWM.Extensions
 {
     public static class ClaimExtensions
     {
