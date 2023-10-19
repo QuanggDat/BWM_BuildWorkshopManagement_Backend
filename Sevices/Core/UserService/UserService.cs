@@ -62,10 +62,10 @@ namespace Sevices.Core.UserService
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
-                if (userByPhone != null)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                 }
                 else
                 {
@@ -77,17 +77,17 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (userByMail != null)
+                        if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Email Đã Tồn Tại!";
+                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
                         }
                         else
                         {
-                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                            if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                                result.ErrorMessage = "Email Đã Tồn Tại!";
                             }
                             else
                             {
@@ -97,7 +97,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
                                     return result;
                                 }
                                 else
@@ -120,10 +120,10 @@ namespace Sevices.Core.UserService
                                         result.Succeed = false;
                                         result.ErrorMessage = "Xác thực người dùng sai ";
                                     }
-                                }                            
+                                }
                             }
                         }
-                    }                
+                    }
                 }
             }
             catch (Exception ex)
@@ -161,10 +161,10 @@ namespace Sevices.Core.UserService
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (userByPhone != null)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                 }
                 else
                 {
@@ -176,17 +176,17 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (userByMail != null)
+                        if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Email Đã Tồn Tại!";
+                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
                         }
                         else
                         {
-                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                            if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                                result.ErrorMessage = "Email Đã Tồn Tại!";
                             }
                             else
                             {
@@ -196,7 +196,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
                                     return result;
                                 }
                                 else
@@ -261,10 +261,10 @@ namespace Sevices.Core.UserService
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (userByPhone != null)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                 }
                 else
                 {
@@ -276,17 +276,17 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (userByMail != null)
+                        if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Email Đã Tồn Tại!";
+                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
                         }
                         else
                         {
-                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                            if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                                result.ErrorMessage = "Email Đã Tồn Tại!";
                             }
                             else
                             {
@@ -296,7 +296,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
                                     return result;
                                 }
                                 else
@@ -359,10 +359,11 @@ namespace Sevices.Core.UserService
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
-                if (userByPhone != null)
+                
+                if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
                 }
                 else
                 {
@@ -374,17 +375,17 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        if (userByMail != null)
+                        if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Email Đã Tồn Tại!";
+                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
                         }
                         else
                         {
-                            if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                            if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                                result.ErrorMessage = "Email Đã Tồn Tại!";
                             }
                             else
                             {
@@ -394,7 +395,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người này không trong độ tuổi lao động";
+                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
                                     return result;
                                 }
                                 else
@@ -481,7 +482,7 @@ namespace Sevices.Core.UserService
             }
             else
             {
-                result.ErrorMessage = "Không tìm thấy số điện thoại!";
+                result.ErrorMessage = "Không Tìm Thấy Số Điện Thoại!";
             }
             return result;
         }
@@ -642,12 +643,12 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetByEmail(string email)
+        public ResultModel GetByPhoneNumber(string phoneNumber)
         {
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(s => s.Email == email && !s.banStatus == true);
+                var data = _dbContext.User.Where(s => s.UserName == phoneNumber && !s.banStatus == true);
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<UserModel>(data).FirstOrDefault();

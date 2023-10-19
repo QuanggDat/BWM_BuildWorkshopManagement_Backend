@@ -80,10 +80,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("{email}")]
-        public IActionResult GetByEmail(string email)
+        [HttpGet("{phoneNumber}")]
+        public IActionResult GetByEmail(string phoneNumber)
         {
-            var result = _userService.GetByEmail(email);
+            var result = _userService.GetByPhoneNumber(phoneNumber);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

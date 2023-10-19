@@ -18,7 +18,7 @@ namespace Sevices.Core.UserService
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel GetAll();
-        ResultModel GetByEmail(String email);
+        ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetByID(Guid id);
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
