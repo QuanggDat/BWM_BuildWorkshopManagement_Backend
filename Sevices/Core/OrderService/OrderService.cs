@@ -7,6 +7,7 @@ using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
+using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -20,12 +21,14 @@ namespace Sevices.Core.OrderService
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUtilsService _utilsService;
+        private readonly INotificationService _notificationService;
 
-        public OrderService(AppDbContext dbContext, IMapper mapper, IUtilsService utilsService)
+        public OrderService(AppDbContext dbContext, IMapper mapper, IUtilsService utilsService, INotificationService notificationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _utilsService = utilsService;
+            _notificationService = notificationService;
         }
 
         public ResultModel GetAllWithPaging(int pageIndex, int pageSize)
@@ -277,11 +280,21 @@ namespace Sevices.Core.OrderService
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
 
 
-                        //_dbContext.Order.Update(orderCreate);
-
                         _dbContext.SaveChanges();
 
+
                         var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderCreate.id);
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Đơn đặt hàng mới",
+                            content = "Bạn có đơn đặt hàng mới cần báo giá",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
+
                         result.Data = _mapper.Map<OrderModel>(order);
                         result.Succeed = true;
                     }

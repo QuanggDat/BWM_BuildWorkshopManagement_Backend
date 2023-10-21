@@ -22,7 +22,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("GetAllWithPaging")]
         public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var r = User.GetRole();
             var result = _orderService.GetAllWithPaging(pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);

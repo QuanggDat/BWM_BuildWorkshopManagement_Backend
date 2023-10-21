@@ -36,6 +36,10 @@ namespace Sevices.Mapping
             //HumanResources
             CreateMap<Squad, SquadModel>();
             CreateMap<Group, GroupModel>();
+
+            // Notification
+            CreateMap<Notification, NotificationModel>().ReverseMap();
+            CreateMap<Notification, NotificationCreateModel>().ReverseMap();
         }
     }
 }

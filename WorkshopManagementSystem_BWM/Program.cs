@@ -1,5 +1,6 @@
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using SignalRHubs.Hubs.NotificationHub;
 using WorkshopManagementSystem_BWM.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,15 +22,15 @@ builder.Services.ConfigIdentityService();
 builder.Services.AddBussinessService();
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 builder.Services.AddSwaggerWithAuthentication();
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
     builder
-        .AllowAnyMethod()
         .AllowAnyHeader()
+        .AllowAnyMethod()
         .AllowCredentials()
-        .WithOrigins("http://localhost:7245","https://localhost:3000");
-
+        .SetIsOriginAllowed((host) => true);
 }));
 
 var app = builder.Build();
@@ -37,8 +38,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
@@ -51,5 +52,7 @@ app.UseAuthentication();
 app.UseStaticFiles();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
