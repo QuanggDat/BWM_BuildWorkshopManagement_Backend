@@ -63,7 +63,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(CreateOrderModel model)
         {
-            var result = await _orderService.Create(model);
+            var result = await _orderService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

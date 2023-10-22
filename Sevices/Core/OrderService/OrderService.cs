@@ -155,7 +155,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public async Task<ResultModel> Create(CreateOrderModel model)
+        public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
             var result = new ResultModel();
             try
@@ -181,6 +181,7 @@ namespace Sevices.Core.OrderService
                     {
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
+                        orderCreate.createdById = createdById;
                         orderCreate.orderDate = DateTime.Now;
                         orderCreate.status = OrderStatus.Pending;
 
@@ -279,9 +280,7 @@ namespace Sevices.Core.OrderService
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
 
-
                         _dbContext.SaveChanges();
-
 
                         var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderCreate.id);
 
@@ -314,21 +313,38 @@ namespace Sevices.Core.OrderService
             try
             {
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
-                if (status == OrderStatus.Request)
+                if(order == null)
                 {
-                    order.quoteDate = DateTime.Now;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
                 }
-                else if (status == OrderStatus.Completed)
+                else
                 {
-                    order.acceptanceDate = DateTime.Now;
+                    if (status == OrderStatus.Request)
+                    {
+                        order.quoteDate = DateTime.Now;
+
+                        var noti = new Notification()
+                        {
+                            userId = order.createdById,
+                            title = "Báo giá đơn đặt hàng",
+                            content = "Bạn vừa nhận được báo giá đơn hàng",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
+                    }
+                    else if (status == OrderStatus.Completed)
+                    {
+                        order.acceptanceDate = DateTime.Now;
+                    }
+                    order.status = status;
+
+                    _dbContext.Update(order);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
                 }
-                order.status = status;
-
-                _dbContext.Update(order);
-                _dbContext.SaveChanges();
-
-                result.Data = true;
-                result.Succeed = true;
             }
             catch (Exception ex)
             {
