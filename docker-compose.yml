@@ -1,0 +1,12 @@
+version: '1'
+services:
+
+  workshop-management-system:
+    image: workshop-management-system
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    container_name: workshop-management-system
+    ports:
+     - "8008:80"
+    restart: "always"
