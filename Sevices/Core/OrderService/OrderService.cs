@@ -7,6 +7,7 @@ using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
+using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -20,12 +21,14 @@ namespace Sevices.Core.OrderService
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUtilsService _utilsService;
+        private readonly INotificationService _notificationService;
 
-        public OrderService(AppDbContext dbContext, IMapper mapper, IUtilsService utilsService)
+        public OrderService(AppDbContext dbContext, IMapper mapper, IUtilsService utilsService, INotificationService notificationService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _utilsService = utilsService;
+            _notificationService = notificationService;
         }
 
         public ResultModel GetAllWithPaging(int pageIndex, int pageSize)
@@ -152,7 +155,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public async Task<ResultModel> Create(CreateOrderModel model)
+        public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
             var result = new ResultModel();
             try
@@ -178,6 +181,7 @@ namespace Sevices.Core.OrderService
                     {
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
+                        orderCreate.createdById = createdById;
                         orderCreate.orderDate = DateTime.Now;
                         orderCreate.status = OrderStatus.Pending;
 
@@ -276,12 +280,20 @@ namespace Sevices.Core.OrderService
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
 
-
-                        //_dbContext.Order.Update(orderCreate);
-
                         _dbContext.SaveChanges();
 
                         var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderCreate.id);
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Đơn đặt hàng mới",
+                            content = "Bạn có đơn đặt hàng mới cần báo giá",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
+
                         result.Data = _mapper.Map<OrderModel>(order);
                         result.Succeed = true;
                     }
@@ -301,21 +313,38 @@ namespace Sevices.Core.OrderService
             try
             {
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
-                if (status == OrderStatus.Request)
+                if(order == null)
                 {
-                    order.quoteDate = DateTime.Now;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
                 }
-                else if (status == OrderStatus.Completed)
+                else
                 {
-                    order.acceptanceDate = DateTime.Now;
+                    if (status == OrderStatus.Request)
+                    {
+                        order.quoteDate = DateTime.Now;
+
+                        var noti = new Notification()
+                        {
+                            userId = order.createdById,
+                            title = "Báo giá đơn đặt hàng",
+                            content = "Bạn vừa nhận được báo giá đơn hàng",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
+                    }
+                    else if (status == OrderStatus.Completed)
+                    {
+                        order.acceptanceDate = DateTime.Now;
+                    }
+                    order.status = status;
+
+                    _dbContext.Update(order);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
                 }
-                order.status = status;
-
-                _dbContext.Update(order);
-                _dbContext.SaveChanges();
-
-                result.Data = true;
-                result.Succeed = true;
             }
             catch (Exception ex)
             {

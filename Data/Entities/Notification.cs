@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,17 +13,20 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        public string? title { get; set; }
+        public string? content { get; set; }
+        public bool seen { get; set; } = false;
+        public NotificationType? type { get; set; }
+        public bool isDeleted { get; set; } = false;
+        public DateTime dateCreated { get; set; } = DateTime.Now;
+
         [ForeignKey("userId")]
         public Guid userId { get; set; }
         public User User { get; set; } = null!;
-        public bool seen { get; set; }
-        public string action { get; set; } = null!;
-        public string? description { get; set; }
-        public string subject { get; set; } = null!;
-        public string content { get; set; } = null!;
-        public DateTime dateCreated { get; set; } = DateTime.Now;
-        public DateTime dateUpdated { get; set; } = DateTime.Now;
-        public bool isDeleted { get; set; }
+
+        [ForeignKey("orderId")]
+        public Guid? orderId { get; set; }
+        public Order? Order { get; set; }
 
     }
 }

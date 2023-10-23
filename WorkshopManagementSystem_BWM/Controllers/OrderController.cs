@@ -1,7 +1,7 @@
 ﻿using Data.Enums;
 using Data.Models;
 using Data.Utils;
-using FitmarAgencyTemplate.Extensions;
+using WorkshopManagementSystem_BWM.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderService;
@@ -63,7 +63,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(CreateOrderModel model)
         {
-            var result = await _orderService.Create(model);
+            var result = await _orderService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

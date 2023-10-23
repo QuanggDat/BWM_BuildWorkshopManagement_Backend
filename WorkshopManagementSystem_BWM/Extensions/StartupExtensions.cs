@@ -11,6 +11,7 @@ using Sevices.Core.HumanResourceService;
 using Sevices.Core.ItemService;
 using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;
+using Sevices.Core.NotificationService;
 using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderReportService;
 using Sevices.Core.OrderService;
@@ -20,6 +21,7 @@ using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
 using Sevices.Core.WokerTaskService;
 using Sevices.Mapping;
+using SignalRHubs.Hubs.NotificationHub;
 using System.Text;
 using System.Text.Json;
 
@@ -69,6 +71,9 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IUtilsService, UtilsService>();
             services.AddScoped<IOrderReportService, OrderReportService>();
             services.AddScoped<IWokerTaskService, WokerTaskService>();
+            services.AddScoped<INotificationService, NotificationService>();
+
+            services.AddSingleton<INotificationHub, NotificationHub>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {

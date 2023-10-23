@@ -21,6 +21,10 @@ namespace Data.Entities
         public Guid assignToId { get; set; }
         public virtual User AssignTo { get; set; } = null!;
 
+        [ForeignKey("createdById")]
+        public Guid createdById { get; set; }
+        public virtual User createdBy { get; set; } = null!;
+
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 

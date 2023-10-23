@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sevices\Sevices.csproj" />
+    <ProjectReference Include="..\SignalRHubs\SignalRHubs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
