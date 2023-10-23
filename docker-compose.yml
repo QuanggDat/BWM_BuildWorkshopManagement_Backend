@@ -10,3 +10,10 @@ services:
     ports:
      - "8008:80"
     restart: "always"
+    networks:
+      - nginx-network
+
+networks:
+  nginx-network:
+    external:
+      name: nginx-network
