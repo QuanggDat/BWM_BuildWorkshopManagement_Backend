@@ -24,9 +24,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _categoryService.CreateMaterialCategory(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
-        }
-
-        
+        }      
 
         [HttpPut("UpdateMaterialCategory")]
         public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)

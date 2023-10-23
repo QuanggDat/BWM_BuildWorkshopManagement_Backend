@@ -14,7 +14,6 @@ namespace Data.Utils
         public const string Manager = "Manager";
         public const string Worker = "Worker";
     }
-
     public class ConstPaging
     {
         public const int Index = 1;

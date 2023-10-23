@@ -569,9 +569,7 @@ namespace Sevices.Core.OrderService
                                     hasItem = true;
                                 }
                             }
-
                         }
-
 
                         if (!hasItem)
                         {
