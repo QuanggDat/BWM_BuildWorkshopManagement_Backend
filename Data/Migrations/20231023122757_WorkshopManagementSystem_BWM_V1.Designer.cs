@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231018055527_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231023122757_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -306,37 +306,33 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("dateCreated")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("dateUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("orderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("seen")
                         .HasColumnType("bit");
 
-                    b.Property<string>("subject")
-                        .IsRequired()
+                    b.Property<string>("title")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("type")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("userId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
+
+                    b.HasIndex("orderId");
 
                     b.HasIndex("userId");
 
@@ -353,6 +349,9 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("assignToId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("createdById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("customerName")
@@ -390,6 +389,8 @@ namespace Data.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("assignToId");
+
+                    b.HasIndex("createdById");
 
                     b.ToTable("Order");
                 });
@@ -951,11 +952,17 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Notification", b =>
                 {
+                    b.HasOne("Data.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("orderId");
+
                     b.HasOne("Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });
@@ -963,12 +970,20 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.HasOne("Data.Entities.User", "AssignTo")
-                        .WithMany("Orders")
+                        .WithMany("OrdersAssignTo")
                         .HasForeignKey("assignToId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "CreatedBy")
+                        .WithMany("OrdersCreatedBy")
+                        .HasForeignKey("createdById")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AssignTo");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -1217,7 +1232,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("OrdersAssignTo");
+
+                    b.Navigation("OrdersCreatedBy");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>

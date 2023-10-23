@@ -371,32 +371,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notification",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    seen = table.Column<bool>(type: "bit", nullable: false),
-                    action = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    subject = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    dateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    dateUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notification", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Notification_AspNetUsers_userId",
-                        column: x => x.userId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Order",
                 columns: table => new
                 {
@@ -404,6 +378,7 @@ namespace Data.Migrations
                     name = table.Column<string>(type: "nvarchar(500)", nullable: false),
                     customerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     assignToId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    createdById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     orderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
@@ -421,7 +396,13 @@ namespace Data.Migrations
                         column: x => x.assignToId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Order_AspNetUsers_createdById",
+                        column: x => x.createdById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -462,6 +443,36 @@ namespace Data.Migrations
                         principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_ManagerTask_Order_orderId",
+                        column: x => x.orderId,
+                        principalTable: "Order",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notification",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    seen = table.Column<bool>(type: "bit", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: true),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    dateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notification", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Notification_AspNetUsers_userId",
+                        column: x => x.userId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Notification_Order_orderId",
                         column: x => x.orderId,
                         principalTable: "Order",
                         principalColumn: "id");
@@ -715,6 +726,11 @@ namespace Data.Migrations
                 column: "categoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notification_orderId",
+                table: "Notification",
+                column: "orderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_userId",
                 table: "Notification",
                 column: "userId");
@@ -723,6 +739,11 @@ namespace Data.Migrations
                 name: "IX_Order_assignToId",
                 table: "Order",
                 column: "assignToId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_createdById",
+                table: "Order",
+                column: "createdById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetail_areaId",

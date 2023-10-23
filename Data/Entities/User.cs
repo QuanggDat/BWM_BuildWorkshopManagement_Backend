@@ -29,6 +29,8 @@ namespace Data.Entities
         [ForeignKey("squadId")]
         public virtual Squad? Squad { get; set; }
 
-        public virtual List<Order> Orders { get; set; } = new();
+        //public virtual List<Order> Orders { get; set; } = new();
+        public virtual List<Order> OrdersAssignTo { get; set; } = new();
+        public virtual List<Order> OrdersCreatedBy { get; set; } = new();
     }
 }

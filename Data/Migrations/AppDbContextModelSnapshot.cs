@@ -349,6 +349,9 @@ namespace Data.Migrations
                     b.Property<Guid>("assignToId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("createdById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("customerName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -384,6 +387,8 @@ namespace Data.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("assignToId");
+
+                    b.HasIndex("createdById");
 
                     b.ToTable("Order");
                 });
@@ -963,12 +968,20 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.HasOne("Data.Entities.User", "AssignTo")
-                        .WithMany("Orders")
+                        .WithMany("OrdersAssignTo")
                         .HasForeignKey("assignToId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "CreatedBy")
+                        .WithMany("OrdersCreatedBy")
+                        .HasForeignKey("createdById")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AssignTo");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
@@ -1217,7 +1230,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("OrdersAssignTo");
+
+                    b.Navigation("OrdersCreatedBy");
                 });
 
             modelBuilder.Entity("Data.Entities.WokerTask", b =>
