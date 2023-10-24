@@ -10,7 +10,8 @@ namespace Data.Enums
     {
         Order = 0,
         TaskManager = 1,
-        TaskReport = 2,
-        OrderReport = 3,
+        TaskWoker = 2,
+        TaskReport = 3,
+        OrderReport = 4,
     }
 }
