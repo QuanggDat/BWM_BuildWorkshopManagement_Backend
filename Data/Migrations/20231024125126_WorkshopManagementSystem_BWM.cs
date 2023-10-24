@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class WorkshopManagementSystem_BWM_V1 : Migration
+    public partial class WorkshopManagementSystem_BWM : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
