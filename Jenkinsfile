@@ -17,6 +17,8 @@ pipeline {
     }
     stage('Start container') {
       steps {
+	sh 'docker stop workshop-management-system'
+        sh 'docker rm workshop-management-system'
         sh 'docker-compose up -d --no-color --wait'
         sh 'docker-compose ps'
       }
