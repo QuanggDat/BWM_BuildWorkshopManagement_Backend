@@ -11,6 +11,6 @@ namespace Data.Enums
         Order = 0,
         TaskManager = 1,
         TaskReport = 2,
-        OrderReport = 4,
+        OrderReport = 3,
     }
 }
