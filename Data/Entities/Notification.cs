@@ -28,5 +28,17 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public Order? Order { get; set; }
 
+        [ForeignKey("reportId")]
+        public Guid? reportId { get; set; }
+        public Report Report { get; set; } = null!;
+
+        [ForeignKey("managerTaskId")]
+        public Guid? managerTaskId { get; set; }
+        public ManagerTask ManagerTask { get; set; } = null!;
+
+        [ForeignKey("wokerTaskId")]
+        public Guid? wokerTaskId { get; set; }
+        public WokerTask WokerTask { get; set; } = null!;
+
     }
 }

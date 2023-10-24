@@ -42,64 +42,76 @@ namespace Sevices.Core.ManagerTaskService
                     result.ErrorMessage = "OrderId không hợp lệ!";
                     return result;
                 }
-                else 
+                else
                 {
-                    var check1 = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.name == model.name && a.orderId == model.orderId && a.isDeleted == false);
-
-                    if (check1 != null)
+                    var procedureTmp = await _dbContext.Order.FindAsync(model.procedureId);
+                    if (procedureTmp == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Công việc đã được tạo";
+                        result.ErrorMessage = "ProcedureId không hợp lệ!";
                         return result;
                     }
-                    else 
+                    else
                     {
-                        if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
+                        var check1 = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.procedureId == model.procedureId && a.orderId == model.orderId && a.isDeleted == false);
+
+                        if (check1 != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                            result.ErrorMessage = "Công việc đã được tạo";
                             return result;
                         }
-
                         else
                         {
-                            if (model.startTime >= model.endTime)
+                            if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                result.ErrorMessage = "Đơn hàng đang không tiến hành";
                                 return result;
                             }
+
                             else
                             {
-                                var managerTask = new ManagerTask
+                                if (model.startTime >= model.endTime)
                                 {
-                                    managerId = model.managerId,
-                                    createById = createById,
-                                    orderId = model.orderId,
-                                    name = model.name,
-                                    startTime = model.startTime,
-                                    endTime = model.endTime,
-                                    description = model.description,
-                                    status = 0,
-                                    isDeleted = false
-                                };
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                    return result;
+                                }
+                                else
+                                {
 
-                                try
-                                {
-                                    await _dbContext.ManagerTask.AddAsync(managerTask);
-                                    await _dbContext.SaveChangesAsync();
-                                    result.Succeed = true;
-                                    result.Data = managerTask.id;
+                                    var managerTask = new ManagerTask
+                                    {
+                                        managerId = model.managerId,
+                                        createById = createById,
+                                        orderId = model.orderId,
+                                        procedureId = model.procedureId,
+                                        startTime = model.startTime,
+                                        endTime = model.endTime,
+                                        description = model.description,
+                                        status = 0,
+                                        isDeleted = false
+                                    };
+
+                                    try
+                                    {
+                                        await _dbContext.ManagerTask.AddAsync(managerTask);
+                                        await _dbContext.SaveChangesAsync();
+                                        result.Succeed = true;
+                                        result.Data = managerTask.id;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                    }
+                                    return result;
                                 }
-                                catch (Exception ex)
-                                {
-                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                                }
-                                return result;
-                            }                           
-                        }                       
-                    }         
-                }               
+                            }
+                        }
+                    }
+                }
+                
             }           
         }
 
@@ -124,8 +136,7 @@ namespace Sevices.Core.ManagerTaskService
                     return result;
                 }
                 else
-                {
-                    managerTask.name = model.name;
+                {                    
                     managerTask.startTime = model.startTime;
                     managerTask.endTime = model.endTime;
                     managerTask.status = model.status;
@@ -149,7 +160,8 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
         {
             var result = new List<ResponseManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
+            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
+                .Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
             if (managerTask == null) { 
                 return null; 
             }
@@ -166,7 +178,7 @@ namespace Sevices.Core.ManagerTaskService
                         managerName = managerTmp.fullName,
                         orderName = orderTmp.name,
                         createdById = item.createById,
-                        name = item.name,
+                        name = item.Procedure.name,
                         startTime = item.startTime,
                         endTime = item.endTime,
                         status = item.status,
@@ -184,7 +196,8 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
         {
             var result = new List<ResponseManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Where(a => a.managerId == managerId && a.isDeleted == false).ToListAsync();
+            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
+                .Where(a => a.managerId == managerId && a.isDeleted == false).ToListAsync();
             if (managerTask == null)
             {
                 return null;
@@ -202,7 +215,7 @@ namespace Sevices.Core.ManagerTaskService
                         managerName = managerTmp.fullName,
                         orderName = orderTmp.name,
                         createdById = item.createById,
-                        name = item.name,
+                        name = item.Procedure.name,
                         startTime = item.startTime,
                         endTime = item.endTime,
                         status = item.status,
@@ -218,7 +231,8 @@ namespace Sevices.Core.ManagerTaskService
         public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
         {
             var result = new List<ResponseManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Where(a => a.createById == factoryId && a.isDeleted == false).ToListAsync();
+            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
+                .Where(a => a.createById == factoryId && a.isDeleted == false).ToListAsync();
             if (managerTask == null)
             {
                 return null;
@@ -236,7 +250,7 @@ namespace Sevices.Core.ManagerTaskService
                         managerName = managerTmp.fullName,
                         orderName = orderTmp.name,
                         createdById = item.createById,
-                        name = item.name,
+                        name = item.Procedure.name,
                         startTime = item.startTime,
                         endTime = item.endTime,
                         status = item.status,

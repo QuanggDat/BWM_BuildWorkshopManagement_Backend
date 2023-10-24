@@ -159,8 +159,9 @@ namespace Sevices.Core.ReportService
                 .Include(x => x.ManagerTask)                
                     .ThenInclude(x => x.CreateBy)
                 .Include(x => x.ManagerTask)
-                    .ThenInclude(x => x.Order)              
-
+                    .ThenInclude(x => x.Order)
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.Procedure)
                 .Where(x => x.id == reportId)
                 .SingleOrDefaultAsync();
 
@@ -178,7 +179,7 @@ namespace Sevices.Core.ReportService
                 result = new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
-                    managerTaskName = report.ManagerTask.name,                  
+                    managerTaskName = report.ManagerTask.Procedure.name,                  
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -209,7 +210,7 @@ namespace Sevices.Core.ReportService
                 result = new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
-                    managerTaskName = report.ManagerTask.name,                    
+                    managerTaskName = report.ManagerTask.Procedure.name,                    
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -314,6 +315,8 @@ namespace Sevices.Core.ReportService
                     .ThenInclude(x => x.CreateBy)
                 .Include(x => x.ManagerTask)
                     .ThenInclude(x => x.Order)
+                .Include(x => x.ManagerTask)
+                    .ThenInclude(x => x.Procedure)
                 .Where(x => x.reporterId == managerId && x.reportType == Data.Enums.ReportType.ProgressReport)
                 .ToListAsync();
             
@@ -326,7 +329,7 @@ namespace Sevices.Core.ReportService
                 var list = checkReport.Select(report => new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
-                    managerTaskName = report.ManagerTask.name,
+                    managerTaskName = report.ManagerTask.Procedure.name,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -375,7 +378,7 @@ namespace Sevices.Core.ReportService
                 var list = checkReport.Select(report => new ResponseTaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
-                    managerTaskName = report.ManagerTask.name,
+                    managerTaskName = report.ManagerTask.Procedure.name,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,

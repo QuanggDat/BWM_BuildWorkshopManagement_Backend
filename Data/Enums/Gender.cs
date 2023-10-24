@@ -8,10 +8,8 @@ namespace Data.Enums
 {
     public enum Gender
     {       
-        male = 0,
-        female = 1,
-        other = 2,
+        Male = 0,
+        Female = 1,
+        Other = 2,
     }
-
-
 }

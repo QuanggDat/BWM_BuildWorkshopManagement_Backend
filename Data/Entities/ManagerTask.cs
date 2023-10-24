@@ -29,7 +29,10 @@ namespace Data.Entities
         public Guid? groupId { get; set; }
         public virtual Group? Group { get; set; } = null!;
 
-        public string name { get; set; } = null!;
+        [ForeignKey("procedureId")]
+        public Guid procedureId { get; set; }
+        public virtual Procedure Procedure { get; set; } = null!;
+
         public DateTime startTime { get; set; } 
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }

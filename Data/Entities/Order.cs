@@ -23,7 +23,7 @@ namespace Data.Entities
 
         [ForeignKey("createdById")]
         public Guid createdById { get; set; }
-        public virtual User createdBy { get; set; } = null!;
+        public virtual User CreatedBy { get; set; } = null!;
 
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
