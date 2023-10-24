@@ -507,7 +507,7 @@ namespace Sevices.Core.UserService
                 Access_token = serializedToken,
                 Token_type = "Bearer",
                 Expires_in = int.Parse(_configuration["Jwt:ExpireTimes"]) * 3600,
-                userID = user.Id.ToString(),
+                userId = user.Id.ToString(),
                 fullName = user.fullName,
                 PhoneNumber = user.UserName,
                 Role = user.Role

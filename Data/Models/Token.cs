@@ -11,7 +11,7 @@ namespace Data.Models
     {
         public string Access_token { get; set; }
         public string Token_type { get; set; }
-        public string userID { get; set; }
+        public string userId { get; set; }
         public int Expires_in { get; set; }
         public string fullName { get; set; }
         public string PhoneNumber { get; set; }
