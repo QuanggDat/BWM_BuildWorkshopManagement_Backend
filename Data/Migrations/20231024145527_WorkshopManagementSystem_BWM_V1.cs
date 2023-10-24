@@ -10,26 +10,6 @@ namespace Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Area",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(1000)", nullable: false),
-                    price = table.Column<double>(type: "float", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    parentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Area", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Area_Area_parentId",
-                        column: x => x.parentId,
-                        principalTable: "Area",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -42,6 +22,20 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Floor",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(1000)", nullable: false),
+                    price = table.Column<double>(type: "float", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Floor", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,6 +122,26 @@ namespace Data.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Area",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(1000)", nullable: false),
+                    price = table.Column<double>(type: "float", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    floorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Area", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Area_Floor_floorId",
+                        column: x => x.floorId,
+                        principalTable: "Floor",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -651,9 +665,9 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Area_parentId",
+                name: "IX_Area_floorId",
                 table: "Area",
-                column: "parentId");
+                column: "floorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -907,6 +921,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "MaterialCategory");
+
+            migrationBuilder.DropTable(
+                name: "Floor");
 
             migrationBuilder.DropTable(
                 name: "ManagerTask");

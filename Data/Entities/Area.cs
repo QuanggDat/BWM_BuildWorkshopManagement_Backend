@@ -18,10 +18,10 @@ namespace Data.Entities
         public double price { get; set; }
         public bool isDeleted { get; set; }
 
-        [ForeignKey("parentId")]
-        public Guid? parentId { get; set; }
-        public virtual Area? parent { get; set; } = null!;
+        [ForeignKey("floorId")]
+        public Guid? floorId { get; set; }
+        public virtual Floor? Floor { get; set; } = null!;
+
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
-        //public virtual List<Item> Items { get; set; } = new();
     }
 }

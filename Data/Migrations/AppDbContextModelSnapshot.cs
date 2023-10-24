@@ -28,6 +28,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("floorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -35,17 +38,35 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<Guid?>("parentId")
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("floorId");
+
+                    b.ToTable("Area");
+                });
+
+            modelBuilder.Entity("Data.Entities.Floor", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<double>("price")
                         .HasColumnType("float");
 
                     b.HasKey("id");
 
-                    b.HasIndex("parentId");
-
-                    b.ToTable("Area");
+                    b.ToTable("Floor");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
@@ -887,11 +908,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Area", b =>
                 {
-                    b.HasOne("Data.Entities.Area", "parent")
-                        .WithMany()
-                        .HasForeignKey("parentId");
+                    b.HasOne("Data.Entities.Floor", "Floor")
+                        .WithMany("Areas")
+                        .HasForeignKey("floorId");
 
-                    b.Navigation("parent");
+                    b.Navigation("Floor");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
@@ -1213,6 +1234,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Area", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Data.Entities.Floor", b =>
+                {
+                    b.Navigation("Areas");
                 });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
