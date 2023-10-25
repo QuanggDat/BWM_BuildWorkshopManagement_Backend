@@ -12,8 +12,8 @@ namespace Data.Models
         {
             public Guid managerTaskId { get; set; }
             public string name { get; set; } = null!;
-            public DateTime timeStart { get; set; }
-            public DateTime timeEnd { get; set; }
+            public DateTime startTime { get; set; }
+            public DateTime endTime { get; set; }
             public TaskStatus status { get; set; }
             public string description { get; set; } = null!;
             public List<string> assignees { get; set; } = null!;
@@ -24,8 +24,8 @@ namespace Data.Models
             public Guid wokerTaskId { get; set; }
             public string name { get; set; } = null!;
             public string description { get; set; } = null!;
-            public DateTime timeStart { get; set; }
-            public DateTime timeEnd { get; set; }
+            public DateTime startTime { get; set; }
+            public DateTime endTime { get; set; }
             public TaskStatus status { get; set; }
             public List<Guid> assignees { get; set; } = null!;
         }
@@ -47,8 +47,8 @@ namespace Data.Models
             public Guid managerTaskId { get; set; }
             public string name { get; set; } = null!;
             public string description { get; set; } = null!;
-            public DateTime? timeStart { get; set; }
-            public DateTime? timeEnd { get; set; }
+            public DateTime? startTime { get; set; }
+            public DateTime? endTime { get; set; }
             public TaskStatus status { get; set; }
             public List<TaskMemberResponse> Members { get; set; } = null!;
         }

@@ -29,8 +29,8 @@ namespace Sevices.Core.WokerTaskService
                 managerTaskId = model.managerTaskId,
                 name = model.name,
                 description = model?.description ?? "",
-                timeStart = model.timeStart,
-                timeEnd = model.timeEnd,
+                startTime = model.startTime,
+                endTime = model.endTime,
                 status = (TaskStatus)Data.Enums.TaskStatus.New,
                 createById = userId,
                 isDeleted = false,
@@ -81,8 +81,8 @@ namespace Sevices.Core.WokerTaskService
                 {
                     check.name = model.name;
                     check.description = model.description;
-                    check.timeStart = model.timeStart;
-                    check.timeEnd = model.timeEnd;
+                    check.startTime = model.startTime;
+                    check.endTime = model.endTime;
                     check.status = model.status;
 
                     // Remove all old woker tasks detail
@@ -259,8 +259,8 @@ namespace Sevices.Core.WokerTaskService
                     wokerTaskId = item.id,
                     name = item.name,
                     description = item.description,
-                    timeStart = item.timeStart,
-                    timeEnd = item.timeEnd,
+                    startTime = item.startTime,
+                    endTime = item.endTime,
                     status = item.status,
                     userFullName = user!.fullName,
                     Members = item.WokerTaskDetails.Select(_ => new TaskMemberResponse
