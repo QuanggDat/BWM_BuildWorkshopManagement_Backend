@@ -82,6 +82,14 @@ namespace Data.Models
         public string phoneNumber { get; set; } = null!;
 
     }
+
+    public class UserUpdateUserRoleModel
+    {
+        public Guid userId { get; set; }
+        public Guid roleId { get; set; }
+
+    }
+
     public class LoginModel
     {
         public string phoneNumber { get; set; } = null!;
@@ -121,7 +129,7 @@ namespace Data.Models
         public Guid squadId { get; set; }
     }
 
-    public class HumanResourceModel
+    public class ManagementUserModel
     {
         public string fullName { get; set; }
         public string image { get; set; } 

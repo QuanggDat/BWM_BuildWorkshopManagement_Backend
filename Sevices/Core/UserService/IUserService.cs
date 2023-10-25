@@ -17,12 +17,13 @@ namespace Sevices.Core.UserService
         ResultModel Update(UserUpdateModel model);
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
+        ResultModel UpdateRole(UserUpdateUserRoleModel model);
         ResultModel GetAll();
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetByID(Guid id);
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
-        Task<List<HumanResourceModel>> GetAllUserWithSquadAndGroup();
+        Task<List<ManagementUserModel>> GetAllUserWithSquadAndGroup();
     }
 }

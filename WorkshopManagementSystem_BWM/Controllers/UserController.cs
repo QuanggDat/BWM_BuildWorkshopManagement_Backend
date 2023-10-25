@@ -136,6 +136,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPut("[action]")]
+        public IActionResult UpdateRole(UserUpdateUserRoleModel model)
+        {
+            var result = _userService.UpdateRole(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPost("ChangePassword")]
         public async Task<ActionResult> ChangePassword([FromBody] UserUpdatePasswordModel model)
         {
@@ -145,7 +153,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetAllUserWithSquadandGroup")]
-        public async Task<ActionResult<HumanResourceModel>> GetAllUserWithSquadAndGroup()
+        public async Task<ActionResult<ManagementUserModel>> GetAllUserWithSquadAndGroup()
         {
             var result = await _userService.GetAllUserWithSquadAndGroup();
             if (result == null) return BadRequest("Không tìm thấy nhân công");

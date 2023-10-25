@@ -625,6 +625,64 @@ namespace Sevices.Core.UserService
             return result;
         }
 
+        public ResultModel UpdateRole(UserUpdateUserRoleModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            try
+            {
+                var check = _dbContext.User.Find(model.userId);
+                if (check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy User";
+                    return result;
+                }
+                else
+                {
+                    var checkRole = _dbContext.Role.Find(model.roleId);
+                    if (checkRole == null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Role không hợp lệ";
+                        return result;
+                    }
+                    else
+                    {
+                        check.roleID = model.roleId;
+
+                        // Remove all old UserRole
+                        var currentUserRole = _dbContext.UserRole
+                            .Where(x => x.UserId == model.userId)
+                            .ToList();
+                        if (currentUserRole != null && currentUserRole.Count > 0)
+                        {
+                            _dbContext.UserRole.RemoveRange(currentUserRole);
+                        }
+
+                        // Set new role
+                        var userRole = new UserRole
+                        {
+                            UserId = model.userId,
+                            RoleId = model.roleId
+                        };
+
+                        _dbContext.UserRoles.Add(userRole);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = model.userId;
+                    }
+                }
+               
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetAll()
         {
             ResultModel result = new ResultModel();
@@ -781,11 +839,12 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
+        
 
         //For Factory role
-        public async Task<List<HumanResourceModel>> GetAllUserWithSquadAndGroup()
+        public async Task<List<ManagementUserModel>> GetAllUserWithSquadAndGroup()
         {
-            var result = new List<HumanResourceModel>();
+            var result = new List<ManagementUserModel>();
             var data = await _dbContext.User.Where(u => u.banStatus != false).ToListAsync();
             if (data == null)
             {
@@ -799,7 +858,7 @@ namespace Sevices.Core.UserService
                 var group = await _dbContext.Group.FindAsync(info.groupId);
                 if (role != null && squad != null && group != null)
                 {
-                    var stuff = new HumanResourceModel
+                    var stuff = new ManagementUserModel
                     {
                         fullName = info.fullName,
                         image = info.image,
