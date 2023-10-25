@@ -12,6 +12,11 @@
       "ignored": "true",
       "type": "mssql",
       "connectionId": "ConnectionStrings:MyDB"
+    },
+    "signalr1": {
+      "type": "signalr",
+      "connectionId": "Azure:SignalR:ConnectionString",
+      "dynamicId": null
     }
   }
 }
