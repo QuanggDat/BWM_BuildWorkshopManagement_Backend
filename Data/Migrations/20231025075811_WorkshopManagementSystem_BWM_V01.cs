@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class WorkshopManagementSystem_BWM_V1 : Migration
+    public partial class WorkshopManagementSystem_BWM_V01 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -91,10 +91,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    floorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    floorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,10 +111,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     member = table.Column<int>(type: "int", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,6 +132,9 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    roleID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     fullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -139,9 +142,6 @@ namespace Data.Migrations
                     dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     gender = table.Column<int>(type: "int", nullable: false),
                     banStatus = table.Column<bool>(type: "bit", nullable: false),
-                    roleID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    groupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    squadId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -276,12 +276,13 @@ namespace Data.Migrations
                     height = table.Column<double>(type: "float", nullable: false),
                     unit = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     mass = table.Column<double>(type: "float", nullable: false),
-                    technical = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    twoD = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    threeD = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    drawingsTechnical = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    drawings2D = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    drawings3D = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    createdById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -289,6 +290,11 @@ namespace Data.Migrations
                     table.ForeignKey(
                         name: "FK_Item_AspNetUsers_createById",
                         column: x => x.createById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Item_AspNetUsers_createdById",
+                        column: x => x.createdById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -317,10 +323,10 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(500)", nullable: false),
-                    customerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     assignToId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createdById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(500)", nullable: false),
+                    customerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     orderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
@@ -378,6 +384,8 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MaterialCategoryid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     image = table.Column<string>(type: "nvarchar(1000)", nullable: false),
                     color = table.Column<string>(type: "nvarchar(1000)", nullable: false),
@@ -390,8 +398,7 @@ namespace Data.Migrations
                     amount = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
                     totalPrice = table.Column<double>(type: "float", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    categoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -402,8 +409,8 @@ namespace Data.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Material_MaterialCategory_categoryId",
-                        column: x => x.categoryId,
+                        name: "FK_Material_MaterialCategory_MaterialCategoryid",
+                        column: x => x.MaterialCategoryid,
                         principalTable: "MaterialCategory",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -463,14 +470,14 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    areaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
                     totalPrice = table.Column<double>(type: "float", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    areaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -499,15 +506,21 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    materialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    createdById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
-                    totalPrice = table.Column<double>(type: "float", nullable: false),
-                    itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    materialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    totalPrice = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ItemMaterial", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ItemMaterial_AspNetUsers_createdById",
+                        column: x => x.createdById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ItemMaterial_Item_itemId",
                         column: x => x.itemId,
@@ -564,16 +577,14 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    timeStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    timeEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    startTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    endTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     completedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    productCompleted = table.Column<int>(type: "int", nullable: false),
-                    productFailed = table.Column<int>(type: "int", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -596,8 +607,8 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    link = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    link = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -615,17 +626,17 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    seen = table.Column<bool>(type: "bit", nullable: false),
-                    type = table.Column<int>(type: "int", nullable: true),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    dateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     managerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    wokerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    wokerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    seen = table.Column<bool>(type: "bit", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: true),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -664,7 +675,9 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     wokerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    productCompleted = table.Column<int>(type: "int", nullable: true),
+                    productFailed = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -752,6 +765,16 @@ namespace Data.Migrations
                 column: "createById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Item_createdById",
+                table: "Item",
+                column: "createdById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemMaterial_createdById",
+                table: "ItemMaterial",
+                column: "createdById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemMaterial_itemId",
                 table: "ItemMaterial",
                 column: "itemId");
@@ -787,14 +810,14 @@ namespace Data.Migrations
                 column: "procedureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Material_categoryId",
-                table: "Material",
-                column: "categoryId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Material_createById",
                 table: "Material",
                 column: "createById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Material_MaterialCategoryid",
+                table: "Material",
+                column: "MaterialCategoryid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MaterialCategory_createById",

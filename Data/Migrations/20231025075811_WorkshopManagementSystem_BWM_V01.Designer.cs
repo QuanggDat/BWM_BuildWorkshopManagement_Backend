@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231025063828_WorkshopManagementSystem_BWM_V4")]
-    partial class WorkshopManagementSystem_BWM_V4
+    [Migration("20231025075811_WorkshopManagementSystem_BWM_V01")]
+    partial class WorkshopManagementSystem_BWM_V01
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -110,6 +110,9 @@ namespace Data.Migrations
                     b.Property<Guid?>("createById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("createdById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("depth")
                         .HasColumnType("float");
 
@@ -159,6 +162,8 @@ namespace Data.Migrations
 
                     b.HasIndex("createById");
 
+                    b.HasIndex("createdById");
+
                     b.ToTable("Item");
                 });
 
@@ -166,6 +171,9 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("createdById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("itemId")
@@ -184,6 +192,8 @@ namespace Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createdById");
 
                     b.HasIndex("itemId");
 
@@ -952,11 +962,21 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("createById");
 
+                    b.HasOne("Data.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("createdById");
+
                     b.Navigation("CreateBy");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
                 {
+                    b.HasOne("Data.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("createdById");
+
                     b.HasOne("Data.Entities.Item", "Item")
                         .WithMany("ItemMaterials")
                         .HasForeignKey("itemId")
@@ -968,6 +988,8 @@ namespace Data.Migrations
                         .HasForeignKey("materialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Item");
 
