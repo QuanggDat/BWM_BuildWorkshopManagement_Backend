@@ -40,6 +40,13 @@ namespace Sevices.Mapping
             // Notification
             CreateMap<Notification, NotificationModel>().ReverseMap();
             CreateMap<Notification, NotificationCreateModel>().ReverseMap();
+
+            // Area
+            CreateMap<Area, AreaModel>().ReverseMap();
+
+            // Floor
+            CreateMap<Floor, FloorModel>().ReverseMap();
+
         }
     }
 }

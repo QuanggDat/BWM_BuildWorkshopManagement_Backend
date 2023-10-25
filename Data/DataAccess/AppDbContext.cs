@@ -11,6 +11,7 @@ namespace Data.DataAccess
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Area> Area { get; set; }
+        public DbSet<Floor> Floor { get; set; }
         public DbSet<Group> Group { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<ItemMaterial> ItemMaterial { get; set; }

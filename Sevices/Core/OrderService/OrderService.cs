@@ -195,15 +195,13 @@ namespace Sevices.Core.OrderService
                         // Tầng
                         foreach (var item in converData.ListConverted)
                         {
-
                             // Tạo tầng
-                            var floor = new Area()
+                            var floor = new Floor()
                             {
                                 name = item.name,
                             };
-                            _dbContext.Area.Add(floor);
+                            _dbContext.Floor.Add(floor);
                             double priceFloor = 0;
-
 
                             // Khu vực
                             foreach (var child in item.children)
@@ -214,7 +212,7 @@ namespace Sevices.Core.OrderService
                                 var area = new Area()
                                 {
                                     name = child.name,
-                                    parentId = floor.id
+                                    floorId = floor.id
                                 };
                                 _dbContext.Area.Add(area);
 
@@ -240,7 +238,6 @@ namespace Sevices.Core.OrderService
                                         threeD = "",
                                         twoD = "",
                                         technical = "",
-                                        //areaId = area.id,
                                     };
                                     _dbContext.Item.Add(itemNew);
 
@@ -273,8 +270,10 @@ namespace Sevices.Core.OrderService
                                     });
                                     priceArea += detailPrice;
                                 }
+                                area.price = priceArea;
                                 priceFloor += priceArea;
                             }
+                            floor.price = priceFloor;
                         }
 
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
@@ -298,7 +297,6 @@ namespace Sevices.Core.OrderService
                         result.Succeed = true;
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -373,6 +371,9 @@ namespace Sevices.Core.OrderService
                     var listAreaTd = order.OrderDetails.Select(x => x.areaId).Distinct().ToList();
                     var listArea = _dbContext.Area.Where(x => listAreaTd.Contains(x.id)).ToList();
 
+                    var listFloorId = listArea.Select(x => x.floorId).Distinct().ToList();
+                    var listFloor = _dbContext.Floor.Where(x => listFloorId.Contains(x.id)).ToList();
+
                     var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
                     var worksheet = workbook.Worksheets.FirstOrDefault();
 
@@ -400,11 +401,8 @@ namespace Sevices.Core.OrderService
 
                     if (rowData > -1)
                     {
-                        var listFloorId = listArea.Select(x => x.parentId).Distinct().ToList();
-
                         if (listFloorId.Count > 1)
                         {
-                            var listFloor = _dbContext.Area.Where(x => listFloorId.Contains(x.id)).ToList();
                             for (var i = 0; i < listFloor.Count; i++)
                             {
                                 var floor = listFloor[i];
@@ -428,7 +426,7 @@ namespace Sevices.Core.OrderService
 
                                 rowData++;
 
-                                var listAreaByFloor = listArea.Where(x => x.parentId == floor.id).ToList();
+                                var listAreaByFloor = listArea.Where(x => x.floorId == floor.id).ToList();
                                 rowData = AssignDataIntoWorkbook(worksheet, rowData, listAreaByFloor, order.OrderDetails, dictItemImgStream);
                             }
                         }
@@ -622,7 +620,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Data.Entities.Area> listArea, List<OrderDetail> listDetail, Dictionary<Guid, Stream> dictItemImage)
+        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Area> listArea, List<OrderDetail> listDetail, Dictionary<Guid, Stream> dictItemImage)
         {
             for (var a = 0; a < listArea.Count; a++)
             {
