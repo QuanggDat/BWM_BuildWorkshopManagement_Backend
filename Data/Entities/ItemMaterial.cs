@@ -21,6 +21,10 @@ namespace Data.Entities
         public Guid materialId { get; set; }
         public Material Material { get; set; } = null!;
 
+        [ForeignKey("createdById")]
+        public Guid? createdById { get; set; }
+        public virtual User CreatedBy { get; set; } = null!;
+
         public int quantity { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
