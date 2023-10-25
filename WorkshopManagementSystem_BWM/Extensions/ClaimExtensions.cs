@@ -8,7 +8,6 @@ namespace WorkshopManagementSystem_BWM.Extensions
 {
     public static class ClaimExtensions
     {
-
         public static List<string> GetRoles(this ClaimsPrincipal user)
         {
             var x = user.HasClaim(x => x.Type == ClaimTypes.Role);
@@ -30,6 +29,5 @@ namespace WorkshopManagementSystem_BWM.Extensions
             }
             throw new Exception("Invalid token");
         }
-
     }
 }
