@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231024145527_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231025050820_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,6 +107,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<double>("depth")
                         .HasColumnType("float");
 
@@ -153,6 +156,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createById");
 
                     b.ToTable("Item");
                 });
@@ -258,6 +263,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<Guid?>("createById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("image")
                         .IsRequired()
                         .HasColumnType("nvarchar(1000)");
@@ -301,6 +309,8 @@ namespace Data.Migrations
 
                     b.HasIndex("categoryId");
 
+                    b.HasIndex("createById");
+
                     b.ToTable("Material");
                 });
 
@@ -308,6 +318,9 @@ namespace Data.Migrations
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("createById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("isDeleted")
@@ -318,6 +331,8 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("createById");
 
                     b.ToTable("MaterialCategory");
                 });
@@ -928,6 +943,15 @@ namespace Data.Migrations
                     b.Navigation("Squad");
                 });
 
+            modelBuilder.Entity("Data.Entities.Item", b =>
+                {
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
+                    b.Navigation("CreateBy");
+                });
+
             modelBuilder.Entity("Data.Entities.ItemMaterial", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
@@ -992,7 +1016,22 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
                     b.Navigation("Category");
+
+                    b.Navigation("CreateBy");
+                });
+
+            modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
+                {
+                    b.HasOne("Data.Entities.User", "CreateBy")
+                        .WithMany()
+                        .HasForeignKey("createById");
+
+                    b.Navigation("CreateBy");
                 });
 
             modelBuilder.Entity("Data.Entities.Notification", b =>

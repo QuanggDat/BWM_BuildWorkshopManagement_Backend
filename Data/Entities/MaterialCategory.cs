@@ -13,6 +13,11 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
+
+        [ForeignKey("createById")]
+        public Guid? createById { get; set; }
+        public virtual User CreateBy { get; set; } = null!;
+
         [Column(TypeName = "nvarchar(1000)")] 
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
