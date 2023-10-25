@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231024145527_WorkshopManagementSystem_BWM_V1")]
-    partial class WorkshopManagementSystem_BWM_V1
+    [Migration("20231025044422_TestDB")]
+    partial class TestDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
