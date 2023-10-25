@@ -17,8 +17,12 @@ namespace Data.Entities
         public Guid? wokerTaskId { get; set; }
         public virtual WokerTask WokerTask { get; set; } = null!;
 
-        [ForeignKey("userId")]   
-        public Guid userId { get; set; } 
+        [ForeignKey("userId")]
+        public Guid userId { get; set; }
         public virtual User User { get; set; } = null!;
+
+        public int? productCompleted { get; set; }
+        public int? productFailed { get; set; }
+
     }
 }

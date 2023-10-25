@@ -12,17 +12,19 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public int quantity { get; set; }
-        public double price { get; set; }
-        public double totalPrice { get; set; }
 
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
         public Item Item { get; set; } = null!;
 
-
         [ForeignKey("materialId")]
         public Guid materialId { get; set; }
         public Material Material { get; set; } = null!;
+
+        public int quantity { get; set; }
+        public double price { get; set; }
+        public double totalPrice { get; set; }
+
+        
     }
 }

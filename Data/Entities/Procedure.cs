@@ -13,9 +13,11 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
+
         [Column(TypeName = "nvarchar(1000)")] 
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
+
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
     }
 }

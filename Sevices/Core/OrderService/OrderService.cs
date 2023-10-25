@@ -235,9 +235,9 @@ namespace Sevices.Core.OrderService
                                         unit = newItem.unit,
                                         mass = newItem.mass,
                                         description = "",
-                                        threeD = "",
-                                        twoD = "",
-                                        technical = "",
+                                        drawingsTechnical = "",
+                                        drawings2D = "",
+                                        drawings3D = "",
                                     };
                                     _dbContext.Item.Add(itemNew);
 
@@ -287,7 +287,7 @@ namespace Sevices.Core.OrderService
                         {
                             userId = order.assignToId,
                             title = "Đơn đặt hàng mới",
-                            content = "Bạn có đơn đặt hàng mới cần báo giá",
+                            description = "Bạn có đơn đặt hàng mới cần báo giá",
                             type = NotificationType.Order,
                             orderId = order.id
                         };
@@ -325,7 +325,7 @@ namespace Sevices.Core.OrderService
                         {
                             userId = order.createdById,
                             title = "Báo giá đơn đặt hàng",
-                            content = "Bạn vừa nhận được báo giá đơn hàng",
+                            description = "Bạn vừa nhận được báo giá đơn hàng",
                             type = NotificationType.Order,
                             orderId = order.id
                         };

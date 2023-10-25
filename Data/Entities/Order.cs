@@ -13,9 +13,6 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        [Column(TypeName = "nvarchar(500)")]
-        public string name { get; set; } = null!;
-        public string customerName { get; set; } = null!;
 
         [ForeignKey("assignToId")]
         public Guid assignToId { get; set; }
@@ -25,6 +22,9 @@ namespace Data.Entities
         public Guid createdById { get; set; }
         public virtual User CreatedBy { get; set; } = null!;
 
+        [Column(TypeName = "nvarchar(500)")]
+        public string name { get; set; } = null!;
+        public string customerName { get; set; } = null!;     
         public DateTime orderDate { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 

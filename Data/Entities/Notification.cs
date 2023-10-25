@@ -13,12 +13,6 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
-        public string? title { get; set; }
-        public string? content { get; set; }
-        public bool seen { get; set; } = false;
-        public NotificationType? type { get; set; }
-        public bool isDeleted { get; set; } = false;
-        public DateTime dateCreated { get; set; } = DateTime.Now;
 
         [ForeignKey("userId")]
         public Guid userId { get; set; }
@@ -39,6 +33,13 @@ namespace Data.Entities
         [ForeignKey("wokerTaskId")]
         public Guid? wokerTaskId { get; set; }
         public WokerTask WokerTask { get; set; } = null!;
+
+        public string? title { get; set; }
+        public string? description { get; set; }
+        public DateTime createdDate { get; set; } = DateTime.Now;
+        public bool seen { get; set; } = false;
+        public NotificationType? type { get; set; }
+        public bool isDeleted { get; set; } = false;            
 
     }
 }

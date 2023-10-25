@@ -19,7 +19,8 @@ namespace Data.Entities
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
 
-        [Column(TypeName = "nvarchar(500)")]     
+        [Column(TypeName = "nvarchar(500)")]  
+        
         public string name { get; set; } = null!;
         public string code { get; set; }
         public string? image { get; set; } 
@@ -28,21 +29,13 @@ namespace Data.Entities
         public double height { get; set; }
         public string unit { get; set; } = null!;
         public double mass { get; set; }
-        public string technical { get; set; } = null!;
-        public string twoD { get; set; } = null!;
-        public string threeD { get; set; } = null!;
+        public string drawingsTechnical { get; set; } = null!;
+        public string drawings2D { get; set; } = null!;
+        public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-
-        //[ForeignKey("areaId")]
-        //public Guid areaId { get; set; }
-        //public Area area { get; set; }
-
-        //[ForeignKey("categoryId")]
-        //public Guid? categoryId;
-        //public ItemCategory? category { get; set; }
-
         public bool isDeleted { get; set; }
+
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
         public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();

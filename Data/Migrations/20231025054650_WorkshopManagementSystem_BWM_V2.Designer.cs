@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231025054650_WorkshopManagementSystem_BWM_V2")]
+    partial class WorkshopManagementSystem_BWM_V2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,18 +117,6 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("drawings2D")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("drawings3D")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("drawingsTechnical")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("height")
                         .HasColumnType("float");
 
@@ -148,6 +138,18 @@ namespace Data.Migrations
 
                     b.Property<double>("price")
                         .HasColumnType("float");
+
+                    b.Property<string>("technical")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("threeD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("twoD")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("unit")
                         .IsRequired()
@@ -251,9 +253,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("MaterialCategoryid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
@@ -308,7 +307,7 @@ namespace Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("MaterialCategoryid");
+                    b.HasIndex("categoryId");
 
                     b.HasIndex("createById");
 
@@ -344,11 +343,11 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
@@ -1011,9 +1010,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
-                    b.HasOne("Data.Entities.MaterialCategory", "MaterialCategory")
+                    b.HasOne("Data.Entities.MaterialCategory", "Category")
                         .WithMany("Materials")
-                        .HasForeignKey("MaterialCategoryid")
+                        .HasForeignKey("categoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1021,9 +1020,9 @@ namespace Data.Migrations
                         .WithMany()
                         .HasForeignKey("createById");
 
-                    b.Navigation("CreateBy");
+                    b.Navigation("Category");
 
-                    b.Navigation("MaterialCategory");
+                    b.Navigation("CreateBy");
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>

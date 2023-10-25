@@ -18,6 +18,10 @@ namespace Data.Entities
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
 
+        [ForeignKey("categoryId")]
+        public Guid categoryId { get; set; }
+        public MaterialCategory MaterialCategory { get; set; } = null!;
+
         public string name { get; set; } = null!;
         [Column(TypeName = "nvarchar(1000)")]
         public string image { get; set; } = null!;
@@ -33,10 +37,6 @@ namespace Data.Entities
         public double price { get; set; }
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
-
-        [ForeignKey("categoryId")]
-        public Guid categoryId { get; set; }
-        public MaterialCategory Category { get; set; }
 
         public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();
     }

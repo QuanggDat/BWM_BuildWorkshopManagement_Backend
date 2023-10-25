@@ -92,19 +92,19 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Chiều rộng không được âm.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.technical))
+                if (string.IsNullOrEmpty(model.drawingsTechnical))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.twoD))
+                if (string.IsNullOrEmpty(model.drawings2D))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.threeD))
+                if (string.IsNullOrEmpty(model.drawings3D))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
@@ -139,9 +139,9 @@ namespace Sevices.Core.ItemService
                     length=model.length,
                     depth=model.depth,
                     height=model.height,
-                    technical=model.technical,
-                    twoD=model.twoD,
-                    threeD=model.threeD,
+                    drawingsTechnical=model.drawingsTechnical,
+                    drawings2D=model.drawings2D,
+                    drawings3D=model.drawings3D,
                     description=model.description,
                     price=model.price,
                     //areaId=model.areaId,
@@ -202,19 +202,19 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Chiều rộng không được âm.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.technical))
+                if (string.IsNullOrEmpty(model.drawingsTechnical))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.twoD))
+                if (string.IsNullOrEmpty(model.drawings2D))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.threeD))
+                if (string.IsNullOrEmpty(model.drawings3D))
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Bản vẽ này không được để trống.";
@@ -250,9 +250,9 @@ namespace Sevices.Core.ItemService
                     data.length = model.length;
                     data.depth = model.depth;
                     data.height = model.height;
-                    data.technical = model.technical;
-                    data.twoD = model.twoD;
-                    data.threeD = model.threeD;
+                    data.drawingsTechnical = model.drawingsTechnical;
+                    data.drawings2D = model.drawings2D;
+                    data.drawings3D = model.drawings3D;
                     data.description = model.description;
                     data.price = model.price;
                     //data.areaId = model.areaId;

@@ -9,14 +9,6 @@ namespace Data.Entities
 {
     public class User : IdentityUser<Guid>
     {
-        public string fullName { get; set; } = null!;
-        public string address { get; set; }
-        public string? image { get; set; }
-        public string? skill { get; set; } 
-        public DateTime dob { get; set; }
-        public Gender gender { get; set; } 
-        public bool banStatus { get; set; }
-        
         public Guid? roleID { get; set; }
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
@@ -29,6 +21,14 @@ namespace Data.Entities
         [ForeignKey("squadId")]
         public virtual Squad? Squad { get; set; }
 
+        public string fullName { get; set; } = null!;
+        public string address { get; set; }
+        public string? image { get; set; }
+        public string? skill { get; set; } 
+        public DateTime dob { get; set; }
+        public Gender gender { get; set; } 
+        public bool banStatus { get; set; }
+             
         //public virtual List<Order> Orders { get; set; } = new();
         public virtual List<Order> OrdersAssignTo { get; set; } = new();
         public virtual List<Order> OrdersCreatedBy { get; set; } = new();

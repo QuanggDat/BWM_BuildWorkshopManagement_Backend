@@ -17,14 +17,13 @@ namespace Data.Models
         public double height { get; set; }
         public string unit { get; set; }
         public double mass { get; set; }
-        public string technical { get; set; }
-        public string twoD { get; set; }
-        public string threeD { get; set; }
+        public string drawingsTechnical { get; set; } 
+        public string drawings2D { get; set; }
+        public string drawings3D { get; set; } 
         public string description { get; set; }
         public double price { get; set; }
         public bool isDeleted { get; set; }
-        //public Guid areaId { get; set; }
-        //public Guid categoryId { get; set; }
+        
     }
 
     public class CreateItemModel
@@ -36,14 +35,14 @@ namespace Data.Models
         [Required] public double height { get; set; }
         [Required] public string unit { get; set; }
         [Required] public double mass { get; set; }
-        public string technical { get; set; }
-        public string twoD { get; set; }
-        public string threeD { get; set; }
+        public string drawingsTechnical { get; set; } 
+        public string drawings2D { get; set; } 
+        public string drawings3D { get; set; } 
         public string description { get; set; }
         [Required] public double price { get; set; }
         [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid areaId { get; set; }
-        //[Required] public Guid categoryId { get; set; }
+      
     }
 
     public class UpdateItemModel
@@ -56,9 +55,9 @@ namespace Data.Models
         [Required] public double height { get; set; }
         [Required] public string unit { get; set; }
         [Required] public double mass { get; set; }
-        public string technical { get; set; }
-        public string twoD { get; set; }
-        public string threeD { get; set; }
+        public string drawingsTechnical { get; set; } 
+        public string drawings2D { get; set; } 
+        public string drawings3D { get; set; } 
         public string description { get; set; }
         [Required] public double price { get; set; }
         [Required] public Guid areaId { get; set; }

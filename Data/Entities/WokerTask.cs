@@ -17,20 +17,18 @@ namespace Data.Entities
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
 
+        [ForeignKey("managerTaskId")]
+        public Guid managerTaskId { get; set; }
+        public ManagerTask ManagerTask { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
-        public DateTime? completedTime { get; set; }
-        public int productCompleted { get; set; }
-        public int productFailed { get; set; }
+        public DateTime? completedTime { get; set; }      
         public TaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
-
-        [ForeignKey("managerTaskId")]
-        public Guid managerTaskId { get; set;}
-        public ManagerTask ManagerTask { get; set; } = null!;
-
+   
         public virtual List<WokerTaskDetail> WokerTaskDetails { get; set; } = new();
     }
 }
