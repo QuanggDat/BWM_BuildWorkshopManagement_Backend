@@ -40,6 +40,6 @@ namespace Data.Entities
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
 
-        public virtual List<WokerTask> WokerTasks { get; set; } = new();
+        public virtual List<WorkerTask> WorkerTasks { get; set; } = new();
     }
 }

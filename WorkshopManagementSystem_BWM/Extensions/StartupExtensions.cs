@@ -19,7 +19,7 @@ using Sevices.Core.ReportService;
 using Sevices.Core.SquadService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
-using Sevices.Core.WokerTaskService;
+using Sevices.Core.WorkerTaskService;
 using Sevices.Mapping;
 using SignalRHubs.Hubs.NotificationHub;
 using System.Text;
@@ -70,7 +70,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<ITaskReportService, TaskReportService>();
             services.AddScoped<IUtilsService, UtilsService>();
             services.AddScoped<IOrderReportService, OrderReportService>();
-            services.AddScoped<IWokerTaskService, WokerTaskService>();
+            services.AddScoped<IWorkerTaskService, WorkerTaskService>();
             services.AddScoped<INotificationService, NotificationService>();
 
             services.AddSingleton<INotificationHub, NotificationHub>();

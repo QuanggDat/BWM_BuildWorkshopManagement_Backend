@@ -30,12 +30,12 @@ namespace Data.Entities
         public Guid? managerTaskId { get; set; }
         public ManagerTask ManagerTask { get; set; } = null!;
 
-        [ForeignKey("wokerTaskId")]
-        public Guid? wokerTaskId { get; set; }
-        public WokerTask WokerTask { get; set; } = null!;
+        [ForeignKey("workerTaskId")]
+        public Guid? workerTaskId { get; set; }
+        public WorkerTask WorkerTask { get; set; } = null!;
 
         public string? title { get; set; }
-        public string? description { get; set; }
+        public string? content { get; set; }
         public DateTime createdDate { get; set; } = DateTime.Now;
         public bool seen { get; set; } = false;
         public NotificationType? type { get; set; }

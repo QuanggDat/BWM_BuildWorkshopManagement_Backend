@@ -29,8 +29,8 @@ namespace Data.DataAccess
         public DbSet<Squad> Squad { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
-        public DbSet<WokerTask> WokerTask { get; set; }
-        public DbSet<WokerTaskDetail> WokerTaskDetail { get; set; }
+        public DbSet<WorkerTask> WorkerTask { get; set; }
+        public DbSet<WorkerTaskDetail> WorkerTaskDetail { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

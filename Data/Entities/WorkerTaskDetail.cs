@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class WokerTaskDetail
+    public class WorkerTaskDetail
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
-        [ForeignKey("wokerTaskId")]
-        public Guid? wokerTaskId { get; set; }
-        public virtual WokerTask WokerTask { get; set; } = null!;
+        [ForeignKey("workerTaskId")]
+        public Guid? workerTaskId { get; set; }
+        public virtual WorkerTask WorkerTask { get; set; } = null!;
 
         [ForeignKey("userId")]
         public Guid userId { get; set; }

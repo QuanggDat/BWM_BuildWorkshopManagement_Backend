@@ -12,7 +12,7 @@ namespace Sevices.Core.UserService
         Task<ResultModel> CreateAdmin(UserCreateModel model);
         Task<ResultModel> CreateFactory(UserCreateModel model);
         Task<ResultModel> CreateManager(UserCreateModel model);
-        Task<ResultModel> CreateWoker(UserCreateModel model);
+        Task<ResultModel> CreateWorker(UserCreateModel model);
         Task<ResultModel> Login(LoginModel model);
         ResultModel Update(UserUpdateModel model);
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);

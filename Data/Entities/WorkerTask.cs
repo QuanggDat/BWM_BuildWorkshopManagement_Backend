@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class WokerTask
+    public class WorkerTask
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
@@ -29,6 +29,6 @@ namespace Data.Entities
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
    
-        public virtual List<WokerTaskDetail> WokerTaskDetails { get; set; } = new();
+        public virtual List<WorkerTaskDetail> WorkerTaskDetails { get; set; } = new();
     }
 }

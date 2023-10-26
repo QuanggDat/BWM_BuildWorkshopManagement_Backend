@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class WokerTaskModel
+    public class WorkerTaskModel
     {
-        public class CreateWokerTaskModel
+        public class CreateWorkerTaskModel
         {
             public Guid managerTaskId { get; set; }
             public string name { get; set; } = null!;
@@ -19,9 +19,9 @@ namespace Data.Models
             public List<string> assignees { get; set; } = null!;
         }
 
-        public class UpdateWokerTaskModel
+        public class UpdateWorkerTaskModel
         {
-            public Guid wokerTaskId { get; set; }
+            public Guid workerTaskId { get; set; }
             public string name { get; set; } = null!;
             public string description { get; set; } = null!;
             public DateTime startTime { get; set; }
@@ -30,18 +30,20 @@ namespace Data.Models
             public List<Guid> assignees { get; set; } = null!;
         }
 
-        public class UpdateWokerTaskStatusModel
+        public class UpdateWorkerTaskStatusModel
         {
             public TaskStatus status { get; set; }
         }
+
         public class TaskMemberResponse
         {
             public Guid memberId { get; set; }
             public string memberFullName { get; set; } = null!;
         }
-        public class WokerTaskResponseModel
+
+        public class WorkerTaskResponseModel
         {
-            public Guid wokerTaskId { get; set; }
+            public Guid workerTaskId { get; set; }
             public Guid? userId { get; set; }
             public string userFullName { get; set; } = null!;
             public Guid managerTaskId { get; set; }
@@ -53,10 +55,10 @@ namespace Data.Models
             public List<TaskMemberResponse> Members { get; set; } = null!;
         }
 
-        public class AssignWokerTaskModel
+        public class AssignWorkerTaskModel
         {
             public Guid memberId { get; set; }
-            public Guid wokerTaskId { get; set; }
+            public Guid workerTaskId { get; set; }
         }
     }
 }

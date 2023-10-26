@@ -44,7 +44,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Admin"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Admin", Name = "Admin" });
+                    await _roleManager.CreateAsync(new Role { description = "Role For Admin", Name = "Admin" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
                 var user = new User
@@ -72,7 +72,7 @@ namespace Sevices.Core.UserService
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email không hợp lệ !";
+                        result.ErrorMessage = "Email Thoại Không Hợp Lệ!";
                         return result;
                     }
                     else
@@ -118,7 +118,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                        result.ErrorMessage = "Xác Thực Người Dùng Sai";
                                     }
                                 }
                             }
@@ -142,7 +142,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Factory"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Factory", Name = "Factory" });
+                    await _roleManager.CreateAsync(new Role { description = "Role For Factory", Name = "Factory" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Factory");
                 var user = new User
@@ -171,7 +171,7 @@ namespace Sevices.Core.UserService
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email không hợp lệ !";
+                        result.ErrorMessage = "Email Không Hợp Lệ!";
                         return result;
                     }
                     else
@@ -217,7 +217,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
                                     }
                                 }
                             }
@@ -242,7 +242,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Manager"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Manager", Name = "Manager" });
+                    await _roleManager.CreateAsync(new Role { description = "Role For Manager", Name = "Manager" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Manager");
                 var user = new User
@@ -317,7 +317,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
                                     }
                                 }
                             }
@@ -332,18 +332,18 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public async Task<ResultModel> CreateWoker(UserCreateModel model)
+        public async Task<ResultModel> CreateWorker(UserCreateModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;            
 
             try
             {
-                if (!await _roleManager.RoleExistsAsync("Woker"))
+                if (!await _roleManager.RoleExistsAsync("Worker"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Woker", Name = "Woker" });
+                    await _roleManager.CreateAsync(new Role { description = "Role For Worker", Name = "Worker" });
                 }
-                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Woker");
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Worker");
                 var user = new User
                 {
                     Email = model.email,
@@ -416,7 +416,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác thực người dùng sai ";
+                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
                                     }
                                 }
                             }
@@ -636,7 +636,7 @@ namespace Sevices.Core.UserService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy User";
+                    result.ErrorMessage = "Không Tìm Thấy User";
                     return result;
                 }
                 else
@@ -645,7 +645,7 @@ namespace Sevices.Core.UserService
                     if (checkRole == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Role không hợp lệ";
+                        result.ErrorMessage = "Role Không Hợp Lệ";
                         return result;
                     }
                     else

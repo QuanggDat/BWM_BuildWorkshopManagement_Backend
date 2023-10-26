@@ -2,29 +2,24 @@
 using Data.Entities;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Data.Models.WokerTaskModel;
+using static Data.Models.WorkerTaskModel;
 
-namespace Sevices.Core.WokerTaskService
+namespace Sevices.Core.WorkerTaskService
 {
-    public class WokerTaskService : IWokerTaskService
+    public class WorkerTaskService : IWorkerTaskService
     {
         private readonly AppDbContext _dbContext;
-        public WokerTaskService(AppDbContext dbContext)
+        public WorkerTaskService(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<ResultModel> CreateWokerTask(Guid userId, CreateWokerTaskModel model)
+        public async Task<ResultModel> CreateWorkerTask(Guid userId, CreateWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var wokerTask = new WokerTask
+            var workerTask = new WorkerTask
             {
                 managerTaskId = model.managerTaskId,
                 name = model.name,
@@ -38,20 +33,20 @@ namespace Sevices.Core.WokerTaskService
 
             try
             {
-                await _dbContext.WokerTask.AddAsync(wokerTask);
+                await _dbContext.WorkerTask.AddAsync(workerTask);
 
                 foreach (var assignee in model.assignees)
                 {
-                    await _dbContext.WokerTaskDetail.AddAsync(new WokerTaskDetail
+                    await _dbContext.WorkerTaskDetail.AddAsync(new WorkerTaskDetail
                     {
-                        wokerTaskId = wokerTask.id,
+                        workerTaskId = workerTask.id,
                         userId = new Guid(assignee)
                     });
                 }
 
                 await _dbContext.SaveChangesAsync();
                 result.Succeed = true;
-                result.Data = wokerTask.id;
+                result.Data = workerTask.id;
 
             }
 
@@ -63,18 +58,18 @@ namespace Sevices.Core.WokerTaskService
             return result;
         }
 
-        public async Task<ResultModel> UpdateWokerTask(UpdateWokerTaskModel model)
+        public async Task<ResultModel> UpdateWorkerTask(UpdateWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
             try
             {
-                var check = await _dbContext.WokerTask.FindAsync(model.wokerTaskId);
+                var check = await _dbContext.WorkerTask.FindAsync(model.workerTaskId);
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy WokerTask";
+                    result.ErrorMessage = "Không tìm thấy WorkerTask";
                     return result;
                 }
                 else
@@ -86,30 +81,30 @@ namespace Sevices.Core.WokerTaskService
                     check.status = model.status;
 
                     // Remove all old woker tasks detail
-                    var currentWokerTaskDetails = await _dbContext.WokerTaskDetail
-                        .Where(x => x.wokerTaskId == model.wokerTaskId)
+                    var currentWokerTaskDetails = await _dbContext.WorkerTaskDetail
+                        .Where(x => x.workerTaskId == model.workerTaskId)
                         .ToListAsync();
                     if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
                     {
-                        _dbContext.WokerTaskDetail.RemoveRange(currentWokerTaskDetails);
+                        _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
                     }
 
                     // Set new woker tasks detail
-                    var wokerTaskDetails = new List<WokerTaskDetail>();
+                    var workerTaskDetails = new List<WorkerTaskDetail>();
                     foreach (var assignee in model.assignees)
                     {
-                        wokerTaskDetails.Add(new WokerTaskDetail
+                        workerTaskDetails.Add(new WorkerTaskDetail
                         {
-                            wokerTaskId = model.wokerTaskId,
+                            workerTaskId = model.workerTaskId,
                             userId = assignee
                         });
                     }
 
-                    await _dbContext.WokerTaskDetail.AddRangeAsync(wokerTaskDetails);
+                    await _dbContext.WorkerTaskDetail.AddRangeAsync(workerTaskDetails);
 
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
-                    result.Data = model.wokerTaskId;
+                    result.Data = model.workerTaskId;
                 }
 
             }
@@ -121,12 +116,12 @@ namespace Sevices.Core.WokerTaskService
             return result;
         }
 
-        public async Task<ResultModel> DeleteWokerTask(Guid wokerTaskId)
+        public async Task<ResultModel> DeleteWorkerTask(Guid workerTaskId)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WokerTask.FindAsync(wokerTaskId);
+            var check = await _dbContext.WorkerTask.FindAsync(workerTaskId);
             if (check == null)
             {
                 result.Succeed = false;
@@ -140,7 +135,7 @@ namespace Sevices.Core.WokerTaskService
                     check.isDeleted = true;
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
-                    result.Data = wokerTaskId;
+                    result.Data = workerTaskId;
                 }
                 catch (Exception ex)
                 {
@@ -150,12 +145,12 @@ namespace Sevices.Core.WokerTaskService
             }            
         }
 
-        public async Task<ResultModel> AssignWokerTask(AssignWokerTaskModel model)
+        public async Task<ResultModel> AssignWorkerTask(AssignWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WokerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.wokerTaskId == model.wokerTaskId);
+            var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check != null)
             {
                 result.Succeed = false;
@@ -164,17 +159,17 @@ namespace Sevices.Core.WokerTaskService
             }
             else
             {
-                var wokerTaskDetail = new WokerTaskDetail
+                var workerTaskDetail = new WorkerTaskDetail
                 {
                     userId = model.memberId,
-                    wokerTaskId = model.wokerTaskId,
+                    workerTaskId = model.workerTaskId,
                 };
                 try
                 {
-                    await _dbContext.WokerTaskDetail.AddAsync(wokerTaskDetail);
+                    await _dbContext.WorkerTaskDetail.AddAsync(workerTaskDetail);
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
-                    result.Data = wokerTaskDetail.id;
+                    result.Data = workerTaskDetail.id;
                 }
                 catch (Exception ex)
                 {
@@ -185,12 +180,12 @@ namespace Sevices.Core.WokerTaskService
             }         
         }
 
-        public async Task<ResultModel> UnAssignWokerTask(AssignWokerTaskModel model)
+        public async Task<ResultModel> UnAssignWorkerTask(AssignWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WokerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.wokerTaskId == model.wokerTaskId);
+            var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check == null)
             {
                 result.Succeed = false;
@@ -201,7 +196,7 @@ namespace Sevices.Core.WokerTaskService
             {
                 try
                 {
-                    _dbContext.WokerTaskDetail.Remove(check);
+                    _dbContext.WorkerTaskDetail.Remove(check);
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
                     result.Data = check.id;
@@ -214,13 +209,13 @@ namespace Sevices.Core.WokerTaskService
             }
             
         }
-        public async Task<ResultModel> UpdateWokerTaskStatus(Guid wokerTaskId, TaskStatus status)
+        public async Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, TaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var wokerTask = await _dbContext.WokerTask.FindAsync(wokerTaskId);
-            if (wokerTask == null)
+            var workerTask = await _dbContext.WorkerTask.FindAsync(workerTaskId);
+            if (workerTask == null)
             {
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy WokerTask";
@@ -230,10 +225,10 @@ namespace Sevices.Core.WokerTaskService
             {
                 try
                 {
-                    wokerTask.status = status;
+                    workerTask.status = status;
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
-                    result.Data = wokerTaskId;
+                    result.Data = workerTaskId;
                 }
                 catch (Exception ex)
                 {
@@ -243,27 +238,27 @@ namespace Sevices.Core.WokerTaskService
             }           
         }
 
-        public async Task<List<WokerTaskResponseModel>> GetAllWokerTask(Guid managerTaskId)
+        public async Task<List<WorkerTaskResponseModel>> GetAllWorkerTask(Guid managerTaskId)
         {          
 
-            var check = await _dbContext.WokerTask.Include(x => x.WokerTaskDetails).ThenInclude(x => x.User)
+            var check = await _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                 .Where(x => x.managerTaskId == managerTaskId && x.isDeleted == false).ToListAsync();
-            var list = new List<WokerTaskResponseModel>();
+            var list = new List<WorkerTaskResponseModel>();
             foreach (var item in check)
             {
                 var user = await _dbContext.Users.FindAsync(item.createById);
-                var tmp = new WokerTaskResponseModel
+                var tmp = new WorkerTaskResponseModel
                 {
                     managerTaskId = item.managerTaskId,
                     userId = item.createById,
-                    wokerTaskId = item.id,
+                    workerTaskId = item.id,
                     name = item.name,
                     description = item.description,
                     startTime = item.startTime,
                     endTime = item.endTime,
                     status = item.status,
                     userFullName = user!.fullName,
-                    Members = item.WokerTaskDetails.Select(_ => new TaskMemberResponse
+                    Members = item.WorkerTaskDetails.Select(_ => new TaskMemberResponse
                     {
                         memberId = _.User.Id,
                         memberFullName = _.User.fullName,

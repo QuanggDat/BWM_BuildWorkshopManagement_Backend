@@ -13,8 +13,8 @@ namespace Data.Models
     public class NotificationModel
     {
         public Guid id { get; set; }
-        public string? title { get; set; }
-        public string? description { get; set; }
+        public string? title { get; set; } 
+        public string? content { get; set; }
         public bool seen { get; set; } 
         public NotificationType? type { get; set; }
         public bool isDeleted { get; set; }
@@ -30,7 +30,7 @@ namespace Data.Models
     public class NotificationCreateModel
     {
         public string? title { get; set; }
-        public string? description { get; set; }
+        public string? content { get; set; }
         public Guid userId { get; set; }
         public Guid? orderId { get; set; }
     }
