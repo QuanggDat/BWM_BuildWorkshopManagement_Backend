@@ -83,7 +83,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult DeleteMaterial(Guid id)
         {
             var result = _materialService.DeleteMaterial(id);
