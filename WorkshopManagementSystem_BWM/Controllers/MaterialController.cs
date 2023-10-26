@@ -27,25 +27,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("CreateMaterial")]
-        public async Task<ActionResult> CreateMaterial(CreateMaterialModel model)
+        public async Task<ActionResult> CreateMaterial(Guid id, CreateMaterialModel model)
         {
-            var result = await _materialService.CreateMaterial(model);
+            var result = await _materialService.CreateMaterial(id, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpPut("UpdateMaterial")]
-        public IActionResult UpdateMaterial(UpdateMaterialModel model)
+        public IActionResult UpdateMaterial(Guid id, UpdateMaterialModel model)
         {
-            var result = _materialService.UpdateMaterial(model);
+            var result = _materialService.UpdateMaterial(id, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpPut("UpdateMaterialAmount")]
-        public IActionResult UpdateMaterialAmount(UpdateMaterialAmountModel model)
+        public IActionResult UpdateMaterialAmount(Guid id, UpdateMaterialAmountModel model)
         {
-            var result = _materialService.UpdateMaterialAmount(model);
+            var result = _materialService.UpdateMaterialAmount(id, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -73,6 +73,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
+
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetMaterialById(Guid id)

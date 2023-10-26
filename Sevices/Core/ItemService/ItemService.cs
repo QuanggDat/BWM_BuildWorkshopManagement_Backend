@@ -49,7 +49,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> CreateItem(CreateItemModel model)
+        public async Task<ResultModel> CreateItem(Guid id, CreateItemModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -59,7 +59,7 @@ namespace Sevices.Core.ItemService
                 if (string.IsNullOrEmpty(model.name))
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống.";
+                    result.ErrorMessage = "Tên này không được để trống !";
                     return result;
                 }
                 else
@@ -67,7 +67,7 @@ namespace Sevices.Core.ItemService
                     if (model.mass < 0)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Diện tích không được âm.";
+                        result.ErrorMessage = "Diện tích không được âm !";
                         return result;
                     }
                     else
@@ -75,7 +75,7 @@ namespace Sevices.Core.ItemService
                         if (string.IsNullOrEmpty(model.unit))
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Đơn vị không được để trống.";
+                            result.ErrorMessage = "Đơn vị không được để trống !";
                             return result;
                         }
                         else
@@ -83,7 +83,7 @@ namespace Sevices.Core.ItemService
                             if (model.length < 0)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Chiều dài không được âm.";
+                                result.ErrorMessage = "Chiều dài không được âm !";
                                 return result;
                             }
                             else
@@ -91,7 +91,7 @@ namespace Sevices.Core.ItemService
                                 if (model.height < 0)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Chiều cao không được âm.";
+                                    result.ErrorMessage = "Chiều cao không được âm !";
                                     return result;
                                 }
                                 else
@@ -99,7 +99,7 @@ namespace Sevices.Core.ItemService
                                     if (model.depth < 0)
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Chiều rộng không được âm.";
+                                        result.ErrorMessage = "Chiều rộng không được âm !";
                                         return result;
                                     }
                                     else
@@ -107,7 +107,7 @@ namespace Sevices.Core.ItemService
                                         if (string.IsNullOrEmpty(model.drawingsTechnical))
                                         {
                                             result.Succeed = false;
-                                            result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                            result.ErrorMessage = "Bản vẽ này không được để trống !";
                                             return result;
                                         }
                                         else
@@ -115,7 +115,7 @@ namespace Sevices.Core.ItemService
                                             if (string.IsNullOrEmpty(model.drawingsTechnical))
                                             {
                                                 result.Succeed = false;
-                                                result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                result.ErrorMessage = "Bản vẽ này không được để trống !";
                                                 return result;
                                             }
                                             else
@@ -123,7 +123,7 @@ namespace Sevices.Core.ItemService
                                                 if (string.IsNullOrEmpty(model.drawings2D))
                                                 {
                                                     result.Succeed = false;
-                                                    result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                    result.ErrorMessage = "Bản vẽ này không được để trống !";
                                                     return result;
                                                 }
                                                 else
@@ -131,7 +131,7 @@ namespace Sevices.Core.ItemService
                                                     if (string.IsNullOrEmpty(model.drawings3D))
                                                     {
                                                         result.Succeed = false;
-                                                        result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                        result.ErrorMessage = "Bản vẽ này không được để trống !";
                                                         return result;
                                                     }
                                                     else
@@ -139,7 +139,7 @@ namespace Sevices.Core.ItemService
                                                         if (model.price < 0)
                                                         {
                                                             result.Succeed = false;
-                                                            result.ErrorMessage = "Giá tiền không được âm.";
+                                                            result.ErrorMessage = "Giá tiền không được âm !";
                                                             return result;
                                                         }
                                                         else
@@ -147,7 +147,7 @@ namespace Sevices.Core.ItemService
                                                             if (model.areaId == Guid.Empty)
                                                             {
                                                                 result.Succeed = false;
-                                                                result.ErrorMessage = "Không nhận được area";
+                                                                result.ErrorMessage = "Không nhận được area !";
                                                                 return result;
                                                             }
                                                             else
@@ -166,8 +166,11 @@ namespace Sevices.Core.ItemService
                                                                     drawings2D = model.drawings2D,
                                                                     drawings3D = model.drawings3D,
                                                                     description = model.description,
-                                                                    price = model.price,                                                                   
-                                                                    isDeleted = false
+                                                                    price = model.price,
+                                                                    //areaId=model.areaId,
+                                                                    //categoryId=model.categoryId,
+                                                                    isDeleted = false,
+                                                                    createById=id
                                                                 };
                                                                 _dbContext.Item.Add(newItem);
                                                                 await _dbContext.SaveChangesAsync();
@@ -193,7 +196,76 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel UpdateItem(UpdateItemModel model)
+        public async Task<ResultModel> AddMaterialToItem(Guid id, Guid itemId, AddMaterialToItemModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var data =_dbContext.Material.Where(i => i.id == model.materialId).FirstOrDefault();
+                if(data != null)
+                {
+                    var newMaterialItem = new ItemMaterial
+                    {
+                        createdById = id,
+                        itemId = itemId,
+                        materialId = model.materialId,
+                        quantity = model.quantity,
+                        price = model.price,
+                        totalPrice = model.totalPrice,
+                    };
+                    newMaterialItem.totalPrice = model.quantity * model.price;
+                    _dbContext.ItemMaterial.Add(newMaterialItem);
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = newMaterialItem.id;
+                }
+                else
+                {
+                    result.ErrorMessage = "ItemMaterial" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+
+            return result;
+        }
+
+        public ResultModel UpdateItem(Guid id, Guid userId, UpdateMaterialToItemModel model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                //Update Item
+                var data = _dbContext.ItemMaterial.Where(i => i.id == model.id).FirstOrDefault();
+                if (data != null)
+                {
+                    data.price = model.price;
+                    data.quantity = model.quantity;
+                    data.totalPrice = model.price * model.quantity;
+                    data.createdById = userId;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<ItemMaterial, ItemMaterialModel>(data);
+                }
+                else
+                {
+                    result.ErrorMessage = "ItemMaterial" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdateItem(Guid id, Guid userId, UpdateItemModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -305,6 +377,7 @@ namespace Sevices.Core.ItemService
                                                                 data.price = model.price;
                                                                 //data.areaId = model.areaId;
                                                                 //data.categoryId = model.categoryId;
+                                                                data.createById = userId;
                                                                 _dbContext.SaveChanges();
                                                                 result.Succeed = true;
                                                                 result.Data = _mapper.Map<Item, ItemModel>(data);
@@ -325,7 +398,7 @@ namespace Sevices.Core.ItemService
                             }
                         }
                     }
-                }                                                                                                                                         
+                }
             }
             catch (Exception e)
             {
@@ -425,6 +498,11 @@ namespace Sevices.Core.ItemService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
+        }
+
+        public ResultModel UpdateMaterialToItem(Guid id, Guid userId, UpdateMaterialToItemModel model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

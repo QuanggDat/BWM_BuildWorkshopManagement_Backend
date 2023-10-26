@@ -27,17 +27,33 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("CreateItem")]
-        public async Task<ActionResult> CreateItem(CreateItemModel model)
+        public async Task<ActionResult> CreateItem(Guid id, CreateItemModel model)
         {
-            var result = await _itemService.CreateItem(model);
+            var result = await _itemService.CreateItem(id, model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPost("AddMaterialToItem")]
+        public async Task<ActionResult> AddMaterialToItem(Guid id, Guid itemId, AddMaterialToItemModel model)
+        {
+            var result = await _itemService.AddMaterialToItem(id, itemId, model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("UpdateMaterialToItem")]
+        public IActionResult UpdateMaterialToItem(Guid id, Guid userId, UpdateMaterialToItemModel model)
+        {
+            var result = _itemService.UpdateMaterialToItem(id, userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpPut("UpdateItem")]
-        public IActionResult UpdateItem(UpdateItemModel model)
+        public IActionResult UpdateItem(Guid id, Guid userId, UpdateItemModel model)
         {
-            var result = _itemService.UpdateItem(model);
+            var result = _itemService.UpdateItem(id, userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -50,6 +66,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
+
         [HttpGet("SortItembyPrice")]
         public Task<ActionResult> SortItembyPrice(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
@@ -57,6 +74,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
+
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetItemById(Guid id)

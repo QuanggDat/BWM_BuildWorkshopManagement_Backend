@@ -23,6 +23,7 @@ namespace Data.Models
         public string description { get; set; }
         public double price { get; set; }
         public bool isDeleted { get; set; }
+        public Guid createById { get; set; }
         
     }
 
@@ -42,6 +43,7 @@ namespace Data.Models
         [Required] public double price { get; set; }
         [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid areaId { get; set; }
+        public Guid? createById { get; set; }
       
     }
 
@@ -61,6 +63,7 @@ namespace Data.Models
         public string description { get; set; }
         [Required] public double price { get; set; }
         [Required] public Guid areaId { get; set; }
+        public Guid? createById { get; set;}
         //[Required] public Guid categoryId { get; set; }
     }
 
