@@ -84,7 +84,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult DeleteItem(Guid id)
         {
             var result = _itemService.DeleteItem(id);

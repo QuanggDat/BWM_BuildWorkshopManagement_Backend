@@ -52,7 +52,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult DeleteGroup(Guid id)
         {
             var result = _groupService.DeleteGroup(id);
