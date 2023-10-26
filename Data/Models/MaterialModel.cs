@@ -24,6 +24,7 @@ namespace Data.Models
         public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
         public Guid categoryId { get; set; }
+        public Guid? createById { get; set; }
     }
 
     public class CreateMaterialModel
@@ -42,6 +43,7 @@ namespace Data.Models
         [Required] public double totalPrice { get; set; }
         [Required] public bool isDeleted { get; set; } = false;
         [Required] public Guid categoryId { get; set; }
+        public Guid? createById { get; set; }
     }
 
     public class UpdateMaterialModel
@@ -60,17 +62,49 @@ namespace Data.Models
         [Required] public double price { get; set; }
         [Required] public double totalPrice { get; set; }
         [Required] public Guid categoryId { get; set; }
+        public Guid? createById { get; set; }
     }
 
     public class UpdateMaterialAmountModel
     {
         public Guid id { get; set; }
         [Required] public int amount { get; set; }
+        public Guid? CreateById { get; set; }
     }
 
     public class DeleteMaterialModel
     {
         public Guid id { get; set; }
         public bool isDeleted { get; set; } = true;
+    }
+
+    public class ItemMaterialModel
+    {
+            public Guid id { get; set; }
+            public Guid itemId { get; set; }
+            public Guid materialId { get; set; }
+            public Guid createById { get; set; }
+            public int quantity { get; set; }
+            public double price { get; set; }
+            public double totalPrice { get; set; }
+    }
+
+    public class AddMaterialToItemModel
+    {
+        [Required] public Guid itemId { get; set; }
+        [Required] public Guid materialId { get; set; }
+        public Guid createById { get; set; }
+        [Required] public int quantity { get; set; }
+        [Required] public double price { get; set; }
+        public double totalPrice { get; set; }
+    }
+
+    public class UpdateMaterialToItemModel
+    {
+        [Required] public Guid id { get; set; }
+        public Guid createById { get; set; }
+        [Required] public int quantity { get; set; }
+        [Required] public double price { get; set; }
+        public double totalPrice { get; set; }
     }
 }
