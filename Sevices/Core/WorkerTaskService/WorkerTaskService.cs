@@ -69,7 +69,7 @@ namespace Sevices.Core.WorkerTaskService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy WorkerTask";
+                    result.ErrorMessage = "Không tìm thấy thông tin WorkerTask!";
                     return result;
                 }
                 else
@@ -125,7 +125,7 @@ namespace Sevices.Core.WorkerTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy WokerTask";
+                result.ErrorMessage = "Không tìm thấy thông tin WokerTask!";
                 return result;
             }
             else
@@ -154,7 +154,7 @@ namespace Sevices.Core.WorkerTaskService
             if (check != null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Công nhân đã được thêm vào công việc";
+                result.ErrorMessage = "Công nhân đã được thêm vào công việc!";
                 return result;
             }
             else
@@ -189,7 +189,7 @@ namespace Sevices.Core.WorkerTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Công nhân chưa được thêm vào công việc";
+                result.ErrorMessage = "Công nhân chưa được thêm vào công việc!";
                 return result;
             }
             else
@@ -218,7 +218,7 @@ namespace Sevices.Core.WorkerTaskService
             if (workerTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy WokerTask";
+                result.ErrorMessage = "Không tìm thấy thông tin WokerTask!";
                 return result;
             }
             else

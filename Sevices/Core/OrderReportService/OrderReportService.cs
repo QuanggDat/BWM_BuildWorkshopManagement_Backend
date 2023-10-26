@@ -32,7 +32,7 @@ namespace Sevices.Core.OrderReportService
             if (order == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy đơn hàng";
+                result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 return result;
             }
             else
@@ -40,7 +40,7 @@ namespace Sevices.Core.OrderReportService
                 if (order.status != Data.Enums.OrderStatus.InProgress)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                    result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                     return result;
                 }
                 else
@@ -95,7 +95,7 @@ namespace Sevices.Core.OrderReportService
             if (report == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy reportId!";
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!!";
                 return result;
             }
             else
@@ -103,7 +103,7 @@ namespace Sevices.Core.OrderReportService
                 if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Báo cáo này đã hoàn thành";
+                    result.ErrorMessage = "Báo cáo này đã hoàn thành !";
                     return result;
                 }
                 else

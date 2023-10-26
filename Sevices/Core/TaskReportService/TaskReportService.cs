@@ -33,7 +33,7 @@ namespace Sevices.Core.ReportService
             if (managerTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy Manager Task";
+                result.ErrorMessage = "Không tìm thấy ManagerTask!";
                 return result;
             }
             else
@@ -55,7 +55,7 @@ namespace Sevices.Core.ReportService
                         if (!canSendReport)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
+                            result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
                             return result;
                         }
                         else
@@ -93,7 +93,7 @@ namespace Sevices.Core.ReportService
                     if (!canSendReport)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này";
+                        result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
                         return result;
                     }
                     else
@@ -247,7 +247,7 @@ namespace Sevices.Core.ReportService
             if (report == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy reportId!";
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
                 return result;
             }
             else
@@ -257,7 +257,7 @@ namespace Sevices.Core.ReportService
                     if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Báo cáo này đã hoàn thành";
+                        result.ErrorMessage = "Báo cáo này đã hoàn thành!";
                         return result;
                     }
                     else

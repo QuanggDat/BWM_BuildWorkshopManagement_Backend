@@ -44,7 +44,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Admin"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role For Admin", Name = "Admin" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Admin", Name = "Admin" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
                 var user = new User
@@ -65,14 +65,14 @@ namespace Sevices.Core.UserService
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                    result.ErrorMessage = "Số điện thoại không hợp lệ!";
                 }
                 else
                 {
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Thoại Không Hợp Lệ!";
+                        result.ErrorMessage = "Email không hợp lệ!";
                         return result;
                     }
                     else
@@ -80,14 +80,14 @@ namespace Sevices.Core.UserService
                         if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                            result.ErrorMessage = "Số điện thoại này đã được đăng ký!";
                         }
                         else
                         {
                             if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Email Đã Tồn Tại!";
+                                result.ErrorMessage = "Email đã tồn tạii!";
                             }
                             else
                             {
@@ -97,7 +97,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";
                                     return result;
                                 }
                                 else
@@ -118,7 +118,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác Thực Người Dùng Sai";
+                                        result.ErrorMessage = "Xác thực sai!";
                                     }
                                 }
                             }
@@ -136,13 +136,13 @@ namespace Sevices.Core.UserService
         public async Task<ResultModel> CreateFactory(UserCreateModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;            
+            result.Succeed = false;
 
             try
             {
                 if (!await _roleManager.RoleExistsAsync("Factory"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role For Factory", Name = "Factory" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Factory", Name = "Factory" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Factory");
                 var user = new User
@@ -164,14 +164,14 @@ namespace Sevices.Core.UserService
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                    result.ErrorMessage = "Số điện thoại không hợp lệ!";
                 }
                 else
                 {
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email Không Hợp Lệ!";
+                        result.ErrorMessage = "Email không hợp lệ!";
                         return result;
                     }
                     else
@@ -179,14 +179,14 @@ namespace Sevices.Core.UserService
                         if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                            result.ErrorMessage = "Số điện thoại này đã được đăng ký!";
                         }
                         else
                         {
                             if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Email Đã Tồn Tại!";
+                                result.ErrorMessage = "Email đã tồn tạii!";
                             }
                             else
                             {
@@ -196,7 +196,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";
                                     return result;
                                 }
                                 else
@@ -217,7 +217,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
+                                        result.ErrorMessage = "Xác thực sai!";
                                     }
                                 }
                             }
@@ -242,7 +242,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Manager"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role For Manager", Name = "Manager" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Manager", Name = "Manager" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Manager");
                 var user = new User
@@ -264,14 +264,14 @@ namespace Sevices.Core.UserService
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                    result.ErrorMessage = "Số điện thoại không hợp lệ!";
                 }
                 else
                 {
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email không hợp lệ !";
+                        result.ErrorMessage = "Email không hợp lệ!";
                         return result;
                     }
                     else
@@ -279,14 +279,14 @@ namespace Sevices.Core.UserService
                         if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                            result.ErrorMessage = "Số điện thoại này đã được đăng ký!";
                         }
                         else
                         {
                             if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Email Đã Tồn Tại!";
+                                result.ErrorMessage = "Email đã tồn tạii!";
                             }
                             else
                             {
@@ -296,7 +296,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";
                                     return result;
                                 }
                                 else
@@ -317,7 +317,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
+                                        result.ErrorMessage = "Xác thực sai!";
                                     }
                                 }
                             }
@@ -341,7 +341,7 @@ namespace Sevices.Core.UserService
             {
                 if (!await _roleManager.RoleExistsAsync("Worker"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role For Worker", Name = "Worker" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Worker", Name = "Worker" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Worker");
                 var user = new User
@@ -363,14 +363,14 @@ namespace Sevices.Core.UserService
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Số Điện Thoại Không Hợp Lệ!";
+                    result.ErrorMessage = "Số điện thoại không hợp lệ!";
                 }
                 else
                 {
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email không hợp lệ !";
+                        result.ErrorMessage = "Email không hợp lệ!";
                         return result;
                     }
                     else
@@ -378,14 +378,14 @@ namespace Sevices.Core.UserService
                         if (userByPhone != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Số Điện Thoại Đã Được Đăng Kí!";
+                            result.ErrorMessage = "Số điện thoại này đã được đăng ký!";
                         }
                         else
                         {
                             if (userByMail != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Email Đã Tồn Tại!";
+                                result.ErrorMessage = "Email đã tồn tạii!";
                             }
                             else
                             {
@@ -395,7 +395,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người Này Không Trong Độ Tuổi Lao Động";
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";
                                     return result;
                                 }
                                 else
@@ -416,7 +416,7 @@ namespace Sevices.Core.UserService
                                     else
                                     {
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Xác Thực Người Dùng Sai ";
+                                        result.ErrorMessage = "Xác thực sai!";
                                     }
                                 }
                             }
@@ -457,13 +457,13 @@ namespace Sevices.Core.UserService
                 var check = await _signInManager.CheckPasswordSignInAsync(user, model.password, false);
                 if (!check.Succeeded)
                 {                  
-                        result.ErrorMessage = "Sai Mật Khẩu!";
+                        result.ErrorMessage = "Sai mật khẩu!";
                 }
                 else
                 {
                     if (user.banStatus)
                     {
-                        result.ErrorMessage = "Tài Khoản Đã Bị Khóa!";
+                        result.ErrorMessage = "Tài khoản đã bị khoá!";
                     }
                     else
                     {
@@ -482,7 +482,7 @@ namespace Sevices.Core.UserService
             }
             else
             {
-                result.ErrorMessage = "Không Tìm Thấy Số Điện Thoại!";
+                result.ErrorMessage = "Không tìm thấy số điện thoại!";
             }
             return result;
         }
@@ -610,7 +610,7 @@ namespace Sevices.Core.UserService
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
-                    result.ErrorMessage = "Cập Nhật Số Điện Thoại Thành Công!";
+                    result.ErrorMessage = "Cập nhập số điênh thoại thành công!";
                 }
                 else
                 {
@@ -636,7 +636,7 @@ namespace Sevices.Core.UserService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không Tìm Thấy User";
+                    result.ErrorMessage = "Không tìm thấy User!";
                     return result;
                 }
                 else
@@ -645,7 +645,7 @@ namespace Sevices.Core.UserService
                     if (checkRole == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Role Không Hợp Lệ";
+                        result.ErrorMessage = "Role không hợp lệ!";
                         return result;
                     }
                     else

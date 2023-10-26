@@ -12,7 +12,7 @@ namespace Sevices.Core.ItemService
         Task<ResultModel> CreateItem(CreateItemModel model);
         ResultModel Search(string search, int pageIndex, int pageSize);
         ResultModel GetAllItem(int pageIndex, int pageSize);
-        ResultModel SortItembyPrice(int pageIndex, int pageSize);
+        ResultModel SortItemByPrice(int pageIndex, int pageSize);
         ResultModel GetItemById(Guid id);
         ResultModel UpdateItem(UpdateItemModel model);
         ResultModel DeleteItem(Guid id);

@@ -426,7 +426,7 @@ namespace Sevices.Core.MaterialService
             return resultModel;
         }
 
-        public ResultModel SortMaterialbyPrice(int pageIndex, int pageSize)
+        public ResultModel SortMaterialByPrice(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
@@ -446,7 +446,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel SortMaterialbyThickness(int pageIndex, int pageSize)
+        public ResultModel SortMaterialByThickness(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try

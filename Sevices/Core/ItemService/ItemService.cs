@@ -75,7 +75,7 @@ namespace Sevices.Core.ItemService
                         if (string.IsNullOrEmpty(model.unit))
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Đơn vị này không được để trống.";
+                            result.ErrorMessage = "Đơn vị không được để trống.";
                             return result;
                         }
                         else
@@ -166,9 +166,7 @@ namespace Sevices.Core.ItemService
                                                                     drawings2D = model.drawings2D,
                                                                     drawings3D = model.drawings3D,
                                                                     description = model.description,
-                                                                    price = model.price,
-                                                                    //areaId=model.areaId,
-                                                                    //categoryId=model.categoryId,
+                                                                    price = model.price,                                                                   
                                                                     isDeleted = false
                                                                 };
                                                                 _dbContext.Item.Add(newItem);
@@ -356,7 +354,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel SortItembyPrice(int pageIndex, int pageSize)
+        public ResultModel SortItemByPrice(int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try

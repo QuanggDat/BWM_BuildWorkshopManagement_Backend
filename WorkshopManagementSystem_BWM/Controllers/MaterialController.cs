@@ -61,7 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("SortMaterialbyPrice")]
         public Task<ActionResult> SortMaterialbyPrice(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.SortMaterialbyPrice(pageIndex, pageSize);
+            var result = _materialService.SortMaterialByPrice(pageIndex, pageSize);
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
@@ -69,7 +69,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("SortMaterialbyThickness")]
         public Task<ActionResult> SortMaterialbyThickness(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.SortMaterialbyThickness(pageIndex, pageSize);
+            var result = _materialService.SortMaterialByThickness(pageIndex, pageSize);
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }

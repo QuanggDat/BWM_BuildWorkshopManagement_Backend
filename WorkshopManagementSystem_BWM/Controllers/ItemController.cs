@@ -53,7 +53,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("SortItembyPrice")]
         public Task<ActionResult> SortItembyPrice(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _itemService.SortItembyPrice(pageIndex, pageSize);
+            var result = _itemService.SortItemByPrice(pageIndex, pageSize);
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }

@@ -30,7 +30,7 @@ namespace Sevices.Core.ManagerTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "ManagerId không hợp lệ!";
+                result.ErrorMessage = "Không tìm thấy thông tin Manager!";
                 return result;
             }
             else
@@ -39,7 +39,7 @@ namespace Sevices.Core.ManagerTaskService
                 if (orderTmp == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "OrderId không hợp lệ!";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                     return result;
                 }
                 else
@@ -48,7 +48,7 @@ namespace Sevices.Core.ManagerTaskService
                     if (procedureTmp == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "ProcedureId không hợp lệ!";
+                        result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
                         return result;
                     }
                     else
@@ -58,7 +58,7 @@ namespace Sevices.Core.ManagerTaskService
                         if (check1 != null)
                         {
                             result.Succeed = false;
-                            result.ErrorMessage = "Công việc đã được tạo";
+                            result.ErrorMessage = "Công việc đã được tạo!";
                             return result;
                         }
                         else
@@ -66,7 +66,7 @@ namespace Sevices.Core.ManagerTaskService
                             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Đơn hàng đang không tiến hành";
+                                result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                                 return result;
                             }
 
@@ -124,7 +124,7 @@ namespace Sevices.Core.ManagerTaskService
             if (managerTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy MannagerTask!";
+                result.ErrorMessage = "Không tìm thấy thông tin ManagerTask!";
                 return result;
             }
             else
@@ -272,7 +272,7 @@ namespace Sevices.Core.ManagerTaskService
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
                 return result;
             }
             else
@@ -304,7 +304,7 @@ namespace Sevices.Core.ManagerTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
                 return result;
             }
             else
@@ -336,7 +336,7 @@ namespace Sevices.Core.ManagerTaskService
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy Mannager Task!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
                 return result;
             }
             else
