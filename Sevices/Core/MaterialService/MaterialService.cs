@@ -64,80 +64,106 @@ namespace Sevices.Core.MaterialService
                     result.ErrorMessage = "Tên này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.color))
+                else
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Màu này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.supplier))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nguồn cung này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Độ dày không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.importPlace))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nơi nhập này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Số lượng không được âm.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
+                    if (string.IsNullOrEmpty(model.color))
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Màu này không được để trống.";
+                        return result;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(model.supplier))
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Nguồn cung này không được để trống.";
+                            return result;
+                        }
+                        else
+                        {
+                            if (model.amount < 0)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Độ dày không được âm.";
+                                return result;
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(model.unit))
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Đơn vị này không được để trống.";
+                                    return result;
+                                }
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(model.importPlace))
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Nơi nhập này không được để trống.";
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        if (model.amount < 0)
+                                        {
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Số lượng không được âm.";
+                                            return result;
+                                        }
+                                        else
+                                        {
+                                            if (model.price < 0)
+                                            {
+                                                result.Succeed = false;
+                                                result.ErrorMessage = "Giá tiền không được âm.";
+                                                return result;
+                                            }
+                                            else
+                                            {
+                                                if (model.categoryId == Guid.Empty)
+                                                {
+                                                    result.Succeed = false;
+                                                    result.ErrorMessage = "Không nhận được category";
+                                                    return result;
+                                                }
+                                                else
+                                                {
+                                                    //Create Material 
+                                                    var newMaterial = new Material
+                                                    {
+                                                        name = model.name,
+                                                        image = model.image,
+                                                        color = model.color,
+                                                        supplier = model.supplier,
+                                                        thickness = model.thickness,
+                                                        unit = model.unit,
+                                                        sku = model.sku,
+                                                        importDate = model.importDate,
+                                                        importPlace = model.importPlace,
+                                                        amount = model.amount,
+                                                        price = model.price,
+                                                        totalPrice = model.totalPrice,
+                                                        categoryId = model.categoryId,
+                                                        isDeleted = false
+                                                    };
+                                                    newMaterial.totalPrice = model.price * model.amount;
+                                                    newMaterial.sku = $"{model.name[0]}-{newMaterial.supplier}-{model.thickness}";
 
-                //Create Material 
-                var newMaterial = new Material
-                {
-                    name = model.name,
-                    image = model.image,
-                    color = model.color,
-                    supplier = model.supplier,
-                    thickness = model.thickness,
-                    unit = model.unit,
-                    sku = model.sku,
-                    importDate = model.importDate,
-                    importPlace = model.importPlace,
-                    amount = model.amount,
-                    price = model.price,
-                    totalPrice = model.totalPrice,
-                    categoryId = model.categoryId,
-                    isDeleted = false
-                };
-                newMaterial.totalPrice = model.price * model.amount;
-                newMaterial.sku = $"{model.name[0]}-{newMaterial.supplier}-{model.thickness}";
-
-                _dbContext.Material.Add(newMaterial);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = newMaterial.id;
+                                                    _dbContext.Material.Add(newMaterial);
+                                                    await _dbContext.SaveChangesAsync();
+                                                    result.Succeed = true;
+                                                    result.Data = newMaterial.id;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }               
             }
             catch (Exception ex)
             {
@@ -158,82 +184,110 @@ namespace Sevices.Core.MaterialService
                     result.ErrorMessage = "Tên này không được để trống.";
                     return result;
                 }
-                if (string.IsNullOrEmpty(model.color))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Màu này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.supplier))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nguồn cung này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Độ dày không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.importPlace))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nơi nhập này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Số lượng không được âm.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
-
-                //Update Material
-                var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
-                if (data != null)
-                {
-                    data.name = model.name;
-                    data.image = model.image;
-                    data.color = model.color;
-                    data.supplier = model.supplier;
-                    data.thickness = model.thickness;
-                    data.unit = model.unit;
-                    data.sku = model.sku;
-                    data.importDate = model.importDate;
-                    data.importPlace = model.importPlace;
-                    data.amount = model.amount;
-                    data.price = model.price;
-                    data.totalPrice = model.totalPrice = model.price * model.amount;
-                    data.categoryId = model.categoryId;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Material, MaterialModel>(data);
-                }
                 else
                 {
-                    result.ErrorMessage = "Material" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
+                    if (string.IsNullOrEmpty(model.color))
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Màu này không được để trống.";
+                        return result;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(model.supplier))
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Nguồn cung này không được để trống.";
+                            return result;
+                        }
+                        else
+                        {
+                            if (model.amount < 0)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Độ dày không được âm.";
+                                return result;
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(model.unit))
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Đơn vị này không được để trống.";
+                                    return result;
+                                }
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(model.importPlace))
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Nơi nhập này không được để trống.";
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        if (model.amount < 0)
+                                        {
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Số lượng không được âm.";
+                                            return result;
+                                        }
+                                        else
+                                        {
+                                            if (model.price < 0)
+                                            {
+                                                result.Succeed = false;
+                                                result.ErrorMessage = "Giá tiền không được âm.";
+                                                return result;
+                                            }
+                                            else
+                                            {
+                                                if (model.categoryId == Guid.Empty)
+                                                {
+                                                    result.Succeed = false;
+                                                    result.ErrorMessage = "Không nhận được category";
+                                                    return result;
+                                                }
+                                                else
+                                                {
+                                                    //Update Material
+                                                    var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
+                                                    if (data != null)
+                                                    {
+                                                        data.name = model.name;
+                                                        data.image = model.image;
+                                                        data.color = model.color;
+                                                        data.supplier = model.supplier;
+                                                        data.thickness = model.thickness;
+                                                        data.unit = model.unit;
+                                                        data.sku = model.sku;
+                                                        data.importDate = model.importDate;
+                                                        data.importPlace = model.importPlace;
+                                                        data.amount = model.amount;
+                                                        data.price = model.price;
+                                                        data.totalPrice = model.totalPrice = model.price * model.amount;
+                                                        data.categoryId = model.categoryId;
+                                                        _dbContext.SaveChanges();
+                                                        result.Succeed = true;
+                                                        result.Data = _mapper.Map<Material, MaterialModel>(data);
+                                                    }
+                                                    else
+                                                    {
+                                                        result.ErrorMessage = "Material" + ErrorMessage.ID_NOT_EXISTED;
+                                                        result.Succeed = false;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }                              
             }
+
+
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;

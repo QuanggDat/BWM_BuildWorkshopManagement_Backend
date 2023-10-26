@@ -38,26 +38,29 @@ namespace Sevices.Core.CategoryService
                     result.ErrorMessage = "Tên này không được để trống";
                     return result;
                 }
-                bool nameExists = await _dbContext.MaterialCategory.AnyAsync(s => s.name == model.name && !s.isDeleted);
-                if (nameExists)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này đã tồn tại.";
-                }
-
-                //Create Category
                 else
                 {
-                    var newCategory = new MaterialCategory
+                    bool nameExists = await _dbContext.MaterialCategory.AnyAsync(s => s.name == model.name && !s.isDeleted);
+                    if (nameExists)
                     {
-                        name = model.name,
-                        isDeleted = false
-                    };
-                    _dbContext.MaterialCategory.Add(newCategory);
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = newCategory.id;
-                }
+                        result.Succeed = false;
+                        result.ErrorMessage = "Tên này đã tồn tại.";
+                    }
+
+                    //Create Category
+                    else
+                    {
+                        var newCategory = new MaterialCategory
+                        {
+                            name = model.name,
+                            isDeleted = false
+                        };
+                        _dbContext.MaterialCategory.Add(newCategory);
+                        await _dbContext.SaveChangesAsync();
+                        result.Succeed = true;
+                        result.Data = newCategory.id;
+                    }
+                }              
             }
             catch (Exception ex)
             {

@@ -35,6 +35,9 @@ namespace Data.Entities
         public string description { get; set; } = null!;
         public double price { get; set; }
         public bool isDeleted { get; set; }
+        [ForeignKey("createdById")]
+        public Guid? createdById { get; set; }
+        public virtual User CreatedBy { get; set; } = null!;
 
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();

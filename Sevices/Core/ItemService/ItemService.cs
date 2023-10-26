@@ -62,96 +62,131 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Tên này không được để trống.";
                     return result;
                 }
-                if (model.mass < 0)
+                else
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Diện tích không được âm.";
-                    return result;
+                    if (model.mass < 0)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Diện tích không được âm.";
+                        return result;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(model.unit))
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Đơn vị này không được để trống.";
+                            return result;
+                        }
+                        else
+                        {
+                            if (model.length < 0)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Chiều dài không được âm.";
+                                return result;
+                            }
+                            else
+                            {
+                                if (model.height < 0)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Chiều cao không được âm.";
+                                    return result;
+                                }
+                                else
+                                {
+                                    if (model.depth < 0)
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Chiều rộng không được âm.";
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        if (string.IsNullOrEmpty(model.drawingsTechnical))
+                                        {
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                            return result;
+                                        }
+                                        else
+                                        {
+                                            if (string.IsNullOrEmpty(model.drawingsTechnical))
+                                            {
+                                                result.Succeed = false;
+                                                result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                return result;
+                                            }
+                                            else
+                                            {
+                                                if (string.IsNullOrEmpty(model.drawings2D))
+                                                {
+                                                    result.Succeed = false;
+                                                    result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                    return result;
+                                                }
+                                                else
+                                                {
+                                                    if (string.IsNullOrEmpty(model.drawings3D))
+                                                    {
+                                                        result.Succeed = false;
+                                                        result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                        return result;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (model.price < 0)
+                                                        {
+                                                            result.Succeed = false;
+                                                            result.ErrorMessage = "Giá tiền không được âm.";
+                                                            return result;
+                                                        }
+                                                        else
+                                                        {
+                                                            if (model.areaId == Guid.Empty)
+                                                            {
+                                                                result.Succeed = false;
+                                                                result.ErrorMessage = "Không nhận được area";
+                                                                return result;
+                                                            }
+                                                            else
+                                                            {
+                                                                //Create Item
+                                                                var newItem = new Item
+                                                                {
+                                                                    name = model.name,
+                                                                    image = model.image,
+                                                                    mass = model.mass,
+                                                                    unit = model.unit,
+                                                                    length = model.length,
+                                                                    depth = model.depth,
+                                                                    height = model.height,
+                                                                    drawingsTechnical = model.drawingsTechnical,
+                                                                    drawings2D = model.drawings2D,
+                                                                    drawings3D = model.drawings3D,
+                                                                    description = model.description,
+                                                                    price = model.price,
+                                                                    //areaId=model.areaId,
+                                                                    //categoryId=model.categoryId,
+                                                                    isDeleted = false
+                                                                };
+                                                                _dbContext.Item.Add(newItem);
+                                                                await _dbContext.SaveChangesAsync();
+                                                                result.Succeed = true;
+                                                                result.Data = newItem.id;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (model.length < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều dài không được âm.";
-                    return result;
-                }
-                if (model.height < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều cao không được âm.";
-                    return result;
-                }
-                if (model.depth < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều rộng không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawingsTechnical))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawings2D))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawings3D))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.areaId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được area";
-                    return result;
-                }
-                //if (model.categoryId == Guid.Empty)
-                //{
-                //    result.Succeed = false;
-                //    result.ErrorMessage = "Không nhận được category";
-                //    return result;
-                //}
-
-                //Create Item
-                var newItem = new Item
-                {
-                    name = model.name,
-                    image=model.image,
-                    mass= model.mass,
-                    unit=model.unit,
-                    length=model.length,
-                    depth=model.depth,
-                    height=model.height,
-                    drawingsTechnical=model.drawingsTechnical,
-                    drawings2D=model.drawings2D,
-                    drawings3D=model.drawings3D,
-                    description=model.description,
-                    price=model.price,
-                    //areaId=model.areaId,
-                    //categoryId=model.categoryId,
-                    isDeleted = false
-                };
-                _dbContext.Item.Add(newItem);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = newItem.id;
             }
             catch (Exception ex)
             {
@@ -172,100 +207,127 @@ namespace Sevices.Core.ItemService
                     result.ErrorMessage = "Tên này không được để trống.";
                     return result;
                 }
-                if (model.mass < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Diện tích không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (model.length < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều dài không được âm.";
-                    return result;
-                }
-                if (model.height < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều cao không được âm.";
-                    return result;
-                }
-                if (model.depth < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Chiều rộng không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawingsTechnical))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawings2D))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.drawings3D))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.areaId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được area";
-                    return result;
-                }
-                //if (model.categoryId == Guid.Empty)
-                //{
-                //    result.Succeed = false;
-                //    result.ErrorMessage = "Không nhận được category";
-                //    return result;
-                //}
-
-                //Update Item
-                var data = _dbContext.Item.Where(i => i.id == model.id).FirstOrDefault();
-                if (data != null)
-                {
-                    data.name = model.name;
-                    data.image = model.image;
-                    data.mass = model.mass;
-                    data.unit=model.unit;
-                    data.length = model.length;
-                    data.depth = model.depth;
-                    data.height = model.height;
-                    data.drawingsTechnical = model.drawingsTechnical;
-                    data.drawings2D = model.drawings2D;
-                    data.drawings3D = model.drawings3D;
-                    data.description = model.description;
-                    data.price = model.price;
-                    //data.areaId = model.areaId;
-                    //data.categoryId = model.categoryId;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Item, ItemModel>(data);
-                }
                 else
                 {
-                    result.ErrorMessage = "Item" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
+                    if (model.mass < 0)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Diện tích không được âm.";
+                        return result;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(model.unit))
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Đơn vị này không được để trống.";
+                            return result;
+                        }
+                        else
+                        {
+                            if (model.length < 0)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Chiều dài không được âm.";
+                                return result;
+                            }
+                            else
+                            {
+                                if (model.height < 0)
+                                {
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Chiều cao không được âm.";
+                                    return result;
+                                }
+                                else
+                                {
+                                    if (model.depth < 0)
+                                    {
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Chiều rộng không được âm.";
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        if (string.IsNullOrEmpty(model.drawingsTechnical))
+                                        {
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                            return result;
+                                        }
+                                        else
+                                        {
+                                            if (string.IsNullOrEmpty(model.drawings2D))
+                                            {
+                                                result.Succeed = false;
+                                                result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                return result;
+                                            }
+                                            else
+                                            {
+                                                if (string.IsNullOrEmpty(model.drawings3D))
+                                                {
+                                                    result.Succeed = false;
+                                                    result.ErrorMessage = "Bản vẽ này không được để trống.";
+                                                    return result;
+                                                }
+                                                else
+                                                {
+                                                    if (model.price < 0)
+                                                    {
+                                                        result.Succeed = false;
+                                                        result.ErrorMessage = "Giá tiền không được âm.";
+                                                        return result;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (model.areaId == Guid.Empty)
+                                                        {
+                                                            result.Succeed = false;
+                                                            result.ErrorMessage = "Không nhận được area";
+                                                            return result;
+                                                        }
+                                                        else
+                                                        {
+                                                            //Update Item
+                                                            var data = _dbContext.Item.Where(i => i.id == model.id).FirstOrDefault();
+                                                            if (data != null)
+                                                            {
+                                                                data.name = model.name;
+                                                                data.image = model.image;
+                                                                data.mass = model.mass;
+                                                                data.unit = model.unit;
+                                                                data.length = model.length;
+                                                                data.depth = model.depth;
+                                                                data.height = model.height;
+                                                                data.drawingsTechnical = model.drawingsTechnical;
+                                                                data.drawings2D = model.drawings2D;
+                                                                data.drawings3D = model.drawings3D;
+                                                                data.description = model.description;
+                                                                data.price = model.price;
+                                                                //data.areaId = model.areaId;
+                                                                //data.categoryId = model.categoryId;
+                                                                _dbContext.SaveChanges();
+                                                                result.Succeed = true;
+                                                                result.Data = _mapper.Map<Item, ItemModel>(data);
+                                                            }
+                                                            else
+                                                            {
+                                                                result.ErrorMessage = "Item" + ErrorMessage.ID_NOT_EXISTED;
+                                                                result.Succeed = false;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }                                                                                                                                         
             }
             catch (Exception e)
             {

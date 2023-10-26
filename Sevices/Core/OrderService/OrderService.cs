@@ -58,7 +58,7 @@ namespace Sevices.Core.OrderService
         {
             var result = new ResultModel();
             var listStatus = new List<OrderStatus>() {
-                OrderStatus.Pending ,
+                OrderStatus.Pending,
                 OrderStatus.Request,
                 OrderStatus.Approve
             };
@@ -131,7 +131,7 @@ namespace Sevices.Core.OrderService
                         }
                         else
                         {
-                            dict.Add(itemMate.materialId, new()
+                            var quoteMaterialModel = new QuoteMaterialModel()
                             {
                                 materialId = itemMate.materialId,
                                 name = itemMate.Material.name,
@@ -139,7 +139,8 @@ namespace Sevices.Core.OrderService
                                 quantity = itemMate.quantity,
                                 price = itemMate.price,
                                 totalPrice = itemMate.totalPrice,
-                            });
+                            };
+                            dict.Add(itemMate.materialId, quoteMaterialModel);
                         }
                     }
 
@@ -311,7 +312,7 @@ namespace Sevices.Core.OrderService
             try
             {
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
-                if(order == null)
+                if (order == null)
                 {
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
                 }
