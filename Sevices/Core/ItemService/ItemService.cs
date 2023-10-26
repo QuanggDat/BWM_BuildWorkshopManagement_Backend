@@ -235,7 +235,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel UpdateItem(Guid id, Guid userId, UpdateMaterialToItemModel model)
+        public ResultModel UpdateMaterialToItemModel(Guid id, Guid userId, UpdateMaterialToItemModel model)
         {
             ResultModel result = new ResultModel();
             try
