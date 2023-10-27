@@ -66,7 +66,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IOrderDetailService, OrderDetailService>();
             services.AddScoped<ISquadService, SquadService>();
             services.AddScoped<IGroupService, GroupService>();
-            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IMaterialCategoryService, MaterialCategoryService>();
             services.AddScoped<ITaskReportService, TaskReportService>();
             services.AddScoped<IUtilsService, UtilsService>();
             services.AddScoped<IOrderReportService, OrderReportService>();

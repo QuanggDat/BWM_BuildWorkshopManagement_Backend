@@ -18,14 +18,12 @@ namespace Data.Entities
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
 
-        [ForeignKey("categoryId")]
-        public Guid categoryId { get; set; }
+        [ForeignKey("materialCategoryId")]
+        public Guid materialCategoryId { get; set; }
         public MaterialCategory MaterialCategory { get; set; } = null!;
 
         public string name { get; set; } = null!;
-        [Column(TypeName = "nvarchar(1000)")]
-        public string image { get; set; } = null!;
-        [Column(TypeName = "nvarchar(1000)")]
+        public string? image { get; set; } 
         public string color { get; set; } = null!;
         public string supplier { get; set; } = null!;
         public double thickness { get; set; } 

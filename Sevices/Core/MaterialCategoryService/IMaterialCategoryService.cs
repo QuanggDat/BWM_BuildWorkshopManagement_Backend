@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Sevices.Core.CategoryService
 {
-    public interface ICategoryService
+    public interface IMaterialCategoryService
     {       
-        Task<ResultModel> CreateMaterialCategory(CreateMaterialCategoryModel model);
+        ResultModel CreateMaterialCategory(CreateMaterialCategoryModel model);
         ResultModel GetAllMaterialCategory(string? search, int pageIndex, int pageSize);
         ResultModel GetMaterialCategoryById(Guid id);
         ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model);

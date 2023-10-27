@@ -11,17 +11,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
     [ApiController]
     public class MaterialCategoryController : Controller
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IMaterialCategoryService _categoryService;
 
-        public MaterialCategoryController(ICategoryService categoryService)
+        public MaterialCategoryController(IMaterialCategoryService categoryService)
         {
             _categoryService = categoryService;
         }       
 
         [HttpPost("CreateMaterialCategory")]
-        public async Task<ActionResult> CreateMaterialCategory(CreateMaterialCategoryModel model)
+        public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
-            var result = await _categoryService.CreateMaterialCategory(model);
+            var result =  _categoryService.CreateMaterialCategory(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }      
@@ -34,7 +34,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }       
 
-        [HttpGet("GetAllMaterialCategory")]
+        [HttpGet("[action]")]
         public Task<ActionResult> GetAllMaterialCategory(string? search,int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _categoryService.GetAllMaterialCategory(search,pageIndex, pageSize);
@@ -50,7 +50,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
        
-        [HttpGet("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult DeleteMaterialCategory(Guid id)
         {
             var result = _categoryService.DeleteMaterialCategory(id);

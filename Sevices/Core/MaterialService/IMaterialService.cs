@@ -9,7 +9,8 @@ namespace Sevices.Core.MaterialService
 {
     public interface IMaterialService
     {
-        Task<ResultModel> CreateMaterial(Guid id, CreateMaterialModel model);
+        ResultModel CreateMaterial(Guid createdById,CreateMaterialModel model);
+        /*
         ResultModel Search(string search, int pageIndex, int pageSize);
         ResultModel GetAllMaterial(int pageIndex, int pageSize);
         ResultModel SortMaterialByThickness(int pageIndex, int pageSize);
@@ -19,5 +20,6 @@ namespace Sevices.Core.MaterialService
         ResultModel UpdateMaterial(Guid id, UpdateMaterialModel model);
         ResultModel UpdateMaterialAmount(Guid id, UpdateMaterialAmountModel model);
         ResultModel DeleteMaterial(Guid id);
+        */
     }
 }

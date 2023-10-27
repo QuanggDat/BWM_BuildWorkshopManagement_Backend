@@ -10,23 +10,16 @@ namespace Data.Models
     public class MaterialCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; }
+        public string name { get; set; } = null!;
     }
 
     public class CreateMaterialCategoryModel
-    {
-        [Required] public string name { get; set; }
-        public bool isDeleted { get; set; } = false;
+    {       
+        public string name { get; set; } = null!;
     }
     public class UpdateMaterialCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; }
-    }
-
-    public class DeleteMaterialCategoryModel
-    {
-        public Guid id { get; set; }
-        public bool isDeleted { get; set; } = true;
+        public string name { get; set; } = null!;
     }
 }

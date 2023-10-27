@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.MaterialService;
 using System.Drawing.Printing;
+using WorkshopManagementSystem_BWM.Extensions;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -17,7 +18,74 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _materialService = materialService;
         }
+        
+        [HttpPost("CreateMaterial")]
+        public ActionResult CreateMaterial(CreateMaterialModel model)
+        {
+            if (!ValidateCreateMaterial(model))
+            {
+                return BadRequest(ModelState);
+            }
+            var createdById = User.GetId();
+            var result =  _materialService.CreateMaterial(createdById, model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+        private bool ValidateCreateMaterial(CreateMaterialModel model)
+        {
+            if (model.materialCategoryId == Guid.Empty)
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"Không nhận được {model.materialCategoryId}!");
+            }
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"{model.name} không được để trống !");
+            }
+            if (string.IsNullOrWhiteSpace(model.color))
+            {
+                ModelState.AddModelError(nameof(model.color),
+                    $"{model.color} không được để trống !");
+            }
+            if (string.IsNullOrWhiteSpace(model.supplier))
+            {
+                ModelState.AddModelError(nameof(model.supplier),
+                    $"{model.supplier} không được để trống !");
+            }
+            if (model.thickness <= 0)
+            {
+                ModelState.AddModelError(nameof(model.thickness),
+                    $"{model.thickness} nhỏ hơn hoặc bằng 0 !");
+            }
+            if (string.IsNullOrWhiteSpace(model.unit))
+            {
+                ModelState.AddModelError(nameof(model.unit),
+                    $"{model.unit} không được để trống !");
+            }
+            if (string.IsNullOrWhiteSpace(model.importPlace))
+            {
+                ModelState.AddModelError(nameof(model.importPlace),
+                    $"{model.importPlace} không được để trống !");
+            }
+            if (model.amount<= 0)
+            {
+                ModelState.AddModelError(nameof(model.amount),
+                    $"{model.amount} nhỏ hơn hoặc bằng 0 !");
+            }
+            if (model.price <= 0)
+            {
+                ModelState.AddModelError(nameof(model.price),
+                    $"{model.price} nhỏ hơn hoặc bằng 0 !");
+            }
+            if (ModelState.ErrorCount > 0)
+            {
+                return false;
+            }
 
+            return true;
+        }
+        /*
         [HttpPost("SearchMaterial")]
         public Task<ActionResult> SearchItem(string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
@@ -25,15 +93,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
-
-        [HttpPost("CreateMaterial")]
-        public async Task<ActionResult> CreateMaterial(Guid id, CreateMaterialModel model)
-        {
-            var result = await _materialService.CreateMaterial(id, model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
         [HttpPut("UpdateMaterial")]
         public IActionResult UpdateMaterial(Guid id, UpdateMaterialModel model)
         {
@@ -74,8 +133,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }
 
+        //[HttpGet("SortMaterialbyPrice")]
+        //public Task<ActionResult> SortMaterialbyPrice(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        //{
+        //    var result = _materialService.SortMaterialbyPrice(pageIndex, pageSize);
+        //    if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+        //    return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
+        //}
 
-        [HttpGet("[action]/{id}")]
+        //[HttpGet("SortMaterialbyThickness")]
+        //public Task<ActionResult> SortMaterialbyThickness(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        //{
+        //    var result = _materialService.SortMaterialbyThickness(pageIndex, pageSize);
+        //    if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
+        //    return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
+        //}
+>
         public IActionResult GetMaterialById(Guid id)
         {
             var result = _materialService.GetMaterialById(id);
@@ -90,5 +163,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+        */
+
     }
 }

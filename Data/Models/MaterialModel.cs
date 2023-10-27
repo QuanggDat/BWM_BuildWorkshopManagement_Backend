@@ -9,59 +9,53 @@ namespace Data.Models
 {
     public class MaterialModel
     {
-        public Guid id { get; set; }
-        public string name { get; set; }
-        public string image { get; set; }
-        public string color { get; set; }
-        public string supplier { get; set; }
+        public Guid userId { get; set; }
+        public string name { get; set; } = null!;
+        public string image { get; set; } = null!;
+        public string color { get; set; } = null!;
+        public string supplier { get; set; } = null!;
         public double thickness { get; set; }
-        public string unit { get; set; }
-        public string sku { get; set; }
+        public string unit { get; set; } = null!;
+        public string sku { get; set; } = null!;
         public DateTime importDate { get; set; }
-        public string importPlace { get; set; }
+        public string importPlace { get; set; } = null!;
         public int amount { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
-        public bool isDeleted { get; set; }
-        public Guid categoryId { get; set; }
+        public Guid materialCategoryId { get; set; }
         public Guid? createById { get; set; }
     }
 
     public class CreateMaterialModel
     {
-        [Required] public string name { get; set; }
-        public string image { get; set; }
-        [Required] public string color { get; set; }
-        [Required] public string supplier { get; set; }
-        [Required] public double thickness { get; set; }
-        [Required] public string unit { get; set; }
-        public string sku { get; set; }
-        [Required] public DateTime importDate { get; set; }
-        [Required] public string importPlace { get; set; }
-        [Required] public int amount { get; set; }
-        [Required] public double price { get; set; }
-        [Required] public double totalPrice { get; set; }
-        [Required] public bool isDeleted { get; set; } = false;
-        [Required] public Guid categoryId { get; set; }
-        public Guid? createById { get; set; }
+        public Guid materialCategoryId { get; set; }
+        public string name { get; set; } = null!;
+        public string image { get; set; } = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR2_4Ps9OjcZ7Wz84elhQhUtOoXFsko0p5XSsAZuD5So8thFrFU4IW5edaI";
+        public string color { get; set; } = null!;
+        public string supplier { get; set; } = null!;
+        public double thickness { get; set; } 
+        public string unit { get; set; } = null!;
+        public string importPlace { get; set; } = null!;
+        public int amount { get; set; }
+        public double price { get; set; }
     }
 
     public class UpdateMaterialModel
     {
         public Guid id { get; set; }
-        [Required] public string name { get; set; }
-        public string image { get; set; }
-        [Required] public string color { get; set; }
-        [Required] public string supplier { get; set; }
-        [Required] public double thickness { get; set; }
-        [Required] public string unit { get; set; }
-        public string sku { get; set; }
-        [Required] public DateTime importDate { get; set; }
-        [Required] public string importPlace { get; set; }
-        [Required] public int amount { get; set; }
-        [Required] public double price { get; set; }
-        [Required] public double totalPrice { get; set; }
-        [Required] public Guid categoryId { get; set; }
+        public string name { get; set; } = null!;
+        public string image { get; set; } = null!;
+        public string color { get; set; } = null!;
+        public string supplier { get; set; } = null!;
+        public double thickness { get; set; }
+        public string unit { get; set; } = null!;
+        public string sku { get; set; } = null!;
+        public DateTime importDate { get; set; }
+        public string importPlace { get; set; } = null!;
+        public int amount { get; set; }
+        public double price { get; set; }
+        public double totalPrice { get; set; }
+        public Guid materialCategoryId { get; set; }
         public Guid? createById { get; set; }
     }
 

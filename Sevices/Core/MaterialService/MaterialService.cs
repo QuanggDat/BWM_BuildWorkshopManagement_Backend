@@ -29,7 +29,64 @@ namespace Sevices.Core.MaterialService
             _mapper = mapper;
             _configuration = configuration;
         }
+        
+        public ResultModel CreateMaterial(Guid createdById, CreateMaterialModel model)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var checkMaterial = _dbContext.Material.SingleOrDefault(x => x.name == model.name && x.isDeleted == false);
+                if (checkMaterial != null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Tên vật liệu này đã tồn tại !";
+                }
+                else 
+                {
+                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId).SingleOrDefault();
+                    if (checkCategory == null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                    }
+                    else
+                    {
+                        //Create Material 
+                        var material = new Material
+                        {
+                            createById = createdById,
+                            materialCategoryId = model.materialCategoryId,
+                            name = model.name,
+                            image = model.image,
+                            color = model.color,
+                            supplier = model.supplier,
+                            thickness = model.thickness,
+                            unit = model.unit,
+                            sku = $"{model.name[0]}-{model.supplier}-{model.thickness}",
+                            importDate = DateTime.Now,
+                            importPlace = model.importPlace,
+                            amount = model.amount,
+                            price = model.price,
+                            totalPrice = model.price * model.amount,
+                            isDeleted = false
+                        };
 
+                        _dbContext.Material.Add(material);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = material.id;
+                    }                 
+                }                                  
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+        /*
+         
         //Search base on name and color of the material
         public ResultModel Search(string search, int pageIndex, int pageSize)
         {
@@ -47,101 +104,6 @@ namespace Sevices.Core.MaterialService
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        public async Task<ResultModel> CreateMaterial(CreateMaterialModel model)
-        {
-            var result = new ResultModel();
-            result.Succeed = false;
-            try
-            {
-                //Validation
-                if (string.IsNullOrEmpty(model.name))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.color))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Màu này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.supplier))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nguồn cung này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Độ dày không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.importPlace))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nơi nhập này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Số lượng không được âm.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
-
-                //Create Material 
-                var newMaterial = new Material
-                {
-                    name = model.name,
-                    image = model.image,
-                    color = model.color,
-                    supplier = model.supplier,
-                    thickness = model.thickness,
-                    unit = model.unit,
-                    sku = model.sku,
-                    importDate = model.importDate,
-                    importPlace = model.importPlace,
-                    amount = model.amount,
-                    price = model.price,
-                    totalPrice = model.totalPrice,
-                    categoryId = model.categoryId,
-                    isDeleted = false
-                };
-                newMaterial.totalPrice = model.price * model.amount;
-                newMaterial.sku = $"{model.name[0]}-{newMaterial.supplier}-{model.thickness}";
-
-                _dbContext.Material.Add(newMaterial);
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = newMaterial.id;
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
         }
@@ -436,5 +398,6 @@ namespace Sevices.Core.MaterialService
         {
             throw new NotImplementedException();
         }
+        */
     }
 }

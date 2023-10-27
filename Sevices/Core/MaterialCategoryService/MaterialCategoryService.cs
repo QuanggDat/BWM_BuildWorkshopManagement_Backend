@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 
 namespace Sevices.Core.CategoryService
 {
-    public class CategoryService : ICategoryService
+    public class MaterialCategoryService : IMaterialCategoryService
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public CategoryService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public MaterialCategoryService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _configuration = configuration;
         }     
 
-        public async Task<ResultModel> CreateMaterialCategory(CreateMaterialCategoryModel model)
+        public ResultModel CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -40,11 +40,11 @@ namespace Sevices.Core.CategoryService
                 }
                 else
                 {
-                    bool nameExists = await _dbContext.MaterialCategory.AnyAsync(x => x.name == model.name && !x.isDeleted);
-                    if (nameExists)
+                    bool checkExists =  _dbContext.MaterialCategory.Any(x => x.name == model.name && x.isDeleted != true);
+                    if (checkExists)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên này đã tồn tại !";
+                        result.ErrorMessage = "Tên MaterialCategory này đã tồn tại !";
                     }
 
                     //Create Category
@@ -56,7 +56,7 @@ namespace Sevices.Core.CategoryService
                             isDeleted = false
                         };
                         _dbContext.MaterialCategory.Add(newCategory);
-                        await _dbContext.SaveChangesAsync();
+                        _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = newCategory.id;
                     }
@@ -74,31 +74,39 @@ namespace Sevices.Core.CategoryService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.MaterialCategory.Where(x => x.id == model.id).FirstOrDefault();
-                if (data != null)
+                var check = _dbContext.MaterialCategory.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+                if(check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                    return result;
+                }
+                else
                 {
                     //Validation
                     if (string.IsNullOrEmpty(model.name))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên này không được để trống.";
+                        result.ErrorMessage = "Tên MaterialCategory này không được để trống !";
                         return result;
                     }
-
-                    //Update Material Category
                     else
                     {
-                        data.name = model.name;
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(data);
+                        bool checkExists =  _dbContext.MaterialCategory.Any(x => x.name == model.name && !x.isDeleted);
+                        if (checkExists)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Tên này đã tồn tại !";
+                        }
+                        else
+                        {
+                            check.name = model.name;
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(check);
+                        }
                     }
-                }
-                else
-                {
-                    result.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
+                }               
             }
             catch (Exception e)
             {
@@ -141,55 +149,58 @@ namespace Sevices.Core.CategoryService
 
         public ResultModel GetMaterialCategoryById(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
             try
             {
-                var data = _dbContext.MaterialCategory.Where(c => c.id == id && c.isDeleted != true);
-                if (data != null)
-                {
+                var check = _dbContext.MaterialCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
-                    var view = _mapper.ProjectTo<MaterialCategoryModel>(data).FirstOrDefault();
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
+                if (check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory!";
+                    return result;
                 }
                 else
-                {
-                    resultModel.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
+                {               
+                    result.Data = _mapper.Map<MaterialCategoryModel>(check);
+                    result.Succeed = true;
                 }
+
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }       
 
         public ResultModel DeleteMaterialCategory(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.MaterialCategory.Where(c => c.id == id).FirstOrDefault();
-                if (data != null)
+                var check = _dbContext.MaterialCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                
+                if (check == null)
                 {
-                    data.isDeleted = true;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory!";
+                    return result;
+                }
+                else 
+                {
+                    check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    var view = _mapper.Map<MaterialCategory, MaterialCategoryModel>(data);
-                    resultModel.Data = view;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "MaterialCategory" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
+                    result.Data = "Xoá thành công " + check.id;
+                    result.Succeed = true;
+                }          
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }
         
     }
