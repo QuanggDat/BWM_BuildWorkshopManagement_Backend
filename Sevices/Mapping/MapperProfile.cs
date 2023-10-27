@@ -22,7 +22,7 @@ namespace Sevices.Mapping
             CreateMap<ItemMaterial, ItemMaterialModel>();
 
             //Material
-            CreateMap<Material, MaterialModel>();
+            CreateMap<Material, ResponeMaterialModel>();
             CreateMap<MaterialCategory, ResponeMaterialCategoryModel>();
 
             // Order

@@ -54,6 +54,7 @@ namespace Sevices.Core.CategoryService
                             name = model.name,
                             isDeleted = false
                         };
+
                         _dbContext.MaterialCategory.Add(newCategory);
                         _dbContext.SaveChanges();
                         result.Succeed = true;
