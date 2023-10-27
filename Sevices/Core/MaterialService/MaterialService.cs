@@ -36,7 +36,7 @@ namespace Sevices.Core.MaterialService
             result.Succeed = false;
             try
             {
-                var checkMaterial = _dbContext.Material.SingleOrDefault(x => x.name == model.name && x.isDeleted == false);
+                var checkMaterial = _dbContext.Material.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
                 if (checkMaterial != null)
                 {
                     result.Succeed = false;
@@ -64,7 +64,7 @@ namespace Sevices.Core.MaterialService
                             thickness = model.thickness,
                             unit = model.unit,
                             sku = $"{model.name[0]}-{model.supplier}-{model.thickness}",
-                            importDate = DateTime.Now,
+                            importDate = model.importDate,
                             importPlace = model.importPlace,
                             amount = model.amount,
                             price = model.price,
@@ -82,6 +82,40 @@ namespace Sevices.Core.MaterialService
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdateMaterial(UpdateMaterialModel model)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {              
+                var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
+                if (data != null)
+                {
+                    data.name = model.name;
+                    data.image = model.image;
+                    data.color = model.color;
+                    data.supplier = model.supplier;
+                    data.thickness = model.thickness;
+                    data.unit = model.unit;
+                    data.sku = model.sku;
+                    data.importDate = model.importDate;
+                    data.importPlace = model.importPlace;
+                    data.amount = model.amount;
+                    data.price = model.price;
+                    data.totalPrice = model.totalPrice = model.price * model.amount;
+                    data.materialCategoryId = model.materialCategoryId;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<Material, MaterialModel>(data);
+                }
+                
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }
@@ -108,100 +142,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel UpdateMaterial(UpdateMaterialModel model)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                //Validation
-                if (string.IsNullOrEmpty(model.name))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.color))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Màu này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.supplier))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nguồn cung này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Độ dày không được âm.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.unit))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Đơn vị này không được để trống.";
-                    return result;
-                }
-                if (string.IsNullOrEmpty(model.importPlace))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Nơi nhập này không được để trống.";
-                    return result;
-                }
-                if (model.amount < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Số lượng không được âm.";
-                    return result;
-                }
-                if (model.price < 0)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Giá tiền không được âm.";
-                    return result;
-                }
-                if (model.categoryId == Guid.Empty)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không nhận được category";
-                    return result;
-                }
-
-                //Update Material
-                var data = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
-                if (data != null)
-                {
-                    data.name = model.name;
-                    data.image = model.image;
-                    data.color = model.color;
-                    data.supplier = model.supplier;
-                    data.thickness = model.thickness;
-                    data.unit = model.unit;
-                    data.sku = model.sku;
-                    data.importDate = model.importDate;
-                    data.importPlace = model.importPlace;
-                    data.amount = model.amount;
-                    data.price = model.price;
-                    data.totalPrice = model.totalPrice = model.price * model.amount;
-                    data.categoryId = model.categoryId;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Material, MaterialModel>(data);
-                }
-                else
-                {
-                    result.ErrorMessage = "Material" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
+        
 
         public ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model)
         {

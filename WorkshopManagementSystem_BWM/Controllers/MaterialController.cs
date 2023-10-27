@@ -63,6 +63,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
             }
+            if (model.importDate >= DateTime.Now)
+            {
+                ModelState.AddModelError(nameof(model.importDate),
+                    $"{model.importDate} không lớn hơn ngày hiện tại !");
+            }
             if (string.IsNullOrWhiteSpace(model.importPlace))
             {
                 ModelState.AddModelError(nameof(model.importPlace),

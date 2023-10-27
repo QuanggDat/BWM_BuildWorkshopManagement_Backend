@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.CategoryService;
 using Sevices.Core.ItemService;
+using WorkshopManagementSystem_BWM.Extensions;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -21,7 +22,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("CreateMaterialCategory")]
         public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
-            var result =  _categoryService.CreateMaterialCategory(model);
+            var createdById = User.GetId();
+            var result =  _categoryService.CreateMaterialCategory(createdById,model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }      

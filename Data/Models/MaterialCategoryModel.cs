@@ -7,16 +7,19 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class MaterialCategoryModel
+    public class ResponeMaterialCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; } = null!;
+        public Guid? createById { get; set; }
+        public string createByName { get; set; } = null!;
+        public string name { get; set; } = null!;        
     }
 
     public class CreateMaterialCategoryModel
-    {       
+    {      
         public string name { get; set; } = null!;
     }
+
     public class UpdateMaterialCategoryModel
     {
         public Guid id { get; set; }

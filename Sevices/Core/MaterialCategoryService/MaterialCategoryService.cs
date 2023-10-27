@@ -26,32 +26,31 @@ namespace Sevices.Core.CategoryService
             _configuration = configuration;
         }     
 
-        public ResultModel CreateMaterialCategory(CreateMaterialCategoryModel model)
+        public ResultModel CreateMaterialCategory(Guid createById, CreateMaterialCategoryModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
             try
             {
                 //Validation
-                if (model.name==null || model.name=="")
+                if (string.IsNullOrWhiteSpace(model.name))
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống !";
+                    result.ErrorMessage = "Tên này không được để trống !";                    
                 }
                 else
-                {
-                    bool checkExists =  _dbContext.MaterialCategory.Any(x => x.name == model.name && x.isDeleted != true);
-                    if (checkExists)
+                {                
+                    var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+                    if (checkExists != null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên MaterialCategory này đã tồn tại !";
+                        result.ErrorMessage = "Tên MaterialCategory này đã tồn tại !";                        
                     }
-
-                    //Create Category
                     else
                     {
                         var newCategory = new MaterialCategory
                         {
+                            createById = createById,
                             name = model.name,
                             isDeleted = false
                         };
@@ -74,7 +73,7 @@ namespace Sevices.Core.CategoryService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.MaterialCategory.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.MaterialCategory.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
                 if(check == null)
                 {
                     result.Succeed = false;
@@ -87,23 +86,34 @@ namespace Sevices.Core.CategoryService
                     if (string.IsNullOrEmpty(model.name))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên MaterialCategory này không được để trống !";
+                        result.ErrorMessage = "Tên MaterialCategory không được để trống !";
                         return result;
                     }
                     else
                     {
-                        bool checkExists =  _dbContext.MaterialCategory.Any(x => x.name == model.name && !x.isDeleted);
-                        if (checkExists)
+                        if(model.name != check.name)
                         {
-                            result.Succeed = false;
-                            result.ErrorMessage = "Tên này đã tồn tại !";
+                            var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
+                            if (checkExists != null)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Tên này đã tồn tại !";
+                                return result;
+                            }
+                            else
+                            {
+                                check.name = model.name;
+                                _dbContext.SaveChanges();
+                                result.Succeed = true;
+                                result.Data = "Cập nhập thành công " + check.id;
+                            }
                         }
                         else
                         {
                             check.name = model.name;
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = _mapper.Map<Data.Entities.MaterialCategory, MaterialCategoryModel>(check);
+                            result.Data = "Cập nhập thành công " + check.id;
                         }
                     }
                 }               
@@ -127,14 +137,26 @@ namespace Sevices.Core.CategoryService
                 if (!string.IsNullOrEmpty(search))
                 {
                     listMaterialCategory = listMaterialCategory.Where(x => x.name.Contains(search)).ToList();
-
                 }
                 
                 var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
+                var list = new List<ResponeMaterialCategoryModel>();
+                foreach (var item in listMaterialCategoryPaging)
+                {
+                    var createBy = _dbContext.Users.Find(item.createById);
+                    var tmp = new ResponeMaterialCategoryModel
+                    {
+                        id = item.id,
+                        createById = item.createById,
+                        createByName = createBy!.fullName,
+                        name = item.name,                    
+                    };
+                    list.Add(tmp);
+                } 
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<MaterialCategoryModel>>(listMaterialCategoryPaging),
+                    Data = list,
                     Total = listMaterialCategoryPaging.Count
                 };
                 result.Succeed = true;
@@ -162,8 +184,18 @@ namespace Sevices.Core.CategoryService
                     return result;
                 }
                 else
-                {               
-                    result.Data = _mapper.Map<MaterialCategoryModel>(check);
+                {
+                    var createBy = _dbContext.Users.Find(check.createById);
+
+                    var ResponeMaterialCategoryModel = new ResponeMaterialCategoryModel
+                    {
+                        id = check.id,
+                        createById = check.createById,
+                        createByName = createBy!.fullName,
+                        name = check.name,
+                    };
+
+                    result.Data = ResponeMaterialCategoryModel;
                     result.Succeed = true;
                 }
 

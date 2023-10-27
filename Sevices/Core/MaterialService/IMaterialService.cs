@@ -10,6 +10,7 @@ namespace Sevices.Core.MaterialService
     public interface IMaterialService
     {
         ResultModel CreateMaterial(Guid createdById,CreateMaterialModel model);
+        ResultModel UpdateMaterial(UpdateMaterialModel model);
         /*
         ResultModel Search(string search, int pageIndex, int pageSize);
         ResultModel GetAllMaterial(int pageIndex, int pageSize);

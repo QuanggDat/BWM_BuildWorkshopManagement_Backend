@@ -9,7 +9,7 @@ namespace Sevices.Core.CategoryService
 {
     public interface IMaterialCategoryService
     {       
-        ResultModel CreateMaterialCategory(CreateMaterialCategoryModel model);
+        ResultModel CreateMaterialCategory(Guid createById, CreateMaterialCategoryModel model);
         ResultModel GetAllMaterialCategory(string? search, int pageIndex, int pageSize);
         ResultModel GetMaterialCategoryById(Guid id);
         ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model);
