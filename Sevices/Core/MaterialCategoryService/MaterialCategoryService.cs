@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +33,10 @@ namespace Sevices.Core.CategoryService
             try
             {
                 //Validation
-                if (string.IsNullOrEmpty(model.name))
+                if (model.name==null || model.name=="")
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Tên này không được để trống !";
-                    return result;
                 }
                 else
                 {
