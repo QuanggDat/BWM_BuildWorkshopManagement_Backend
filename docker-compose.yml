@@ -1,12 +1,12 @@
 version: '1'
 services:
 
-  workshop-management-system:
-    image: workshop-management-system
+  workshop-management-system-jama:
+    image: workshop-management-system-jama
     build: 
       context: ./
       dockerfile: Dockerfile
-    container_name: workshop-management-system
+    container_name: workshop-management-system-jama
     ports:
      - "8008:80"
     restart: "always"
