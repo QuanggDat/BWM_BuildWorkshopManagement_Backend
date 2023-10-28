@@ -19,7 +19,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _materialCategoryService = materialCategoryService;
         }       
 
-        [HttpPost("CreateMaterialCategory")]
+        [HttpPost("[action]")]
         public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
             var createdById = User.GetId();
@@ -28,7 +28,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }      
 
-        [HttpPut("UpdateMaterialCategory")]
+        [HttpPut("[action]")]
         public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
         {
             var result = _materialCategoryService.UpdateMaterialCategory(model);
@@ -52,7 +52,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
        
-        [HttpPut("[action]/{id}")]
+        [HttpDelete("[action]/{id}")]
         public IActionResult DeleteMaterialCategory(Guid id)
         {
             var result = _materialCategoryService.DeleteMaterialCategory(id);

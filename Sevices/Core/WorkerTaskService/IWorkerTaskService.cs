@@ -15,7 +15,7 @@ namespace Sevices.Core.WorkerTaskService
         Task<ResultModel> DeleteWorkerTask(Guid workerTaskId);
         Task<ResultModel> AssignWorkerTask(AssignWorkerTaskModel model);
         Task<ResultModel> UnAssignWorkerTask(AssignWorkerTaskModel model);
-        Task <List<WorkerTaskResponseModel>> GetAllWorkerTask(Guid managerTaskId);
+        Task <List<WorkerTaskModel>> GetAllWorkerTask(Guid managerTaskId);
         Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, TaskStatus status);
     }
 }

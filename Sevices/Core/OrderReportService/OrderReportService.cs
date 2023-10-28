@@ -95,7 +95,7 @@ namespace Sevices.Core.OrderReportService
             if (report == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!!";
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo !";
                 return result;
             }
             else
@@ -136,7 +136,7 @@ namespace Sevices.Core.OrderReportService
             }          
         }
 
-        public async Task<ResponseOrderReportModel?> GetOrderReportById(Guid reportId)
+        public async Task<OrderReportModel?> GetOrderReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -152,7 +152,7 @@ namespace Sevices.Core.OrderReportService
             {
                 var reporter = report.Reporter;
 
-                return new ResponseOrderReportModel
+                return new OrderReportModel
                 {
                     orderName = report.Order.name,
                     title = report.title,
@@ -161,7 +161,7 @@ namespace Sevices.Core.OrderReportService
                     reportStatus = report.reportStatus,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterOrderReport
                     {
                         id = reporter.Id,
                         fullName = reporter.fullName,
@@ -172,7 +172,7 @@ namespace Sevices.Core.OrderReportService
             }
         }
 
-        public async Task<List<ResponseOrderReportModel>> GetOrderReportsByFactoryId(Guid factoryId)
+        public async Task<List<OrderReportModel>> GetOrderReportsByFactoryId(Guid factoryId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -182,11 +182,11 @@ namespace Sevices.Core.OrderReportService
 
             if (checkReport == null)
             {
-                return new List<ResponseOrderReportModel>();
+                return new List<OrderReportModel>();
             }
             else
             {
-                var list = checkReport.Select(report => new ResponseOrderReportModel
+                var list = checkReport.Select(report => new OrderReportModel
                 {
                     orderName = report.Order.name,
                     title = report.title,
@@ -195,7 +195,7 @@ namespace Sevices.Core.OrderReportService
                     reportStatus = report.reportStatus,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterOrderReport
                     {
                         id = report.Reporter.Id,
                         fullName = report.Reporter.fullName,

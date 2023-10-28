@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 using System.Drawing.Printing;
+using Sevices.Core.UtilsService;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sevices.Core.ItemService
 {
@@ -20,174 +22,75 @@ namespace Sevices.Core.ItemService
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IUtilsService _utilsService;
         private readonly IConfiguration _configuration;
 
-        public ItemService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public ItemService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, IUtilsService utilsService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _utilsService = utilsService;
             _configuration = configuration;
         }
 
-        public ResultModel Search(string search, int pageIndex, int pageSize)
+        public async Task<ResultModel> CreateItem(Guid createById, CreateItemModel model)
         {
-            ResultModel result = new ResultModel();
-            try
+            if (string.IsNullOrEmpty(model.image))
             {
-                var data = _dbContext.Item.Where(i => i.isDeleted != true && i.name.Contains(search)).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<ItemModel>>(data),
-                    Total = data.Count
-                };
-                result.Succeed = true;
+                model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
             }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
 
-        public async Task<ResultModel> CreateItem(Guid id, CreateItemModel model)
-        {
             var result = new ResultModel();
             result.Succeed = false;
-            try
+            var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
+            var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+            var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
+
+            //Create Item
+            var item = new Item
             {
-                //Validation
-                if (string.IsNullOrEmpty(model.name))
+                createById = createById,
+                name = model.name,
+                code = randomCode,
+                image = model.image,
+                length = model.length,
+                depth = model.depth,
+                height = model.height,
+                unit = model.unit,
+                mass = model.mass,
+                drawingsTechnical = model.drawingsTechnical,
+                drawings2D = model.drawings2D,
+                drawings3D = model.drawings3D,
+                description = model.description,
+                price = model.price,
+                isDeleted = false
+            };
+
+            try
+            {      
+                _dbContext.Item.Add(item);
+
+                foreach (var procedure in model.procedures)
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống !";
-                    return result;
+                    await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
+                    {
+                        itemId = item.id,
+                        procedureId = procedure
+                    });
                 }
-                else
+
+                foreach (var material in model.materials)
                 {
-                    if (model.mass < 0)
+                    await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
                     {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Diện tích không được âm !";
-                        return result;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(model.unit))
-                        {
-                            result.Succeed = false;
-                            result.ErrorMessage = "Đơn vị không được để trống !";
-                            return result;
-                        }
-                        else
-                        {
-                            if (model.length < 0)
-                            {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Chiều dài không được âm !";
-                                return result;
-                            }
-                            else
-                            {
-                                if (model.height < 0)
-                                {
-                                    result.Succeed = false;
-                                    result.ErrorMessage = "Chiều cao không được âm !";
-                                    return result;
-                                }
-                                else
-                                {
-                                    if (model.depth < 0)
-                                    {
-                                        result.Succeed = false;
-                                        result.ErrorMessage = "Chiều rộng không được âm !";
-                                        return result;
-                                    }
-                                    else
-                                    {
-                                        if (string.IsNullOrEmpty(model.drawingsTechnical))
-                                        {
-                                            result.Succeed = false;
-                                            result.ErrorMessage = "Bản vẽ này không được để trống !";
-                                            return result;
-                                        }
-                                        else
-                                        {
-                                            if (string.IsNullOrEmpty(model.drawingsTechnical))
-                                            {
-                                                result.Succeed = false;
-                                                result.ErrorMessage = "Bản vẽ này không được để trống !";
-                                                return result;
-                                            }
-                                            else
-                                            {
-                                                if (string.IsNullOrEmpty(model.drawings2D))
-                                                {
-                                                    result.Succeed = false;
-                                                    result.ErrorMessage = "Bản vẽ này không được để trống !";
-                                                    return result;
-                                                }
-                                                else
-                                                {
-                                                    if (string.IsNullOrEmpty(model.drawings3D))
-                                                    {
-                                                        result.Succeed = false;
-                                                        result.ErrorMessage = "Bản vẽ này không được để trống !";
-                                                        return result;
-                                                    }
-                                                    else
-                                                    {
-                                                        if (model.price < 0)
-                                                        {
-                                                            result.Succeed = false;
-                                                            result.ErrorMessage = "Giá tiền không được âm !";
-                                                            return result;
-                                                        }
-                                                        else
-                                                        {
-                                                            if (model.areaId == Guid.Empty)
-                                                            {
-                                                                result.Succeed = false;
-                                                                result.ErrorMessage = "Không nhận được area !";
-                                                                return result;
-                                                            }
-                                                            else
-                                                            {
-                                                                //Create Item
-                                                                var newItem = new Item
-                                                                {
-                                                                    name = model.name,
-                                                                    image = model.image,
-                                                                    mass = model.mass,
-                                                                    unit = model.unit,
-                                                                    length = model.length,
-                                                                    depth = model.depth,
-                                                                    height = model.height,
-                                                                    drawingsTechnical = model.drawingsTechnical,
-                                                                    drawings2D = model.drawings2D,
-                                                                    drawings3D = model.drawings3D,
-                                                                    description = model.description,
-                                                                    price = model.price,
-                                                                    //areaId=model.areaId,
-                                                                    //categoryId=model.categoryId,
-                                                                    isDeleted = false,
-                                                                    createById=id
-                                                                };
-                                                                _dbContext.Item.Add(newItem);
-                                                                await _dbContext.SaveChangesAsync();
-                                                                result.Succeed = true;
-                                                                result.Data = newItem.id;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                        itemId = item.id,
+                        materialId = material
+                    });
                 }
+
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = item.id;
             }
             catch (Exception ex)
             {
@@ -196,313 +99,241 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> AddMaterialToItem(Guid id, Guid itemId, AddMaterialToItemModel model)
+        public async Task<ResultModel> UpdateItem(UpdateItemModel model)
         {
             ResultModel result = new ResultModel();
-            result.Succeed = false;
             try
-            {
-                var data =_dbContext.Material.Where(i => i.id == model.materialId).FirstOrDefault();
-                if(data != null)
+            {   
+                var check = await _dbContext.Item.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefaultAsync();
+                
+                if (check == null)
                 {
-                    var newMaterialItem = new ItemMaterial
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(model.image))
                     {
-                        createdById = id,
-                        itemId = itemId,
-                        materialId = model.materialId,
-                        quantity = model.quantity,
-                        price = model.price,
-                        totalPrice = model.totalPrice,
-                    };
-                    newMaterialItem.totalPrice = model.quantity * model.price;
-                    _dbContext.ItemMaterial.Add(newMaterialItem);
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                    }
+
+                    check.name = model.name;
+                    check.image = model.image;
+                    check.length = model.length;
+                    check.depth = model.depth;
+                    check.height = model.height;
+                    check.unit = model.unit;
+                    check.mass = model.mass;         
+                    check.drawingsTechnical = model.drawingsTechnical;
+                    check.drawings2D = model.drawings2D;
+                    check.drawings3D = model.drawings3D;
+                    check.description = model.description;
+                    check.price = model.price;
+
+                    // Remove all old Procedure Item
+                    var currentProcedureItems = await _dbContext.ProcedureItem
+                        .Where(x => x.itemId == model.id)
+                        .ToListAsync();
+                    if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                    {
+                        _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
+                    }
+
+                    // Set new Procedure Item
+                    var procedureItems = new List<ProcedureItem>();
+                    foreach (var procedure in model.procedures)
+                    {
+                        procedureItems.Add(new ProcedureItem
+                        {
+                            itemId = model.id,
+                            procedureId = procedure
+                        });
+                    }
+
+                    // Remove all old Material Item
+                    var currentMaterialItems = await _dbContext.ItemMaterial
+                        .Where(x => x.itemId == model.id)
+                        .ToListAsync();
+                    if (currentMaterialItems != null && currentMaterialItems.Count > 0)
+                    {
+                        _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
+                    }
+
+                    // Set new Material Item
+                    var materialItems = new List<ItemMaterial>();
+                    foreach (var material in model.materials)
+                    {
+                        materialItems.Add(new ItemMaterial
+                        {
+                            itemId = model.id,
+                            materialId = material
+                        });
+                    }
+
+                    await _dbContext.ProcedureItem.AddRangeAsync(procedureItems);
+                    await _dbContext.ItemMaterial.AddRangeAsync(materialItems);
+
                     await _dbContext.SaveChangesAsync();
                     result.Succeed = true;
-                    result.Data = newMaterialItem.id;
+                    result.Data = check.id;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> DeleteItem(Guid id)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var check = await _dbContext.Item.Where(x => x.id == id && x.isDeleted != true).FirstOrDefaultAsync();
+                if (check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
                 }
                 else
                 {
-                    result.ErrorMessage = "ItemMaterial" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
-            }
+                    check.isDeleted = true;
+                    await _dbContext.SaveChangesAsync();
 
+                    result.Data = "Xoá thành công " + check.id;
+                    result.Succeed = true;
+                }
+                
+            }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-
             return result;
         }
 
-        public ResultModel UpdateMaterialToItemModel(Guid id, Guid userId, UpdateMaterialToItemModel model)
+        public async Task<ResultModel> GetAllItem(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                //Update Item
-                var data = _dbContext.ItemMaterial.Where(i => i.id == model.id).FirstOrDefault();
-                if (data != null)
+                var listItem = await _dbContext.Item.Where(x => x.isDeleted != true)
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                    .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
+                   .OrderByDescending(x => x.name).ToListAsync();
+
+                if (!string.IsNullOrEmpty(search))
                 {
-                    data.price = model.price;
-                    data.quantity = model.quantity;
-                    data.totalPrice = model.price * model.quantity;
-                    data.createdById = userId;
-                    _dbContext.SaveChanges();
+                    listItem = listItem.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<ItemModel>();
+                foreach (var item in listItemPaging)
+                {
+                    var createBy = _dbContext.Users.Find(item.createById);
+                    var tmp = new ItemModel
+                    {
+                        id = item.id,
+                        createById = item.createById,
+                        createByName = createBy!.fullName,
+                        name = item.name,
+                        image = item.image,
+                        length = item.length,
+                        depth = item.depth,
+                        height = item.height,
+                        unit = item.unit,
+                        mass = item.mass,
+                        drawingsTechnical = item.drawingsTechnical,
+                        drawings2D = item.drawings2D,
+                        drawings3D = item.drawings3D,
+                        description = item.description,
+                        price = item.price,
+                        Procedures = item.ProcedureItems.Select(_ => new _Procedure
+                        {
+                            procedureId = _.Procedure.id,
+                            procedureName = _.Procedure.name,
+                        }).ToList(),
+                        Materials = item.ItemMaterials.Select(_ => new _Material
+                        {
+                            materialId = _.Material.id,
+                            materialName = _.Material.name,
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listItemPaging.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+        public async Task<ResultModel> GetItemById(Guid id)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var check = await _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                    .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
+                    .FirstOrDefaultAsync();
+
+                if (check == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                }
+                else
+                {
+                    var createBy = _dbContext.Users.Find(check.createById);
+                    var item = new ItemModel
+                    {
+                        id = check.id,
+                        createById = check.createById,
+                        createByName = createBy!.fullName,
+                        name = check.name,
+                        image = check.image,
+                        length = check.length,
+                        depth = check.depth,
+                        height = check.height,
+                        unit = check.unit,
+                        mass = check.mass,
+                        drawingsTechnical = check.drawingsTechnical,
+                        drawings2D = check.drawings2D,
+                        drawings3D = check.drawings3D,
+                        description = check.description,
+                        price = check.price,
+                        Procedures = check.ProcedureItems.Select(_ => new _Procedure
+                        {
+                            procedureId = _.Procedure.id,
+                            procedureName = _.Procedure.name,
+                        }).ToList(),
+                        Materials = check.ItemMaterials.Select(_ => new _Material
+                        {
+                            materialId = _.Material.id,
+                            materialName = _.Material.name,
+                        }).ToList(),
+                    };
+                    result.Data = item;
                     result.Succeed = true;
-                    result.Data = _mapper.Map<ItemMaterial, ItemMaterialModel>(data);
-                }
-                else
-                {
-                    result.ErrorMessage = "ItemMaterial" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        public ResultModel UpdateItem(Guid id, Guid userId, UpdateItemModel model)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                //Validation
-                if (string.IsNullOrEmpty(model.name))
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống.";
-                    return result;
-                }
-                else
-                {
-                    if (model.mass < 0)
-                    {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Diện tích không được âm.";
-                        return result;
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(model.unit))
-                        {
-                            result.Succeed = false;
-                            result.ErrorMessage = "Đơn vị này không được để trống.";
-                            return result;
-                        }
-                        else
-                        {
-                            if (model.length < 0)
-                            {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Chiều dài không được âm.";
-                                return result;
-                            }
-                            else
-                            {
-                                if (model.height < 0)
-                                {
-                                    result.Succeed = false;
-                                    result.ErrorMessage = "Chiều cao không được âm.";
-                                    return result;
-                                }
-                                else
-                                {
-                                    if (model.depth < 0)
-                                    {
-                                        result.Succeed = false;
-                                        result.ErrorMessage = "Chiều rộng không được âm.";
-                                        return result;
-                                    }
-                                    else
-                                    {
-                                        if (string.IsNullOrEmpty(model.drawingsTechnical))
-                                        {
-                                            result.Succeed = false;
-                                            result.ErrorMessage = "Bản vẽ này không được để trống.";
-                                            return result;
-                                        }
-                                        else
-                                        {
-                                            if (string.IsNullOrEmpty(model.drawings2D))
-                                            {
-                                                result.Succeed = false;
-                                                result.ErrorMessage = "Bản vẽ này không được để trống.";
-                                                return result;
-                                            }
-                                            else
-                                            {
-                                                if (string.IsNullOrEmpty(model.drawings3D))
-                                                {
-                                                    result.Succeed = false;
-                                                    result.ErrorMessage = "Bản vẽ này không được để trống.";
-                                                    return result;
-                                                }
-                                                else
-                                                {
-                                                    if (model.price < 0)
-                                                    {
-                                                        result.Succeed = false;
-                                                        result.ErrorMessage = "Giá tiền không được âm.";
-                                                        return result;
-                                                    }
-                                                    else
-                                                    {
-                                                        if (model.areaId == Guid.Empty)
-                                                        {
-                                                            result.Succeed = false;
-                                                            result.ErrorMessage = "Không nhận được area";
-                                                            return result;
-                                                        }
-                                                        else
-                                                        {
-                                                            //Update Item
-                                                            var data = _dbContext.Item.Where(i => i.id == model.id).FirstOrDefault();
-                                                            if (data != null)
-                                                            {
-                                                                data.name = model.name;
-                                                                data.image = model.image;
-                                                                data.mass = model.mass;
-                                                                data.unit = model.unit;
-                                                                data.length = model.length;
-                                                                data.depth = model.depth;
-                                                                data.height = model.height;
-                                                                data.drawingsTechnical = model.drawingsTechnical;
-                                                                data.drawings2D = model.drawings2D;
-                                                                data.drawings3D = model.drawings3D;
-                                                                data.description = model.description;
-                                                                data.price = model.price;
-                                                                //data.areaId = model.areaId;
-                                                                //data.categoryId = model.categoryId;
-                                                                data.createById = userId;
-                                                                _dbContext.SaveChanges();
-                                                                result.Succeed = true;
-                                                                result.Data = _mapper.Map<Item, ItemModel>(data);
-                                                            }
-                                                            else
-                                                            {
-                                                                result.ErrorMessage = "Item" + ErrorMessage.ID_NOT_EXISTED;
-                                                                result.Succeed = false;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        public ResultModel GetAllItem(int pageIndex, int pageSize)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.Item.Where(i => i.isDeleted != true).OrderByDescending(i=>i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<ItemModel>>(data),
-                    Total = data.Count
-                };
-                result.Succeed = true;
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        public ResultModel SortItemByPrice(int pageIndex, int pageSize)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var data = _dbContext.Item.Where(i => i.isDeleted != true).OrderByDescending(i => i.price).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList(); ;
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<ItemModel>>(data),
-                    Total = data.Count
-                };
-                result.Succeed = true;
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
-
-        public ResultModel GetItemById(Guid id)
-        {
-            ResultModel resultModel = new ResultModel();
-            try
-            {
-                var data = _dbContext.Item.Where(i => i.id == id && i.isDeleted != true);
-                if (data != null)
-                {
-
-                    var view = _mapper.ProjectTo<ItemModel>(data).FirstOrDefault();
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "Item" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
+                };                                 
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
-        }
-
-        public ResultModel DeleteItem(Guid id)
-        {
-            ResultModel resultModel = new ResultModel();
-            try
-            {
-                var data = _dbContext.Item.Where(i => i.id == id).FirstOrDefault();
-                if (data != null)
-                {
-                    data.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    var view = _mapper.Map<Item, ItemModel>(data);
-                    resultModel.Data = view;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "Item" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return resultModel;
-        }
-
-        public ResultModel UpdateMaterialToItem(Guid id, Guid userId, UpdateMaterialToItemModel model)
-        {
-            throw new NotImplementedException();
-        }
+            return result;
+        }       
     }
 }

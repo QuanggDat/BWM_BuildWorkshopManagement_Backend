@@ -22,8 +22,8 @@ namespace Sevices.Mapping
             CreateMap<ItemMaterial, ItemMaterialModel>();
 
             //Material
-            CreateMap<Material, ResponeMaterialModel>();
-            CreateMap<MaterialCategory, ResponeMaterialCategoryModel>();
+            CreateMap<Material, MaterialModel>();
+            CreateMap<MaterialCategory, MaterialCategoryModel>();
 
             // Order
             CreateMap<Order, OrderModel>().ReverseMap();

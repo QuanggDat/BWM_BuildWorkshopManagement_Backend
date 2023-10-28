@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class ResponeMaterialCategoryModel
+    public class MaterialCategoryModel
     {
         public Guid id { get; set; }
         public Guid? createById { get; set; }

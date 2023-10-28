@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderReportService;
 using static Data.Models.OrderReportModel;
+using Data.Models;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {

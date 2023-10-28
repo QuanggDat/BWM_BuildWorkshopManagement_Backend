@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class ResponeMaterialModel
+    public class MaterialModel
     {
         public Guid id { get; set; }
         public string name { get; set; } = null!;

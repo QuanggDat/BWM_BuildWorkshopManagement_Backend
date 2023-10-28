@@ -19,7 +19,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _materialService = materialService;
         }
         
-        [HttpPost("CreateMaterial")]
+        [HttpPost("[action]")]
         public ActionResult CreateMaterial(CreateMaterialModel model)
         {
             if (!ValidateCreateMaterial(model))
@@ -32,7 +32,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("GetAllMaterial")]
+        [HttpGet("[action]")]
         public IActionResult GetAllMaterial(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _materialService.GetAllMaterial(search, pageIndex, pageSize);
@@ -56,7 +56,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("[action]/{id}")]
+        [HttpDelete("[action]/{id}")]
         public IActionResult DeleteMaterial(Guid id)
         {
             var result = _materialService.DeleteMaterial(id);
@@ -64,7 +64,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("UpdateMaterial")]
+        [HttpPut("[action]")]
         public IActionResult UpdateMaterial(UpdateMaterialModel model)
         {
             if (!ValidateUpdateMaterial(model))
@@ -76,7 +76,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("UpdateMaterialAmount")]
+        [HttpPut("[action]")]
         public IActionResult UpdateMaterialAmount(UpdateMaterialAmountModel model)
         {
             var result = _materialService.UpdateMaterialAmount(model);

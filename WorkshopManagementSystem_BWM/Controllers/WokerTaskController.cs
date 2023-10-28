@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.WorkerTaskService;
 using static Data.Models.WorkerTaskModel;
+using Data.Models;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {

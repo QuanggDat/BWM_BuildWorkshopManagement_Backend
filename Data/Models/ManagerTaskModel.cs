@@ -16,7 +16,7 @@ namespace Data.Models
         public DateTime endTime { get; set; }
         public string description { get; set; } = null!;        
     }
-    public class ResponseManagerTaskModel
+    public class ManagerTaskModel
     {
         public Guid managerId { get; set; }
         public string managerName { get; set; } = null!;

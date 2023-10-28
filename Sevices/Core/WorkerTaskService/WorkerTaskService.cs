@@ -24,7 +24,7 @@ namespace Sevices.Core.WorkerTaskService
                 managerTaskId = model.managerTaskId,
                 name = model.name,
                 description = model?.description ?? "",
-                startTime = model.startTime,
+                startTime = model!.startTime,
                 endTime = model.endTime,
                 status = (TaskStatus)Data.Enums.TaskStatus.New,
                 createById = userId,
@@ -40,7 +40,7 @@ namespace Sevices.Core.WorkerTaskService
                     await _dbContext.WorkerTaskDetail.AddAsync(new WorkerTaskDetail
                     {
                         workerTaskId = workerTask.id,
-                        userId = new Guid(assignee)
+                        userId = assignee
                     });
                 }
 
@@ -238,16 +238,16 @@ namespace Sevices.Core.WorkerTaskService
             }           
         }
 
-        public async Task<List<WorkerTaskResponseModel>> GetAllWorkerTask(Guid managerTaskId)
+        public async Task<List<WorkerTaskModel>> GetAllWorkerTask(Guid managerTaskId)
         {          
 
             var check = await _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                 .Where(x => x.managerTaskId == managerTaskId && x.isDeleted == false).ToListAsync();
-            var list = new List<WorkerTaskResponseModel>();
+            var list = new List<WorkerTaskModel>();
             foreach (var item in check)
             {
                 var user = await _dbContext.Users.FindAsync(item.createById);
-                var tmp = new WorkerTaskResponseModel
+                var tmp = new WorkerTaskModel
                 {
                     managerTaskId = item.managerTaskId,
                     userId = item.createById,
@@ -258,7 +258,7 @@ namespace Sevices.Core.WorkerTaskService
                     endTime = item.endTime,
                     status = item.status,
                     userFullName = user!.fullName,
-                    Members = item.WorkerTaskDetails.Select(_ => new TaskMemberResponse
+                    Members = item.WorkerTaskDetails.Select(_ => new TaskMember
                     {
                         memberId = _.User.Id,
                         memberFullName = _.User.fullName,

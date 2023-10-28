@@ -157,9 +157,9 @@ namespace Sevices.Core.ManagerTaskService
             }      
         }
 
-        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
+        public async Task<List<ManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
         {
-            var result = new List<ResponseManagerTaskModel>();
+            var result = new List<ManagerTaskModel>();
             var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
                 .Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
             if (managerTask == null) { 
@@ -172,11 +172,11 @@ namespace Sevices.Core.ManagerTaskService
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
                     var managerTmp = await _dbContext.User.FindAsync(item.managerId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ResponseManagerTaskModel
+                    var tmp = new ManagerTaskModel
                     {
-                        createByName = createByTmp.fullName,
-                        managerName = managerTmp.fullName,
-                        orderName = orderTmp.name,
+                        createByName = createByTmp!.fullName,
+                        managerName = managerTmp!.fullName,
+                        orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,
@@ -193,11 +193,12 @@ namespace Sevices.Core.ManagerTaskService
             
         }
 
-        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
+        public async Task<List<ManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
         {
-            var result = new List<ResponseManagerTaskModel>();
+            var result = new List<ManagerTaskModel>();
             var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
                 .Where(a => a.managerId == managerId && a.isDeleted == false).ToListAsync();
+
             if (managerTask == null)
             {
                 return null;
@@ -209,11 +210,11 @@ namespace Sevices.Core.ManagerTaskService
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
                     var managerTmp = await _dbContext.User.FindAsync(item.managerId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ResponseManagerTaskModel
+                    var tmp = new ManagerTaskModel
                     {
-                        createByName = createByTmp.fullName,
-                        managerName = managerTmp.fullName,
-                        orderName = orderTmp.name,
+                        createByName = createByTmp!.fullName,
+                        managerName = managerTmp!.fullName,
+                        orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,
@@ -228,9 +229,9 @@ namespace Sevices.Core.ManagerTaskService
             }
         }
 
-        public async Task<List<ResponseManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
+        public async Task<List<ManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
         {
-            var result = new List<ResponseManagerTaskModel>();
+            var result = new List<ManagerTaskModel>();
             var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
                 .Where(a => a.createById == factoryId && a.isDeleted == false).ToListAsync();
             if (managerTask == null)
@@ -244,11 +245,11 @@ namespace Sevices.Core.ManagerTaskService
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
                     var managerTmp = await _dbContext.User.FindAsync(item.managerId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ResponseManagerTaskModel
+                    var tmp = new ManagerTaskModel
                     {
-                        createByName = createByTmp.fullName,
-                        managerName = managerTmp.fullName,
-                        orderName = orderTmp.name,
+                        createByName = createByTmp!.fullName,
+                        managerName = managerTmp!.fullName,
+                        orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,
@@ -261,7 +262,6 @@ namespace Sevices.Core.ManagerTaskService
                 }
                 return result;
             }
-            
         }
 
         public async Task<ResultModel> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status)

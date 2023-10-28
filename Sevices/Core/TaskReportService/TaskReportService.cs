@@ -151,7 +151,7 @@ namespace Sevices.Core.ReportService
             return now >= managerTask.startTime && now <= managerTask.endTime;
         }
         
-        public async Task<ResponseTaskReportModel?> GetTaskReportById(Guid reportId)
+        public async Task<TaskReportModel?> GetTaskReportById(Guid reportId)
         {
             var report = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -170,13 +170,13 @@ namespace Sevices.Core.ReportService
                 return null;
             }
 
-            ResponseTaskReportModel result = null;
+            TaskReportModel result = null;
             if (report.reportType == Data.Enums.ReportType.ProgressReport)
             {
                 var reviewer = report.ManagerTask.CreateBy;
                 var reporter = report.Reporter;
 
-                result = new ResponseTaskReportModel
+                result = new TaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.Procedure.name,                  
@@ -186,7 +186,7 @@ namespace Sevices.Core.ReportService
                     reportStatus = report.reportStatus,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterTaskReport
                     {
                         id = reporter.Id,
                         fullName = reporter.fullName,
@@ -207,7 +207,7 @@ namespace Sevices.Core.ReportService
                 var reviewer = report.ManagerTask.CreateBy;
                 var reporter = report.Reporter;
 
-                result = new ResponseTaskReportModel
+                result = new TaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.Procedure.name,                    
@@ -216,7 +216,7 @@ namespace Sevices.Core.ReportService
                     createdDate = report.createdDate,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterTaskReport
                     {
                         id = reporter.Id,
                         fullName = reporter.fullName,
@@ -306,7 +306,7 @@ namespace Sevices.Core.ReportService
             }                  
         }
 
-        public async Task<List<ResponseTaskReportModel>> GetProgressTaskReportsByManagerId(Guid managerId)
+        public async Task<List<TaskReportModel>> GetProgressTaskReportsByManagerId(Guid managerId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -322,11 +322,11 @@ namespace Sevices.Core.ReportService
             
             if (checkReport == null)
             {
-                return new List<ResponseTaskReportModel>();
+                return new List<TaskReportModel>();
             }
             else
             {
-                var list = checkReport.Select(report => new ResponseTaskReportModel
+                var list = checkReport.Select(report => new TaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.Procedure.name,
@@ -336,7 +336,7 @@ namespace Sevices.Core.ReportService
                     reportStatus = report.reportStatus,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterTaskReport
                     {
                         id = report.Reporter.Id,
                         fullName = report.Reporter.fullName,
@@ -357,7 +357,7 @@ namespace Sevices.Core.ReportService
             
         }
 
-        public async Task<List<ResponseTaskReportModel>> GetProblemTaskReportsByManagerId(Guid managerId)
+        public async Task<List<TaskReportModel>> GetProblemTaskReportsByManagerId(Guid managerId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
@@ -371,11 +371,11 @@ namespace Sevices.Core.ReportService
 
             if (checkReport == null)
             {
-                return new List<ResponseTaskReportModel>();
+                return new List<TaskReportModel>();
             }
             else
             {
-                var list = checkReport.Select(report => new ResponseTaskReportModel
+                var list = checkReport.Select(report => new TaskReportModel
                 {
                     orderName = report.ManagerTask.Order.name,
                     managerTaskName = report.ManagerTask.Procedure.name,
@@ -384,7 +384,7 @@ namespace Sevices.Core.ReportService
                     createdDate = report.createdDate,
                     responseContent = report.responseContent,
 
-                    reporter = new Reporter
+                    reporter = new ReporterTaskReport
                     {
                         id = report.Reporter.Id,
                         fullName = report.Reporter.fullName,

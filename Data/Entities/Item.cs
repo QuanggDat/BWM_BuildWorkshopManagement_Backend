@@ -18,11 +18,9 @@ namespace Data.Entities
         [ForeignKey("createById")]
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
-
-        [Column(TypeName = "nvarchar(500)")]  
         
         public string name { get; set; } = null!;
-        public string code { get; set; }
+        public string code { get; set; } = null!;
         public string? image { get; set; } 
         public double length { get; set; }
         public double depth { get; set; }

@@ -49,15 +49,20 @@ namespace Sevices.Core.MaterialService
                     {
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                        
                     }
                     else
                     {
+                        if(string.IsNullOrEmpty(model.image))
+                        {
+                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        }
                         //Create Material 
                         var material = new Material
                         {
                             createById = createdById,
                             materialCategoryId = model.materialCategoryId,
-                            name = model.name,
+                            name = model.name,                            
                             image = model.image,
                             color = model.color,
                             supplier = model.supplier,
@@ -71,7 +76,7 @@ namespace Sevices.Core.MaterialService
                             totalPrice = model.price * model.amount,
                             isDeleted = false
                         };
-
+           
                         _dbContext.Material.Add(material);
                         _dbContext.SaveChanges();
                         result.Succeed = true;
@@ -91,15 +96,18 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {              
-                var check = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
+                var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin Material!";
-                    return result;
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(model.image))
+                    {
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                    }
                     var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId).SingleOrDefault();
                     if (checkCategory == null)
                     {
@@ -115,7 +123,6 @@ namespace Sevices.Core.MaterialService
                             {
                                 result.Succeed = false;
                                 result.ErrorMessage = "Tên này đã tồn tại !";
-                                return result;
                             }
                             else
                             {
@@ -173,7 +180,7 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.Material.Where(m => m.id == id).FirstOrDefault();
+                var check = _dbContext.Material.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
                     result.Succeed = false;
@@ -206,14 +213,13 @@ namespace Sevices.Core.MaterialService
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin Material!";
-                    return result;
                 }
                 else
                 {
                     var createBy = _dbContext.Users.Find(check.createById);
                     var materialCategory = _dbContext.MaterialCategory.Find(check.materialCategoryId);
 
-                    var ResponMaterialModel = new ResponeMaterialModel
+                    var materialModel = new MaterialModel
                     {
                         id = check.id,
                         createById = check.createById,
@@ -234,7 +240,7 @@ namespace Sevices.Core.MaterialService
                         totalPrice = check.totalPrice,
                     };
 
-                    result.Data = ResponMaterialModel;
+                    result.Data = materialModel;
                     result.Succeed = true;
                 }
 
@@ -251,7 +257,7 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.Material.Where(m => m.id == model.id).FirstOrDefault();
+                var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
                     result.Succeed = false;
@@ -289,13 +295,13 @@ namespace Sevices.Core.MaterialService
 
                 var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = new List<ResponeMaterialModel>();
+                var list = new List<MaterialModel>();
                 foreach (var item in listMaterialCategoryPaging)
                 {
                     var createBy = _dbContext.Users.Find(item.createById);
                     var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
 
-                    var tmp = new ResponeMaterialModel
+                    var tmp = new MaterialModel
                     {
                         id = item.id,
                         createById = item.createById,
@@ -344,52 +350,50 @@ namespace Sevices.Core.MaterialService
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin Material Category!";
-                    return result;
                 }
-
-                
-                
-                var listMaterialCategory = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
+                else
+                {
+                    var listMaterialCategory = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
                    .OrderByDescending(x => x.name).ToList();
 
 
-                var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                    var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = new List<ResponeMaterialModel>();
-                foreach (var item in listMaterialCategoryPaging)
-                {
-                    var createBy = _dbContext.Users.Find(item.createById);
-                    var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
-
-                    var tmp = new ResponeMaterialModel
+                    var list = new List<MaterialModel>();
+                    foreach (var item in listMaterialCategoryPaging)
                     {
-                        id = item.id,
-                        createById = item.createById,
-                        createByName = createBy!.fullName,
-                        materialCategoryId = item.materialCategoryId,
-                        materialCategoryName = materialCategory!.name,
-                        name = item.name,
-                        image = item.image,
-                        color = item.color,
-                        supplier = item.supplier,
-                        thickness = item.thickness,
-                        unit = item.unit,
-                        sku = item.sku,
-                        importDate = item.importDate,
-                        importPlace = item.importPlace,
-                        amount = item.amount,
-                        price = item.price,
-                        totalPrice = item.totalPrice,
-                    };
-                    list.Add(tmp);
-                }
-                result.Data = new PagingModel()
-                {
-                    Data = list,
-                    Total = listMaterialCategoryPaging.Count
-                };
-                result.Succeed = true;
+                        var createBy = _dbContext.Users.Find(item.createById);
+                        var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
 
+                        var tmp = new MaterialModel
+                        {
+                            id = item.id,
+                            createById = item.createById,
+                            createByName = createBy!.fullName,
+                            materialCategoryId = item.materialCategoryId,
+                            materialCategoryName = materialCategory!.name,
+                            name = item.name,
+                            image = item.image,
+                            color = item.color,
+                            supplier = item.supplier,
+                            thickness = item.thickness,
+                            unit = item.unit,
+                            sku = item.sku,
+                            importDate = item.importDate,
+                            importPlace = item.importPlace,
+                            amount = item.amount,
+                            price = item.price,
+                            totalPrice = item.totalPrice,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listMaterialCategoryPaging.Count
+                    };
+                    result.Succeed = true;
+                }               
             }
             catch (Exception e)
             {
@@ -397,6 +401,5 @@ namespace Sevices.Core.MaterialService
             }
             return result;
         }
-        
     }
 }

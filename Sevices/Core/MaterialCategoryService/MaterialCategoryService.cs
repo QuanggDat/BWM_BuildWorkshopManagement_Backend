@@ -79,7 +79,6 @@ namespace Sevices.Core.CategoryService
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
-                    return result;
                 }
                 else
                 {
@@ -88,7 +87,6 @@ namespace Sevices.Core.CategoryService
                     {
                         result.Succeed = false;
                         result.ErrorMessage = "Tên MaterialCategory không được để trống !";
-                        return result;
                     }
                     else
                     {
@@ -99,7 +97,6 @@ namespace Sevices.Core.CategoryService
                             {
                                 result.Succeed = false;
                                 result.ErrorMessage = "Tên này đã tồn tại !";
-                                return result;
                             }
                             else
                             {
@@ -142,11 +139,11 @@ namespace Sevices.Core.CategoryService
                 
                 var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = new List<ResponeMaterialCategoryModel>();
+                var list = new List<MaterialCategoryModel>();
                 foreach (var item in listMaterialCategoryPaging)
                 {
                     var createBy = _dbContext.Users.Find(item.createById);
-                    var tmp = new ResponeMaterialCategoryModel
+                    var tmp = new MaterialCategoryModel
                     {
                         id = item.id,
                         createById = item.createById,
@@ -182,13 +179,12 @@ namespace Sevices.Core.CategoryService
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory!";
-                    return result;
                 }
                 else
                 {
                     var createBy = _dbContext.Users.Find(check.createById);
 
-                    var ResponeMaterialCategoryModel = new ResponeMaterialCategoryModel
+                    var materialCategoryModel = new MaterialCategoryModel
                     {
                         id = check.id,
                         createById = check.createById,
@@ -196,7 +192,7 @@ namespace Sevices.Core.CategoryService
                         name = check.name,
                     };
 
-                    result.Data = ResponeMaterialCategoryModel;
+                    result.Data = materialCategoryModel;
                     result.Succeed = true;
                 }
 
@@ -219,7 +215,6 @@ namespace Sevices.Core.CategoryService
                 {
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory!";
-                    return result;
                 }
                 else 
                 {
