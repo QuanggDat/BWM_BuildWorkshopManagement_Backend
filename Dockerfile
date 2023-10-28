@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["WorkshopManagementSystem_BWM/WorkshopManagementSystem_BWM.csproj", "WorkshopManagementSystem/"]
-RUN dotnet restore "WorkshopManagementSystem_BWM/WorkshopManagementSystem_BWM.csproj"
+RUN dotnet restore "WorkshopManagementSystem/WorkshopManagementSystem_BWM.csproj"
 COPY . .
 WORKDIR "/src/WorkshopManagementSystem"
 RUN dotnet build "WorkshopManagementSystem_BWM.csproj" -c Release -o /app/build
