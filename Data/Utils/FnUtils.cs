@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
-using SkiaSharp;
 using System.Drawing.Drawing2D;
 
 namespace Data.Utils
