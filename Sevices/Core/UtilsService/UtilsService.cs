@@ -19,7 +19,7 @@ namespace Sevices.Core.UtilsService
 
         public string GenerateItemCode(List<string> listCodeDB, List<string> excludeCodes)
         {
-            var randomCode = FnUtils.GenerateCode();
+            var randomCode = FnUtil.GenerateCode();
             if (excludeCodes.Contains(randomCode) || listCodeDB.Contains(randomCode))
             {
                 return GenerateItemCode(listCodeDB, excludeCodes);

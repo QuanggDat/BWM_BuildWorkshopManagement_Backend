@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 
 namespace Data.Utils
 {
-    public static class FnUtils
+    public static class FnUtil
     {
         // Kiểm tra ký tự in hoa
         public static bool IsAlphabetOnly(string? val)

@@ -390,7 +390,7 @@ namespace Sevices.Core.OrderService
                     for (var row = 0; row <= rowCount; row++)
                     {
                         var cellValue = worksheet?.Cells[row, 0]?.Value?.ToString();
-                        if (FnUtils.Remove_VN_Accents(cellValue)?.ToUpper() == "PHAN HOAN THIEN NOI THAT")
+                        if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "PHAN HOAN THIEN NOI THAT")
                         {
                             rowDataBegin = row + 1;
                             rowData = row + 1;
@@ -398,7 +398,7 @@ namespace Sevices.Core.OrderService
                         }
 
                         cellValue = worksheet?.Cells[row, 1]?.Value?.ToString();
-                        if (FnUtils.Remove_VN_Accents(cellValue)?.ToUpper() == "KHACH HANG:")
+                        if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "KHACH HANG:")
                         {
                             worksheet.Cells[row, 1].Value = $"Khách hàng: {order.customerName?.ToUpper()}";
                         }
@@ -414,7 +414,7 @@ namespace Sevices.Core.OrderService
                                 // STT
                                 var cell = worksheet.Cells[rowData, 0];
                                 cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
-                                cell.Value = FnUtils.NumToAlphabets(i + 1);
+                                cell.Value = FnUtil.NumToAlphabets(i + 1);
                                 // Name
                                 worksheet.Cells.Merge(rowData, 1, 1, 9);
                                 cell = worksheet.Cells[rowData, 1];
@@ -514,7 +514,7 @@ namespace Sevices.Core.OrderService
                         for (var row = 0; row <= rowCount; row++)
                         {
                             var cellColA = worksheet?.Cells[row, 0]?.Value?.ToString() ?? "";
-                            if (FnUtils.Remove_VN_Accents(cellColA) == "TONG CONG")
+                            if (FnUtil.Remove_VN_Accents(cellColA) == "TONG CONG")
                             {
                                 isDataBegin = true;
                             }
@@ -522,10 +522,10 @@ namespace Sevices.Core.OrderService
                             {
                                 var cellColB = worksheet?.Cells[row, 1]?.Value?.ToString() ?? "";
 
-                                if (FnUtils.IsAlphabetOnly(cellColA) && !FnUtils.IsFirstWordValid(cellColB, "TANG") && !FnUtils.IsFirstWordValid(cellColB, "PHONG")) break;
+                                if (FnUtil.IsAlphabetOnly(cellColA) && !FnUtil.IsFirstWordValid(cellColB, "TANG") && !FnUtil.IsFirstWordValid(cellColB, "PHONG")) break;
 
                                 // Nếu là chữ cái in hoa + bắt đầu bằng từ "Tầng"
-                                if (FnUtils.IsAlphabetOnly(cellColA) && FnUtils.IsFirstWordValid(cellColB, "TANG"))
+                                if (FnUtil.IsAlphabetOnly(cellColA) && FnUtil.IsFirstWordValid(cellColB, "TANG"))
                                 {
                                     floor = new OrderExcelModel()
                                     {
@@ -534,7 +534,7 @@ namespace Sevices.Core.OrderService
                                     listFromExcel.Add(floor);
                                 }
                                 // Nếu là số la mã hợp lệ + bắt đầu bằng từ "Phòng"
-                                else if (FnUtils.IsValidRomanNumber(cellColA) && FnUtils.IsFirstWordValid(cellColB, "PHONG"))
+                                else if (FnUtil.IsValidRomanNumber(cellColA) && FnUtil.IsFirstWordValid(cellColB, "PHONG"))
                                 {
                                     area = new OrderChildrenExcelModel()
                                     {
@@ -592,12 +592,12 @@ namespace Sevices.Core.OrderService
                                     {
                                         code = cellColB,
                                         name = cellName,
-                                        length = FnUtils.ParseStringToInt(cellLength),
-                                        depth = FnUtils.ParseStringToInt(cellDepth),
-                                        height = FnUtils.ParseStringToInt(cellHeight),
+                                        length = FnUtil.ParseStringToInt(cellLength),
+                                        depth = FnUtil.ParseStringToInt(cellDepth),
+                                        height = FnUtil.ParseStringToInt(cellHeight),
                                         unit = cellUnit,
-                                        mass = FnUtils.ParseStringToDouble(cellMass),
-                                        quantity = FnUtils.ParseStringToInt(cellQty),
+                                        mass = FnUtil.ParseStringToDouble(cellMass),
+                                        quantity = FnUtil.ParseStringToInt(cellQty),
                                         description = cellDescr,
 
                                     });
@@ -636,7 +636,7 @@ namespace Sevices.Core.OrderService
                 // STT
                 var cell = worksheet.Cells[rowData, 0];
                 cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
-                cell.Value = FnUtils.NumToRomanNum(a + 1);
+                cell.Value = FnUtil.NumToRomanNum(a + 1);
                 // Name
                 worksheet.Cells.Merge(rowData, 1, 1, 9);
                 cell = worksheet.Cells[rowData, 1];
@@ -666,7 +666,7 @@ namespace Sevices.Core.OrderService
                     {
 
                         var image = Image.FromStream(dictItemImage[detail.Item.id]);
-                        image = FnUtils.ResizeImage(image);
+                        image = FnUtil.ResizeImage(image);
                         worksheet.Cells.SetRowHeightPixel(rowData, image.Height + 10);
 
                         var streamImg = new MemoryStream();

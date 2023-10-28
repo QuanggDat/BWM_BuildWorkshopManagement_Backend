@@ -30,8 +30,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 {
                     id = Guid.NewGuid(),
                     userId = Guid.NewGuid(),
-                    title = FnUtils.GenerateCode(),
-                    content  = FnUtils.GenerateCode(),
+                    title = FnUtil.GenerateCode(),
+                    content  = FnUtil.GenerateCode(),
                     dateCreated = DateTime.Now,
                 }
             };
