@@ -7,6 +7,8 @@ using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using System.Drawing;
@@ -158,6 +160,8 @@ namespace Sevices.Core.OrderService
 
         public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
+            Console.WriteLine("Create Order URL: " + model.fileQuote);
+            Log.Warning("Create Order URL: " + model.fileQuote);
             var result = new ResultModel();
             try
             {

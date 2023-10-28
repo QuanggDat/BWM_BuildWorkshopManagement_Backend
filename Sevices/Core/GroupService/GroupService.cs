@@ -29,12 +29,13 @@ namespace Sevices.Core.HumanResourceService
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.Group.Where(g => g.squadId == id && g.isDeleted != true).OrderByDescending(g => g.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var data = _dbContext.Group.Where(g => g.squadId == id && g.isDeleted != true).OrderByDescending(g => g.name).ToList();
+                var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 if (data != null)
                 {
                     resultModel.Data = new PagingModel()
                     {
-                        Data = _mapper.Map<List<SquadModel>>(data),
+                        Data = _mapper.Map<List<SquadModel>>(dataPaging),
                         Total = data.Count
                     };
                     resultModel.Succeed = true;

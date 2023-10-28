@@ -32,10 +32,11 @@ namespace Sevices.Core.SquadService
             ResultModel result = new ResultModel();
             try
             {
-                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).ToList();
+                var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<SquadModel>>(data),
+                    Data = _mapper.Map<List<SquadModel>>(dataPaging),
                     Total = data.Count
                 };
                 result.Succeed = true;
