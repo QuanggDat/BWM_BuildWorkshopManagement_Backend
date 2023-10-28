@@ -485,14 +485,18 @@ namespace Sevices.Core.OrderService
                 else
                 {
                     Log.Warning("487 - Create Order URL: " + url);
+                    Console.WriteLine("487 - Create Order URL: " + url);
                     // tải file excel về
                     var httpClient = new HttpClient();
                     var response = await httpClient.GetAsync(url);
-                    Log.Warning("491 - Create Order URL: " + url);
-                    Log.Warning("492 - Create Order URL - response.StatusCode: " + response.StatusCode);
+                    Log.Warning("492 - Create Order URL: " + url);
+                    Console.WriteLine("493 - Create Order URL: " + url);
+                    Log.Warning("494 - Create Order URL - response.StatusCode: " + response.StatusCode);
+                    Console.WriteLine("495 - Create Order URL - response.StatusCode: " + response.StatusCode);
 
                     if (response.IsSuccessStatusCode)
                     {
+                        Console.WriteLine("499 - Create Order URL - response.IsSuccessStatusCode: " + response.IsSuccessStatusCode);
                         // đọc file excel vừa tải về
                         var stream = response.Content.ReadAsStream();
                         var workbook = new Workbook(stream);
