@@ -15,7 +15,7 @@ namespace Sevices.Core.MaterialService
         ResultModel GetMaterialById(Guid id);
         ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model);
         ResultModel GetAllMaterial(string? search,int pageIndex, int pageSize);
-        ResultModel GetAllMaterialByCategoryId(Guid id, int pageIndex, int pageSize);
+        ResultModel GetMaterialByMaterialCategoryId(Guid id, int pageIndex, int pageSize);
         
     }
 }

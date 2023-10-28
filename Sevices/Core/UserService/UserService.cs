@@ -370,8 +370,7 @@ namespace Sevices.Core.UserService
                     if (!IsValidEmail(model.email))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Email không hợp lệ!";
-                        return result;
+                        result.ErrorMessage = "Email không hợp lệ!";                       
                     }
                     else
                     {
@@ -395,8 +394,7 @@ namespace Sevices.Core.UserService
                                 if (age < 18 || age > 60)
                                 {
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";
-                                    return result;
+                                    result.ErrorMessage = "Người này không trong độ tuổi lao động!";                                    
                                 }
                                 else
                                 {
@@ -840,7 +838,6 @@ namespace Sevices.Core.UserService
             return resultModel;
         }
         
-
         //For Factory role
         public async Task<List<ManagementUserModel>> GetAllUserWithSquadAndGroup()
         {
@@ -871,23 +868,7 @@ namespace Sevices.Core.UserService
                 }
             }
             return result;
-        }
-
-        //public async Task<List<HumanResources>> GetAllHumanResource()
-        //{
-        //    var result = new List<HumanResources>();
-        //    var data = await _dbContext.User.Include(r => r.Role).Include(s => s.Squad).Include(g => g.group).Where(u => u.banStatus != false).Select(u => new HumanResources
-        //    {
-        //        fullName = u.fullName,
-        //        image = u.image,
-        //        roleName = u.Role.Name,
-        //        groupName = u.group.name,
-        //        squadName = u.Squad.name,
-        //        banStatus = u.banStatus
-        //    }).ToListAsync();
-
-        //    return result;
-        //}
+        }     
 
     }
 }

@@ -235,6 +235,5 @@ namespace Sevices.Core.CategoryService
             }
             return result;
         }
-        
     }
 }

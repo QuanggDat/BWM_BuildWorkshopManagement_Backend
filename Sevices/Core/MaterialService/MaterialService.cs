@@ -331,7 +331,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetAllMaterialByCategoryId(Guid materialCategoryId, int pageIndex, int pageSize)
+        public ResultModel GetMaterialByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 

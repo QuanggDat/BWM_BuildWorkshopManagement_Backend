@@ -12,18 +12,18 @@ namespace WorkshopManagementSystem_BWM.Controllers
     [ApiController]
     public class MaterialCategoryController : Controller
     {
-        private readonly IMaterialCategoryService _categoryService;
+        private readonly IMaterialCategoryService _materialCategoryService;
 
-        public MaterialCategoryController(IMaterialCategoryService categoryService)
+        public MaterialCategoryController(IMaterialCategoryService materialCategoryService)
         {
-            _categoryService = categoryService;
+            _materialCategoryService = materialCategoryService;
         }       
 
         [HttpPost("CreateMaterialCategory")]
         public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
             var createdById = User.GetId();
-            var result =  _categoryService.CreateMaterialCategory(createdById,model);
+            var result = _materialCategoryService.CreateMaterialCategory(createdById,model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }      
@@ -31,7 +31,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("UpdateMaterialCategory")]
         public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
         {
-            var result = _categoryService.UpdateMaterialCategory(model);
+            var result = _materialCategoryService.UpdateMaterialCategory(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }       
@@ -39,7 +39,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]")]
         public Task<ActionResult> GetAllMaterialCategory(string? search,int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _categoryService.GetAllMaterialCategory(search,pageIndex, pageSize);
+            var result = _materialCategoryService.GetAllMaterialCategory(search,pageIndex, pageSize);
             if (result.Succeed) return Task.FromResult<ActionResult>(Ok(result.Data));
             return Task.FromResult<ActionResult>(BadRequest(result.ErrorMessage));
         }    
@@ -47,7 +47,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]/{id}")]
         public IActionResult GetMaterialCategoryById(Guid id)
         {
-            var result = _categoryService.GetMaterialCategoryById(id);
+            var result = _materialCategoryService.GetMaterialCategoryById(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -55,7 +55,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]/{id}")]
         public IActionResult DeleteMaterialCategory(Guid id)
         {
-            var result = _categoryService.DeleteMaterialCategory(id);
+            var result = _materialCategoryService.DeleteMaterialCategory(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

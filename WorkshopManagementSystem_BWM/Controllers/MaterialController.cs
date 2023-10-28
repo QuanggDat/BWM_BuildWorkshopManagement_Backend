@@ -43,7 +43,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]")]
         public IActionResult GetAllMaterialByCategoryId(Guid materialCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetAllMaterialByCategoryId(materialCategoryId, pageIndex, pageSize);
+            var result = _materialService.GetMaterialByMaterialCategoryId(materialCategoryId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -89,7 +89,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             if (model.materialCategoryId == Guid.Empty)
             {
-                ModelState.AddModelError(nameof(model.name),
+                ModelState.AddModelError(nameof(model.materialCategoryId),
                     $"Không nhận được {model.materialCategoryId}!");
             }
             if (string.IsNullOrWhiteSpace(model.name))
@@ -149,7 +149,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             if (model.materialCategoryId == Guid.Empty)
             {
-                ModelState.AddModelError(nameof(model.name),
+                ModelState.AddModelError(nameof(model.materialCategoryId),
                     $"Không nhận được {model.materialCategoryId}!");
             }
             if (string.IsNullOrWhiteSpace(model.name))

@@ -13,45 +13,31 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string fullName { get; set; } = null!;
-
         public string address { get; set; } = null!;
-
         public string UserName { get; set; } = null!;
-
         public string email { get; set; } = null!;
-
         public string? image { get; set; }
         public DateTime dob { get; set; }
         public Gender gender { get; set; }
-
         public Guid? roleId { get; set; }
         public Role? Role { get; set; }
-
         public Guid? groupId { get; set; }
         public Group Group { get; set; } = null!;
-
-
         public Guid? squadId { get; set; }
         public Squad Squad { get; set; } = null!;
-
         public bool banStatus { get; set; }    
     }
 
     public class UserCreateModel
     {
         public string phoneNumber { get; set; } = null!;
-        [Required]
-        public string password { get; set; } = null!;
-        [Required]
-        public string email { get; set; } = null!;
-        [Required]
+        public string password { get; set; } = null!;   
+        public string email { get; set; } = null!;     
         public string fullName { get; set; } = null!;
-        [Required]
         public string address { get; set; } = null!;
         public string? image { get; set; }
         public DateTime dob { get; set; }
         public Gender gender { get; set; } 
-
     }
     
     public class UserUpdateModel
@@ -93,7 +79,6 @@ namespace Data.Models
     public class LoginModel
     {
         public string phoneNumber { get; set; } = null!;
-
         public string password { get; set; } = null!;
 
     }
