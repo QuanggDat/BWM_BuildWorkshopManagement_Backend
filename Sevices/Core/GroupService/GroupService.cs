@@ -97,7 +97,7 @@ namespace Sevices.Core.HumanResourceService
 
                 if(model.listUserId.Any())
                 {
-                    var listUser = _dbContext.Users.Where(x => model.listUserId.Contains(x.Id)).ToList();
+                    var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
                     foreach (var user in listUser)
                     {
                         user.groupId = newGroup.id;
@@ -131,7 +131,7 @@ namespace Sevices.Core.HumanResourceService
 
                     if (model.listUserId.Any())
                     {
-                        var listUser = _dbContext.Users.Where(x => x.groupId == data.id).ToList();
+                        var listUser = _dbContext.User.Where(x => x.groupId == data.id).ToList();
                         foreach (var user in listUser)
                         {
                             if(model.listUserId.Contains(user.Id))
