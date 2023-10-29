@@ -9,7 +9,7 @@ namespace Sevices.Core.HumanResourceService
 {
     public interface IGroupService
     {
-        Task<ResultModel> CreateGroup(CreateGroupModel model);
+        ResultModel CreateGroup(CreateGroupModel model);
         ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize);
         ResultModel GetAllUserByGroupId(Guid id);
         ResultModel AddWorkerToGroup(AddWorkerToGroupModel model);

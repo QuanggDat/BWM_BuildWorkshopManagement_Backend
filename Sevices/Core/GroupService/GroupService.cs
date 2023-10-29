@@ -2,6 +2,7 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -80,21 +81,31 @@ namespace Sevices.Core.HumanResourceService
         }
 
         //Factory and Manager can both use this 
-        public async Task<ResultModel> CreateGroup(CreateGroupModel model)
+        public ResultModel CreateGroup(CreateGroupModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;
             try
             {
                 var newGroup = new Group
                 {
                     name = model.name,
-                    member = 0,
+                    member = model.listUserId.Count,
                     squadId = model.squadId,
                     isDeleted = false
                 };
                 _dbContext.Group.Add(newGroup);
-                await _dbContext.SaveChangesAsync();
+
+                if(model.listUserId.Any())
+                {
+                    var listUser = _dbContext.Users.Where(x => model.listUserId.Contains(x.Id)).ToList();
+                    foreach (var user in listUser)
+                    {
+                        user.groupId = newGroup.id;
+                    }
+                    _dbContext.User.UpdateRange(listUser);
+                }
+
+                _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = newGroup.id;
             }
@@ -107,8 +118,7 @@ namespace Sevices.Core.HumanResourceService
 
         public ResultModel UpdateGroup(UpdateGroupModel model)
         {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
+            var result = new ResultModel();
             try
             {
                 var data = _dbContext.Group.Where(s => s.id == model.id).FirstOrDefault();
@@ -116,6 +126,26 @@ namespace Sevices.Core.HumanResourceService
                 {
                     data.name = model.name;
                     data.squadId = model.squadId;
+                    data.member = model.listUserId.Count;
+                    _dbContext.Group.Update(data);
+
+                    if (model.listUserId.Any())
+                    {
+                        var listUser = _dbContext.Users.Where(x => x.groupId == data.id).ToList();
+                        foreach (var user in listUser)
+                        {
+                            if(model.listUserId.Contains(user.Id))
+                            {
+                                user.groupId = data.id;
+                            }
+                            else
+                            {
+                                user.groupId = null;
+                            }
+                        }
+                        _dbContext.User.UpdateRange(listUser);
+                    }
+
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<Group, GroupModel>(data);
@@ -145,7 +175,7 @@ namespace Sevices.Core.HumanResourceService
                 {
                     //Update GroupId
                     data.groupId = model.groupId;
-                    group.member+=1;
+                    group.member += 1;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<User, UserModel>(data);
@@ -174,7 +204,7 @@ namespace Sevices.Core.HumanResourceService
                 if (data != null && group != null)
                 {
                     //Update GroupId
-                    data.groupId = model.groupId;
+                    data.groupId = null;
                     group.member -= 1;
                     _dbContext.SaveChanges();
                     result.Succeed = true;

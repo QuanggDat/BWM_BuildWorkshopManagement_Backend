@@ -18,9 +18,8 @@ namespace Data.Models
     public class CreateGroupModel
     {
         public string name { get; set; }
-        public int member { get; set; } = 0;
         public Guid squadId { get; set; }
-        public bool isDeleted { get; set; } 
+        public List<Guid> listUserId { get; set; } = new();
     }
 
     public class UpdateGroupModel
@@ -28,6 +27,6 @@ namespace Data.Models
         public Guid id { get; set; }
         public string name { get; set; }
         public Guid squadId { get; set; }
-
+        public List<Guid> listUserId { get; set; } = new();
     }
 }
