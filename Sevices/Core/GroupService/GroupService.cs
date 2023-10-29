@@ -2,82 +2,56 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sevices.Core.HumanResourceService
+namespace Sevices.Core.GroupService
 {
     public class GroupService : IGroupService
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public GroupService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public GroupService(AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _configuration = configuration;
         }
 
         public ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize)
         {
-            ResultModel resultModel = new ResultModel();
+            var result = new ResultModel();
             try
             {
                 var data = _dbContext.Group.Where(g => g.squadId == id && g.isDeleted != true).OrderByDescending(g => g.name).ToList();
                 var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-                if (data != null)
+
+                result.Data = new PagingModel()
                 {
-                    resultModel.Data = new PagingModel()
-                    {
-                        Data = _mapper.Map<List<SquadModel>>(dataPaging),
-                        Total = data.Count
-                    };
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
+                    Data = _mapper.Map<List<SquadModel>>(dataPaging),
+                    Total = data.Count
+                };
+                result.Succeed = true;
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }
 
         public ResultModel GetAllUserByGroupId(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(s => s.groupId == id && s.banStatus != true);
-                if (data != null)
-                {
-
-                    var view = _mapper.ProjectTo<UserModel>(data).OrderByDescending(s => s.fullName).ToList();
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "Group" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
+                var listUser = _dbContext.User.Where(s => s.groupId == id && s.banStatus != true).OrderByDescending(s => s.fullName).ToList();
+                result.Data = _mapper.Map<List<UserModel>>(listUser);
+                result.Succeed = true;
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }
 
         //Factory and Manager can both use this 
@@ -95,7 +69,7 @@ namespace Sevices.Core.HumanResourceService
                 };
                 _dbContext.Group.Add(newGroup);
 
-                if(model.listUserId.Any())
+                if (model.listUserId.Any())
                 {
                     var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
                     foreach (var user in listUser)
@@ -106,8 +80,8 @@ namespace Sevices.Core.HumanResourceService
                 }
 
                 _dbContext.SaveChanges();
-                result.Succeed = true;
                 result.Data = newGroup.id;
+                result.Succeed = true;
             }
             catch (Exception ex)
             {
@@ -121,7 +95,7 @@ namespace Sevices.Core.HumanResourceService
             var result = new ResultModel();
             try
             {
-                var data = _dbContext.Group.Where(s => s.id == model.id).FirstOrDefault();
+                var data = _dbContext.Group.FirstOrDefault(s => s.id == model.id);
                 if (data != null)
                 {
                     data.name = model.name;
@@ -134,7 +108,7 @@ namespace Sevices.Core.HumanResourceService
                         var listUser = _dbContext.User.Where(x => x.groupId == data.id).ToList();
                         foreach (var user in listUser)
                         {
-                            if(model.listUserId.Contains(user.Id))
+                            if (model.listUserId.Contains(user.Id))
                             {
                                 user.groupId = data.id;
                             }
@@ -147,12 +121,12 @@ namespace Sevices.Core.HumanResourceService
                     }
 
                     _dbContext.SaveChanges();
+                    result.Data = _mapper.Map<GroupModel>(data);
                     result.Succeed = true;
-                    result.Data = _mapper.Map<Group, GroupModel>(data);
                 }
                 else
                 {
-                    result.ErrorMessage = "Group" + ErrorMessage.ID_NOT_EXISTED;
+                    result.ErrorMessage = "Không tìm thấy nhóm";
                     result.Succeed = false;
                 }
             }
@@ -166,25 +140,34 @@ namespace Sevices.Core.HumanResourceService
         //Need check again not complete. Fac and Manager can both use this function.
         public ResultModel AddWorkerToGroup(AddWorkerToGroupModel model)
         {
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                var group = _dbContext.Group.SingleOrDefault(g => g.id == model.groupId);
-                if (data != null && group != null)
+                var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
                 {
-                    //Update GroupId
-                    data.groupId = model.groupId;
-                    group.member += 1;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                    result.Data = _mapper.Map<Group, GroupModel>(group);
+                    result.ErrorMessage = "Không tìm thấy người dùng";
                 }
                 else
                 {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
+                    var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
+                    if (group == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy nhóm";
+                    }
+                    else
+                    {
+                        //Update GroupId
+                        user.groupId = model.groupId;
+                        _dbContext.User.Update(user);
+
+                        group.member += 1;
+                        _dbContext.Group.Update(group);
+
+                        _dbContext.SaveChanges();
+                        result.Data = _mapper.Map<GroupModel>(group);
+                        result.Succeed = true;
+                    }
                 }
             }
             catch (Exception e)
@@ -196,25 +179,34 @@ namespace Sevices.Core.HumanResourceService
 
         public ResultModel RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                var group = _dbContext.Group.SingleOrDefault(g => g.id == model.groupId);
-                if (data != null && group != null)
+                var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
                 {
-                    //Update GroupId
-                    data.groupId = null;
-                    group.member -= 1;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                    result.Data = _mapper.Map<Group, GroupModel>(group);
+                    result.ErrorMessage = "Không tìm thấy người dùng";
                 }
                 else
                 {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
+                    var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
+                    if (group == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy nhóm";
+                    }
+                    else
+                    {
+                        //Update GroupId
+                        user.groupId = null;
+                        _dbContext.User.Update(user);
+
+                        group.member -= 1;
+                        _dbContext.Group.Update(group);
+
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = _mapper.Map<GroupModel>(group);
+                    }
                 }
             }
             catch (Exception e)
@@ -227,29 +219,29 @@ namespace Sevices.Core.HumanResourceService
         //Not sure about this yet
         public ResultModel DeleteGroup(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.Group.Where(s => s.id == id).FirstOrDefault();
+                var data = _dbContext.Group.FirstOrDefault(s => s.id == id);
                 if (data != null)
                 {
                     data.isDeleted = true;
+                    _dbContext.Group.Update(data);
                     _dbContext.SaveChanges();
-                    var view = _mapper.Map<Group, GroupModel>(data);
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
+
+                    result.Data = _mapper.Map<GroupModel>(data);
+                    result.Succeed = true;
                 }
                 else
                 {
-                    resultModel.ErrorMessage = "Group" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy nhóm";
                 }
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using Data.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sevices.Core.HumanResourceService;
-using Sevices.Core.SquadService;
-using Sevices.Core.UserService;
+using Sevices.Core.GroupService;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -12,18 +9,16 @@ namespace WorkshopManagementSystem_BWM.Controllers
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;
-        private readonly IUserService _userService;
 
-        public GroupController(IGroupService groupService, IUserService userService)
+        public GroupController(IGroupService groupService)
         {
             _groupService = groupService;
-            _userService = userService;
         }
 
         [HttpPost("CreateGroup")]
-        public async Task<ActionResult> CreateGroup(CreateGroupModel model)
+        public IActionResult CreateGroup(CreateGroupModel model)
         {
-            var result = await _groupService.CreateGroup(model);
+            var result = _groupService.CreateGroup(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

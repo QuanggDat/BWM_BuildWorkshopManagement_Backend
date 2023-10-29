@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sevices.Core.CategoryService;
-using Sevices.Core.HumanResourceService;
+using Sevices.Core.GroupService;
 using Sevices.Core.ItemService;
 using Sevices.Core.ManagerTaskService;
 using Sevices.Core.MaterialService;

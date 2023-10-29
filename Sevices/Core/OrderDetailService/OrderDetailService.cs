@@ -1,16 +1,7 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
-using Data.Entities;
-using Data.Enums;
 using Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sevices.Core.OrderDetailService
 {
