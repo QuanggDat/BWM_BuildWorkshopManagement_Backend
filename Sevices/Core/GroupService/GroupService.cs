@@ -222,19 +222,27 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var data = _dbContext.Group.FirstOrDefault(s => s.id == id);
-                if (data != null)
+                var listUser = _dbContext.User.Where(x => x.groupId == id).ToList();
+                if (listUser.Any())
                 {
-                    data.isDeleted = true;
-                    _dbContext.Group.Update(data);
-                    _dbContext.SaveChanges();
-
-                    result.Data = _mapper.Map<GroupModel>(data);
-                    result.Succeed = true;
+                    result.ErrorMessage = "Vui lòng xoá hết thành viên trước khi xoá nhóm";
                 }
                 else
                 {
-                    result.ErrorMessage = "Không tìm thấy nhóm";
+                    var group = _dbContext.Group.FirstOrDefault(s => s.id == id);
+                    if (group != null)
+                    {
+                        group.isDeleted = true;
+                        _dbContext.Group.Update(group);
+                        _dbContext.SaveChanges();
+
+                        result.Data = _mapper.Map<GroupModel>(group);
+                        result.Succeed = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Không tìm thấy nhóm";
+                    }
                 }
             }
             catch (Exception ex)
