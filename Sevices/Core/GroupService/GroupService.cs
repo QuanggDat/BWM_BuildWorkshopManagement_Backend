@@ -21,7 +21,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var data = _dbContext.Group.Where(g => g.squadId == id && g.isDeleted != true).OrderByDescending(g => g.name).ToList();
+                var data = _dbContext.Group.Where(g => g.squadId == id && !g.isDeleted).OrderByDescending(g => g.name).ToList();
                 var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 result.Data = new PagingModel()
@@ -43,7 +43,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(s => s.groupId == id && s.banStatus != true).OrderByDescending(s => s.fullName).ToList();
+                var listUser = _dbContext.User.Where(s => s.groupId == id && !s.banStatus).OrderByDescending(s => s.fullName).ToList();
                 result.Data = _mapper.Map<List<UserModel>>(listUser);
                 result.Succeed = true;
             }
@@ -103,22 +103,19 @@ namespace Sevices.Core.GroupService
                     data.member = model.listUserId.Count;
                     _dbContext.Group.Update(data);
 
-                    if (model.listUserId.Any())
+                    var listUser = _dbContext.User.Where(x => x.groupId == data.id).ToList();
+                    foreach (var user in listUser)
                     {
-                        var listUser = _dbContext.User.Where(x => x.groupId == data.id).ToList();
-                        foreach (var user in listUser)
+                        if (model.listUserId.Contains(user.Id))
                         {
-                            if (model.listUserId.Contains(user.Id))
-                            {
-                                user.groupId = data.id;
-                            }
-                            else
-                            {
-                                user.groupId = null;
-                            }
+                            user.groupId = data.id;
                         }
-                        _dbContext.User.UpdateRange(listUser);
+                        else
+                        {
+                            user.groupId = null;
+                        }
                     }
+                    _dbContext.User.UpdateRange(listUser);
 
                     _dbContext.SaveChanges();
                     result.Data = _mapper.Map<GroupModel>(data);
@@ -222,10 +219,10 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(x => x.groupId == id).ToList();
-                if (listUser.Any())
+                var isExistedUser = _dbContext.User.Any(x => x.groupId == id);
+                if (isExistedUser)
                 {
-                    result.ErrorMessage = "Vui lòng xoá hết thành viên trước khi xoá nhóm";
+                    result.ErrorMessage = "Hãy xoá hết thành viên trước khi xoá nhóm";
                 }
                 else
                 {

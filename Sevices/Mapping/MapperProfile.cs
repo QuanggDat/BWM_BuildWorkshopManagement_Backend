@@ -14,8 +14,8 @@ namespace Sevices.Mapping
         public MapperProfile()
         {
             //User
-            CreateMap<UserCreateModel, User>();
-            CreateMap<User, UserModel>();
+            CreateMap<UserCreateModel, User>().ReverseMap();
+            CreateMap<User, UserModel>().ReverseMap();
 
             //Item
             CreateMap<Item, ItemModel>();
@@ -34,8 +34,8 @@ namespace Sevices.Mapping
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
 
             //HumanResources
-            CreateMap<Squad, SquadModel>();
-            CreateMap<Group, GroupModel>();
+            CreateMap<Squad, SquadModel>().ReverseMap();
+            CreateMap<Group, GroupModel>().ReverseMap();
 
             // Notification
             CreateMap<Notification, NotificationModel>().ReverseMap();
