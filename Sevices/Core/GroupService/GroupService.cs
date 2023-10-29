@@ -103,7 +103,7 @@ namespace Sevices.Core.GroupService
                     data.member = model.listUserId.Count;
                     _dbContext.Group.Update(data);
 
-                    var listUser = _dbContext.User.Where(x => x.groupId == data.id).ToList();
+                    var listUser = _dbContext.User.Where(x => x.groupId == data.id || model.listUserId.Contains(x.Id)).ToList();
                     foreach (var user in listUser)
                     {
                         if (model.listUserId.Contains(user.Id))
