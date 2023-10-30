@@ -1,9 +1,6 @@
 ﻿using Data.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sevices.Core.HumanResourceService;
 using Sevices.Core.SquadService;
-using Sevices.Core.UserService;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -12,26 +9,24 @@ namespace WorkshopManagementSystem_BWM.Controllers
     public class SquadController : Controller
     {
         private readonly ISquadService _squadService;
-        private readonly IUserService _userService;
 
-        public SquadController(ISquadService squadService, IUserService userService)
+        public SquadController(ISquadService squadService)
         {
             _squadService = squadService;
-            _userService = userService;
         }
 
         [HttpPost("CreateSquad")]
-        public async Task<ActionResult> CreateSquad(CreateSquadModel model)
+        public IActionResult CreateSquad(CreateSquadModel model)
         {
-            var result = await _squadService.CreateSquad(model);
+            var result = _squadService.CreateSquad(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpPut("UpdateSquad")]
-        public async Task<IActionResult> UpdateSquad(UpdateSquadModel model)
+        public IActionResult UpdateSquad(UpdateSquadModel model)
         {
-            var result = await _squadService.UpdateSquad(model);
+            var result = _squadService.UpdateSquad(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -55,7 +50,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("RemoveWorkerFromSquad")]
         public IActionResult RemoveWorkerFromSquad(RemoveWorkerFromSquadModel model)
         {
-            var result = _squadService.RemoveWorkerFromSquad(model);
+            var result = _squadService.RemoveUserFromSquad(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -72,6 +67,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult GetAllUserBySquadId(Guid id)
         {
             var result = _squadService.GetAllUserBySquadId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllUserNotInSquadId(Guid id)
+        {
+            var result = _squadService.GetAllUserNotInSquadId(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

@@ -4,11 +4,6 @@ using Data.Entities;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sevices.Core.SquadService
 {
@@ -16,23 +11,21 @@ namespace Sevices.Core.SquadService
     {
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public SquadService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public SquadService(AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _configuration = configuration;
         }
 
         //For factory role to see all squad in the factory.
         public ResultModel GetAllSquad(int pageIndex, int pageSize)
         {
 
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.Squad.Where(s => s.isDeleted != true).OrderByDescending(i => i.name).ToList();
+                var data = _dbContext.Squad.Where(x => !x.isDeleted).OrderByDescending(i => i.name).ToList();
                 var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 result.Data = new PagingModel()
                 {
@@ -50,55 +43,79 @@ namespace Sevices.Core.SquadService
 
         public ResultModel GetAllUserBySquadId(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(s => s.squadId == id && s.banStatus != true);
-                if (data != null)
-                {
-
-                    var view = _mapper.ProjectTo<UserModel>(data).OrderByDescending(s => s.fullName).ToList();
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
-                }
-                else
-                {
-                    resultModel.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
-                }
+                var listUser = _dbContext.User.Where(x => x.squadId == id && !x.banStatus).OrderByDescending(s => s.fullName).ToList();
+                result.Data = _mapper.Map<List<UserModel>>(listUser);
+                result.Succeed = true;
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
+        }
+
+        public ResultModel GetAllUserNotInSquadId(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Where(x => x.squadId != id && !x.banStatus).OrderByDescending(s => s.fullName).ToList();
+                result.Data = _mapper.Map<List<UserModel>>(listUser);
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
         }
 
         //Factory will create new squad 
-        public async Task<ResultModel> CreateSquad(CreateSquadModel model)
+        public ResultModel CreateSquad(CreateSquadModel model)
         {
             var result = new ResultModel();
-            result.Succeed = false;
             try
             {
-                var nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
+                var nameExists = _dbContext.Squad.Any(s => s.name == model.name && !s.isDeleted);
                 if (nameExists)
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Tổ tên này đã tồn tại.";
+                    result.ErrorMessage = "Tên tổ đã tồn tại!";
                 }
                 else
                 {
-                    var newSquad = new Squad
+                    var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
+                    var listUserInGroup = listUser.Where(x => x.groupId != null).ToList();
+                    if (listUserInGroup.Any())
                     {
-                        name = model.name,
-                        member = 0,
-                        isDeleted = false
-                    };
-                    _dbContext.Squad.Add(newSquad);
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = newSquad.id;
+                        var listName = listUserInGroup.Select(x => x.fullName).ToList();
+                        result.ErrorMessage = $"Hãy xoá người dùng khỏi nhóm trước khi thêm vào tổ mới: {string.Join(", ", listName)}";
+                    }
+                    else
+                    {
+                        var newSquad = new Squad
+                        {
+                            name = model.name,
+                            member = model.listUserId.Count,
+                            isDeleted = false
+                        };
+                        _dbContext.Squad.Add(newSquad);
+
+                        if (listUser.Any())
+                        {
+                            foreach (var user in listUser)
+                            {
+                                user.squadId = newSquad.id;
+                            }
+                            _dbContext.User.UpdateRange(listUser);
+                        }
+
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = newSquad.id;
+                    }
                 }
             }
             catch (Exception ex)
@@ -108,14 +125,12 @@ namespace Sevices.Core.SquadService
             return result;
         }
 
-        public async Task<ResultModel> UpdateSquad(UpdateSquadModel model)
+        public ResultModel UpdateSquad(UpdateSquadModel model)
         {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.Squad.Where(s => s.id == model.id).FirstOrDefault();
-                bool nameExists = await _dbContext.Squad.AnyAsync(s => s.name == model.name && !s.isDeleted);
+                bool nameExists = _dbContext.Squad.Any(s => s.name == model.name && !s.isDeleted);
                 if (nameExists)
                 {
                     result.Succeed = false;
@@ -123,18 +138,50 @@ namespace Sevices.Core.SquadService
                 }
                 else
                 {
-                    if (data != null)
+                    var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
+                    var listUserInGroup = listUser.Where(x => x.squadId != model.id && x.groupId != null).ToList();
+                    if (listUserInGroup.Any())
                     {
-                        data.name = model.name;
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = _mapper.Map<Squad, SquadModel>(data);
+                        var listName = listUserInGroup.Select(x => x.fullName).ToList();
+                        result.ErrorMessage = $"Hãy xoá người dùng khỏi nhóm trước khi thay đổi tổ: {string.Join(", ", listName)}";
                     }
                     else
                     {
-                        result.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
-                        result.Succeed = false;
+                        var data = _dbContext.Squad.FirstOrDefault(s => s.id == model.id);
+                        if (data != null)
+                        {
+                            data.name = model.name;
+                            data.member = model.listUserId.Count;
+                            _dbContext.Squad.Update(data);
+
+                            var listUserBySquad = _dbContext.User.Where(x => x.squadId == data.id).ToList();
+                            if(listUser.Any())
+                            {
+                                listUserBySquad.AddRange(listUser);
+                            }
+                            foreach (var user in listUserBySquad)
+                            {
+                                if (model.listUserId.Contains(user.Id))
+                                {
+                                    user.squadId = data.id;
+                                }
+                                else
+                                {
+                                    user.squadId = null;
+                                }
+                            }
+                            _dbContext.User.UpdateRange(listUser);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<Squad, SquadModel>(data);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                        }
                     }
+
                 }
             }
             catch (Exception e)
@@ -146,33 +193,45 @@ namespace Sevices.Core.SquadService
 
         public ResultModel AddManagerToSquad(AddWorkerToSquadModel model)
         {
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Include(r => r.Role).Where(i => i.Id == model.id).FirstOrDefault();
-                var squad = _dbContext.Squad.SingleOrDefault(g => g.id == model.squadId);
-                if (data != null && squad != null)
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
                 {
-                    if (data.Role != null && data.Role.Name == "Manager")
-                    {
-                        //Update GroupId
-                        data.squadId = model.squadId;
-                        squad.member += 1;
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = _mapper.Map<User, UserModel>(data);
-                        result.Data = _mapper.Map<Squad, SquadModel>(squad);
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "User does not has valid Role!!!!";
-                        result.Succeed = false;
-                    }
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.squadId != model.squadId && user.groupId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
                 {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
+                    var squad = _dbContext.Squad.FirstOrDefault(g => g.id == model.squadId);
+                    if (squad == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
+                    else
+                    {
+                        if (user.Role != null && user.Role.Name == "Manager")
+                        {
+                            //Update GroupId
+                            user.squadId = model.squadId;
+                            _dbContext.User.Update(user);
+
+                            squad.member += 1;
+                            _dbContext.Squad.Update(squad);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<SquadModel>(squad);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Người dùng không phải quản lý!";
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -185,25 +244,45 @@ namespace Sevices.Core.SquadService
         //Fac and Manager can both use this function.
         public ResultModel AddWorkerToSquad(AddWorkerToSquadModel model)
         {
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                var squad = _dbContext.Squad.SingleOrDefault(g => g.id == model.squadId);
-                if (data != null && squad != null)
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
                 {
-                    //Update GroupId
-                    data.squadId = model.squadId;
-                    squad.member += 1;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                    result.Data = _mapper.Map<Squad, SquadModel>(squad);
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.squadId != model.squadId && user.groupId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
                 {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
+                    var squad = _dbContext.Squad.FirstOrDefault(g => g.id == model.squadId);
+                    if (squad == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
+                    else
+                    {
+                        if (user.Role != null && user.Role.Name == "Worker")
+                        {
+                            //Update GroupId
+                            user.squadId = model.squadId;
+                            _dbContext.User.Update(user);
+
+                            squad.member += 1;
+                            _dbContext.Squad.Update(squad);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<SquadModel>(squad);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Người dùng không phải công nhân!";
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -213,27 +292,40 @@ namespace Sevices.Core.SquadService
             return result;
         }
 
-        public ResultModel RemoveWorkerFromSquad(RemoveWorkerFromSquadModel model)
+        public ResultModel RemoveUserFromSquad(RemoveWorkerFromSquadModel model)
         {
-            ResultModel result = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(i => i.Id == model.id).FirstOrDefault();
-                var squad = _dbContext.Squad.SingleOrDefault(g => g.id == model.squadId);
-                if (data != null && squad != null)
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
                 {
-                    //Update GroupId
-                    data.squadId = null;
-                    squad.member -= 1;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<User, UserModel>(data);
-                    result.Data = _mapper.Map<Squad, SquadModel>(squad);
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.squadId != model.squadId && user.groupId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
                 {
-                    result.ErrorMessage = "User" + ErrorMessage.ID_NOT_EXISTED;
-                    result.Succeed = false;
+                    var squad = _dbContext.Squad.FirstOrDefault(g => g.id == model.squadId);
+                    if (squad == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
+                    else
+                    {
+                        //Update GroupId
+                        user.squadId = null;
+                        _dbContext.User.Update(user);
+
+                        squad.member -= 1;
+                        _dbContext.Squad.Update(squad);
+
+                        _dbContext.SaveChanges();
+                        result.Data = _mapper.Map<SquadModel>(squad);
+                        result.Succeed = true;
+                    }
                 }
             }
             catch (Exception e)
@@ -246,29 +338,37 @@ namespace Sevices.Core.SquadService
         //Not sure about this yet
         public ResultModel DeleteSquad(Guid id)
         {
-            ResultModel resultModel = new ResultModel();
+            var result = new ResultModel();
             try
             {
-                var data = _dbContext.Squad.Where(s => s.id == id).FirstOrDefault();
-                if (data != null)
+                var isExistedGroup = _dbContext.Group.Any(x => x.squadId == id);
+                if (isExistedGroup)
                 {
-                    data.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    var view = _mapper.Map<Squad, SquadModel>(data);
-                    resultModel.Data = view!;
-                    resultModel.Succeed = true;
+                    result.ErrorMessage = "Hãy xoá hết nhóm trước khi xoá tổ";
                 }
                 else
                 {
-                    resultModel.ErrorMessage = "Squad" + ErrorMessage.ID_NOT_EXISTED;
-                    resultModel.Succeed = false;
+                    var squad = _dbContext.Squad.Where(s => s.id == id).FirstOrDefault();
+                    if (squad != null)
+                    {
+                        squad.isDeleted = true;
+                        _dbContext.Squad.Update(squad);
+                        _dbContext.SaveChanges();
+                        result.Data = _mapper.Map<SquadModel>(squad);
+                        result.Succeed = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
                 }
+
             }
             catch (Exception ex)
             {
-                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
-            return resultModel;
+            return result;
         }
     }
 }

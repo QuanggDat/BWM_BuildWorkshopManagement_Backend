@@ -17,14 +17,14 @@ namespace Data.Models
     public class CreateSquadModel
     {
         public string name { get; set; }
-        public int member { get; set; } = 1;
-        public bool isDeleted { get; set; } = false;
+        public List<Guid> listUserId { get; set; } = new();
     }
 
     public class UpdateSquadModel
     {
         public Guid id { get; set; }
         public string name { get; set; }
+        public List<Guid> listUserId { get; set; } = new();
     }
 
     public class DeleteSquadModel
