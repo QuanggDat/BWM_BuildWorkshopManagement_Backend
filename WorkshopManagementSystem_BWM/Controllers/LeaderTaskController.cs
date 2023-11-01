@@ -2,88 +2,88 @@
 using Data.Models;
 using WorkshopManagementSystem_BWM.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Sevices.Core.ManagerTaskService;
 using System.Data.Common;
+using Sevices.Core.LeaderTaskService;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ManagerTaskController : Controller
+    public class LeaderTaskController : Controller
     {
-        private readonly IManagerTaskService _managerTaskService;
+        private readonly ILeaderTaskService _leaderTaskService;
 
-        public ManagerTaskController(IManagerTaskService managerTaskService)
+        public LeaderTaskController(ILeaderTaskService leaderTaskService)
         {
-            _managerTaskService = managerTaskService;
+            _leaderTaskService = leaderTaskService;
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateManagerTask(CreateManagerTaskModel model)
+        public async Task<ActionResult> CreateLeaderTask(CreateLeaderTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
-            var result = await _managerTaskService.CreatedManagerTask(userId, model);
+            var result = await _leaderTaskService.CreatedLeaderTask(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
         
         [HttpGet("[action]/{orderId}")]
-        public async Task<ActionResult> GetManagerTaskByOrderId(Guid orderId)
+        public async Task<ActionResult> GetLeaderTaskByOrderId(Guid orderId)
         {
-            var result = await _managerTaskService.GetManagerTaskByOrderId(orderId);
+            var result = await _leaderTaskService.GetLeaderTaskByOrderId(orderId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetManagerTaskByManagerId()
+        public async Task<ActionResult> GetLeaderTaskByLeaderId()
         {
             var userId = User.GetId();         
-            var result = await _managerTaskService.GetManagerTaskByManagerId(userId);
+            var result = await _leaderTaskService.GetLeaderTaskByLeaderId(userId);
             if (result == null) return BadRequest("Không tìm thấy công việc");
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetManagerTaskByFactory()
+        public async Task<ActionResult> GetLeaderTaskByForemanId()
         {
             var userId = User.GetId();
-            var result = await _managerTaskService.GetManagerTaskByFactory(userId);
+            var result = await _leaderTaskService.GetLeaderTaskByForemanId(userId);
             if (result == null) return BadRequest("Không tìm thấy công việc");
             return Ok(result);
         }        
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> UpdateManagerTask(UpdateManagerTaskModel model)
+        public async Task<ActionResult> UpdateLeaderTask(UpdateLeaderTaskModel model)
         {            
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
-            var result = await _managerTaskService.UpdateManagerTask(model);
+            var result = await _leaderTaskService.UpdateLeaderTask(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("[action]/{managerTaskId}")]
-        public async Task<ActionResult> UpdateTaskStatus(Guid managerTaskId, TaskStatus status)
+        [HttpPut("[action]/{leaderTaskId}")]
+        public async Task<ActionResult> UpdateTaskStatus(Guid leaderTaskId, TaskStatus status)
         {
-            var result = await _managerTaskService.UpdateManagerTaskStatus(managerTaskId, status);
+            var result = await _leaderTaskService.UpdateLeaderTaskStatus(leaderTaskId, status);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpDelete("[action]/{managerTaskId}")]
-        public async Task<ActionResult> DeleteTask(Guid managerTaskId)
+        [HttpDelete("[action]/{leaderTaskId}")]
+        public async Task<ActionResult> DeleteTask(Guid leaderTaskId)
         {
-            var result = await _managerTaskService.DeleteManagerTask(managerTaskId);
+            var result = await _leaderTaskService.DeleteLeaderTask(leaderTaskId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("[action]/{managerTaskId}/{groupId}")]
-        public async Task<ActionResult> AssignManagerTask(Guid managerTaskId, Guid groupId)
+        [HttpPut("[action]/{leaderTaskId}/{groupId}")]
+        public async Task<ActionResult> AssignLeaderTask(Guid leaderTaskId, Guid groupId)
         {
-            var result = await _managerTaskService.AssignManagerTask(managerTaskId, groupId);
+            var result = await _leaderTaskService.AssignLeaderTask(leaderTaskId, groupId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }       

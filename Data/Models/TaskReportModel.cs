@@ -10,7 +10,7 @@ namespace Data.Models
 {
     public class CreateTaskReportModel
     {
-        public Guid? managerTaskId { get; set; }
+        public Guid? leaderTaskId { get; set; }
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
@@ -22,7 +22,7 @@ namespace Data.Models
 
     public class UpdateTaskReportModel
     {
-        public Guid? managerTaskId { get; set; }
+        public Guid? leaderTaskId { get; set; }
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
@@ -33,9 +33,9 @@ namespace Data.Models
     public class TaskReportModel
     {
         public Guid id { get; set; }
-        public Guid? managerTaskId { get; set; }
+        public Guid? leaderTaskId { get; set; }
         public string orderName { get; set; } = null!;
-        public string managerTaskName { get; set; } = null!;
+        public string leaderTaskName { get; set; } = null!;
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;

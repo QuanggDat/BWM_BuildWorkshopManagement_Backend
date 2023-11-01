@@ -13,6 +13,6 @@ namespace Sevices.Core.OrderReportService
         Task<ResultModel> CreateOrderReport(Guid reporterId, CreateOrderReportModel model);
         Task<OrderReportModel?> GetOrderReportById(Guid reportId);
         Task<ResultModel> ReviewsOrderReport(ReviewsOrderReportModel model);
-        Task<List<OrderReportModel>> GetOrderReportsByFactoryId(Guid managerId);    
+        Task<List<OrderReportModel>> GetOrderReportsByForemanId(Guid foremanId);    
     }
 }

@@ -8,7 +8,7 @@ namespace Data.Models
 {
     public class CreateWorkerTaskModel
     {
-        public Guid managerTaskId { get; set; }
+        public Guid leaderTaskId { get; set; }
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
@@ -44,7 +44,7 @@ namespace Data.Models
         public Guid workerTaskId { get; set; }
         public Guid? userId { get; set; }
         public string userFullName { get; set; } = null!;
-        public Guid managerTaskId { get; set; }
+        public Guid leaderTaskId { get; set; }
         public string name { get; set; } = null!;
         public string description { get; set; } = null!;
         public DateTime? startTime { get; set; }

@@ -9,7 +9,7 @@ namespace Sevices.Core.MaterialService
 {
     public interface IMaterialService
     {
-        ResultModel CreateMaterial(Guid createdById,CreateMaterialModel model);
+        ResultModel CreateMaterial(CreateMaterialModel model);
         ResultModel UpdateMaterial(UpdateMaterialModel model);
         ResultModel DeleteMaterial(Guid id);
         ResultModel GetMaterialById(Guid id);

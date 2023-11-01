@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Data.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.GroupService;
 
@@ -31,6 +32,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPut("AddLeaderToGroup")]
+        public IActionResult AddLeaderToGroup(AddWorkerToGroupModel model)
+        {
+            var result = _groupService.AddLeaderToGroup(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut("AddWorkerToGroup")]
         public IActionResult AddWorkerToGroup(AddWorkerToGroupModel model)
         {
@@ -42,12 +51,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("RemoveWorkerFromGroup")]
         public IActionResult RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
-            var result = _groupService.RemoveWorkerFromGroup(model);
+            var result = _groupService.RemoveUserFromGroup(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("[action]/{id}")]
+        [HttpDelete("[action]/{id}")]
         public IActionResult DeleteGroup(Guid id)
         {
             var result = _groupService.DeleteGroup(id);
@@ -62,5 +71,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllUserNotInGroupId(Guid id)
+        {
+            var result = _groupService.GetAllUserNotInGroupId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetAllGroup(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
     }
 }

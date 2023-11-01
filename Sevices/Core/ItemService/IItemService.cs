@@ -9,7 +9,7 @@ namespace Sevices.Core.ItemService
 {
     public interface IItemService
     {
-        Task<ResultModel> CreateItem(Guid createById, CreateItemModel model);
+        Task<ResultModel> CreateItem(CreateItemModel model);
         Task<ResultModel> UpdateItem(UpdateItemModel model);
         Task<ResultModel> DeleteItem(Guid id);
         Task<ResultModel> GetAllItem(string? search, int pageIndex, int pageSize);

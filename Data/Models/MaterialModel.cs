@@ -24,8 +24,6 @@ namespace Data.Models
         public double totalPrice { get; set; }
         public Guid materialCategoryId { get; set; }
         public string materialCategoryName { get; set; } = null!;
-        public Guid? createById { get; set; }
-        public string createByName { get; set; } = null!;
     }
 
     public class CreateMaterialModel

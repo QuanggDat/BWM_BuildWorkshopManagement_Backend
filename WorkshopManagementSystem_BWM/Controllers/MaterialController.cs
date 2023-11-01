@@ -26,8 +26,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var createdById = User.GetId();
-            var result =  _materialService.CreateMaterial(createdById, model);
+            var result =  _materialService.CreateMaterial(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

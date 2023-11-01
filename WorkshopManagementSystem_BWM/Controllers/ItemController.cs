@@ -26,8 +26,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var createdById = User.GetId();
-            var result = await _itemService.CreateItem(createdById, model);
+            
+            var result = await _itemService.CreateItem(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

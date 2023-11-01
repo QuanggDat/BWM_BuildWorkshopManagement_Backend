@@ -9,26 +9,18 @@ namespace Data.Models
 {
     public class ItemCategoryModel
     {
-        public Guid id { get; set; }
-        public string name { get; set; }
-        public bool isDeleted { get; set; } 
+        public Guid id { get; set; }      
+        public string name { get; set; } = null!;
     }
 
     public class CreateItemCategoryModel
     {
-        [Required] public string name { get; set; }
-        public bool isDeleted { get; set; } = false;
+        public string name { get; set; } = null!;
     }
 
     public class UpdateItemCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; }
-    }
-
-    public class DeleteItemCategoryModel
-    {
-        public Guid id { get; set;}
-        public bool isDeleted { get; set; } = true;
+        public string name { get; set; } = null!;
     }
 }

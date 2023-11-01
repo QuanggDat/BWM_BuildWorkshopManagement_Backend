@@ -17,9 +17,9 @@ namespace Data.Entities
         public Guid? createById { get; set; }
         public virtual User CreateBy { get; set; } = null!;
 
-        [ForeignKey("managerTaskId")]
-        public Guid managerTaskId { get; set; }
-        public ManagerTask ManagerTask { get; set; } = null!;
+        [ForeignKey("leaderTaskId")]
+        public Guid leaderTaskId { get; set; }
+        public LeaderTask LeaderTask { get; set; } = null!;
 
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }

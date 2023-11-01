@@ -22,8 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
         {
-            var createdById = User.GetId();
-            var result = _materialCategoryService.CreateMaterialCategory(createdById,model);
+            var result = _materialCategoryService.CreateMaterialCategory(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }      

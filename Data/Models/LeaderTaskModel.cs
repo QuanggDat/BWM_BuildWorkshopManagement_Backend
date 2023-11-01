@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class CreateManagerTaskModel
+    public class CreateLeaderTaskModel
     {
-        public Guid managerId { get; set; }
+        public Guid leaderId { get; set; }
         public Guid orderId { get; set; }
         public Guid procedureId { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public string description { get; set; } = null!;        
     }
-    public class ManagerTaskModel
+    public class LeaderTaskModel
     {
-        public Guid managerId { get; set; }
-        public string managerName { get; set; } = null!;
+        public Guid leaderId { get; set; }
+        public string leaderName { get; set; } = null!;
         public Guid orderId { get; set; }
         public string orderName { get; set; } = null!;    
         public Guid? createdById { get; set; } = null!;
@@ -32,7 +32,7 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
     }
-    public class UpdateManagerTaskModel
+    public class UpdateLeaderTaskModel
     {
         public Guid id { get; set; }
         public DateTime startTime { get; set; }
@@ -41,10 +41,10 @@ namespace Data.Models
         public string description { get; set; } = null!;
         
     }
-    public class AssignManagerTaskModel
+    public class AssignLeaderTaskModel
     {
-        public Guid groupId { get; set; }
-        public Guid taskManagerId { get; set; }
+        public Guid teamId { get; set; }
+        public Guid leaderTaskId { get; set; }
     }
 
 }

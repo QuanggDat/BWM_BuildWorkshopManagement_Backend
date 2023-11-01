@@ -33,65 +33,78 @@ namespace Sevices.Core.ItemService
             _configuration = configuration;
         }
 
-        public async Task<ResultModel> CreateItem(Guid createById, CreateItemModel model)
+        public async Task<ResultModel> CreateItem(CreateItemModel model)
         {
-            if (string.IsNullOrEmpty(model.image))
-            {
-                model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-            }
-
             var result = new ResultModel();
             result.Succeed = false;
-            var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
-            var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
-            var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
-
-            //Create Item
-            var item = new Item
-            {
-                createById = createById,
-                name = model.name,
-                code = randomCode,
-                image = model.image,
-                length = model.length,
-                depth = model.depth,
-                height = model.height,
-                unit = model.unit,
-                mass = model.mass,
-                drawingsTechnical = model.drawingsTechnical,
-                drawings2D = model.drawings2D,
-                drawings3D = model.drawings3D,
-                description = model.description,
-                price = model.price,
-                isDeleted = false
-            };
-
             try
-            {      
-                _dbContext.Item.Add(item);
-
-                foreach (var procedure in model.procedures)
+            {
+                var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
+                if (checkCategory == null)
                 {
-                    await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
+
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(model.image))
                     {
-                        itemId = item.id,
-                        procedureId = procedure
-                    });
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                    }
+
+                    var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
+                    var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+                    var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
+
+                    //Create Item
+                    var item = new Item
+                    {
+                        itemCategoryId = model.itemCategoryId,
+                        name = model.name,
+                        code = randomCode,
+                        image = model.image,
+                        length = model.length,
+                        depth = model.depth,
+                        height = model.height,
+                        unit = model.unit,
+                        mass = model.mass,
+                        drawingsTechnical = model.drawingsTechnical,
+                        drawings2D = model.drawings2D,
+                        drawings3D = model.drawings3D,
+                        description = model.description,
+                        price = model.price,
+                        isDeleted = false
+                    };
+
+
+                    _dbContext.Item.Add(item);
+
+                    foreach (var procedure in model.procedures)
+                    {
+                        await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
+                        {
+                            itemId = item.id,
+                            procedureId = procedure
+                        });
+                    }
+
+                    foreach (var material in model.materials)
+                    {
+                        await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
+                        {
+                            itemId = item.id,
+                            materialId = material
+                        });
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    result.Succeed = true;
+                    result.Data = item.id;
                 }
 
-                foreach (var material in model.materials)
-                {
-                    await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
-                    {
-                        itemId = item.id,
-                        materialId = material
-                    });
-                }
-
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = item.id;
             }
+            
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
@@ -113,71 +126,81 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(model.image))
+                    var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
+                    if (checkCategory == null)
                     {
-                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        result.Succeed = false;
+                        result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
+
                     }
-
-                    check.name = model.name;
-                    check.image = model.image;
-                    check.length = model.length;
-                    check.depth = model.depth;
-                    check.height = model.height;
-                    check.unit = model.unit;
-                    check.mass = model.mass;         
-                    check.drawingsTechnical = model.drawingsTechnical;
-                    check.drawings2D = model.drawings2D;
-                    check.drawings3D = model.drawings3D;
-                    check.description = model.description;
-                    check.price = model.price;
-
-                    // Remove all old Procedure Item
-                    var currentProcedureItems = await _dbContext.ProcedureItem
-                        .Where(x => x.itemId == model.id)
-                        .ToListAsync();
-                    if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                    else
                     {
-                        _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
-                    }
-
-                    // Set new Procedure Item
-                    var procedureItems = new List<ProcedureItem>();
-                    foreach (var procedure in model.procedures)
-                    {
-                        procedureItems.Add(new ProcedureItem
+                        if (string.IsNullOrEmpty(model.image))
                         {
-                            itemId = model.id,
-                            procedureId = procedure
-                        });
-                    }
+                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        }
 
-                    // Remove all old Material Item
-                    var currentMaterialItems = await _dbContext.ItemMaterial
-                        .Where(x => x.itemId == model.id)
-                        .ToListAsync();
-                    if (currentMaterialItems != null && currentMaterialItems.Count > 0)
-                    {
-                        _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
-                    }
+                        check.name = model.name;
+                        check.image = model.image;
+                        check.length = model.length;
+                        check.depth = model.depth;
+                        check.height = model.height;
+                        check.unit = model.unit;
+                        check.mass = model.mass;
+                        check.drawingsTechnical = model.drawingsTechnical;
+                        check.drawings2D = model.drawings2D;
+                        check.drawings3D = model.drawings3D;
+                        check.description = model.description;
+                        check.price = model.price;
 
-                    // Set new Material Item
-                    var materialItems = new List<ItemMaterial>();
-                    foreach (var material in model.materials)
-                    {
-                        materialItems.Add(new ItemMaterial
+                        // Remove all old Procedure Item
+                        var currentProcedureItems = await _dbContext.ProcedureItem
+                            .Where(x => x.itemId == model.id)
+                            .ToListAsync();
+                        if (currentProcedureItems != null && currentProcedureItems.Count > 0)
                         {
-                            itemId = model.id,
-                            materialId = material
-                        });
+                            _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
+                        }
+
+                        // Set new Procedure Item
+                        var procedureItems = new List<ProcedureItem>();
+                        foreach (var procedure in model.procedures)
+                        {
+                            procedureItems.Add(new ProcedureItem
+                            {
+                                itemId = model.id,
+                                procedureId = procedure
+                            });
+                        }
+
+                        // Remove all old Material Item
+                        var currentMaterialItems = await _dbContext.ItemMaterial
+                            .Where(x => x.itemId == model.id)
+                            .ToListAsync();
+                        if (currentMaterialItems != null && currentMaterialItems.Count > 0)
+                        {
+                            _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
+                        }
+
+                        // Set new Material Item
+                        var materialItems = new List<ItemMaterial>();
+                        foreach (var material in model.materials)
+                        {
+                            materialItems.Add(new ItemMaterial
+                            {
+                                itemId = model.id,
+                                materialId = material
+                            });
+                        }
+
+                        await _dbContext.ProcedureItem.AddRangeAsync(procedureItems);
+                        await _dbContext.ItemMaterial.AddRangeAsync(materialItems);
+
+                        await _dbContext.SaveChangesAsync();
+                        result.Succeed = true;
+                        result.Data = check.id;
                     }
-
-                    await _dbContext.ProcedureItem.AddRangeAsync(procedureItems);
-                    await _dbContext.ItemMaterial.AddRangeAsync(materialItems);
-
-                    await _dbContext.SaveChangesAsync();
-                    result.Succeed = true;
-                    result.Data = check.id;
-                }
+                }      
             }
             catch (Exception e)
             {
@@ -195,7 +218,7 @@ namespace Sevices.Core.ItemService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin Item!";
                 }
                 else
                 {
@@ -234,12 +257,12 @@ namespace Sevices.Core.ItemService
                 var list = new List<ItemModel>();
                 foreach (var item in listItemPaging)
                 {
-                    var createBy = _dbContext.Users.Find(item.createById);
+                    var itemCategory = _dbContext.ItemCategory.Find(item.itemCategoryId);
                     var tmp = new ItemModel
                     {
                         id = item.id,
-                        createById = item.createById,
-                        createByName = createBy!.fullName,
+                        itemCategoryId = item.itemCategoryId,
+                        itemCategoryName = itemCategory!.name,
                         name = item.name,
                         image = item.image,
                         length = item.length,
@@ -296,12 +319,12 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    var createBy = _dbContext.Users.Find(check.createById);
+                    var itemCategory = _dbContext.Users.Find(check.itemCategoryId);
                     var item = new ItemModel
                     {
                         id = check.id,
-                        createById = check.createById,
-                        createByName = createBy!.fullName,
+                        itemCategoryId = check.itemCategoryId,
+                        itemCategoryName = itemCategory!.fullName,
                         name = check.name,
                         image = check.image,
                         length = check.length,

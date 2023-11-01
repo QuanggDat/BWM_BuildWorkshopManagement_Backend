@@ -172,12 +172,12 @@ namespace Sevices.Core.OrderReportService
             }
         }
 
-        public async Task<List<OrderReportModel>> GetOrderReportsByFactoryId(Guid factoryId)
+        public async Task<List<OrderReportModel>> GetOrderReportsByForemanId(Guid foremanId)
         {
             var checkReport = await _dbContext.Report
                 .Include(x => x.Reporter)
                 .Include(x => x.Order)
-                .Where(x => x.reporterId == factoryId)
+                .Where(x => x.reporterId == foremanId && x.reportType == Data.Enums.ReportType.ProgressReport)
                 .ToListAsync();
 
             if (checkReport == null)

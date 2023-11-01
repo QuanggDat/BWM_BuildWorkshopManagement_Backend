@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class MaterialCategory
+    public class ItemCategory
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
-        public Guid id { get; set; }   
-
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid id { get; set; }
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
-        public virtual List<Material> Materials { get; set; } = new();
+        public virtual List<Item> Items { get; set; } = new();
     }
 }

@@ -6,29 +6,27 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
-    public class SquadModel
+    public class TeamModel
     {
         public Guid id {  get; set; }
         public string name { get; set; }
         public int member { get; set; }
         public bool isDeleted { get; set; }
+        public Guid groupId { get; set; }
     }
 
-    public class CreateSquadModel
+    public class CreateTeamModel
     {
         public string name { get; set; }
+        public Guid groupId { get; set; }
         public List<Guid> listUserId { get; set; } = new();
     }
 
-    public class UpdateSquadModel
+    public class UpdateTeamModel
     {
         public Guid id { get; set; }
         public string name { get; set; }
+        public Guid groupId { get; set; }
         public List<Guid> listUserId { get; set; } = new();
-    }
-
-    public class DeleteSquadModel
-    {
-        public Guid id { get; set; }
     }
 }

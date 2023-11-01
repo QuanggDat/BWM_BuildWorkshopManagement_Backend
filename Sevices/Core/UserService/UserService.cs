@@ -133,18 +133,18 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public async Task<ResultModel> CreateFactory(UserCreateModel model)
+        public async Task<ResultModel> CreateForeman(UserCreateModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
             try
             {
-                if (!await _roleManager.RoleExistsAsync("Factory"))
+                if (!await _roleManager.RoleExistsAsync("Foreman"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Factory", Name = "Factory" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Foreman", Name = "Foreman" });
                 }
-                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Factory");
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Foreman");
                 var user = new User
                 {
                     Email = model.email,
@@ -233,18 +233,18 @@ namespace Sevices.Core.UserService
 
         }
 
-        public async Task<ResultModel> CreateManager(UserCreateModel model)
+        public async Task<ResultModel> CreateLeader(UserCreateModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
             try
             {
-                if (!await _roleManager.RoleExistsAsync("Manager"))
+                if (!await _roleManager.RoleExistsAsync("Leader"))
                 {
-                    await _roleManager.CreateAsync(new Role { description = "Role for Manager", Name = "Manager" });
+                    await _roleManager.CreateAsync(new Role { description = "Role for Leader", Name = "Leader" });
                 }
-                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Manager");
+                var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Leader");
                 var user = new User
                 {
                     Email = model.email,
@@ -837,9 +837,9 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
-        
-        //For Factory role
-        public async Task<List<ManagementUserModel>> GetAllUserWithSquadAndGroup()
+
+        //For Foreman role
+        public async Task<List<ManagementUserModel>> GetAllUserForForeman()
         {
             var result = new List<ManagementUserModel>();
             var data = await _dbContext.User.Where(u => u.banStatus != false).ToListAsync();
@@ -851,20 +851,20 @@ namespace Sevices.Core.UserService
             foreach (var info in data)
             {
                 var role = await _dbContext.Role.FindAsync(info.roleID);
-                var squad = await _dbContext.Squad.FindAsync(info.squadId);
+                var team = await _dbContext.Team.FindAsync(info.teamId);
                 var group = await _dbContext.Group.FindAsync(info.groupId);
-                if (role != null && squad != null && group != null)
+                if (role != null && team != null && group != null)
                 {
-                    var stuff = new ManagementUserModel
+                    var user = new ManagementUserModel
                     {
                         fullName = info.fullName,
                         image = info.image,
                         roleName = role.Name,
-                        squadName = squad.name,
+                        teamName = team.name,
                         groupName = group.name,
                         banStatus = info.banStatus,
                     };
-                    result.Add(stuff);
+                    result.Add(user);
                 }
             }
             return result;
