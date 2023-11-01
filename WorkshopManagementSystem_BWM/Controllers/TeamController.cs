@@ -56,7 +56,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpGet("[action]/{groupId}")]
         public IActionResult GetTeamByGroupId(Guid groupId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _teamService.GetTeamByGroupId(groupId, search, pageIndex, pageSize);

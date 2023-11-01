@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public async Task<ActionResult> GetAll()
         {
             var result = _userService.GetAll();

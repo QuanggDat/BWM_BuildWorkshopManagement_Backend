@@ -80,7 +80,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpGet("[action]")]
         public IActionResult GetAllGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _groupService.GetAllGroup(search, pageIndex, pageSize);

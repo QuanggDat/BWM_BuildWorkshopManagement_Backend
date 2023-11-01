@@ -102,7 +102,7 @@ namespace Sevices.Core.CategoryService
                                 check.name = model.name;
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.id;
+                                result.Data = "Cập nhập thành công " + check.name;
                             }
                         }
                         else
@@ -110,7 +110,7 @@ namespace Sevices.Core.CategoryService
                             check.name = model.name;
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.id;
+                            result.Data = "Cập nhập thành công " + check.name;
                         }
                     }
                 }               
@@ -208,20 +208,23 @@ namespace Sevices.Core.CategoryService
                 {
                     result.ErrorMessage = "Hãy xoá hết vật liệu trước khi xoá nhóm vật liệu ! ";
                 }
-                var check = _dbContext.MaterialCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
-                
-                if (check == null)
+                else
                 {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
-                }
-                else 
-                {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.id;
-                    result.Succeed = true;
-                }          
+                    var check = _dbContext.MaterialCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+
+                    if (check == null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
+                        result.Data = "Xoá thành công " + check.name;
+                        result.Succeed = true;
+                    }
+                }    
             }
             catch (Exception ex)
             {

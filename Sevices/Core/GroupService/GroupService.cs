@@ -250,7 +250,7 @@ namespace Sevices.Core.GroupService
                         }
                         else
                         {
-                            result.ErrorMessage = "Người dùng không phải quản lý!";
+                            result.ErrorMessage = "Người dùng không phải nhosm trưởng8!";
                         }
                     }
                 }

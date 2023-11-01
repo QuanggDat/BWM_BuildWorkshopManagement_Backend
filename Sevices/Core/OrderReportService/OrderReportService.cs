@@ -25,60 +25,68 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var order = await _dbContext.Order
-                .Where(x => x.id == model.orderId)
-                .SingleOrDefaultAsync();
-
-            if (order == null)
+            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+            if (user!.Role != null && user.Role.Name != "Foreman")
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                result.ErrorMessage = "Người dùng không phải quản đốc!";
                 return result;
             }
             else
             {
-                if (order.status != Data.Enums.OrderStatus.InProgress)
+                var order = await _dbContext.Order
+                .Where(x => x.id == model.orderId)
+                .SingleOrDefaultAsync();
+                if (order == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Đơn hàng đang không tiến hành!";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                     return result;
                 }
                 else
                 {
-                    var checkReport = await _dbContext.Report.AnyAsync(x => x.orderId == model.orderId);
-
-                    if (checkReport == true)
+                    if (order.status != Data.Enums.OrderStatus.InProgress)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
+                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                         return result;
                     }
                     else
                     {
-                        var report = new Report
+                        var checkReport = await _dbContext.Report.AnyAsync(x => x.orderId == model.orderId);
 
+                        if (checkReport == true)
                         {
-                            orderId = model.orderId,
-                            title = model.title,
-                            content = model.content,
-                            reporterId = reporterId,
-                            reportStatus = model.reportStatus,
-                            createdDate = DateTime.Now,
-                        };
-
-                        try
-                        {
-                            await _dbContext.Report.AddAsync(report);
-                            await _dbContext.SaveChangesAsync();
-                            result.Succeed = true;
-                            result.Data = report.id;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
+                            return result;
                         }
-
-                        catch (Exception ex)
+                        else
                         {
-                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                        }
+                            var report = new Report
 
+                            {
+                                orderId = model.orderId,
+                                title = model.title,
+                                content = model.content,
+                                reporterId = reporterId,
+                                reportStatus = model.reportStatus,
+                                createdDate = DateTime.Now,
+                            };
+
+                            try
+                            {
+                                await _dbContext.Report.AddAsync(report);
+                                await _dbContext.SaveChangesAsync();
+                                result.Succeed = true;
+                                result.Data = report.id;
+                            }
+
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
+                        }            
                         return result;
                     }                 
                 }          

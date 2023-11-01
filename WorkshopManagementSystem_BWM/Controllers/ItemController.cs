@@ -66,9 +66,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _itemService.GetAllItem(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
-        }       
+        }
 
-        
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetAllItemByCategoryId(Guid itemCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = await _itemService.GetItemByItemCategoryId(itemCategoryId, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
 
         #region Validate
         private bool ValidateUpdateItem(UpdateItemModel model)

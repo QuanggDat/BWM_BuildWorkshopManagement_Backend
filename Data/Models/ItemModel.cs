@@ -54,8 +54,8 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-        public List<Guid> procedures { get; set; } = null!;
-        public List<Guid> materials { get; set; } = null!;
+        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<Guid> listMaterialId { get; set; } = null!;
     }
 
     public class UpdateItemModel
@@ -74,8 +74,8 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-        public List<Guid> procedures { get; set; } = null!;
-        public List<Guid> materials { get; set; } = null!;
+        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<Guid> listMaterialId { get; set; } = null!;
     }
 
     public class DeleteItemModel

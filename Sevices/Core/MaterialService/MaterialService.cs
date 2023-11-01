@@ -111,7 +111,7 @@ namespace Sevices.Core.MaterialService
                     if (checkCategory == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu !";
                     }
                     else
                     {
@@ -121,7 +121,7 @@ namespace Sevices.Core.MaterialService
                             if (checkExists != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Tên này đã tồn tại !";
+                                result.ErrorMessage = "Tên vật liệu đã tồn tại !";
                             }
                             else
                             {
@@ -141,7 +141,7 @@ namespace Sevices.Core.MaterialService
 
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.id;
+                                result.Data = "Cập nhập thành công " + check.name;
                             }
                         }
                         else
@@ -162,7 +162,7 @@ namespace Sevices.Core.MaterialService
 
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.id;
+                            result.Data = "Cập nhập thành công " + check.name;
                         }
                     }
                 }               
@@ -184,13 +184,13 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
                 else
                 {
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.id;
+                    result.Data = "Xoá thành công " + check.name;
                     result.Succeed = true;
                 }
             }
@@ -212,7 +212,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
                 else
                 {
@@ -258,7 +258,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material !";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
                     return result;
                 }
                 else
@@ -343,7 +343,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory!";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
                 }
                 else
                 {

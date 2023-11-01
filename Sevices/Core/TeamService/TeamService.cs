@@ -144,7 +144,7 @@ namespace Sevices.Core.TeamService
                 }
                 else
                 {
-                    result.ErrorMessage = "Không tìm thấy nhóm";
+                    result.ErrorMessage = "Không tìm thấy nhóm!";
                     result.Succeed = false;
                 }
             }
@@ -164,14 +164,14 @@ namespace Sevices.Core.TeamService
                 var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy người dùng";
+                    result.ErrorMessage = "Không tìm thấy người dùng!";
                 }
                 else
                 {
                     var team = _dbContext.Team.FirstOrDefault(g => g.id == model.teamId);
                     if (team == null)
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy nhóm!";
                     }
                     else
                     {
@@ -203,14 +203,14 @@ namespace Sevices.Core.TeamService
                 var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy người dùng";
+                    result.ErrorMessage = "Không tìm thấy người dùng!";
                 }
                 else
                 {
                     var team = _dbContext.Team.FirstOrDefault(g => g.id == model.teamId);
                     if (team == null)
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy nhóm!";
                     }
                     else
                     {
@@ -243,7 +243,7 @@ namespace Sevices.Core.TeamService
                 var isExistedUser = _dbContext.User.Any(x => x.teamId == id);
                 if (isExistedUser)
                 {
-                    result.ErrorMessage = "Hãy xoá hết thành viên trước khi xoá nhóm";
+                    result.ErrorMessage = "Hãy xoá hết thành viên trước khi xoá nhóm!";
                 }
                 else
                 {
@@ -259,7 +259,7 @@ namespace Sevices.Core.TeamService
                     }
                     else
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy nhóm!";
                     }
                 }
             }

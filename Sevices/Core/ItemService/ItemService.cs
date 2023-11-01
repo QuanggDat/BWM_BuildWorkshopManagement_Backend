@@ -80,7 +80,7 @@ namespace Sevices.Core.ItemService
 
                     _dbContext.Item.Add(item);
 
-                    foreach (var procedure in model.procedures)
+                    foreach (var procedure in model.listProcedureId)
                     {
                         await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
                         {
@@ -89,7 +89,7 @@ namespace Sevices.Core.ItemService
                         });
                     }
 
-                    foreach (var material in model.materials)
+                    foreach (var material in model.listMaterialId)
                     {
                         await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
                         {
@@ -122,7 +122,7 @@ namespace Sevices.Core.ItemService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
                 else
                 {
@@ -164,7 +164,7 @@ namespace Sevices.Core.ItemService
 
                         // Set new Procedure Item
                         var procedureItems = new List<ProcedureItem>();
-                        foreach (var procedure in model.procedures)
+                        foreach (var procedure in model.listProcedureId)
                         {
                             procedureItems.Add(new ProcedureItem
                             {
@@ -184,7 +184,7 @@ namespace Sevices.Core.ItemService
 
                         // Set new Material Item
                         var materialItems = new List<ItemMaterial>();
-                        foreach (var material in model.materials)
+                        foreach (var material in model.listMaterialId)
                         {
                             materialItems.Add(new ItemMaterial
                             {
@@ -218,14 +218,14 @@ namespace Sevices.Core.ItemService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Item!";
+                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
                 else
                 {
                     check.isDeleted = true;
                     await _dbContext.SaveChangesAsync();
 
-                    result.Data = "Xoá thành công " + check.id;
+                    result.Data = "Xoá thành công " + check.name;
                     result.Succeed = true;
                 }
                 
@@ -315,16 +315,16 @@ namespace Sevices.Core.ItemService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
                 else
                 {
-                    var itemCategory = _dbContext.Users.Find(check.itemCategoryId);
+                    var itemCategory = _dbContext.ItemCategory.Find(check.itemCategoryId);
                     var item = new ItemModel
                     {
                         id = check.id,
                         itemCategoryId = check.itemCategoryId,
-                        itemCategoryName = itemCategory!.fullName,
+                        itemCategoryName = itemCategory!.name,
                         name = check.name,
                         image = check.image,
                         length = check.length,
@@ -357,6 +357,77 @@ namespace Sevices.Core.ItemService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }       
+        }
+        public async Task<ResultModel> GetItemByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+            var check = _dbContext.ItemCategory.Where(x => x.id == itemCategoryId && x.isDeleted != true).FirstOrDefault();
+
+            if (check == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
+            }
+            else
+            {
+                try
+                {
+                    var listItem = await _dbContext.Item.Where(x => x.itemCategoryId == itemCategoryId && x.isDeleted != true)
+                        .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                        .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
+                       .OrderByDescending(x => x.name).ToListAsync();
+
+
+                    var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<ItemModel>();
+                    foreach (var item in listItemPaging)
+                    {
+                        var itemCategory = _dbContext.ItemCategory.Find(item.itemCategoryId);
+                        var tmp = new ItemModel
+                        {
+                            id = item.id,
+                            itemCategoryId = item.itemCategoryId,
+                            itemCategoryName = itemCategory!.name,
+                            name = item.name,
+                            image = item.image,
+                            length = item.length,
+                            depth = item.depth,
+                            height = item.height,
+                            unit = item.unit,
+                            mass = item.mass,
+                            drawingsTechnical = item.drawingsTechnical,
+                            drawings2D = item.drawings2D,
+                            drawings3D = item.drawings3D,
+                            description = item.description,
+                            price = item.price,
+                            Procedures = item.ProcedureItems.Select(_ => new _Procedure
+                            {
+                                procedureId = _.Procedure.id,
+                                procedureName = _.Procedure.name,
+                            }).ToList(),
+                            Materials = item.ItemMaterials.Select(_ => new _Material
+                            {
+                                materialId = _.Material.id,
+                                materialName = _.Material.name,
+                            }).ToList(),
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listItemPaging.Count
+                    };
+                    result.Succeed = true;
+
+                }
+                catch (Exception e)
+                {
+                    result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                }
+            }   
+            return result;
+        }
     }
 }

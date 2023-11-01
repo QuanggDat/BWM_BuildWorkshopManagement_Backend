@@ -14,6 +14,6 @@ namespace Sevices.Core.ItemService
         Task<ResultModel> DeleteItem(Guid id);
         Task<ResultModel> GetAllItem(string? search, int pageIndex, int pageSize);
         Task<ResultModel> GetItemById(Guid id);
-     
+        Task<ResultModel> GetItemByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize);
     }
 }

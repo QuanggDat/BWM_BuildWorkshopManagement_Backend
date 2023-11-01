@@ -30,7 +30,7 @@ namespace Sevices.Core.LeaderTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin Leader!";
+                result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
                 return result;
             }
             else
@@ -124,7 +124,7 @@ namespace Sevices.Core.LeaderTaskService
             if (leaderTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin leaderTask!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -272,7 +272,7 @@ namespace Sevices.Core.LeaderTaskService
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -304,7 +304,7 @@ namespace Sevices.Core.LeaderTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -336,7 +336,7 @@ namespace Sevices.Core.LeaderTaskService
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else

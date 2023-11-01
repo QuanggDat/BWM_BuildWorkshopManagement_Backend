@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> SendReport(CreateTaskReportModel model)
         {
-            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được leaderTaskId!");
+            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
             var result = await _reportService.CreateTaskReport(userId,model);
@@ -50,16 +50,16 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var leaderId = User.GetId();
             var result = await _reportService.GetProgressTaskReportsByLeaderId(leaderId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
+            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetProblemReportsByLeaderIdId()
+        public async Task<ActionResult> GetProblemReportsByLeaderId()
         {
             var leaderId = User.GetId();
             var result = await _reportService.GetProblemTaskReportsByLeaderId(leaderId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
+            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             return Ok(result);
         }
     }

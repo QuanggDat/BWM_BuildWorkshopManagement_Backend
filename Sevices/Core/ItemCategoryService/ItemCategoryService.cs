@@ -34,7 +34,7 @@ namespace Sevices.Core.ItemCategoryService
                 if (string.IsNullOrWhiteSpace(model.name))
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên này không được để trống !";
+                    result.ErrorMessage = "Tên loại mặt hàng không được để trống !";
                 }
                 else
                 {
@@ -42,7 +42,7 @@ namespace Sevices.Core.ItemCategoryService
                     if (checkExists != null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên ItemCategory này đã tồn tại !";
+                        result.ErrorMessage = "Tên loại mặt hàng này đã tồn tại !";
                     }
                     else
                     {
@@ -75,7 +75,7 @@ namespace Sevices.Core.ItemCategoryService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin ItemCategory !";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace Sevices.Core.ItemCategoryService
                     if (string.IsNullOrEmpty(model.name))
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên ItemCategory không được để trống !";
+                        result.ErrorMessage = "Tên loại mặt hàng không được để trống !";
                     }
                     else
                     {
@@ -93,14 +93,14 @@ namespace Sevices.Core.ItemCategoryService
                             if (checkExists != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Tên này đã tồn tại !";
+                                result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
                             }
                             else
                             {
                                 check.name = model.name;
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.id;
+                                result.Data = "Cập nhập thành công " + check.name;
                             }
                         }
                         else
@@ -108,7 +108,7 @@ namespace Sevices.Core.ItemCategoryService
                             check.name = model.name;
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.id;
+                            result.Data = "Cập nhập thành công " + check.name;
                         }
                     }
                 }
@@ -173,7 +173,7 @@ namespace Sevices.Core.ItemCategoryService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin ItemCategory!";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
                 }
                 else
                 {
@@ -206,20 +206,23 @@ namespace Sevices.Core.ItemCategoryService
                 {
                     result.ErrorMessage = "Hãy xoá hết mặt hàng trước khi xoá loại mặt hàng ! ";
                 }
-                var check = _dbContext.ItemCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
-
-                if (check == null)
-                {
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
-                }
                 else
                 {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.id;
-                    result.Succeed = true;
-                }
+                    var check = _dbContext.ItemCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+
+                    if (check == null)
+                    {
+                        result.Succeed = false;
+                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
+                        result.Data = "Xoá thành công " + check.name;
+                        result.Succeed = true;
+                    }
+                }               
             }
             catch (Exception ex)
             {

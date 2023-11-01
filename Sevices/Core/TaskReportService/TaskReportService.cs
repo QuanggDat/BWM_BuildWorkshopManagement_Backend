@@ -21,37 +21,84 @@ namespace Sevices.Core.ReportService
         }
 
         public async Task<ResultModel> CreateTaskReport(Guid reporterId, CreateTaskReportModel model)
-        {
+        {            
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTask = await _dbContext.LeaderTask.Include(x => x.Order)
-                .Include(x => x.Leader)
-                .Where(x => x.id == model.leaderTaskId)
-                .SingleOrDefaultAsync();
-
-            if (leaderTask == null)
+            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+            if(user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin Leader Task!";
+                result.ErrorMessage = "Người dùng không phải trưởng nhóm !";
                 return result;
             }
             else
             {
-                if (model.reportType == Data.Enums.ReportType.ProgressReport)
-                {
-                    var canSendReport = CanSendProgressTaskReport(leaderTask);
-                    var checkReport = await _dbContext.Report.AnyAsync(x => x.leaderTaskId == model.leaderTaskId || x.reportType == Data.Enums.ReportType.ProgressReport);
+                var leaderTask = await _dbContext.LeaderTask.Include(x => x.Order)
+                .Include(x => x.Leader)
+                .Where(x => x.id == model.leaderTaskId)
+                .SingleOrDefaultAsync();
 
-                    if (checkReport == true)
+                if (leaderTask == null)
+                {
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                    return result;
+                }
+                else
+                {
+                    if (model.reportType == Data.Enums.ReportType.ProgressReport)
                     {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Báo cáo tiến độ cho công việc này đã được thực hiện!";
-                        return result;
+                        var canSendReport = CanSendProgressTaskReport(leaderTask);
+                        var checkReport = await _dbContext.Report.AnyAsync(x => x.leaderTaskId == model.leaderTaskId || x.reportType == Data.Enums.ReportType.ProgressReport);
+
+                        if (checkReport == true)
+                        {
+                            result.Succeed = false;
+                            result.ErrorMessage = "Báo cáo tiến độ cho công việc này đã được thực hiện!";
+                            return result;
+                        }
+
+                        else
+                        {
+                            if (!canSendReport)
+                            {
+                                result.Succeed = false;
+                                result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
+                                return result;
+                            }
+                            else
+                            {
+                                var report = new Report
+                                {
+                                    leaderTaskId = model.leaderTaskId,
+                                    title = model.title,
+                                    content = model.content,
+                                    reporterId = reporterId,
+                                    reportType = model.reportType,
+                                    reportStatus = model.reportStatus,
+                                    createdDate = DateTime.Now,
+                                };
+
+                                try
+                                {
+                                    await _dbContext.Report.AddAsync(report);
+                                    await _dbContext.SaveChangesAsync();
+                                    result.Succeed = true;
+                                    result.Data = report.id;
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                }
+                            }
+                        }
                     }
-                    
+
                     else
                     {
+                        var canSendReport = CanSendProblemTaskReport(leaderTask);
+
                         if (!canSendReport)
                         {
                             result.Succeed = false;
@@ -67,73 +114,36 @@ namespace Sevices.Core.ReportService
                                 content = model.content,
                                 reporterId = reporterId,
                                 reportType = model.reportType,
-                                reportStatus = model.reportStatus,
                                 createdDate = DateTime.Now,
                             };
 
                             try
                             {
                                 await _dbContext.Report.AddAsync(report);
+                                if (model.resource != null)
+                                {
+                                    foreach (var resource in model.resource)
+                                    {
+                                        await _dbContext.Resource.AddAsync(new Resource
+                                        {
+                                            reportId = report.id,
+                                            link = resource
+                                        });
+                                    }
+                                }
+
                                 await _dbContext.SaveChangesAsync();
+
                                 result.Succeed = true;
                                 result.Data = report.id;
                             }
+
                             catch (Exception ex)
                             {
                                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                             }
-                        }             
-                    }                 
-                }
-
-                else
-                {
-                    var canSendReport = CanSendProblemTaskReport(leaderTask);
-
-                    if (!canSendReport)
-                    {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
-                        return result;
+                        }
                     }
-                    else
-                    {
-                        var report = new Report
-                        {
-                            leaderTaskId = model.leaderTaskId,
-                            title = model.title,
-                            content = model.content,
-                            reporterId = reporterId,
-                            reportType = model.reportType,
-                            createdDate = DateTime.Now,
-                        };
-
-                        try
-                        {
-                            await _dbContext.Report.AddAsync(report);
-                            if (model.resource != null)
-                            {
-                                foreach (var resource in model.resource)
-                                {
-                                    await _dbContext.Resource.AddAsync(new Resource
-                                    {
-                                        reportId = report.id,
-                                        link = resource
-                                    });
-                                }
-                            }
-
-                            await _dbContext.SaveChangesAsync();
-
-                            result.Succeed = true;
-                            result.Data = report.id;
-                        }
-
-                        catch (Exception ex)
-                        {
-                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                        }
-                    }                 
                 }
                 return result;
             }      

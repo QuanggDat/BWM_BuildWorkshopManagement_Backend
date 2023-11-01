@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> CreateWokerTask(CreateWorkerTaskModel model)
         {
-            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được managerTaskId!");
+            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
