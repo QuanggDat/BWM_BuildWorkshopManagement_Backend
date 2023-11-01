@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.CreateGroup(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("UpdateGroup")]
@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.UpdateGroup(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("AddLeaderToGroup")]
@@ -37,7 +37,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.AddLeaderToGroup(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("AddWorkerToGroup")]
@@ -45,7 +45,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.AddWorkerToGroup(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("RemoveWorkerFromGroup")]
@@ -53,7 +53,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.RemoveUserFromGroup(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
@@ -61,7 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.DeleteGroup(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -69,7 +69,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.GetAllUserByGroupId(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -77,7 +77,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _groupService.GetAllUserNotInGroupId(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]

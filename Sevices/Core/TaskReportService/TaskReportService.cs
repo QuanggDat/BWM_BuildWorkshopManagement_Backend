@@ -28,6 +28,7 @@ namespace Sevices.Core.ReportService
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
             if(user!.Role != null && user.Role.Name != "Leader")
             {
+                result.Code = 50;
                 result.Succeed = false;
                 result.ErrorMessage = "Người dùng không phải trưởng nhóm !";
                 return result;
@@ -41,6 +42,7 @@ namespace Sevices.Core.ReportService
 
                 if (leaderTask == null)
                 {
+                    result.Code = 51;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                     return result;
@@ -54,6 +56,7 @@ namespace Sevices.Core.ReportService
 
                         if (checkReport == true)
                         {
+                            result.Code = 52;
                             result.Succeed = false;
                             result.ErrorMessage = "Báo cáo tiến độ cho công việc này đã được thực hiện!";
                             return result;
@@ -63,6 +66,7 @@ namespace Sevices.Core.ReportService
                         {
                             if (!canSendReport)
                             {
+                                result.Code = 53;
                                 result.Succeed = false;
                                 result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
                                 return result;
@@ -101,6 +105,7 @@ namespace Sevices.Core.ReportService
 
                         if (!canSendReport)
                         {
+                            result.Code = 53;
                             result.Succeed = false;
                             result.ErrorMessage = "Chưa thể gửi báo cáo vào lúc này!";
                             return result;
@@ -168,7 +173,7 @@ namespace Sevices.Core.ReportService
                 return null;
             }
 
-            TaskReportModel result = null;
+            TaskReportModel result = null!;
             if (report.reportType == Data.Enums.ReportType.ProgressReport)
             {
                 var reviewer = report.LeaderTask.CreateBy;
@@ -244,6 +249,7 @@ namespace Sevices.Core.ReportService
 
             if (report == null)
             {
+                result.Code = 54;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
                 return result;
@@ -254,6 +260,7 @@ namespace Sevices.Core.ReportService
                 {
                     if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                     {
+                        result.Code = 55;
                         result.Succeed = false;
                         result.ErrorMessage = "Báo cáo này đã hoàn thành!";
                         return result;

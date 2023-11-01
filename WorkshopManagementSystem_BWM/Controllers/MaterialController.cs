@@ -28,7 +28,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             }
             var result =  _materialService.CreateMaterial(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
@@ -44,7 +44,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _materialService.GetMaterialByMaterialCategoryId(materialCategoryId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
@@ -52,7 +52,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _materialService.GetMaterialById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
@@ -60,7 +60,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _materialService.DeleteMaterial(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             }
             var result = _materialService.UpdateMaterial(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -80,7 +80,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _materialService.UpdateMaterialAmount(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
    
         #region Validate

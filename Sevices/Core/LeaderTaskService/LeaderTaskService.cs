@@ -29,6 +29,7 @@ namespace Sevices.Core.LeaderTaskService
             var check = await _dbContext.User.FindAsync(model.leaderId);
             if (check == null)
             {
+                result.Code = 38;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
                 return result;
@@ -38,6 +39,7 @@ namespace Sevices.Core.LeaderTaskService
                 var orderTmp = await _dbContext.Order.FindAsync(model.orderId);
                 if (orderTmp == null)
                 {
+                    result.Code = 39;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                     return result;
@@ -47,6 +49,7 @@ namespace Sevices.Core.LeaderTaskService
                     var procedureTmp = await _dbContext.Order.FindAsync(model.procedureId);
                     if (procedureTmp == null)
                     {
+                        result.Code = 40;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
                         return result;
@@ -57,6 +60,7 @@ namespace Sevices.Core.LeaderTaskService
 
                         if (check1 != null)
                         {
+                            result.Code = 41;
                             result.Succeed = false;
                             result.ErrorMessage = "Công việc đã được tạo!";
                             return result;
@@ -65,6 +69,7 @@ namespace Sevices.Core.LeaderTaskService
                         {
                             if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
                             {
+                                result.Code = 42;
                                 result.Succeed = false;
                                 result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                                 return result;
@@ -74,6 +79,7 @@ namespace Sevices.Core.LeaderTaskService
                             {
                                 if (model.startTime >= model.endTime)
                                 {
+                                    result.Code = 43;
                                     result.Succeed = false;
                                     result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
                                     return result;
@@ -123,6 +129,7 @@ namespace Sevices.Core.LeaderTaskService
             var leaderTask = await _dbContext.LeaderTask.FindAsync(model.id);
             if (leaderTask == null)
             {
+                result.Code = 38;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
@@ -131,6 +138,7 @@ namespace Sevices.Core.LeaderTaskService
             {                                               
                 if (model.startTime > model.endTime)
                 {
+                    result.Code = 43;
                     result.Succeed = false;
                     result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
                     return result;
@@ -163,7 +171,7 @@ namespace Sevices.Core.LeaderTaskService
             var leaderTask = await _dbContext.LeaderTask.Include(x => x.Procedure)
                 .Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
             if (leaderTask == null) { 
-                return null; 
+                return null!; 
             }
             else
             {
@@ -201,7 +209,7 @@ namespace Sevices.Core.LeaderTaskService
 
             if (leaderTask == null)
             {
-                return null;
+                return null!;
             }
             else
             {
@@ -236,7 +244,7 @@ namespace Sevices.Core.LeaderTaskService
                 .Where(a => a.createById == foremanId && a.isDeleted == false).ToListAsync();
             if (leaderTask == null)
             {
-                return null;
+                return null!;
             }
             else
             {
@@ -303,6 +311,7 @@ namespace Sevices.Core.LeaderTaskService
             var check = await _dbContext.LeaderTask.FindAsync(leaderTaskId);
             if (check == null)
             {
+                result.Code = 44;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
@@ -335,6 +344,7 @@ namespace Sevices.Core.LeaderTaskService
             var task = await _dbContext.LeaderTask.FindAsync(leaderTaskId);
             if (task == null)
             {
+                result.Code = 44;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
@@ -344,6 +354,7 @@ namespace Sevices.Core.LeaderTaskService
                 var check = await _dbContext.Team.SingleOrDefaultAsync(x => x.id == teamId);
                 if (check == null)
                 {
+                    result.Code = 45;
                     result.Succeed = false;
                     result.ErrorMessage = "Nhóm không hợp lệ!";
                     return result;
@@ -352,6 +363,7 @@ namespace Sevices.Core.LeaderTaskService
                 {
                     if (check.isDeleted == true)
                     {
+                        result.Code = 46;
                         result.Succeed = false;
                         result.ErrorMessage = "Nhóm đã xoá!";
                         return result;

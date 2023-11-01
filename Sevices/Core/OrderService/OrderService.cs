@@ -89,6 +89,7 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
+                    result.Code = 35;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
@@ -112,6 +113,7 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
+                    result.Code = 35;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
@@ -315,6 +317,7 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
+                    result.Code = 35;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
                 }
                 else
@@ -361,7 +364,8 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy thông tin đơn đặt hàng!";
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
@@ -456,6 +460,7 @@ namespace Sevices.Core.OrderService
                     }
                     else
                     {
+                        result.Code = 36;
                         result.ErrorMessage = "Template lỗi!";
                     }
 

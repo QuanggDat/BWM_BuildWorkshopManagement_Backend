@@ -39,6 +39,7 @@ namespace Sevices.Core.MaterialService
                 var checkMaterial = _dbContext.Material.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
                 if (checkMaterial != null)
                 {
+                    result.Code = 27;
                     result.Succeed = false;
                     result.ErrorMessage = "Tên vật liệu này đã tồn tại !";
                 }
@@ -47,6 +48,7 @@ namespace Sevices.Core.MaterialService
                     var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
                     if (checkCategory == null)
                     {
+                        result.Code = 28;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu !";
                         
@@ -98,6 +100,7 @@ namespace Sevices.Core.MaterialService
                 var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
+                    result.Code = 29;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
@@ -110,6 +113,7 @@ namespace Sevices.Core.MaterialService
                     var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
                     if (checkCategory == null)
                     {
+                        result.Code = 28;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu !";
                     }
@@ -120,6 +124,7 @@ namespace Sevices.Core.MaterialService
                             var checkExists = _dbContext.Material.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
                             if (checkExists != null)
                             {
+                                result.Code = 27;
                                 result.Succeed = false;
                                 result.ErrorMessage = "Tên vật liệu đã tồn tại !";
                             }
@@ -183,6 +188,7 @@ namespace Sevices.Core.MaterialService
                 var check = _dbContext.Material.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
+                    result.Code = 29;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
@@ -211,6 +217,7 @@ namespace Sevices.Core.MaterialService
 
                 if (check == null)
                 {
+                    result.Code = 29;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
@@ -257,6 +264,7 @@ namespace Sevices.Core.MaterialService
                 var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
+                    result.Code = 29;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
                     return result;
@@ -342,6 +350,7 @@ namespace Sevices.Core.MaterialService
 
                 if (check == null)
                 {
+                    result.Code = 28;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
                 }

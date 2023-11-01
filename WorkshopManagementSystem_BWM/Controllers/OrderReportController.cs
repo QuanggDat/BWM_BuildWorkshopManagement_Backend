@@ -26,7 +26,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var userId = User.GetId();
             var result = await _orderReportService.CreateOrderReport(userId, model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{reportId}")]
@@ -42,7 +42,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _orderReportService.ReviewsOrderReport(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]

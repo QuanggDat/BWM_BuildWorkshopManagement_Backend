@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             
             var result = await _itemService.CreateItem(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
         
         [HttpPut("[action]")]
@@ -41,7 +41,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             }
             var result = await _itemService.UpdateItem(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
@@ -49,7 +49,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _itemService.DeleteItem(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -57,7 +57,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _itemService.GetItemById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
@@ -73,7 +73,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _itemService.GetItemByItemCategoryId(itemCategoryId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         #region Validate

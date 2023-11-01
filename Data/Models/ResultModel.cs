@@ -8,10 +8,17 @@ namespace Data.Models
 {
     public class ResultModel
     {
+        public int? Code { get; set; }
         public string? ErrorMessage { get; set; }
         public object? Data { get; set; }
         public bool Succeed { get; set; } = false;
     }
+    public class ResponeResultModel
+    {
+        public int? Code { get; set; }
+        public string? ErrorMessage { get; set; }       
+    }
+
     public class PagingModel
     {
         public object? Data { get; set; }
@@ -20,6 +27,7 @@ namespace Data.Models
 
     public class FileResultModel
     {
+        public int? Code { get; set; }
         public string? ErrorMessage { get; set; }
         public byte[]? Data { get; set; }
         public bool Succeed { get; set; } = false;

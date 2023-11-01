@@ -23,7 +23,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");        
             var result = await _userService.CreateAdmin(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage});         
         }
         
         [HttpPost("CreateForeman")]
@@ -35,7 +35,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
             var result = await _userService.CreateForeman(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPost("CreateLeader")]
@@ -47,7 +47,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
             var result = await _userService.CreateLeader(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPost("CreateWoker")]
@@ -59,7 +59,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
             var result = await _userService.CreateWorker(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPost("Login")]
@@ -69,13 +69,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.password)) return BadRequest("Không nhận được mật khẩu!");
             var result = await _userService.Login(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetAll()
+        public IActionResult GetAll()
         {
-            var result = _userService.GetAll();
+            var result =  _userService.GetAll();
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -85,15 +85,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.GetByPhoneNumber(phoneNumber);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetById(Guid id)
         {
-            var result = _userService.GetByID(id);
+            var result = _userService.GetById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -101,7 +101,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.GetUserRole(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut]
@@ -109,7 +109,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.Update(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -117,7 +117,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.BannedUser(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -125,7 +125,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.UnBannedUser(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -133,7 +133,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.UpdatePhone(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -141,7 +141,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _userService.UpdateRole(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPost("ChangePassword")]
@@ -149,14 +149,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _userService.ChangePassword(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("GetAllUserForForeman")]
-        public async Task<ActionResult<ManagementUserModel>> GetAllUserForForeman()
+        public IActionResult GetAllUserForForeman()
         {
-            var result = await _userService.GetAllUserForForeman();
-            if (result == null) return BadRequest("Không tìm thấy nhân công");
+            var result =  _userService.GetAllUserForForeman();
+            if (result == null) return BadRequest("Không tìm thấy công nhân!");
             return Ok(result);
         }
     }

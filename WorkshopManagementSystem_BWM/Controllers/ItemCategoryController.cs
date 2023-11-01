@@ -20,17 +20,19 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public ActionResult CreateItemCategory(CreateItemCategoryModel model)
         {
+            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!"); 
             var result = _itemCategoryService.CreateItemCategory(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
         public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
         {
+            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!");
             var result = _itemCategoryService.UpdateItemCategory(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
@@ -46,7 +48,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _itemCategoryService.GetItemCategoryById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
@@ -54,7 +56,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _itemCategoryService.DeleteItemCategory(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
     }
 }

@@ -30,33 +30,25 @@ namespace Sevices.Core.ItemCategoryService
             result.Succeed = false;
             try
             {
-                //Validation
-                if (string.IsNullOrWhiteSpace(model.name))
+                var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+                if (checkExists != null)
                 {
+                    result.Code = 30;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên loại mặt hàng không được để trống !";
+                    result.ErrorMessage = "Tên loại mặt hàng này đã tồn tại !";
                 }
                 else
                 {
-                    var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
-                    if (checkExists != null)
+                    var newCategory = new ItemCategory
                     {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Tên loại mặt hàng này đã tồn tại !";
-                    }
-                    else
-                    {
-                        var newCategory = new ItemCategory
-                        {
-                            name = model.name,
-                            isDeleted = false
-                        };
+                        name = model.name,
+                        isDeleted = false
+                    };
 
-                        _dbContext.ItemCategory.Add(newCategory);
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = newCategory.id;
-                    }
+                    _dbContext.ItemCategory.Add(newCategory);
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = newCategory.id;
                 }
             }
             catch (Exception ex)
@@ -74,34 +66,20 @@ namespace Sevices.Core.ItemCategoryService
                 var check = _dbContext.ItemCategory.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
                 if (check == null)
                 {
+                    result.Code = 31;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
                 }
                 else
                 {
-                    //Validation
-                    if (string.IsNullOrEmpty(model.name))
+                    if (model.name != check.name)
                     {
-                        result.Succeed = false;
-                        result.ErrorMessage = "Tên loại mặt hàng không được để trống !";
-                    }
-                    else
-                    {
-                        if (model.name != check.name)
+                        var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
+                        if (checkExists != null)
                         {
-                            var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
-                            if (checkExists != null)
-                            {
-                                result.Succeed = false;
-                                result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
-                            }
-                            else
-                            {
-                                check.name = model.name;
-                                _dbContext.SaveChanges();
-                                result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.name;
-                            }
+                            result.Code = 30;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
                         }
                         else
                         {
@@ -110,6 +88,13 @@ namespace Sevices.Core.ItemCategoryService
                             result.Succeed = true;
                             result.Data = "Cập nhập thành công " + check.name;
                         }
+                    }
+                    else
+                    {
+                        check.name = model.name;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = "Cập nhập thành công " + check.name;
                     }
                 }
             }
@@ -172,6 +157,7 @@ namespace Sevices.Core.ItemCategoryService
 
                 if (check == null)
                 {
+                    result.Code = 31;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
                 }
@@ -204,7 +190,8 @@ namespace Sevices.Core.ItemCategoryService
                 var isExistedItem = _dbContext.Item.Any(x => x.itemCategoryId == id && x.isDeleted != true);
                 if (isExistedItem)
                 {
-                    result.ErrorMessage = "Hãy xoá hết mặt hàng trước khi xoá loại mặt hàng ! ";
+                    result.Code = 32;
+                    result.ErrorMessage = "Hãy xoá hết mặt hàng trước khi xoá loại mặt hàng !";
                 }
                 else
                 {
@@ -212,8 +199,9 @@ namespace Sevices.Core.ItemCategoryService
 
                     if (check == null)
                     {
+                        result.Code = 31;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
                     }
                     else
                     {

@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.CreateTeam(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("UpdateTeam")]
@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.UpdateTeam(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("AddWorkerToTeam")]
@@ -37,7 +37,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.AddWorkerToTeam(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("RemoveWorkerFromTeam")]
@@ -45,7 +45,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.RemoveWorkerFromTeam(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]/{id}")]
@@ -53,7 +53,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.DeleteTeam(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{groupId}")]
@@ -61,7 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.GetTeamByGroupId(groupId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
@@ -69,7 +69,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _teamService.GetAllUserByTeamId(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
     }
