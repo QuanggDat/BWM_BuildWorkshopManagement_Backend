@@ -45,6 +45,7 @@ namespace Sevices.Core.OrderDetailService
                 var orderDetail = _dbContext.OrderDetail.FirstOrDefault(x => x.id == model.id);
                 if(orderDetail == null)
                 {
+                    result.Code =  37;
                     result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
                 }
                 else

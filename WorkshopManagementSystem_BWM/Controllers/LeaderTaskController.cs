@@ -26,7 +26,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var userId = User.GetId();
             var result = await _leaderTaskService.CreatedLeaderTask(userId, model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
         
         [HttpGet("[action]/{orderId}")]
@@ -61,7 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var result = await _leaderTaskService.UpdateLeaderTask(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]/{leaderTaskId}")]
@@ -69,7 +69,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _leaderTaskService.UpdateLeaderTaskStatus(leaderTaskId, status);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{leaderTaskId}")]
@@ -77,7 +77,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _leaderTaskService.DeleteLeaderTask(leaderTaskId);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]/{leaderTaskId}/{groupId}")]
@@ -85,7 +85,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _leaderTaskService.AssignLeaderTask(leaderTaskId, groupId);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }       
     }
 }

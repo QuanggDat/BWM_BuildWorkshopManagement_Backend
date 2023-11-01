@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _orderDetailService.Update(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
     }

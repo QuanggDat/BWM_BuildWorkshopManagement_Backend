@@ -68,6 +68,7 @@ namespace Sevices.Core.WorkerTaskService
                 var check = await _dbContext.WorkerTask.FindAsync(model.workerTaskId);
                 if (check == null)
                 {
+                    result.Code = 47;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                     return result;
@@ -124,6 +125,7 @@ namespace Sevices.Core.WorkerTaskService
             var check = await _dbContext.WorkerTask.FindAsync(workerTaskId);
             if (check == null)
             {
+                result.Code = 47;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                 return result;
@@ -153,6 +155,7 @@ namespace Sevices.Core.WorkerTaskService
             var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check != null)
             {
+                result.Code = 48;
                 result.Succeed = false;
                 result.ErrorMessage = "Công nhân đã được thêm vào công việc!";
                 return result;
@@ -188,6 +191,7 @@ namespace Sevices.Core.WorkerTaskService
             var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check == null)
             {
+                result.Code = 49;
                 result.Succeed = false;
                 result.ErrorMessage = "Công nhân chưa được thêm vào công việc!";
                 return result;
@@ -217,6 +221,7 @@ namespace Sevices.Core.WorkerTaskService
             var workerTask = await _dbContext.WorkerTask.FindAsync(workerTaskId);
             if (workerTask == null)
             {
+                result.Code = 47;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                 return result;

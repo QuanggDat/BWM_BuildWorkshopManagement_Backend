@@ -20,10 +20,10 @@ namespace Sevices.Core.UserService
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
         ResultModel GetAll();
         ResultModel GetByPhoneNumber(string phoneNumber);
-        ResultModel GetByID(Guid id);
+        ResultModel GetById(Guid id);
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
-        Task<List<ManagementUserModel>> GetAllUserForForeman();
+        List<ManagementUserModel> GetAllUserForForeman();
     }
 }

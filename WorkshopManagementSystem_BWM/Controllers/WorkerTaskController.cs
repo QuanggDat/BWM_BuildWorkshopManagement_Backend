@@ -27,7 +27,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var userId = User.GetId();
             var result = await _workerTaskService.CreateWorkerTask(userId, model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -37,7 +37,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var result = await _workerTaskService.UpdateWorkerTask(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]/{wokerTaskId}/{status}")]
@@ -45,7 +45,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _workerTaskService.UpdateWorkerTaskStatus(wokerTaskId, status);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{wokerTaskId}")]
@@ -53,7 +53,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _workerTaskService.DeleteWorkerTask(wokerTaskId);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -61,7 +61,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _workerTaskService.AssignWorkerTask(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
@@ -69,13 +69,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _workerTaskService.UnAssignWorkerTask(model);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{managerTaskId}")]
-        public async Task<ActionResult> GetAllWokerTask(Guid managerTaskId)
+        [HttpGet("[action]/{leaderTaskId}")]
+        public async Task<ActionResult> GetAllWokerTask(Guid leaderTaskId)
         {
-            var result = await _workerTaskService.GetAllWorkerTask(managerTaskId);
+            var result = await _workerTaskService.GetAllWorkerTask(leaderTaskId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);
         }

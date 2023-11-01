@@ -28,6 +28,7 @@ namespace Sevices.Core.OrderReportService
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
             if (user!.Role != null && user.Role.Name != "Foreman")
             {
+                result.Code = 56;
                 result.Succeed = false;
                 result.ErrorMessage = "Người dùng không phải quản đốc!";
                 return result;
@@ -39,6 +40,7 @@ namespace Sevices.Core.OrderReportService
                 .SingleOrDefaultAsync();
                 if (order == null)
                 {
+                    result.Code = 57;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                     return result;
@@ -47,6 +49,7 @@ namespace Sevices.Core.OrderReportService
                 {
                     if (order.status != Data.Enums.OrderStatus.InProgress)
                     {
+                        result.Code = 58;
                         result.Succeed = false;
                         result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                         return result;
@@ -57,6 +60,7 @@ namespace Sevices.Core.OrderReportService
 
                         if (checkReport == true)
                         {
+                            result.Code = 59;
                             result.Succeed = false;
                             result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
                             return result;
@@ -102,6 +106,7 @@ namespace Sevices.Core.OrderReportService
 
             if (report == null)
             {
+                result.Code = 60;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin báo cáo !";
                 return result;
@@ -110,6 +115,7 @@ namespace Sevices.Core.OrderReportService
             {
                 if (report.reportStatus == Data.Enums.ReportStatus.Complete)
                 {
+                    result.Code = 61;
                     result.Succeed = false;
                     result.ErrorMessage = "Báo cáo này đã hoàn thành !";
                     return result;

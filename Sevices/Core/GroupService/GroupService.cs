@@ -103,6 +103,7 @@ namespace Sevices.Core.GroupService
                 var nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted);
                 if (nameExists)
                 {
+                    result.Code = 16;
                     result.ErrorMessage = "Tên tổ đã tồn tại!";
                 }
                 else
@@ -154,6 +155,7 @@ namespace Sevices.Core.GroupService
                 bool nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted);
                 if (nameExists)
                 {
+                    result.Code = 16;
                     result.Succeed = false;
                     result.ErrorMessage = "Tổ tên này đã tồn tại.";
                 }
@@ -220,10 +222,12 @@ namespace Sevices.Core.GroupService
                 var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
+                    result.Code = 18;
                     result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
                 }
                 else if (user.groupId != model.groupId && user.teamId != null)
                 {
+                    result.Code = 19;
                     result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
@@ -231,6 +235,7 @@ namespace Sevices.Core.GroupService
                     var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
                     if (group == null)
                     {
+                        result.Code = 20;
                         result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                     else
@@ -250,7 +255,8 @@ namespace Sevices.Core.GroupService
                         }
                         else
                         {
-                            result.ErrorMessage = "Người dùng không phải nhosm trưởng8!";
+                            result.Code = 21;
+                            result.ErrorMessage = "Người dùng không phải trưởng nhóm!";
                         }
                     }
                 }
@@ -271,10 +277,12 @@ namespace Sevices.Core.GroupService
                 var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
+                    result.Code = 18;
                     result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
                 }
                 else if (user.groupId != model.groupId && user.teamId != null)
                 {
+                    result.Code = 19;
                     result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
@@ -282,6 +290,7 @@ namespace Sevices.Core.GroupService
                     var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
                     if (group == null)
                     {
+                        result.Code = 20;
                         result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                     else
@@ -301,6 +310,7 @@ namespace Sevices.Core.GroupService
                         }
                         else
                         {
+                            result.Code = 22;
                             result.ErrorMessage = "Người dùng không phải công nhân!";
                         }
                     }
@@ -321,10 +331,12 @@ namespace Sevices.Core.GroupService
                 var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
+                    result.Code = 18;
                     result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
                 }
                 else if (user.groupId != model.groupId && user.teamId != null)
                 {
+                    result.Code = 19;
                     result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
@@ -332,6 +344,7 @@ namespace Sevices.Core.GroupService
                     var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
                     if (group == null)
                     {
+                        result.Code = 20;
                         result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                     else
@@ -365,7 +378,8 @@ namespace Sevices.Core.GroupService
                 var isExistedTeam = _dbContext.Team.Any(x => x.groupId == id);
                 if (isExistedTeam)
                 {
-                    result.ErrorMessage = "Hãy xoá hết nhóm trước khi xoá tổ";
+                    result.Code = 23;
+                    result.ErrorMessage = "Hãy xoá hết nhóm trước khi xoá tổ!";
                 }
                 else
                 {
@@ -380,6 +394,7 @@ namespace Sevices.Core.GroupService
                     }
                     else
                     {
+                        result.Code = 20;
                         result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                 }

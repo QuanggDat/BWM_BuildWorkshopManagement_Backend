@@ -40,7 +40,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _orderService.GetById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("GetQuoteMaterialById/{id}")]
@@ -48,15 +48,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _orderService.GetQuoteMaterialById(id);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("ExportQuoteAsPDF/{id}")]
         public async Task<IActionResult> ExportQuoteAsPDF(Guid id)
         {
             var result = await _orderService.ExportQuoteToPDF(id);
-            if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName); 
-            return BadRequest(result.ErrorMessage);
+            if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPost]
@@ -64,7 +64,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = await _orderService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("UpdateStatus/{status}/{id}")]
@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             var result = _orderService.UpdateStatus(id, status);
             if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
     }

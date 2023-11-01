@@ -42,6 +42,7 @@ namespace Sevices.Core.ItemService
                 var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
                 if (checkCategory == null)
                 {
+                    result.Code = 33;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
 
@@ -121,6 +122,7 @@ namespace Sevices.Core.ItemService
                 
                 if (check == null)
                 {
+                    result.Code = 34;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
@@ -129,6 +131,7 @@ namespace Sevices.Core.ItemService
                     var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
                     if (checkCategory == null)
                     {
+                        result.Code = 33;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
 
@@ -217,6 +220,7 @@ namespace Sevices.Core.ItemService
                 var check = await _dbContext.Item.Where(x => x.id == id && x.isDeleted != true).FirstOrDefaultAsync();
                 if (check == null)
                 {
+                    result.Code = 34;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
@@ -314,6 +318,7 @@ namespace Sevices.Core.ItemService
 
                 if (check == null)
                 {
+                    result.Code = 34;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                 }
@@ -365,6 +370,7 @@ namespace Sevices.Core.ItemService
 
             if (check == null)
             {
+                result.Code = 33;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
             }
