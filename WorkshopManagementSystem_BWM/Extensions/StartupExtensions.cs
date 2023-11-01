@@ -8,15 +8,16 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sevices.Core.CategoryService;
 using Sevices.Core.GroupService;
+using Sevices.Core.ItemCategoryService;
 using Sevices.Core.ItemService;
-using Sevices.Core.ManagerTaskService;
+using Sevices.Core.LeaderTaskService;
 using Sevices.Core.MaterialService;
 using Sevices.Core.NotificationService;
 using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderReportService;
 using Sevices.Core.OrderService;
 using Sevices.Core.ReportService;
-using Sevices.Core.SquadService;
+using Sevices.Core.TeamService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
 using Sevices.Core.WorkerTaskService;
@@ -59,13 +60,14 @@ namespace WorkshopManagementSystem_BWM.Extensions
         public static void AddBussinessService(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IItemService, ItemService>(); 
+            services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IItemCategoryService, ItemCategoryService>();
             services.AddScoped<IMaterialService, MaterialService>();
-            services.AddScoped<IManagerTaskService, ManagerTaskService>();
+            services.AddScoped<ILeaderTaskService, LeaderTaskService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderDetailService, OrderDetailService>();
-            services.AddScoped<ISquadService, SquadService>();
             services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IMaterialCategoryService, MaterialCategoryService>();
             services.AddScoped<ITaskReportService, TaskReportService>();
             services.AddScoped<IUtilsService, UtilsService>();

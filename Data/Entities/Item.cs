@@ -15,10 +15,10 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
-        [ForeignKey("createById")]
-        public Guid? createById { get; set; }
-        public virtual User CreateBy { get; set; } = null!;
-        
+        [ForeignKey("itemCategoryId")]
+        public Guid? itemCategoryId { get; set; }
+        public ItemCategory ItemCategory { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public string code { get; set; } = null!;
         public string? image { get; set; } 

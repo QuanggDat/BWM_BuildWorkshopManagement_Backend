@@ -21,7 +21,7 @@ namespace Sevices.Core.WorkerTaskService
 
             var workerTask = new WorkerTask
             {
-                managerTaskId = model.managerTaskId,
+                leaderTaskId = model.leaderTaskId,
                 name = model.name,
                 description = model?.description ?? "",
                 startTime = model!.startTime,
@@ -69,7 +69,7 @@ namespace Sevices.Core.WorkerTaskService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin WorkerTask!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                     return result;
                 }
                 else
@@ -125,7 +125,7 @@ namespace Sevices.Core.WorkerTaskService
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin WokerTask!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                 return result;
             }
             else
@@ -218,7 +218,7 @@ namespace Sevices.Core.WorkerTaskService
             if (workerTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin WokerTask!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
                 return result;
             }
             else
@@ -238,18 +238,18 @@ namespace Sevices.Core.WorkerTaskService
             }           
         }
 
-        public async Task<List<WorkerTaskModel>> GetAllWorkerTask(Guid managerTaskId)
+        public async Task<List<WorkerTaskModel>> GetAllWorkerTask(Guid leaderTaskId)
         {          
 
             var check = await _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.managerTaskId == managerTaskId && x.isDeleted == false).ToListAsync();
+                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).ToListAsync();
             var list = new List<WorkerTaskModel>();
             foreach (var item in check)
             {
                 var user = await _dbContext.Users.FindAsync(item.createById);
                 var tmp = new WorkerTaskModel
                 {
-                    managerTaskId = item.managerTaskId,
+                    leaderTaskId = item.leaderTaskId,
                     userId = item.createById,
                     workerTaskId = item.id,
                     name = item.name,
@@ -268,6 +268,5 @@ namespace Sevices.Core.WorkerTaskService
             }
             return list;
         }
-       
     }
 }

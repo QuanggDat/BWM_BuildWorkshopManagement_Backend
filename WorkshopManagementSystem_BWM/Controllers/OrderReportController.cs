@@ -48,8 +48,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpGet("[action]")]
         public async Task<ActionResult> GetOrderReportsByFactoryId()
         {
-            var factoryId = User.GetId();
-            var result = await _orderReportService.GetOrderReportsByFactoryId(factoryId);
+            var foremanId = User.GetId();
+            var result = await _orderReportService.GetOrderReportsByForemanId(foremanId);
             if (result == null) return BadRequest("Không tìm thấy công việc!");
             return Ok(result);
         }

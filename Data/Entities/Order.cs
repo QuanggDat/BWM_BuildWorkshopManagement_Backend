@@ -35,7 +35,7 @@ namespace Data.Entities
         public DateTime? acceptanceDate { get; set; }
 
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
-        public virtual List<ManagerTask> ManagerTasks { get; set; } = new();
+        public virtual List<LeaderTask> LeaderTasks { get; set; } = new();
 
     }
 }

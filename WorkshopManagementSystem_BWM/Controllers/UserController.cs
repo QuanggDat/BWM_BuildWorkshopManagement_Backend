@@ -26,26 +26,26 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
         
-        [HttpPost("CreateFactory")]
-        public async Task<ActionResult> CeatedFactory([FromBody] UserCreateModel model)
+        [HttpPost("CreateForeman")]
+        public async Task<ActionResult> CeatedForeman([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
-            var result = await _userService.CreateFactory(model);
+            var result = await _userService.CreateForeman(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPost("CreateManager")]
-        public async Task<ActionResult> CeatedManager([FromBody] UserCreateModel model)
+        [HttpPost("CreateLeader")]
+        public async Task<ActionResult> CeatedLeader([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
             if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
-            var result = await _userService.CreateManager(model);
+            var result = await _userService.CreateLeader(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public async Task<ActionResult> GetAll()
         {
             var result = _userService.GetAll();
@@ -152,10 +152,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("GetAllUserWithSquadandGroup")]
-        public async Task<ActionResult<ManagementUserModel>> GetAllUserWithSquadAndGroup()
+        [HttpGet("GetAllUserForForeman")]
+        public async Task<ActionResult<ManagementUserModel>> GetAllUserForForeman()
         {
-            var result = await _userService.GetAllUserWithSquadAndGroup();
+            var result = await _userService.GetAllUserForForeman();
             if (result == null) return BadRequest("Không tìm thấy nhân công");
             return Ok(result);
         }

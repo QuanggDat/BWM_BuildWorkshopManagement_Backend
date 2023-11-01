@@ -18,9 +18,9 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public virtual Order Order { get; set; } = null!;
 
-        [ForeignKey("managerTaskId")]
-        public Guid? managerTaskId { get; set; }
-        public virtual ManagerTask ManagerTask { get; set; } = null!;
+        [ForeignKey("leaderTaskId")]
+        public Guid? leaderTaskId { get; set; }
+        public virtual LeaderTask LeaderTask { get; set; } = null!;
 
         [ForeignKey("reporterId")]
         public Guid reporterId { get; set; }

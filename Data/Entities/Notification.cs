@@ -26,9 +26,9 @@ namespace Data.Entities
         public Guid? reportId { get; set; }
         public Report Report { get; set; } = null!;
 
-        [ForeignKey("managerTaskId")]
-        public Guid? managerTaskId { get; set; }
-        public ManagerTask ManagerTask { get; set; } = null!;
+        [ForeignKey("leaderTaskId")]
+        public Guid? leaderTaskId { get; set; }
+        public LeaderTask LeaderTask { get; set; } = null!;
 
         [ForeignKey("workerTaskId")]
         public Guid? workerTaskId { get; set; }

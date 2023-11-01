@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ManagerTask
+    public class LeaderTask
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
-        [ForeignKey("managerId")]
-        public Guid managerId { get; set; }
-        public virtual User Manager { get; set; } = null!;
+        [ForeignKey("leaderId")]
+        public Guid leaderId { get; set; }
+        public virtual User Leader { get; set; } = null!;
 
         [ForeignKey("createById")]
         public Guid? createById { get; set; }
@@ -25,9 +25,9 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public virtual Order Order { get; set; } = null!;
 
-        [ForeignKey("groupId")]
-        public Guid? groupId { get; set; }
-        public virtual Group? Group { get; set; } = null!;
+        [ForeignKey("teamId")]
+        public Guid? teamId { get; set; }
+        public virtual Team? Team { get; set; } = null!;
 
         [ForeignKey("procedureId")]
         public Guid procedureId { get; set; }

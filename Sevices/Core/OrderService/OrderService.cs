@@ -89,7 +89,7 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy thông tin Order!";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
@@ -112,7 +112,7 @@ namespace Sevices.Core.OrderService
                 var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy thông tin Order!";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {

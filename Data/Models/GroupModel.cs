@@ -12,13 +12,11 @@ namespace Data.Models
         public string name { get; set; }
         public int member { get; set; }
         public bool isDeleted { get; set; }
-        public Guid squadId { get; set; }
     }
 
     public class CreateGroupModel
     {
         public string name { get; set; }
-        public Guid squadId { get; set; }
         public List<Guid> listUserId { get; set; } = new();
     }
 
@@ -26,7 +24,11 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; }
-        public Guid squadId { get; set; }
         public List<Guid> listUserId { get; set; } = new();
+    }
+
+    public class DeleteGroupModel
+    {
+        public Guid id { get; set; }
     }
 }

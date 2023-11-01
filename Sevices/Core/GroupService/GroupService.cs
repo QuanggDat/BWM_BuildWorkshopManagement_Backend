@@ -2,6 +2,8 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Sevices.Core.GroupService
 {
@@ -16,24 +18,46 @@ namespace Sevices.Core.GroupService
             _mapper = mapper;
         }
 
-        public ResultModel GetGroupBySquadId(Guid id, int pageIndex, int pageSize)
+        //For Foreman role to see all group in the factory.
+        public ResultModel GetAllGroup(string? search, int pageIndex, int pageSize)
         {
-            var result = new ResultModel();
+            ResultModel result = new ResultModel();
+
             try
             {
-                var data = _dbContext.Group.Where(g => g.squadId == id && !g.isDeleted).OrderByDescending(g => g.name).ToList();
-                var dataPaging = data.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listGroup = _dbContext.Group.Where(x => x.isDeleted != true)
+                   .OrderByDescending(x => x.name).ToList();
 
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listGroup = listGroup.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listGroupPaging = listGroup.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<GroupModel>();
+                foreach (var item in listGroup)
+                {
+
+                    var tmp = new GroupModel
+                    {
+                        id = item.id,
+                        name = item.name,
+                        member = item.member
+                    };
+                    list.Add(tmp);
+                }
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<SquadModel>>(dataPaging),
-                    Total = data.Count
+                    Data = list,
+                    Total = listGroupPaging.Count
                 };
                 result.Succeed = true;
+
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }
@@ -43,7 +67,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(s => s.groupId == id && !s.banStatus).OrderByDescending(s => s.fullName).ToList();
+                var listUser = _dbContext.User.Where(x => x.groupId == id && !x.banStatus).OrderByDescending(s => s.fullName).ToList();
                 result.Data = _mapper.Map<List<UserModel>>(listUser);
                 result.Succeed = true;
             }
@@ -54,34 +78,66 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        //Factory and Manager can both use this 
+        public ResultModel GetAllUserNotInGroupId(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Where(x => x.groupId != id && !x.banStatus).OrderByDescending(s => s.fullName).ToList();
+                result.Data = _mapper.Map<List<UserModel>>(listUser);
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        //Foreman will create new group 
         public ResultModel CreateGroup(CreateGroupModel model)
         {
             var result = new ResultModel();
             try
             {
-                var newGroup = new Group
+                var nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted);
+                if (nameExists)
                 {
-                    name = model.name,
-                    member = model.listUserId.Count,
-                    squadId = model.squadId,
-                    isDeleted = false
-                };
-                _dbContext.Group.Add(newGroup);
-
-                if (model.listUserId.Any())
+                    result.ErrorMessage = "Tên tổ đã tồn tại!";
+                }
+                else
                 {
                     var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
-                    foreach (var user in listUser)
+                    var listUserInTeam = listUser.Where(x => x.teamId != null).ToList();
+                    if (listUserInTeam.Any())
                     {
-                        user.groupId = newGroup.id;
+                        var listName = listUserInTeam.Select(x => x.fullName).ToList();
+                        result.ErrorMessage = $"Hãy xoá người dùng khỏi nhóm trước khi thêm vào tổ mới: {string.Join(", ", listName)}";
                     }
-                    _dbContext.User.UpdateRange(listUser);
-                }
+                    else
+                    {
+                        var newGroup = new Group
+                        {
+                            name = model.name,
+                            member = model.listUserId.Count,
+                            isDeleted = false
+                        };
+                        _dbContext.Group.Add(newGroup);
 
-                _dbContext.SaveChanges();
-                result.Data = newGroup.id;
-                result.Succeed = true;
+                        if (listUser.Any())
+                        {
+                            foreach (var user in listUser)
+                            {
+                                user.groupId = newGroup.id;
+                            }
+                            _dbContext.User.UpdateRange(listUser);
+                        }
+
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = newGroup.id;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -95,36 +151,58 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var data = _dbContext.Group.FirstOrDefault(s => s.id == model.id);
-                if (data != null)
+                bool nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted);
+                if (nameExists)
                 {
-                    data.name = model.name;
-                    data.squadId = model.squadId;
-                    data.member = model.listUserId.Count;
-                    _dbContext.Group.Update(data);
-
-                    var listUser = _dbContext.User.Where(x => x.groupId == data.id || model.listUserId.Contains(x.Id)).ToList();
-                    foreach (var user in listUser)
-                    {
-                        if (model.listUserId.Contains(user.Id))
-                        {
-                            user.groupId = data.id;
-                        }
-                        else
-                        {
-                            user.groupId = null;
-                        }
-                    }
-                    _dbContext.User.UpdateRange(listUser);
-
-                    _dbContext.SaveChanges();
-                    result.Data = _mapper.Map<GroupModel>(data);
-                    result.Succeed = true;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Tổ tên này đã tồn tại.";
                 }
                 else
                 {
-                    result.ErrorMessage = "Không tìm thấy nhóm";
-                    result.Succeed = false;
+                    var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
+                    var listUserInTeam = listUser.Where(x => x.groupId != model.id && x.teamId != null).ToList();
+                    if (listUserInTeam.Any())
+                    {
+                        var listName = listUserInTeam.Select(x => x.fullName).ToList();
+                        result.ErrorMessage = $"Hãy xoá người dùng khỏi nhóm trước khi thay đổi tổ: {string.Join(", ", listName)}";
+                    }
+                    else
+                    {
+                        var data = _dbContext.Group.FirstOrDefault(s => s.id == model.id);
+                        if (data != null)
+                        {
+                            data.name = model.name;
+                            data.member = model.listUserId.Count;
+                            _dbContext.Group.Update(data);
+
+                            var listUserByGroup = _dbContext.User.Where(x => x.groupId == data.id).ToList();
+                            if(listUser.Any())
+                            {
+                                listUserByGroup.AddRange(listUser);
+                            }
+                            foreach (var user in listUserByGroup)
+                            {
+                                if (model.listUserId.Contains(user.Id))
+                                {
+                                    user.groupId = data.id;
+                                }
+                                else
+                                {
+                                    user.groupId = null;
+                                }
+                            }
+                            _dbContext.User.UpdateRange(listUser);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<Group, GroupModel>(data);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                        }
+                    }
+
                 }
             }
             catch (Exception e)
@@ -134,36 +212,97 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        //Need check again not complete. Fac and Manager can both use this function.
+        public ResultModel AddLeaderToGroup(AddWorkerToGroupModel model)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
+                {
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.groupId != model.groupId && user.teamId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
+                }
+                else
+                {
+                    var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
+                    if (group == null)
+                    {
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
+                    else
+                    {
+                        if (user.Role != null && user.Role.Name == "Leader")
+                        {
+                            //Update TeamId
+                            user.groupId = model.groupId;
+                            _dbContext.User.Update(user);
+
+                            group.member += 1;
+                            _dbContext.Group.Update(group);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<TeamModel>(group);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Người dùng không phải nhosm trưởng8!";
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        //Foreman and Leader can both use this function.
         public ResultModel AddWorkerToGroup(AddWorkerToGroupModel model)
         {
             var result = new ResultModel();
             try
             {
-                var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy người dùng";
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.groupId != model.groupId && user.teamId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
                 {
                     var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
                     if (group == null)
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                     else
                     {
-                        //Update GroupId
-                        user.groupId = model.groupId;
-                        _dbContext.User.Update(user);
+                        if (user.Role != null && user.Role.Name == "Worker")
+                        {
+                            //Update TeamId
+                            user.groupId = model.groupId;
+                            _dbContext.User.Update(user);
 
-                        group.member += 1;
-                        _dbContext.Group.Update(group);
+                            group.member += 1;
+                            _dbContext.Group.Update(group);
 
-                        _dbContext.SaveChanges();
-                        result.Data = _mapper.Map<GroupModel>(group);
-                        result.Succeed = true;
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<TeamModel>(group);
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Người dùng không phải công nhân!";
+                        }
                     }
                 }
             }
@@ -174,26 +313,30 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
+        public ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model)
         {
             var result = new ResultModel();
             try
             {
-                var user = _dbContext.User.FirstOrDefault(i => i.Id == model.id);
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
                 if (user == null)
                 {
-                    result.ErrorMessage = "Không tìm thấy người dùng";
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else if (user.groupId != model.groupId && user.teamId != null)
+                {
+                    result.ErrorMessage = "Hãy xoá người dùng ra khỏi nhóm!";
                 }
                 else
                 {
                     var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
                     if (group == null)
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                     else
                     {
-                        //Update GroupId
+                        //Update TeamId
                         user.groupId = null;
                         _dbContext.User.Update(user);
 
@@ -201,8 +344,8 @@ namespace Sevices.Core.GroupService
                         _dbContext.Group.Update(group);
 
                         _dbContext.SaveChanges();
+                        result.Data = _mapper.Map<TeamModel>(group);
                         result.Succeed = true;
-                        result.Data = _mapper.Map<GroupModel>(group);
                     }
                 }
             }
@@ -219,28 +362,28 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var isExistedUser = _dbContext.User.Any(x => x.groupId == id);
-                if (isExistedUser)
+                var isExistedTeam = _dbContext.Team.Any(x => x.groupId == id);
+                if (isExistedTeam)
                 {
-                    result.ErrorMessage = "Hãy xoá hết thành viên trước khi xoá nhóm";
+                    result.ErrorMessage = "Hãy xoá hết nhóm trước khi xoá tổ";
                 }
                 else
                 {
-                    var group = _dbContext.Group.FirstOrDefault(s => s.id == id);
+                    var group = _dbContext.Group.Where(s => s.id == id).FirstOrDefault();
                     if (group != null)
                     {
                         group.isDeleted = true;
                         _dbContext.Group.Update(group);
                         _dbContext.SaveChanges();
-
-                        result.Data = _mapper.Map<GroupModel>(group);
+                        result.Data = _mapper.Map<TeamModel>(group);
                         result.Succeed = true;
                     }
                     else
                     {
-                        result.ErrorMessage = "Không tìm thấy nhóm";
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                     }
                 }
+
             }
             catch (Exception ex)
             {

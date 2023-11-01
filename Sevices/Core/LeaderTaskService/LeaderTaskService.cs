@@ -10,27 +10,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sevices.Core.ManagerTaskService
+namespace Sevices.Core.LeaderTaskService
 {
-    public class ManagerTaskService : IManagerTaskService
+    public class LeaderTaskService : ILeaderTaskService
     {
         private readonly AppDbContext _dbContext;
 
-        public ManagerTaskService(AppDbContext dbContext)
+        public LeaderTaskService(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<ResultModel> CreatedManagerTask(Guid createById, CreateManagerTaskModel model)
+        public async Task<ResultModel> CreatedLeaderTask(Guid createById, CreateLeaderTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;            
 
-            var check = await _dbContext.User.FindAsync(model.managerId);
+            var check = await _dbContext.User.FindAsync(model.leaderId);
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin Manager!";
+                result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
                 return result;
             }
             else
@@ -53,7 +53,7 @@ namespace Sevices.Core.ManagerTaskService
                     }
                     else
                     {
-                        var check1 = await _dbContext.ManagerTask.SingleOrDefaultAsync(a => a.procedureId == model.procedureId && a.orderId == model.orderId && a.isDeleted == false);
+                        var check1 = await _dbContext.LeaderTask.SingleOrDefaultAsync(a => a.procedureId == model.procedureId && a.orderId == model.orderId && a.isDeleted == false);
 
                         if (check1 != null)
                         {
@@ -81,9 +81,9 @@ namespace Sevices.Core.ManagerTaskService
                                 else
                                 {
 
-                                    var managerTask = new ManagerTask
+                                    var leaderTask = new LeaderTask
                                     {
-                                        managerId = model.managerId,
+                                        leaderId = model.leaderId,
                                         createById = createById,
                                         orderId = model.orderId,
                                         procedureId = model.procedureId,
@@ -96,10 +96,10 @@ namespace Sevices.Core.ManagerTaskService
 
                                     try
                                     {
-                                        await _dbContext.ManagerTask.AddAsync(managerTask);
+                                        await _dbContext.LeaderTask.AddAsync(leaderTask);
                                         await _dbContext.SaveChangesAsync();
                                         result.Succeed = true;
-                                        result.Data = managerTask.id;
+                                        result.Data = leaderTask.id;
                                     }
                                     catch (Exception ex)
                                     {
@@ -115,16 +115,16 @@ namespace Sevices.Core.ManagerTaskService
             }           
         }
 
-        public async Task<ResultModel> UpdateManagerTask(UpdateManagerTaskModel model)
+        public async Task<ResultModel> UpdateLeaderTask(UpdateLeaderTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var managerTask = await _dbContext.ManagerTask.FindAsync(model.id);
-            if (managerTask == null)
+            var leaderTask = await _dbContext.LeaderTask.FindAsync(model.id);
+            if (leaderTask == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin ManagerTask!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -136,17 +136,17 @@ namespace Sevices.Core.ManagerTaskService
                     return result;
                 }
                 else
-                {                    
-                    managerTask.startTime = model.startTime;
-                    managerTask.endTime = model.endTime;
-                    managerTask.status = model.status;
-                    managerTask.description = model.description;
+                {
+                    leaderTask.startTime = model.startTime;
+                    leaderTask.endTime = model.endTime;
+                    leaderTask.status = model.status;
+                    leaderTask.description = model.description;
 
                     try
                     {
                         await _dbContext.SaveChangesAsync();
                         result.Succeed = true;
-                        result.Data = managerTask.id;
+                        result.Data = leaderTask.id;
                     }
                     catch (Exception ex)
                     {
@@ -157,25 +157,25 @@ namespace Sevices.Core.ManagerTaskService
             }      
         }
 
-        public async Task<List<ManagerTaskModel>> GetManagerTaskByOrderId(Guid orderId)
+        public async Task<List<LeaderTaskModel>> GetLeaderTaskByOrderId(Guid orderId)
         {
-            var result = new List<ManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
+            var result = new List<LeaderTaskModel>();
+            var leaderTask = await _dbContext.LeaderTask.Include(x => x.Procedure)
                 .Where(a => a.orderId == orderId && a.isDeleted == false).ToListAsync();
-            if (managerTask == null) { 
+            if (leaderTask == null) { 
                 return null; 
             }
             else
             {
-                foreach (var item in managerTask)
+                foreach (var item in leaderTask)
                 {
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var leaderTmp = await _dbContext.User.FindAsync(item.leaderId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ManagerTaskModel
+                    var tmp = new LeaderTaskModel
                     {
                         createByName = createByTmp!.fullName,
-                        managerName = managerTmp!.fullName,
+                        leaderName = leaderTmp!.fullName,
                         orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
@@ -193,27 +193,27 @@ namespace Sevices.Core.ManagerTaskService
             
         }
 
-        public async Task<List<ManagerTaskModel>> GetManagerTaskByManagerId(Guid managerId)
+        public async Task<List<LeaderTaskModel>> GetLeaderTaskByLeaderId(Guid leaderId)
         {
-            var result = new List<ManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
-                .Where(a => a.managerId == managerId && a.isDeleted == false).ToListAsync();
+            var result = new List<LeaderTaskModel>();
+            var leaderTask = await _dbContext.LeaderTask.Include(x => x.Procedure)
+                .Where(a => a.leaderId == leaderId && a.isDeleted == false).ToListAsync();
 
-            if (managerTask == null)
+            if (leaderTask == null)
             {
                 return null;
             }
             else
             {
-                foreach (var item in managerTask)
+                foreach (var item in leaderTask)
                 {
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var leaderTmp = await _dbContext.User.FindAsync(item.leaderId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ManagerTaskModel
+                    var tmp = new LeaderTaskModel
                     {
                         createByName = createByTmp!.fullName,
-                        managerName = managerTmp!.fullName,
+                        leaderName = leaderTmp!.fullName,
                         orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
@@ -229,26 +229,26 @@ namespace Sevices.Core.ManagerTaskService
             }
         }
 
-        public async Task<List<ManagerTaskModel>> GetManagerTaskByFactory (Guid factoryId)
+        public async Task<List<LeaderTaskModel>> GetLeaderTaskByForemanId(Guid foremanId)
         {
-            var result = new List<ManagerTaskModel>();
-            var managerTask = await _dbContext.ManagerTask.Include(x => x.Procedure)
-                .Where(a => a.createById == factoryId && a.isDeleted == false).ToListAsync();
-            if (managerTask == null)
+            var result = new List<LeaderTaskModel>();
+            var leaderTask = await _dbContext.LeaderTask.Include(x => x.Procedure)
+                .Where(a => a.createById == foremanId && a.isDeleted == false).ToListAsync();
+            if (leaderTask == null)
             {
                 return null;
             }
             else
             {
-                foreach (var item in managerTask)
+                foreach (var item in leaderTask)
                 {
                     var orderTmp = await _dbContext.Order.FindAsync(item.orderId);
-                    var managerTmp = await _dbContext.User.FindAsync(item.managerId);
+                    var leaderTmp = await _dbContext.User.FindAsync(item.leaderId);
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
-                    var tmp = new ManagerTaskModel
+                    var tmp = new LeaderTaskModel
                     {
                         createByName = createByTmp!.fullName,
-                        managerName = managerTmp!.fullName,
+                        leaderName = leaderTmp!.fullName,
                         orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
@@ -264,15 +264,15 @@ namespace Sevices.Core.ManagerTaskService
             }
         }
 
-        public async Task<ResultModel> UpdateManagerTaskStatus(Guid taskManagerId, TaskStatus status)
+        public async Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, TaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
-            var task = await _dbContext.ManagerTask.FindAsync(taskManagerId);
+            var task = await _dbContext.LeaderTask.FindAsync(leaderTaskId);
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -295,16 +295,16 @@ namespace Sevices.Core.ManagerTaskService
             
         }
 
-        public async Task<ResultModel> DeleteManagerTask(Guid taskManagerId)
+        public async Task<ResultModel> DeleteLeaderTask(Guid leaderTaskId)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false; 
 
-            var check = await _dbContext.ManagerTask.FindAsync(taskManagerId);
+            var check = await _dbContext.LeaderTask.FindAsync(leaderTaskId);
             if (check == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
@@ -326,22 +326,22 @@ namespace Sevices.Core.ManagerTaskService
             } 
         }        
 
-        public async Task<ResultModel> AssignManagerTask(Guid taskManagerId, Guid groupId)
+        public async Task<ResultModel> AssignLeaderTask(Guid leaderTaskId, Guid teamId)
         {
 
             ResultModel result = new ResultModel();
 
             result.Succeed = false;
-            var task = await _dbContext.ManagerTask.FindAsync(taskManagerId);
+            var task = await _dbContext.LeaderTask.FindAsync(leaderTaskId);
             if (task == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
                 return result;
             }
             else
             {
-                var check = await _dbContext.Group.SingleOrDefaultAsync(x => x.id == groupId);
+                var check = await _dbContext.Team.SingleOrDefaultAsync(x => x.id == teamId);
                 if (check == null)
                 {
                     result.Succeed = false;
@@ -360,7 +360,7 @@ namespace Sevices.Core.ManagerTaskService
                     {
                         try
                         {
-                            task.groupId = groupId;
+                            task.teamId = teamId;
                             await _dbContext.SaveChangesAsync();
                             result.Succeed = true;
                             result.Data = task.id;
@@ -373,7 +373,7 @@ namespace Sevices.Core.ManagerTaskService
                     }
                 }
             }
-        }
+        }  
 
         /*
         public async Task<ResultModel> AssignManagerTask(AssignManagerTaskModel model)

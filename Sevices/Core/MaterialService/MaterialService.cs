@@ -30,7 +30,7 @@ namespace Sevices.Core.MaterialService
             _configuration = configuration;
         }
         
-        public ResultModel CreateMaterial(Guid createdById, CreateMaterialModel model)
+        public ResultModel CreateMaterial(CreateMaterialModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -44,11 +44,11 @@ namespace Sevices.Core.MaterialService
                 }
                 else 
                 {
-                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId).SingleOrDefault();
+                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
                     if (checkCategory == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu !";
                         
                     }
                     else
@@ -60,7 +60,6 @@ namespace Sevices.Core.MaterialService
                         //Create Material 
                         var material = new Material
                         {
-                            createById = createdById,
                             materialCategoryId = model.materialCategoryId,
                             name = model.name,                            
                             image = model.image,
@@ -100,7 +99,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
                 else
                 {
@@ -108,11 +107,11 @@ namespace Sevices.Core.MaterialService
                     {
                         model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
                     }
-                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId).SingleOrDefault();
+                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
                     if (checkCategory == null)
                     {
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu !";
                     }
                     else
                     {
@@ -122,7 +121,7 @@ namespace Sevices.Core.MaterialService
                             if (checkExists != null)
                             {
                                 result.Succeed = false;
-                                result.ErrorMessage = "Tên này đã tồn tại !";
+                                result.ErrorMessage = "Tên vật liệu đã tồn tại !";
                             }
                             else
                             {
@@ -142,7 +141,7 @@ namespace Sevices.Core.MaterialService
 
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.id;
+                                result.Data = "Cập nhập thành công " + check.name;
                             }
                         }
                         else
@@ -163,7 +162,7 @@ namespace Sevices.Core.MaterialService
 
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.id;
+                            result.Data = "Cập nhập thành công " + check.name;
                         }
                     }
                 }               
@@ -180,17 +179,18 @@ namespace Sevices.Core.MaterialService
             ResultModel result = new ResultModel();
             try
             {
+
                 var check = _dbContext.Material.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
                 else
                 {
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.id;
+                    result.Data = "Xoá thành công " + check.name;
                     result.Succeed = true;
                 }
             }
@@ -212,18 +212,15 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material!";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                 }
                 else
                 {
-                    var createBy = _dbContext.Users.Find(check.createById);
                     var materialCategory = _dbContext.MaterialCategory.Find(check.materialCategoryId);
 
                     var materialModel = new MaterialModel
                     {
                         id = check.id,
-                        createById = check.createById,
-                        createByName = createBy!.fullName,
                         materialCategoryId = check.materialCategoryId,
                         materialCategoryName = materialCategory!.name,
                         name = check.name,
@@ -261,7 +258,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin MaterialCategory !";
+                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
                     return result;
                 }
                 else
@@ -298,14 +295,11 @@ namespace Sevices.Core.MaterialService
                 var list = new List<MaterialModel>();
                 foreach (var item in listMaterialCategoryPaging)
                 {
-                    var createBy = _dbContext.Users.Find(item.createById);
                     var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
 
                     var tmp = new MaterialModel
                     {
                         id = item.id,
-                        createById = item.createById,
-                        createByName = createBy!.fullName,
                         materialCategoryId = item.materialCategoryId,
                         materialCategoryName = materialCategory!.name,
                         name = item.name,
@@ -349,7 +343,7 @@ namespace Sevices.Core.MaterialService
                 if (check == null)
                 {
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin Material Category!";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại vật liệu!";
                 }
                 else
                 {
@@ -362,14 +356,12 @@ namespace Sevices.Core.MaterialService
                     var list = new List<MaterialModel>();
                     foreach (var item in listMaterialCategoryPaging)
                     {
-                        var createBy = _dbContext.Users.Find(item.createById);
+                        
                         var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
 
                         var tmp = new MaterialModel
                         {
                             id = item.id,
-                            createById = item.createById,
-                            createByName = createBy!.fullName,
                             materialCategoryId = item.materialCategoryId,
                             materialCategoryName = materialCategory!.name,
                             name = item.name,

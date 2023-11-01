@@ -22,9 +22,9 @@ namespace Data.Models
         public Guid? roleId { get; set; }
         public Role? Role { get; set; }
         public Guid? groupId { get; set; }
-        public Group Group { get; set; } = null!;
+        public Team Team { get; set; } = null!;
         public Guid? squadId { get; set; }
-        public Squad Squad { get; set; } = null!;
+        public Group Group { get; set; } = null!;
         public bool banStatus { get; set; }    
     }
 
@@ -83,6 +83,18 @@ namespace Data.Models
 
     }
 
+    public class AddWorkerToTeamModel
+    {
+        public Guid id { get; set; }
+        public Guid teamId { get; set; }
+    }
+
+    public class RemoveWorkerFromTeamModel
+    {
+        public Guid id { get; set; }
+        public Guid teamId { get; set; }
+    }
+
     public class AddWorkerToGroupModel
     {
         public Guid id { get; set; }
@@ -95,23 +107,11 @@ namespace Data.Models
         public Guid groupId { get; set; }
     }
 
-    public class AddWorkerToSquadModel
-    {
-        public Guid id { get; set; }
-        public Guid squadId { get; set; }
-    }
-
-    public class RemoveWorkerFromSquadModel
-    {
-        public Guid id { get; set; }
-        public Guid squadId { get; set; }
-    }
-
-    public class AddManagerToSquadModel
+    public class AddManagerToGroupModel
     {
         public Guid id { get; set; }
         public Guid roleId { get; set; }
-        public Guid squadId { get; set; }
+        public Guid groupId { get; set; }
     }
 
     public class ManagementUserModel
@@ -119,7 +119,7 @@ namespace Data.Models
         public string fullName { get; set; }
         public string image { get; set; } 
         public string roleName { get; set; } 
-        public string squadName { get; set; } 
+        public string teamName { get; set; } 
         public string groupName { get; set; } 
         public bool banStatus { get; set; } 
 

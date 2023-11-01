@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class Squad
+    public class Team
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+
+        [ForeignKey("groupId")]
+        public Guid groupId { get; set; }
+        public virtual Group Group { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public int member { get; set; }
         public bool isDeleted { get; set; }
-
+              
         public virtual List<User> Users { get; set; } = new();
-        public virtual List<Group> Groups { get; set; } = new();
+        public virtual List<LeaderTask> LeaderTasks { get; set; } = new();
     }
 }
-

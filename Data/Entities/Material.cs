@@ -14,10 +14,7 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
 
-        [ForeignKey("createById")]
-        public Guid? createById { get; set; }
-        public virtual User CreateBy { get; set; } = null!;
-
+       
         [ForeignKey("materialCategoryId")]
         public Guid materialCategoryId { get; set; }
         public MaterialCategory MaterialCategory { get; set; } = null!;

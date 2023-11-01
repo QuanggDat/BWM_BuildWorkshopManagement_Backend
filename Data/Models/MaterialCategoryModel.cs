@@ -10,8 +10,6 @@ namespace Data.Models
     public class MaterialCategoryModel
     {
         public Guid id { get; set; }
-        public Guid? createById { get; set; }
-        public string createByName { get; set; } = null!;
         public string name { get; set; } = null!;        
     }
 

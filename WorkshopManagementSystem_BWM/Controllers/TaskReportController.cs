@@ -21,7 +21,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> SendReport(CreateTaskReportModel model)
         {
-            if (model.managerTaskId == Guid.Empty) return BadRequest("Không nhận được managerTaskId!");
+            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
             var result = await _reportService.CreateTaskReport(userId,model);
@@ -46,20 +46,20 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetProgressReportsByManagerId()
+        public async Task<ActionResult> GetProgressReportsByLeaderId()
         {
-            var managerId = User.GetId();
-            var result = await _reportService.GetProgressTaskReportsByManagerId(managerId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
+            var leaderId = User.GetId();
+            var result = await _reportService.GetProgressTaskReportsByLeaderId(leaderId);
+            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetProblemReportsByManagerId()
+        public async Task<ActionResult> GetProblemReportsByLeaderId()
         {
-            var managerId = User.GetId();
-            var result = await _reportService.GetProblemTaskReportsByManagerId(managerId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
+            var leaderId = User.GetId();
+            var result = await _reportService.GetProblemTaskReportsByLeaderId(leaderId);
+            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             return Ok(result);
         }
     }

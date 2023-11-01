@@ -14,7 +14,7 @@ namespace Sevices.Core.ReportService
         Task<ResultModel> CreateTaskReport(Guid reporterId, CreateTaskReportModel model);
         Task<TaskReportModel?> GetTaskReportById(Guid reportId);
         Task<ResultModel> TaskReportResponse(ReviewsReportModel model);
-        Task<List<TaskReportModel>> GetProgressTaskReportsByManagerId(Guid managerId);
-        Task<List<TaskReportModel>> GetProblemTaskReportsByManagerId(Guid managerId);
+        Task<List<TaskReportModel>> GetProgressTaskReportsByLeaderId(Guid leaderId);
+        Task<List<TaskReportModel>> GetProblemTaskReportsByLeaderId(Guid leaderId);
     }
 }

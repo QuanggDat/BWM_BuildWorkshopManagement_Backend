@@ -10,8 +10,8 @@ namespace Sevices.Core.UserService
     public interface IUserService
     {
         Task<ResultModel> CreateAdmin(UserCreateModel model);
-        Task<ResultModel> CreateFactory(UserCreateModel model);
-        Task<ResultModel> CreateManager(UserCreateModel model);
+        Task<ResultModel> CreateForeman(UserCreateModel model);
+        Task<ResultModel> CreateLeader(UserCreateModel model);
         Task<ResultModel> CreateWorker(UserCreateModel model);
         Task<ResultModel> Login(LoginModel model);
         ResultModel Update(UserUpdateModel model);
@@ -24,6 +24,6 @@ namespace Sevices.Core.UserService
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
-        Task<List<ManagementUserModel>> GetAllUserWithSquadAndGroup();
+        Task<List<ManagementUserModel>> GetAllUserForForeman();
     }
 }

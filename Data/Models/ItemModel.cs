@@ -22,8 +22,8 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-        public Guid? createById { get; set; }
-        public string createByName { get; set; } = null!;
+        public Guid? itemCategoryId { get; set; }
+        public string itemCategoryName { get; set; } = null!;
         public List<_Procedure> Procedures { get; set; } = null!;
         public List<_Material> Materials { get; set; } = null!;
     }
@@ -41,6 +41,7 @@ namespace Data.Models
 
     public class CreateItemModel
     {
+        public Guid itemCategoryId { get; set; }
         public string name { get; set; } = null!;
         public string? image { get; set; } 
         public double length { get; set; }
@@ -53,12 +54,13 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-        public List<Guid> procedures { get; set; } = null!;
-        public List<Guid> materials { get; set; } = null!;
+        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<Guid> listMaterialId { get; set; } = null!;
     }
 
     public class UpdateItemModel
     {
+        public Guid itemCategoryId { get; set; }
         public Guid id { get; set; }
         public string name { get; set; } = null!;
         public string? image { get; set; }
@@ -72,8 +74,8 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }
-        public List<Guid> procedures { get; set; } = null!;
-        public List<Guid> materials { get; set; } = null!;
+        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<Guid> listMaterialId { get; set; } = null!;
     }
 
     public class DeleteItemModel
@@ -82,6 +84,7 @@ namespace Data.Models
         public bool isDeleted { get; set; } = true;
     }
 
+    /*
     public class ItemMaterialModel
     {
         public Guid id { get; set; }
@@ -92,7 +95,7 @@ namespace Data.Models
         public double price { get; set; }
         public double totalPrice { get; set; }
     }
-
+    
     public class AddMaterialToItemModel
     {
         [Required] public Guid itemId { get; set; }
@@ -111,6 +114,7 @@ namespace Data.Models
         [Required] public double price { get; set; }
         public double totalPrice { get; set; }
     }
+    */
 }
 
     
