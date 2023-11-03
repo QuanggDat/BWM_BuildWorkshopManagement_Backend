@@ -27,6 +27,7 @@ namespace Data.DataAccess
         public DbSet<Report> Report { get; set; }
         public DbSet<Resource> Resource { get; set; }
         public DbSet<Role> Role { get; set; }
+        public DbSet<Step> Step { get; set; }
         public DbSet<Group> Group { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }
@@ -36,7 +37,7 @@ namespace Data.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);           
 
             // Configure the relationship between OrdersAssignTo and User
             modelBuilder.Entity<Order>()

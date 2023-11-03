@@ -32,7 +32,8 @@ namespace Data.Entities
         [ForeignKey("procedureId")]
         public Guid procedureId { get; set; }
         public virtual Procedure Procedure { get; set; } = null!;
-
+        public DateTime estimatedStartTime { get; set; }
+        public DateTime estimatedEndTime { get; set; }
         public DateTime startTime { get; set; } 
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }

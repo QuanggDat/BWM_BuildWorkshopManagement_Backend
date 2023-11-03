@@ -25,7 +25,9 @@ namespace Data.Entities
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;     
-        public DateTime orderDate { get; set; }
+        public DateTime createDate { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
         public string description { get; set; } = null!;
         public OrderStatus status { get; set; } 
         public string fileContract { get; set; } = null!;

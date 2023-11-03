@@ -19,7 +19,7 @@ namespace Data.Models
         public UserModel assign { get; set; } = null!;
         public Guid createdById { get; set; }
         public UserModel createdBy { get; set; } = null!;
-        public DateTime orderDate { get; set; }
+        public DateTime createDate { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;
@@ -48,7 +48,7 @@ namespace Data.Models
         public UserModel assign { get; set; } = null!;
         public Guid createdById { get; set; }
         public UserModel createdBy { get; set; } = null!;
-        public DateTime orderDate { get; set; }
+        public DateTime createDate { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;
