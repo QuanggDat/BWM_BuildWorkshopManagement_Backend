@@ -16,11 +16,12 @@ namespace Data.Entities
         [ForeignKey("procedureId")]
         public Guid procedureId { get; set; }
         public Procedure Procedure { get; set; } = null!;
+        public int priority { get; set; }
+        public int estimatedCompletedTime { get; set; }
 
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
         public Item Item { get; set; } = null!;
-        public int priority { get; set; }
-        public int estimatedCompletedTime { get; set; }
+        
     }
 }
