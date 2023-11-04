@@ -70,11 +70,8 @@ namespace Sevices.Core.MaterialService
                             thickness = model.thickness,
                             unit = model.unit,
                             sku = $"{model.name[0]}-{model.supplier}-{model.thickness}",
-                            importDate = model.importDate,
                             importPlace = model.importPlace,
-                            amount = model.amount,
                             price = model.price,
-                            totalPrice = model.price * model.amount,
                             isDeleted = false
                         };
            
@@ -136,11 +133,8 @@ namespace Sevices.Core.MaterialService
                                 check.supplier = model.supplier;
                                 check.thickness = model.thickness;
                                 check.unit = model.unit;                                
-                                check.importDate = model.importDate;
                                 check.importPlace = model.importPlace;
-                                check.amount = model.amount;
                                 check.price = model.price;
-                                check.totalPrice = model.price * model.amount;
                                 check.sku = $"{model.name[0]}-{model.supplier}-{model.thickness}";
                                 check.materialCategoryId = model.materialCategoryId;
 
@@ -157,11 +151,8 @@ namespace Sevices.Core.MaterialService
                             check.supplier = model.supplier;
                             check.thickness = model.thickness;
                             check.unit = model.unit;
-                            check.importDate = model.importDate;
                             check.importPlace = model.importPlace;
-                            check.amount = model.amount;
                             check.price = model.price;
-                            check.totalPrice = model.price * model.amount;
                             check.sku = $"{model.name[0]}-{model.supplier}-{model.thickness}";
                             check.materialCategoryId = model.materialCategoryId;
 
@@ -237,11 +228,8 @@ namespace Sevices.Core.MaterialService
                         thickness = check.thickness,
                         unit = check.unit,
                         sku = check.sku,
-                        importDate = check.importDate,
                         importPlace = check.importPlace,
-                        amount = check.amount,
                         price = check.price,
-                        totalPrice = check.totalPrice,
                     };
 
                     result.Data = materialModel;
@@ -255,34 +243,7 @@ namespace Sevices.Core.MaterialService
             }
             return result;
         }
-
-        public ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
-                if (check == null)
-                {
-                    result.Code = 29;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
-                    return result;
-                }
-                else
-                {
-                    check.amount = model.amount;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = "Cập nhập thành công " + check.id;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
+       
 
         public ResultModel GetAllMaterial(string? search, int pageIndex, int pageSize)
         {
@@ -317,11 +278,8 @@ namespace Sevices.Core.MaterialService
                         thickness = item.thickness,
                         unit = item.unit,
                         sku = item.sku,
-                        importDate = item.importDate,
                         importPlace = item.importPlace,
-                        amount = item.amount,
                         price = item.price,
-                        totalPrice = item.totalPrice,
                     };
                     list.Add(tmp);
                 }
@@ -365,14 +323,11 @@ namespace Sevices.Core.MaterialService
                     var list = new List<MaterialModel>();
                     foreach (var item in listMaterialCategoryPaging)
                     {
-                        
-                        var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
-
+                                            
                         var tmp = new MaterialModel
                         {
                             id = item.id,
                             materialCategoryId = item.materialCategoryId,
-                            materialCategoryName = materialCategory!.name,
                             name = item.name,
                             image = item.image,
                             color = item.color,
@@ -380,11 +335,8 @@ namespace Sevices.Core.MaterialService
                             thickness = item.thickness,
                             unit = item.unit,
                             sku = item.sku,
-                            importDate = item.importDate,
                             importPlace = item.importPlace,
-                            amount = item.amount,
                             price = item.price,
-                            totalPrice = item.totalPrice,
                         };
                         list.Add(tmp);
                     }

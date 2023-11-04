@@ -35,7 +35,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var listOrder = _dbContext.Order.OrderByDescending(x => x.orderDate).ToList();
+                var listOrder = _dbContext.Order.OrderByDescending(x => x.createTime).ToList();
 
                 var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
@@ -63,7 +63,7 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var listOrder = _dbContext.Order.Where(x => x.assignToId == userId && listStatus.Contains(x.status)).OrderByDescending(x => x.orderDate).ToList();
+                var listOrder = _dbContext.Order.Where(x => x.assignToId == userId && listStatus.Contains(x.status)).OrderByDescending(x => x.createTime).ToList();
 
                 var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
@@ -186,7 +186,7 @@ namespace Sevices.Core.OrderService
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
                         orderCreate.createdById = createdById;
-                        orderCreate.orderDate = DateTime.Now;
+                        orderCreate.createTime = DateTime.Now;
                         orderCreate.status = OrderStatus.Pending;
 
                         _dbContext.Order.Add(orderCreate);
@@ -324,7 +324,7 @@ namespace Sevices.Core.OrderService
                 {
                     if (status == OrderStatus.Request)
                     {
-                        order.quoteDate = DateTime.Now;
+                        order.quoteTime = DateTime.Now;
 
                         var noti = new Notification()
                         {
@@ -338,7 +338,7 @@ namespace Sevices.Core.OrderService
                     }
                     else if (status == OrderStatus.Completed)
                     {
-                        order.acceptanceDate = DateTime.Now;
+                        order.acceptanceTime = DateTime.Now;
                     }
                     order.status = status;
 

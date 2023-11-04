@@ -24,6 +24,30 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllUserByGroupId(Guid id)
+        {
+            var result = _groupService.GetAllUserByGroupId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllUserNotInGroupId(Guid id)
+        {
+            var result = _groupService.GetAllUserNotInGroupId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetAllGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetAllGroup(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut("UpdateGroup")]
         public IActionResult UpdateGroup(UpdateGroupModel model)
         {
@@ -62,31 +86,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _groupService.DeleteGroup(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserByGroupId(Guid id)
-        {
-            var result = _groupService.GetAllUserByGroupId(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserNotInGroupId(Guid id)
-        {
-            var result = _groupService.GetAllUserNotInGroupId(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]")]
-        public IActionResult GetAllGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
-        {
-            var result = _groupService.GetAllGroup(search, pageIndex, pageSize);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
+        }        
     }
 }

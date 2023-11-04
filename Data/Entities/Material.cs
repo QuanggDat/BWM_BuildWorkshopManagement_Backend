@@ -14,7 +14,6 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
 
-       
         [ForeignKey("materialCategoryId")]
         public Guid materialCategoryId { get; set; }
         public MaterialCategory MaterialCategory { get; set; } = null!;
@@ -26,11 +25,8 @@ namespace Data.Entities
         public double thickness { get; set; } 
         public string unit { get; set; } = null!;
         public string sku { get; set; } = null!;
-        public DateTime importDate { get; set; }
         public string importPlace { get; set; } = null!;
-        public int amount { get; set; }
         public double price { get; set; }
-        public double totalPrice { get; set; }
         public bool isDeleted { get; set; }
 
         public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();

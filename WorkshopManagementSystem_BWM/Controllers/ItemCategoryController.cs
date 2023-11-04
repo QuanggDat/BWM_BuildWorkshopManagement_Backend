@@ -26,15 +26,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]")]
-        public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
-        {
-            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!");
-            var result = _itemCategoryService.UpdateItemCategory(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
         [HttpGet("[action]")]
         public Task<ActionResult> GetAllItemCategory(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
@@ -50,6 +41,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
+        [HttpPut("[action]")]
+        public IActionResult UpdateItemCategory(UpdateItemCategoryModel model)
+        {
+            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!");
+            var result = _itemCategoryService.UpdateItemCategory(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }     
 
         [HttpDelete("[action]/{id}")]
         public IActionResult DeleteItemCategory(Guid id)

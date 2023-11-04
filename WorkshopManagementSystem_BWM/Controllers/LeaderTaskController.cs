@@ -79,13 +79,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
+        /*
         [HttpPut("[action]/{leaderTaskId}/{groupId}")]
         public async Task<ActionResult> AssignLeaderTask(Guid leaderTaskId, Guid groupId)
         {
             var result = await _leaderTaskService.AssignLeaderTask(leaderTaskId, groupId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }       
+        }      
+        */
     }
 }

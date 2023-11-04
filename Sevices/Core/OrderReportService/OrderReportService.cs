@@ -132,7 +132,7 @@ namespace Sevices.Core.OrderReportService
 
                         if (order != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
                         {
-                            order.acceptanceDate = DateTime.Now;
+                            order.acceptanceTime = DateTime.Now;
                             order.status = Data.Enums.OrderStatus.Completed;
                         }
 

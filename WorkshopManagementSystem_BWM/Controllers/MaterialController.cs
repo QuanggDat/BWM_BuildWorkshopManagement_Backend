@@ -55,14 +55,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteMaterial(Guid id)
-        {
-            var result = _materialService.DeleteMaterial(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
         [HttpPut("[action]")]
         public IActionResult UpdateMaterial(UpdateMaterialModel model)
         {
@@ -75,14 +67,16 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]")]
-        public IActionResult UpdateMaterialAmount(UpdateMaterialAmountModel model)
+        [HttpDelete("[action]/{id}")]
+        public IActionResult DeleteMaterial(Guid id)
         {
-            var result = _materialService.UpdateMaterialAmount(model);
+            var result = _materialService.DeleteMaterial(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-   
+
+        
+
         #region Validate
         private bool ValidateCreateMaterial(CreateMaterialModel model)
         {
@@ -116,21 +110,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
             }
-            if (model.importDate >= DateTime.Now)
-            {
-                ModelState.AddModelError(nameof(model.importDate),
-                    $"{model.importDate} không lớn hơn ngày hiện tại !");
-            }
+            
             if (string.IsNullOrWhiteSpace(model.importPlace))
             {
                 ModelState.AddModelError(nameof(model.importPlace),
                     $"{model.importPlace} không được để trống !");
             }
-            if (model.amount <= 0)
-            {
-                ModelState.AddModelError(nameof(model.amount),
-                    $"{model.amount} nhỏ hơn hoặc bằng 0 !");
-            }
+            
             if (model.price <= 0)
             {
                 ModelState.AddModelError(nameof(model.price),
@@ -175,21 +161,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
-            }
-            if (model.importDate >= DateTime.Now)
-            {
-                ModelState.AddModelError(nameof(model.importDate),
-                    $"{model.importDate} không lớn hơn ngày hiện tại !");
-            }
+            }          
             if (string.IsNullOrWhiteSpace(model.importPlace))
             {
                 ModelState.AddModelError(nameof(model.importPlace),
                     $"{model.importPlace} không được để trống !");
-            }
-            if (model.amount <= 0)
-            {
-                ModelState.AddModelError(nameof(model.amount),
-                    $"{model.amount} nhỏ hơn hoặc bằng 0 !");
             }
             if (model.price <= 0)
             {

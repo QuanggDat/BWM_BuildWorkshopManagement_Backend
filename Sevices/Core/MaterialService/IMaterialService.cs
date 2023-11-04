@@ -13,7 +13,6 @@ namespace Sevices.Core.MaterialService
         ResultModel UpdateMaterial(UpdateMaterialModel model);
         ResultModel DeleteMaterial(Guid id);
         ResultModel GetMaterialById(Guid id);
-        ResultModel UpdateMaterialAmount(UpdateMaterialAmountModel model);
         ResultModel GetAllMaterial(string? search,int pageIndex, int pageSize);
         ResultModel GetMaterialByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize);
         

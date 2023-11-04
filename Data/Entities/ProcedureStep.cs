@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ProcedureItem
+    public class ProcedureStep
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
@@ -16,12 +16,12 @@ namespace Data.Entities
         [ForeignKey("procedureId")]
         public Guid procedureId { get; set; }
         public Procedure Procedure { get; set; } = null!;
+
         public int priority { get; set; }
         public int estimatedCompletedTime { get; set; }
 
-        [ForeignKey("itemId")]
-        public Guid itemId { get; set; }
-        public Item Item { get; set; } = null!;
-        
+        [ForeignKey("stepId")]
+        public Guid stepId { get; set; }
+        public Step Step { get; set; } = null!;                          
     }
 }

@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231103103503_WorkshopManagementSystem_BWM_V5")]
+    partial class WorkshopManagementSystem_BWM_V5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,9 +211,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("Teamid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
@@ -234,15 +233,8 @@ namespace Data.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("itemId")
+                    b.Property<Guid>("leaderId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("leaderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
@@ -256,19 +248,20 @@ namespace Data.Migrations
                     b.Property<int>("status")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("teamId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("id");
 
-                    b.HasIndex("Teamid");
-
                     b.HasIndex("createById");
-
-                    b.HasIndex("itemId");
 
                     b.HasIndex("leaderId");
 
                     b.HasIndex("orderId");
 
                     b.HasIndex("procedureId");
+
+                    b.HasIndex("teamId");
 
                     b.ToTable("LeaderTask");
                 });
@@ -279,12 +272,18 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
                     b.Property<string>("color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("image")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("importDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("importPlace")
                         .IsRequired()
@@ -312,6 +311,9 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("thickness")
+                        .HasColumnType("float");
+
+                    b.Property<double>("totalPrice")
                         .HasColumnType("float");
 
                     b.Property<string>("unit")
@@ -403,13 +405,13 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("acceptanceTime")
+                    b.Property<DateTime?>("acceptanceDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("assignToId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("createTime")
+                    b.Property<DateTime>("createDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("createdById")
@@ -426,12 +428,6 @@ namespace Data.Migrations
                     b.Property<DateTime>("endTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("estimatedEndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("estimatedStartTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("fileContract")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -444,7 +440,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime?>("quoteTime")
+                    b.Property<DateTime?>("quoteDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("startTime")
@@ -512,12 +508,18 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("estimatedCompletedTime")
+                        .HasColumnType("int");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("priority")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -530,14 +532,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("estimatedCompletedTime")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("priority")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("procedureId")
                         .HasColumnType("uniqueidentifier");
@@ -549,33 +545,6 @@ namespace Data.Migrations
                     b.HasIndex("procedureId");
 
                     b.ToTable("ProcedureItem");
-                });
-
-            modelBuilder.Entity("Data.Entities.ProcedureStep", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("estimatedCompletedTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("priority")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("procedureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("stepId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("procedureId");
-
-                    b.HasIndex("stepId");
-
-                    b.ToTable("ProcedureStep");
                 });
 
             modelBuilder.Entity("Data.Entities.Report", b =>
@@ -681,6 +650,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("estimatedCompletedTime")
+                        .HasColumnType("int");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -688,7 +660,15 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("priority")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("procedureId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("id");
+
+                    b.HasIndex("procedureId");
 
                     b.ToTable("Step");
                 });
@@ -878,16 +858,11 @@ namespace Data.Migrations
                     b.Property<int>("status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("stepId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("id");
 
                     b.HasIndex("createById");
 
                     b.HasIndex("leaderTaskId");
-
-                    b.HasIndex("stepId");
 
                     b.ToTable("WorkerTask");
                 });
@@ -1046,23 +1021,15 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.LeaderTask", b =>
                 {
-                    b.HasOne("Data.Entities.Team", null)
-                        .WithMany("LeaderTasks")
-                        .HasForeignKey("Teamid");
-
                     b.HasOne("Data.Entities.User", "CreateBy")
                         .WithMany()
                         .HasForeignKey("createById");
 
-                    b.HasOne("Data.Entities.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("itemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.Entities.User", "Leader")
                         .WithMany()
-                        .HasForeignKey("leaderId");
+                        .HasForeignKey("leaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Data.Entities.Order", "Order")
                         .WithMany("LeaderTasks")
@@ -1074,15 +1041,19 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreateBy");
+                    b.HasOne("Data.Entities.Team", "Team")
+                        .WithMany("LeaderTasks")
+                        .HasForeignKey("teamId");
 
-                    b.Navigation("Item");
+                    b.Navigation("CreateBy");
 
                     b.Navigation("Leader");
 
                     b.Navigation("Order");
 
                     b.Navigation("Procedure");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -1194,25 +1165,6 @@ namespace Data.Migrations
                     b.Navigation("Procedure");
                 });
 
-            modelBuilder.Entity("Data.Entities.ProcedureStep", b =>
-                {
-                    b.HasOne("Data.Entities.Procedure", "Procedure")
-                        .WithMany("ProcedureSteps")
-                        .HasForeignKey("procedureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.Step", "Step")
-                        .WithMany("ProcedureSteps")
-                        .HasForeignKey("stepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Procedure");
-
-                    b.Navigation("Step");
-                });
-
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
                     b.HasOne("Data.Entities.LeaderTask", "LeaderTask")
@@ -1245,6 +1197,17 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("Data.Entities.Step", b =>
+                {
+                    b.HasOne("Data.Entities.Procedure", "Procedure")
+                        .WithMany("Steps")
+                        .HasForeignKey("procedureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Procedure");
                 });
 
             modelBuilder.Entity("Data.Entities.Team", b =>
@@ -1306,17 +1269,9 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Data.Entities.Step", "Step")
-                        .WithMany()
-                        .HasForeignKey("stepId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("CreateBy");
 
                     b.Navigation("LeaderTask");
-
-                    b.Navigation("Step");
                 });
 
             modelBuilder.Entity("Data.Entities.WorkerTaskDetail", b =>
@@ -1429,17 +1384,12 @@ namespace Data.Migrations
                 {
                     b.Navigation("ProcedureItems");
 
-                    b.Navigation("ProcedureSteps");
+                    b.Navigation("Steps");
                 });
 
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
                     b.Navigation("Resources");
-                });
-
-            modelBuilder.Entity("Data.Entities.Step", b =>
-                {
-                    b.Navigation("ProcedureSteps");
                 });
 
             modelBuilder.Entity("Data.Entities.Team", b =>

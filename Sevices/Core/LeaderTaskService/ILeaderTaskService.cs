@@ -16,6 +16,6 @@ namespace Sevices.Core.LeaderTaskService
         Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, TaskStatus status);
         Task<ResultModel> UpdateLeaderTask(UpdateLeaderTaskModel model);
         Task<ResultModel> DeleteLeaderTask(Guid leaderTaskId);
-        Task<ResultModel> AssignLeaderTask(Guid leaderTaskId, Guid teamId);
+        //Task<ResultModel> AssignLeaderTask(Guid leaderTaskId, Guid teamId);
     }
 }

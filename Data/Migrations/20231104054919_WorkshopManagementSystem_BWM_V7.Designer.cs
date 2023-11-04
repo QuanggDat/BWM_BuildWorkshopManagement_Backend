@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231104054919_WorkshopManagementSystem_BWM_V7")]
+    partial class WorkshopManagementSystem_BWM_V7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -403,13 +405,13 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("acceptanceTime")
+                    b.Property<DateTime?>("acceptanceDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("assignToId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("createTime")
+                    b.Property<DateTime>("createDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("createdById")
@@ -426,12 +428,6 @@ namespace Data.Migrations
                     b.Property<DateTime>("endTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("estimatedEndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("estimatedStartTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("fileContract")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -444,7 +440,7 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime?>("quoteTime")
+                    b.Property<DateTime?>("quoteDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("startTime")
@@ -512,12 +508,18 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("estimatedCompletedTime")
+                        .HasColumnType("int");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("priority")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -530,14 +532,8 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("estimatedCompletedTime")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("itemId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("priority")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("procedureId")
                         .HasColumnType("uniqueidentifier");

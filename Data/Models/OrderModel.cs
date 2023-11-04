@@ -19,14 +19,14 @@ namespace Data.Models
         public UserModel assign { get; set; } = null!;
         public Guid createdById { get; set; }
         public UserModel createdBy { get; set; } = null!;
-        public DateTime orderDate { get; set; }
+        public DateTime createTime { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;
         public string fileQuote { get; set; } = null!;
-        public DateTime quoteDate { get; set; }
+        public DateTime quoteTime { get; set; }
         public double totalPrice { get; set; }
-        public DateTime? acceptanceDate { get; set; }
+        public DateTime? acceptanceTime { get; set; }
     }
 
     public class CreateOrderModel
@@ -48,14 +48,14 @@ namespace Data.Models
         public UserModel assign { get; set; } = null!;
         public Guid createdById { get; set; }
         public UserModel createdBy { get; set; } = null!;
-        public DateTime orderDate { get; set; }
+        public DateTime createTime { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;
         public string fileQuote { get; set; } = null!;
-        public DateTime quoteDate { get; set; }
+        public DateTime quoteTime { get; set; }
         public double totalPrice { get; set; }
-        public DateTime? acceptanceDate { get; set; }
+        public DateTime? acceptanceTime { get; set; }
         public List<QuoteMaterialModel> listQuoteMaterial { get; set; } = new();
     }
 
