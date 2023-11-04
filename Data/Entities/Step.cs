@@ -11,15 +11,11 @@ namespace Data.Entities
     public class Step
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid id { get; set; }
+        public Guid id { get; set; }       
 
-        [ForeignKey("procedureId")]
-        public Guid procedureId { get; set; }
-        public Procedure Procedure { get; set; } = null!;
-
-        public int priority { get; set; }
-        public int estimatedCompletedTime { get; set; }
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
+
+        public virtual List<ProcedureStep> ProcedureSteps { get; set; } = new();
     }
 }

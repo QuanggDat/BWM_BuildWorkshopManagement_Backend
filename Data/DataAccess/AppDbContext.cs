@@ -24,6 +24,7 @@ namespace Data.DataAccess
         public DbSet<OrderDetail> OrderDetail { get; set; }
         public DbSet<Procedure> Procedure { get; set; }
         public DbSet<ProcedureItem> ProcedureItem { get; set; }
+        public DbSet<ProcedureStep> ProcedureStep { get; set; }
         public DbSet<Report> Report { get; set; }
         public DbSet<Resource> Resource { get; set; }
         public DbSet<Role> Role { get; set; }
@@ -56,5 +57,6 @@ namespace Data.DataAccess
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         }
+
     }
 }

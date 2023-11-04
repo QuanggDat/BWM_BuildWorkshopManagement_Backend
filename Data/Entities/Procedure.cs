@@ -13,12 +13,13 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public Guid id { get; set; }
+
         public int priority { get; set; }
         public int estimatedCompletedTime { get; set; }
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
 
         public virtual List<ProcedureItem> ProcedureItems { get; set; } = new();
-        public virtual List<Step> Steps { get; set; } = new();
+        public virtual List<ProcedureStep> ProcedureSteps { get; set; } = new();
     }
 }

@@ -389,12 +389,9 @@ namespace Sevices.Core.ItemService
                     var list = new List<ItemModel>();
                     foreach (var item in listItemPaging)
                     {
-                        var itemCategory = _dbContext.ItemCategory.Find(item.itemCategoryId);
                         var tmp = new ItemModel
                         {
                             id = item.id,
-                            itemCategoryId = item.itemCategoryId,
-                            itemCategoryName = itemCategory!.name,
                             name = item.name,
                             image = item.image,
                             length = item.length,

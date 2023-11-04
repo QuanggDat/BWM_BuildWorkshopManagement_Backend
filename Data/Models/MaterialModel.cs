@@ -17,13 +17,10 @@ namespace Data.Models
         public double thickness { get; set; }
         public string unit { get; set; } = null!;
         public string sku { get; set; } = null!;
-        public DateTime importDate { get; set; }
         public string importPlace { get; set; } = null!;
-        public int amount { get; set; }
         public double price { get; set; }
-        public double totalPrice { get; set; }
         public Guid materialCategoryId { get; set; }
-        public string materialCategoryName { get; set; } = null!;
+        public string? materialCategoryName { get; set; } 
     }
 
     public class CreateMaterialModel
@@ -35,9 +32,7 @@ namespace Data.Models
         public string supplier { get; set; } = null!;
         public double thickness { get; set; } 
         public string unit { get; set; } = null!;
-        public DateTime importDate { get; set; }
         public string importPlace { get; set; } = null!;
-        public int amount { get; set; }
         public double price { get; set; }
     }
 
@@ -51,16 +46,8 @@ namespace Data.Models
         public string supplier { get; set; } = null!;
         public double thickness { get; set; }
         public string unit { get; set; } = null!;
-        public DateTime importDate { get; set; }
         public string importPlace { get; set; } = null!;
-        public int amount { get; set; }
         public double price { get; set; }
     }
 
-    public class UpdateMaterialAmountModel
-    {
-        public Guid id { get; set; }
-        public int amount { get; set; }   
-    }
-   
 }
