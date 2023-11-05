@@ -46,78 +46,88 @@ namespace Sevices.Core.LeaderTaskService
                 }
                 else
                 {
-                    var procedureTmp = await _dbContext.Order.FindAsync(model.procedureId);
-                    if (procedureTmp == null)
+                    var itemTmp = await _dbContext.Item.FindAsync(model.itemId);
+                    if (itemTmp == null)
                     {
-                        result.Code = 40;
+                        result.Code = 63;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
+                        result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                         return result;
                     }
                     else
                     {
-                        var check1 = await _dbContext.LeaderTask.SingleOrDefaultAsync(a => a.procedureId == model.procedureId && a.orderId == model.orderId && a.isDeleted == false);
-
-                        if (check1 != null)
+                        var procedureTmp = await _dbContext.Order.FindAsync(model.procedureId);
+                        if (procedureTmp == null)
                         {
-                            result.Code = 41;
+                            result.Code = 40;
                             result.Succeed = false;
-                            result.ErrorMessage = "Công việc đã được tạo!";
+                            result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
                             return result;
                         }
                         else
                         {
-                            if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
+                            var check1 = await _dbContext.LeaderTask.SingleOrDefaultAsync(a => a.orderId == model.orderId && a.itemId == model.itemId && a.procedureId == model.procedureId && a.isDeleted == false);
+
+                            if (check1 != null)
                             {
-                                result.Code = 42;
+                                result.Code = 41;
                                 result.Succeed = false;
-                                result.ErrorMessage = "Đơn hàng đang không tiến hành!";
+                                result.ErrorMessage = "Công việc đã được tạo!";
                                 return result;
                             }
-
                             else
                             {
-                                if (model.startTime >= model.endTime)
+                                if (orderTmp.status != Data.Enums.OrderStatus.InProgress)
                                 {
-                                    result.Code = 43;
+                                    result.Code = 42;
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                    result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                                     return result;
                                 }
+
                                 else
                                 {
-
-                                    var leaderTask = new LeaderTask
+                                    if (model.startTime >= model.endTime)
                                     {
-                                        leaderId = model.leaderId,
-                                        createById = createById,
-                                        orderId = model.orderId,
-                                        procedureId = model.procedureId,
-                                        startTime = model.startTime,
-                                        endTime = model.endTime,
-                                        description = model.description,
-                                        status = 0,
-                                        isDeleted = false
-                                    };
-
-                                    try
-                                    {
-                                        await _dbContext.LeaderTask.AddAsync(leaderTask);
-                                        await _dbContext.SaveChangesAsync();
-                                        result.Succeed = true;
-                                        result.Data = leaderTask.id;
+                                        result.Code = 43;
+                                        result.Succeed = false;
+                                        result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                        return result;
                                     }
-                                    catch (Exception ex)
+                                    else
                                     {
-                                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                        var leaderTask = new LeaderTask
+                                        {
+                                            leaderId = model.leaderId,
+                                            createById = createById,
+                                            orderId = model.orderId,
+                                            itemId = model.itemId,
+                                            procedureId = model.procedureId,
+                                            startTime = model.startTime,
+                                            endTime = model.endTime,
+                                            description = model.description,
+                                            status = 0,
+                                            isDeleted = false
+                                        };
+
+                                        try
+                                        {
+                                            await _dbContext.LeaderTask.AddAsync(leaderTask);
+                                            await _dbContext.SaveChangesAsync();
+                                            result.Succeed = true;
+                                            result.Data = leaderTask.id;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                        }
+                                        return result;
                                     }
-                                    return result;
                                 }
                             }
                         }
                     }
-                }
-                
+                }                               
             }           
         }
 
@@ -182,9 +192,9 @@ namespace Sevices.Core.LeaderTaskService
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
                     var tmp = new LeaderTaskModel
                     {
-                        createByName = createByTmp!.fullName,
+
                         leaderName = leaderTmp!.fullName,
-                        orderName = orderTmp!.name,
+
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,
@@ -220,9 +230,8 @@ namespace Sevices.Core.LeaderTaskService
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
                     var tmp = new LeaderTaskModel
                     {
-                        createByName = createByTmp!.fullName,
                         leaderName = leaderTmp!.fullName,
-                        orderName = orderTmp!.name,
+
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,
@@ -255,9 +264,7 @@ namespace Sevices.Core.LeaderTaskService
                     var createByTmp = await _dbContext.User.FindAsync(item.createById);
                     var tmp = new LeaderTaskModel
                     {
-                        createByName = createByTmp!.fullName,
                         leaderName = leaderTmp!.fullName,
-                        orderName = orderTmp!.name,
                         createdById = item.createById,
                         name = item.Procedure.name,
                         startTime = item.startTime,

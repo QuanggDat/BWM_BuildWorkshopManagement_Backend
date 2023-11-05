@@ -14,6 +14,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _userService = userService;
         }
+
         [HttpPost("CreateAdmin")]
         public async Task<ActionResult> CreateAdmin([FromBody] UserCreateModel model)
         {
@@ -78,6 +79,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result =  _userService.GetAll();
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("GetAllUserForForeman")]
+        public IActionResult GetAllUserForForeman()
+        {
+            var result = _userService.GetAllUserForForeman();
+            if (result == null) return BadRequest("Không tìm thấy công nhân!");
+            return Ok(result);
         }
 
         [HttpGet("{phoneNumber}")]
@@ -150,14 +159,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _userService.ChangePassword(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("GetAllUserForForeman")]
-        public IActionResult GetAllUserForForeman()
-        {
-            var result =  _userService.GetAllUserForForeman();
-            if (result == null) return BadRequest("Không tìm thấy công nhân!");
-            return Ok(result);
-        }
+        }       
     }
 }

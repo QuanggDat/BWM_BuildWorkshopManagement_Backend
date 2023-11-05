@@ -30,27 +30,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _itemService.CreateItem(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-        
-        [HttpPut("[action]")]
-        public async Task<ActionResult> UpdateItem(UpdateItemModel model)
-        {
-            if (!ValidateUpdateItem(model))
-            {
-                return BadRequest(ModelState);
-            }
-            var result = await _itemService.UpdateItem(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpDelete("[action]/{id}")]
-        public async Task<ActionResult> DeleteItem(Guid id)
-        {
-            var result = await _itemService.DeleteItem(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
+        }       
 
         [HttpGet("[action]/{id}")]
         public async Task<ActionResult> GetItemById(Guid id)
@@ -76,6 +56,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpPut("[action]")]
+        public async Task<ActionResult> UpdateItem(UpdateItemModel model)
+        {
+            if (!ValidateUpdateItem(model))
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _itemService.UpdateItem(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpDelete("[action]/{id}")]
+        public async Task<ActionResult> DeleteItem(Guid id)
+        {
+            var result = await _itemService.DeleteItem(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
         #region Validate
         private bool ValidateUpdateItem(UpdateItemModel model)
         {

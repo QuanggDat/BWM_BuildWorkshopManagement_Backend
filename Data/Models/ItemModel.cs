@@ -23,22 +23,10 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public double price { get; set; }
         public Guid? itemCategoryId { get; set; }
-        public string itemCategoryName { get; set; } = null!;
-        public List<_Procedure> Procedures { get; set; } = null!;
-        public List<_Material> Materials { get; set; } = null!;
+        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<Guid> listMaterialId { get; set; } = null!;
     }
-    public class _Procedure
-    {
-        public Guid procedureId { get; set; }
-        public string procedureName { get; set; } = null!;
-    }
-
-    public class _Material
-    {
-        public Guid materialId { get; set; }
-        public string materialName { get; set; } = null!;
-    }
-
+  
     public class CreateItemModel
     {
         public Guid itemCategoryId { get; set; }
@@ -55,7 +43,13 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public double price { get; set; }
         public List<Guid> listProcedureId { get; set; } = null!;
-        public List<Guid> listMaterialId { get; set; } = null!;
+        public List<AddMaterial> listMaterial { get; set; } = null!;
+    }
+
+    public class AddMaterial
+    {
+        public Guid materialId { get; set; }
+        public int quantity { get; set; }
     }
 
     public class UpdateItemModel
@@ -75,7 +69,7 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public double price { get; set; }
         public List<Guid> listProcedureId { get; set; } = null!;
-        public List<Guid> listMaterialId { get; set; } = null!;
+        public List<AddMaterial> listMaterial { get; set; } = null!;
     }
 
     public class DeleteItemModel

@@ -73,9 +73,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _materialService.DeleteMaterial(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        
+        }       
 
         #region Validate
         private bool ValidateCreateMaterial(CreateMaterialModel model)

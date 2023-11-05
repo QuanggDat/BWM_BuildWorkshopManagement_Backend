@@ -32,7 +32,7 @@ namespace Data.Entities
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }      
         public TaskStatus status { get; set; }
-        public string description { get; set; } = null!;
+        public string? description { get; set; }
         public bool isDeleted { get; set; }
    
         public virtual List<WorkerTaskDetail> WorkerTaskDetails { get; set; } = new();

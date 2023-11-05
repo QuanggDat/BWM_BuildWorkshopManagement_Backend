@@ -24,6 +24,5 @@ namespace Data.Entities
         public int quantity { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
-
     }
 }

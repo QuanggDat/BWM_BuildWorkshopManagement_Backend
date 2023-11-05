@@ -82,7 +82,7 @@ namespace Sevices.Core.ItemService
                     _dbContext.Item.Add(item);
 
                     foreach (var procedure in model.listProcedureId)
-                    {
+                    {                                               
                         await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
                         {
                             itemId = item.id,
@@ -90,13 +90,26 @@ namespace Sevices.Core.ItemService
                         });
                     }
 
-                    foreach (var material in model.listMaterialId)
+                    foreach (var material in model.listMaterial)
                     {
-                        await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
+                        var _material = _dbContext.Material.Find(material.materialId);
+                        if (_material == null)
                         {
-                            itemId = item.id,
-                            materialId = material
-                        });
+                            result.Code = 62;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
+                            return result;
+                        }
+                        else
+                        {
+                            await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
+                            {
+                                itemId = item.id,
+                                materialId = material.materialId,
+                                quantity = material.quantity,
+                                totalPrice = material.quantity * _material.price
+                            });
+                        }                   
                     }
 
                     await _dbContext.SaveChangesAsync();
@@ -187,13 +200,26 @@ namespace Sevices.Core.ItemService
 
                         // Set new Material Item
                         var materialItems = new List<ItemMaterial>();
-                        foreach (var material in model.listMaterialId)
+                        foreach (var material in model.listMaterial)
                         {
-                            materialItems.Add(new ItemMaterial
+                            var _material = _dbContext.Material.Find(material.materialId);
+                            if (_material == null)
                             {
-                                itemId = model.id,
-                                materialId = material
-                            });
+                                result.Code = 62;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Không tìm thấy thông tin vật liệu !";
+                                return result;
+                            }
+                            else
+                            {
+                                materialItems.Add(new ItemMaterial
+                                {
+                                    itemId = model.id,
+                                    materialId = material.materialId,
+                                    quantity = material.quantity,
+                                    totalPrice = material.quantity * _material!.price
+                                });
+                            }                         
                         }
 
                         await _dbContext.ProcedureItem.AddRangeAsync(procedureItems);
@@ -260,13 +286,11 @@ namespace Sevices.Core.ItemService
 
                 var list = new List<ItemModel>();
                 foreach (var item in listItemPaging)
-                {
-                    var itemCategory = _dbContext.ItemCategory.Find(item.itemCategoryId);
+                {                    
                     var tmp = new ItemModel
                     {
                         id = item.id,
                         itemCategoryId = item.itemCategoryId,
-                        itemCategoryName = itemCategory!.name,
                         name = item.name,
                         image = item.image,
                         length = item.length,
@@ -279,16 +303,8 @@ namespace Sevices.Core.ItemService
                         drawings3D = item.drawings3D,
                         description = item.description,
                         price = item.price,
-                        Procedures = item.ProcedureItems.Select(_ => new _Procedure
-                        {
-                            procedureId = _.Procedure.id,
-                            procedureName = _.Procedure.name,
-                        }).ToList(),
-                        Materials = item.ItemMaterials.Select(_ => new _Material
-                        {
-                            materialId = _.Material.id,
-                            materialName = _.Material.name,
-                        }).ToList(),
+                        listMaterialId = item.ItemMaterials.Select(x => x.id).ToList(),
+                        listProcedureId = item.ProcedureItems.Select(x => x.id).ToList()
                     };
                     list.Add(tmp);
                 }
@@ -306,6 +322,7 @@ namespace Sevices.Core.ItemService
             }
             return result;
         }
+
         public async Task<ResultModel> GetItemById(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -324,12 +341,10 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    var itemCategory = _dbContext.ItemCategory.Find(check.itemCategoryId);
                     var item = new ItemModel
                     {
                         id = check.id,
                         itemCategoryId = check.itemCategoryId,
-                        itemCategoryName = itemCategory!.name,
                         name = check.name,
                         image = check.image,
                         length = check.length,
@@ -342,16 +357,8 @@ namespace Sevices.Core.ItemService
                         drawings3D = check.drawings3D,
                         description = check.description,
                         price = check.price,
-                        Procedures = check.ProcedureItems.Select(_ => new _Procedure
-                        {
-                            procedureId = _.Procedure.id,
-                            procedureName = _.Procedure.name,
-                        }).ToList(),
-                        Materials = check.ItemMaterials.Select(_ => new _Material
-                        {
-                            materialId = _.Material.id,
-                            materialName = _.Material.name,
-                        }).ToList(),
+                        listMaterialId = check.ItemMaterials.Select(x => x.id).ToList(),
+                        listProcedureId = check.ProcedureItems.Select(x => x.id).ToList(),
                     };
                     result.Data = item;
                     result.Succeed = true;
@@ -363,6 +370,7 @@ namespace Sevices.Core.ItemService
             }
             return result;
         }
+
         public async Task<ResultModel> GetItemByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
@@ -404,16 +412,8 @@ namespace Sevices.Core.ItemService
                             drawings3D = item.drawings3D,
                             description = item.description,
                             price = item.price,
-                            Procedures = item.ProcedureItems.Select(_ => new _Procedure
-                            {
-                                procedureId = _.Procedure.id,
-                                procedureName = _.Procedure.name,
-                            }).ToList(),
-                            Materials = item.ItemMaterials.Select(_ => new _Material
-                            {
-                                materialId = _.Material.id,
-                                materialName = _.Material.name,
-                            }).ToList(),
+                            listMaterialId = item.ItemMaterials.Select(x => x.id).ToList(),
+                            listProcedureId = item.ProcedureItems.Select(x => x.id).ToList(),
                         };
                         list.Add(tmp);
                     }

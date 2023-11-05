@@ -22,6 +22,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _teamService.CreateTeam(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }       
+
+        [HttpGet("[action]/{groupId}")]
+        public IActionResult GetTeamByGroupId(Guid groupId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _teamService.GetTeamByGroupId(groupId, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetAllUserByTeamId(Guid id)
+        {
+            var result = _teamService.GetAllUserByTeamId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("UpdateTeam")]
@@ -55,22 +71,5 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
-        [HttpGet("[action]/{groupId}")]
-        public IActionResult GetTeamByGroupId(Guid groupId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
-        {
-            var result = _teamService.GetTeamByGroupId(groupId, search, pageIndex, pageSize);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserByTeamId(Guid id)
-        {
-            var result = _teamService.GetAllUserByTeamId(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
     }
 }

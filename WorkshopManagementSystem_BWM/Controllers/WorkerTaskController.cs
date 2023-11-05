@@ -30,6 +30,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpGet("[action]/{leaderTaskId}")]
+        public async Task<ActionResult> GetAllWokerTask(Guid leaderTaskId)
+        {
+            var result = await _workerTaskService.GetAllWorkerTask(leaderTaskId);
+            if (result == null) return BadRequest("Không tìm thấy công việc!");
+            return Ok(result);
+        }
+
         [HttpPut("[action]")]
         public async Task<ActionResult> UpdateWokerTask(UpdateWorkerTaskModel model)
         {
@@ -44,14 +52,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public async Task<ActionResult> UpdateWokerTaskStatus(Guid wokerTaskId, TaskStatus status)
         {
             var result = await _workerTaskService.UpdateWorkerTaskStatus(wokerTaskId, status);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpDelete("[action]/{wokerTaskId}")]
-        public async Task<ActionResult> DeleteWokerTask(Guid wokerTaskId)
-        {
-            var result = await _workerTaskService.DeleteWorkerTask(wokerTaskId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -72,12 +72,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{leaderTaskId}")]
-        public async Task<ActionResult> GetAllWokerTask(Guid leaderTaskId)
+        [HttpDelete("[action]/{wokerTaskId}")]
+        public async Task<ActionResult> DeleteWokerTask(Guid wokerTaskId)
         {
-            var result = await _workerTaskService.GetAllWorkerTask(leaderTaskId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
-            return Ok(result);
-        }
+            var result = await _workerTaskService.DeleteWorkerTask(wokerTaskId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }       
     }
 }

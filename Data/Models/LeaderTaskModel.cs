@@ -11,6 +11,7 @@ namespace Data.Models
     {
         public Guid leaderId { get; set; }
         public Guid orderId { get; set; }
+        public Guid itemId { get; set; }
         public Guid procedureId { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
@@ -21,20 +22,21 @@ namespace Data.Models
         public Guid leaderId { get; set; }
         public string leaderName { get; set; } = null!;
         public Guid orderId { get; set; }
-        public string orderName { get; set; } = null!;    
+        public Guid itemId { get; set; }
+        public Guid procedureId { get; set; }
         public Guid? createdById { get; set; } = null!;
-        public string createByName { get; set; } = null!;
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
         public TaskStatus status { get; set; }
-        public string description { get; set; } = null!;
+        public string? description { get; set; } = null!;
         public bool isDeleted { get; set; }
     }
     public class UpdateLeaderTaskModel
     {
         public Guid id { get; set; }
+        public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public TaskStatus status { get; set; }

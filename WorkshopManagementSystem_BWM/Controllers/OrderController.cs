@@ -17,6 +17,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _orderService = orderService;
         }
+        [HttpPost]
+        public async Task<ActionResult> Create(CreateOrderModel model)
+        {
+            var result = await _orderService.Create(model, User.GetId());
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
 
         [HttpGet("GetAllWithPaging")]
         public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
@@ -58,15 +65,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
-        [HttpPost]
-        public async Task<ActionResult> Create(CreateOrderModel model)
-        {
-            var result = await _orderService.Create(model, User.GetId());
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
+       
         [HttpPut("UpdateStatus/{status}/{id}")]
         public IActionResult UpdateStatus(OrderStatus status, Guid id)
         {

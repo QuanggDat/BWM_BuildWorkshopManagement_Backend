@@ -37,14 +37,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Ok(result);
         }
 
-        [HttpPut("[action]")]
-        public async Task<ActionResult> ReportResponse(ReviewsReportModel model)
-        {
-            var result = await _reportService.TaskReportResponse(model);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
         [HttpGet("[action]")]
         public async Task<ActionResult> GetProgressReportsByLeaderId()
         {
@@ -62,5 +54,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             return Ok(result);
         }
+
+        [HttpPut("[action]")]
+        public async Task<ActionResult> ReportResponse(ReviewsReportModel model)
+        {
+            var result = await _reportService.TaskReportResponse(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        
     }
 }

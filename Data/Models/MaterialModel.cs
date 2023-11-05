@@ -20,7 +20,6 @@ namespace Data.Models
         public string importPlace { get; set; } = null!;
         public double price { get; set; }
         public Guid materialCategoryId { get; set; }
-        public string? materialCategoryName { get; set; } 
     }
 
     public class CreateMaterialModel

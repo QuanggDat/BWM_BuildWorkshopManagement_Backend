@@ -214,13 +214,10 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var materialCategory = _dbContext.MaterialCategory.Find(check.materialCategoryId);
-
                     var materialModel = new MaterialModel
                     {
                         id = check.id,
                         materialCategoryId = check.materialCategoryId,
-                        materialCategoryName = materialCategory!.name,
                         name = check.name,
                         image = check.image,
                         color = check.color,
@@ -263,14 +260,11 @@ namespace Sevices.Core.MaterialService
 
                 var list = new List<MaterialModel>();
                 foreach (var item in listMaterialCategoryPaging)
-                {
-                    var materialCategory = _dbContext.MaterialCategory.Find(item.materialCategoryId);
-
+                {               
                     var tmp = new MaterialModel
                     {
                         id = item.id,
-                        materialCategoryId = item.materialCategoryId,
-                        materialCategoryName = materialCategory!.name,
+                        materialCategoryId = item.materialCategoryId,                        
                         name = item.name,
                         image = item.image,
                         color = item.color,
