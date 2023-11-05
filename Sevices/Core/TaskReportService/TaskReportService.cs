@@ -1,5 +1,6 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -278,7 +279,7 @@ namespace Sevices.Core.ReportService
                             if (leaderTask != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
                             {
                                 leaderTask.completedTime = DateTime.Now;
-                                leaderTask.status = (TaskStatus)Data.Enums.TaskStatus.Completed;
+                                leaderTask.status = ETaskStatus.Completed;
                             }
 
                             await _dbContext.SaveChangesAsync();
