@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Data.Models
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public List<Guid> assignees { get; set; } = null!;
     }
@@ -24,13 +25,13 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public List<Guid> assignees { get; set; } = null!;
     }
 
     public class UpdateWorkerTaskStatusModel
     {
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
     }
 
     public class TaskMember
@@ -49,7 +50,7 @@ namespace Data.Models
         public string description { get; set; } = null!;
         public DateTime? startTime { get; set; }
         public DateTime? endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public List<TaskMember> Members { get; set; } = null!;
     }
 

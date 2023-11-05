@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,7 @@ namespace Data.Models
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
     }
@@ -37,7 +38,7 @@ namespace Data.Models
         public Guid id { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         
     }

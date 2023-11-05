@@ -1,8 +1,8 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
-using static Data.Models.WorkerTaskModel;
 
 namespace Sevices.Core.WorkerTaskService
 {
@@ -26,7 +26,7 @@ namespace Sevices.Core.WorkerTaskService
                 description = model?.description ?? "",
                 startTime = model!.startTime,
                 endTime = model.endTime,
-                status = (TaskStatus)Data.Enums.TaskStatus.New,
+                status = ETaskStatus.New,
                 createById = userId,
                 isDeleted = false,
             };
@@ -213,7 +213,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             
         }
-        public async Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, TaskStatus status)
+        public async Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, ETaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;

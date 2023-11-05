@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -272,7 +273,7 @@ namespace Sevices.Core.LeaderTaskService
             }
         }
 
-        public async Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, TaskStatus status)
+        public async Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, ETaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;

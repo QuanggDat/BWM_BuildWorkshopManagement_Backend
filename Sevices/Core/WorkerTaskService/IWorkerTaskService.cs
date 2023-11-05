@@ -1,10 +1,10 @@
-﻿using Data.Models;
+﻿using Data.Enums;
+using Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Data.Models.WorkerTaskModel;
 
 namespace Sevices.Core.WorkerTaskService
 {
@@ -16,6 +16,6 @@ namespace Sevices.Core.WorkerTaskService
         Task<ResultModel> AssignWorkerTask(AssignWorkerTaskModel model);
         Task<ResultModel> UnAssignWorkerTask(AssignWorkerTaskModel model);
         Task <List<WorkerTaskModel>> GetAllWorkerTask(Guid managerTaskId);
-        Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, TaskStatus status);
+        Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, ETaskStatus status);
     }
 }

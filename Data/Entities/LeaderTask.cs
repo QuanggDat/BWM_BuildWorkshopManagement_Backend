@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,6 +25,7 @@ namespace Data.Entities
         [ForeignKey("itemId")]
         public Guid itemId { get; set; }
         public virtual Item Item { get; set; } = null!;
+        public string itemName { get; set; } = null!;
 
         [ForeignKey("procedureId")]
         public Guid procedureId { get; set; }
@@ -39,7 +41,7 @@ namespace Data.Entities
         public DateTime startTime { get; set; } 
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public bool isDeleted { get; set; }
 

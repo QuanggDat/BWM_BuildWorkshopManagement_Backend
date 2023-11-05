@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data.Enums;
+using Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Sevices.Core.LeaderTaskService
         Task<List<LeaderTaskModel>> GetLeaderTaskByOrderId(Guid orderId);
         Task<List<LeaderTaskModel>> GetLeaderTaskByLeaderId(Guid leaderId);
         Task<List<LeaderTaskModel>> GetLeaderTaskByForemanId(Guid foremanId);
-        Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, TaskStatus status);
+        Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, ETaskStatus status);
         Task<ResultModel> UpdateLeaderTask(UpdateLeaderTaskModel model);
         Task<ResultModel> DeleteLeaderTask(Guid leaderTaskId);
         //Task<ResultModel> AssignLeaderTask(Guid leaderTaskId, Guid teamId);
