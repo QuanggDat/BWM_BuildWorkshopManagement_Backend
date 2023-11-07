@@ -572,7 +572,7 @@ namespace Sevices.Core.UserService
                     data.gender = model.gender;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                    result.Data = _mapper.Map<User, UserModel>(data);
                 }
                 else
                 {
@@ -605,7 +605,7 @@ namespace Sevices.Core.UserService
                         var change = _userManager.ChangePasswordAsync(data, model.oldPassword, model.newPassword);
                         _dbContext.SaveChanges();
                         result.Succeed = true;
-                        result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                        result.Data = _mapper.Map<User, UserModel>(data);
                     }
                 }
                 else
@@ -714,19 +714,31 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetAll()
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false; 
 
             try
             {
-                var data = _dbContext.User;
-                var view = _mapper.ProjectTo<UserModel>(data);
-                result.Data = view;
-                result.Succeed = true;
+                var listUser = _dbContext.User.Where(x => x.banStatus != true)
+                   .OrderBy(x => x.fullName).ToList();
 
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+               
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUserPaging),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
             }
+
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
@@ -880,39 +892,6 @@ namespace Sevices.Core.UserService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
-        }
-
-        //For Foreman role
-        public  List<ManagementUserModel> GetAllUserForForeman()
-        {
-            var result = new List<ManagementUserModel>();
-            var data =  _dbContext.User.Where(u => u.banStatus != false).ToList();
-            if (data == null)
-            {
-                return null;
-            }
-
-            foreach (var info in data)
-            {
-                var role =  _dbContext.Role.Find(info.roleID);
-                var team =  _dbContext.Team.Find(info.teamId);
-                var group =  _dbContext.Group.Find(info.groupId);
-                if (role != null && team != null && group != null)
-                {
-                    var user = new ManagementUserModel
-                    {
-                        fullName = info.fullName,
-                        image = info.image,
-                        roleName = role.Name,
-                        teamName = team.name,
-                        groupName = group.name,
-                        banStatus = info.banStatus,
-                    };
-                    result.Add(user);
-                }
-            }
-            return result;
-        }     
-
+        }        
     }
 }

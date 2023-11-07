@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Enums
 {
-    public enum TaskStatus
+    public enum ETaskStatus
     {
         New = 0,
         InProgress = 1,

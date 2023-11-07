@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sevices.Core.CategoryService
+namespace Sevices.Core.ProcedureService
 {
-    public interface IMaterialCategoryService
-    {       
-        ResultModel Create(CreateMaterialCategoryModel model);
+    public interface IProcedureService
+    {
+        ResultModel Create(CreateProcedureModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
-        ResultModel Update(UpdateMaterialCategoryModel model);
+        ResultModel Update(UpdateProcedureModel model);
         ResultModel Delete(Guid id);
     }
 }

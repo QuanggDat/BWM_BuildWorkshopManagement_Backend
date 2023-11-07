@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using Data.Enums;
+using Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ namespace Sevices.Core.LeaderTaskService
 {
     public interface ILeaderTaskService
     {
-        Task<ResultModel> CreatedLeaderTask(Guid createById, CreateLeaderTaskModel model);
-        Task<List<LeaderTaskModel>> GetLeaderTaskByOrderId(Guid orderId);
-        Task<List<LeaderTaskModel>> GetLeaderTaskByLeaderId(Guid leaderId);
-        Task<List<LeaderTaskModel>> GetLeaderTaskByForemanId(Guid foremanId);
-        Task<ResultModel> UpdateLeaderTaskStatus(Guid leaderTaskId, TaskStatus status);
-        Task<ResultModel> UpdateLeaderTask(UpdateLeaderTaskModel model);
-        Task<ResultModel> DeleteLeaderTask(Guid leaderTaskId);
-        //Task<ResultModel> AssignLeaderTask(Guid leaderTaskId, Guid teamId);
+        ResultModel Created(Guid createById, CreateLeaderTaskModel model);
+        ResultModel GetByOrderId(Guid orderId);
+        ResultModel GetByLeaderId(Guid leadeId);
+        ResultModel GetByOrderIdAndLeaderId(Guid orderId, Guid leaderId);
+        ResultModel GetById(Guid id);
+        ResultModel UpdateStatus(Guid id, ETaskStatus status);
+        ResultModel Update(UpdateLeaderTaskModel model);
+        ResultModel Delete(Guid leaderTaskId);              
     }
 }

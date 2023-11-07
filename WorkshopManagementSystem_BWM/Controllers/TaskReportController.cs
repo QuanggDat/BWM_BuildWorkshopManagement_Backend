@@ -19,50 +19,48 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> SendReport(CreateTaskReportModel model)
+        public IActionResult Create (CreateTaskReportModel model)
         {
             if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
-            var result = await _reportService.CreateTaskReport(userId,model);
+            var result = _reportService.Create(userId,model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{reportId}")]
-        public async Task<ActionResult> GetReportByReportId(Guid reportId)
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetById (Guid id)
         {
-            var result = await _reportService.GetTaskReportById(reportId);
+            var result = _reportService.GetById(id);
             if (result == null) return BadRequest("Không tìm thấy reportId");
-            return Ok(result);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult> GetProgressReportsByLeaderId()
+        [HttpGet("[action]/{leaderTaskId}")]
+        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId)
         {
-            var leaderId = User.GetId();
-            var result = await _reportService.GetProgressTaskReportsByLeaderId(leaderId);
+            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId);
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
-            return Ok(result);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult> GetProblemReportsByLeaderId()
+        [HttpGet("[action]/{leaderTaskId}")]
+        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId)
         {
-            var leaderId = User.GetId();
-            var result = await _reportService.GetProblemTaskReportsByLeaderId(leaderId);
-            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
-            return Ok(result);
+            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> ReportResponse(ReviewsReportModel model)
+        public IActionResult SendResponse (SendResponseModel model)
         {
-            var result = await _reportService.TaskReportResponse(model);
+            var result = _reportService.SendResponse(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        
+        }       
     }
 }

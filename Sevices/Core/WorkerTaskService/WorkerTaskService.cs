@@ -1,71 +1,84 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
-using static Data.Models.WorkerTaskModel;
+using Sevices.Core.NotificationService;
 
 namespace Sevices.Core.WorkerTaskService
 {
     public class WorkerTaskService : IWorkerTaskService
     {
         private readonly AppDbContext _dbContext;
-        public WorkerTaskService(AppDbContext dbContext)
+        private readonly INotificationService _notificationService;
+
+        public WorkerTaskService(AppDbContext dbContext, INotificationService notificationService)
         {
             _dbContext = dbContext;
+            _notificationService = notificationService;
         }
 
-        public async Task<ResultModel> CreateWorkerTask(Guid userId, CreateWorkerTaskModel model)
+        public ResultModel Create(Guid userId, CreateWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var workerTask = new WorkerTask
+            var stepTmp = _dbContext.Step.Find(model.stepId);
+            if (stepTmp == null)
             {
-                leaderTaskId = model.leaderTaskId,
-                name = model.name,
-                description = model?.description ?? "",
-                startTime = model!.startTime,
-                endTime = model.endTime,
-                status = (TaskStatus)Data.Enums.TaskStatus.New,
-                createById = userId,
-                isDeleted = false,
-            };
-
-            try
+                result.Code = 40;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
+            }
+            else
             {
-                await _dbContext.WorkerTask.AddAsync(workerTask);
-
-                foreach (var assignee in model.assignees)
+                var workerTask = new WorkerTask
                 {
-                    await _dbContext.WorkerTaskDetail.AddAsync(new WorkerTaskDetail
+                    leaderTaskId = model.leaderTaskId,
+                    name = stepTmp.name,
+                    description = model.description,
+                    startTime = model.startTime,
+                    endTime = model.endTime,
+                    status = ETaskStatus.New,
+                    createById = userId,
+                    isDeleted = false,
+                };
+
+                try
+                {
+                    _dbContext.WorkerTask.Add(workerTask);
+
+                    foreach (var assignee in model.assignees)
                     {
-                        workerTaskId = workerTask.id,
-                        userId = assignee
-                    });
+                        _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                        {
+                            workerTaskId = workerTask.id,
+                            userId = assignee
+                        });
+                    }
+
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = workerTask.id;
+
                 }
 
-                await _dbContext.SaveChangesAsync();
-                result.Succeed = true;
-                result.Data = workerTask.id;
-
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
             }
-
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-
             return result;
         }
 
-        public async Task<ResultModel> UpdateWorkerTask(UpdateWorkerTaskModel model)
+        public ResultModel Update(UpdateWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
             try
             {
-                var check = await _dbContext.WorkerTask.FindAsync(model.workerTaskId);
+                var check = _dbContext.WorkerTask.Find(model.id);
                 if (check == null)
                 {
                     result.Code = 47;
@@ -82,9 +95,9 @@ namespace Sevices.Core.WorkerTaskService
                     check.status = model.status;
 
                     // Remove all old woker tasks detail
-                    var currentWokerTaskDetails = await _dbContext.WorkerTaskDetail
-                        .Where(x => x.workerTaskId == model.workerTaskId)
-                        .ToListAsync();
+                    var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
+                        .Where(x => x.workerTaskId == model.id)
+                        .ToList();
                     if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
                     {
                         _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
@@ -96,16 +109,15 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         workerTaskDetails.Add(new WorkerTaskDetail
                         {
-                            workerTaskId = model.workerTaskId,
+                            workerTaskId = model.id,
                             userId = assignee
                         });
                     }
 
-                    await _dbContext.WorkerTaskDetail.AddRangeAsync(workerTaskDetails);
-
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = model.workerTaskId;
+                    result.Data = model.id;
                 }
 
             }
@@ -116,13 +128,12 @@ namespace Sevices.Core.WorkerTaskService
 
             return result;
         }
-
-        public async Task<ResultModel> DeleteWorkerTask(Guid workerTaskId)
+        public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WorkerTask.FindAsync(workerTaskId);
+            var check = _dbContext.WorkerTask.Find(id);
             if (check == null)
             {
                 result.Code = 47;
@@ -135,9 +146,9 @@ namespace Sevices.Core.WorkerTaskService
                 try
                 {
                     check.isDeleted = true;
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = workerTaskId;
+                    result.Data = id;
                 }
                 catch (Exception ex)
                 {
@@ -147,12 +158,12 @@ namespace Sevices.Core.WorkerTaskService
             }            
         }
 
-        public async Task<ResultModel> AssignWorkerTask(AssignWorkerTaskModel model)
+        public ResultModel Assign(AssignWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
+            var check = _dbContext.WorkerTaskDetail.SingleOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check != null)
             {
                 result.Code = 48;
@@ -169,8 +180,8 @@ namespace Sevices.Core.WorkerTaskService
                 };
                 try
                 {
-                    await _dbContext.WorkerTaskDetail.AddAsync(workerTaskDetail);
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.WorkerTaskDetail.Add(workerTaskDetail);
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = workerTaskDetail.id;
                 }
@@ -178,47 +189,44 @@ namespace Sevices.Core.WorkerTaskService
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 }
-
                 return result;
             }         
         }
 
-        public async Task<ResultModel> UnAssignWorkerTask(AssignWorkerTaskModel model)
+        public ResultModel UnAssign(AssignWorkerTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = await _dbContext.WorkerTaskDetail.SingleOrDefaultAsync(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
+            var check = _dbContext.WorkerTaskDetail.SingleOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check == null)
             {
                 result.Code = 49;
                 result.Succeed = false;
                 result.ErrorMessage = "Công nhân chưa được thêm vào công việc!";
-                return result;
             }
             else
             {
                 try
                 {
                     _dbContext.WorkerTaskDetail.Remove(check);
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = check.id;
                 }
                 catch (Exception ex)
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-                return result;
+                }    
             }
-            
+            return result;
         }
-        public async Task<ResultModel> UpdateWorkerTaskStatus(Guid workerTaskId, TaskStatus status)
+        public ResultModel UpdateStatus(Guid id, ETaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var workerTask = await _dbContext.WorkerTask.FindAsync(workerTaskId);
+            var workerTask = _dbContext.WorkerTask.Find(id);
             if (workerTask == null)
             {
                 result.Code = 47;
@@ -230,10 +238,15 @@ namespace Sevices.Core.WorkerTaskService
             {
                 try
                 {
+                    if (status == ETaskStatus.Completed)
+                    {
+                        workerTask.completedTime = DateTime.Now;
+                    }
+
                     workerTask.status = status;
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = workerTaskId;
+                    result.Data = id;
                 }
                 catch (Exception ex)
                 {
@@ -243,35 +256,104 @@ namespace Sevices.Core.WorkerTaskService
             }           
         }
 
-        public async Task<List<WorkerTaskModel>> GetAllWorkerTask(Guid leaderTaskId)
-        {          
-
-            var check = await _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).ToListAsync();
-            var list = new List<WorkerTaskModel>();
-            foreach (var item in check)
+        public ResultModel GetById(Guid id)
+        {
+            ResultModel result = new ResultModel();
+            try
             {
-                var user = await _dbContext.Users.FindAsync(item.createById);
-                var tmp = new WorkerTaskModel
+                var check = _dbContext.WorkerTask.Where(x => x.id == id && x.isDeleted != true)
+                    .FirstOrDefault();
+
+                if (check == null)
                 {
-                    leaderTaskId = item.leaderTaskId,
-                    userId = item.createById,
-                    workerTaskId = item.id,
-                    name = item.name,
-                    description = item.description,
-                    startTime = item.startTime,
-                    endTime = item.endTime,
-                    status = item.status,
-                    userFullName = user!.fullName,
-                    Members = item.WorkerTaskDetails.Select(_ => new TaskMember
+                    result.Code = 47;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
+                }
+                else
+                {
+                    var wokerTaskModel = new WorkerTaskModel
                     {
-                        memberId = _.User.Id,
-                        memberFullName = _.User.fullName,
-                    }).ToList(),
+                        leaderTaskId = check.leaderTaskId,
+                        stepId = check.stepId,
+                        userId = check.createById,
+                        name = check.name,
+                        description = check.description,
+                        startTime = check.startTime,
+                        endTime = check.endTime,
+                        status = check.status,
+                        Members = check.WorkerTaskDetails.Select(_ => new TaskMember
+                        {
+                            memberId = _.User.Id,
+                            memberFullName = _.User.fullName,
+                        }).ToList(),
+                    };
+                    result.Data = wokerTaskModel;
+                    result.Succeed = true;
                 };
-                list.Add(tmp);
             }
-            return list;
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAll (Guid leaderTaskId)
+        {
+
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var check =  _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).ToList();
+
+            if (check == null)
+            {
+                result.Code = 81;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm";
+            }
+            else
+            {
+                try
+                {
+                    var list = new List<WorkerTaskModel>();
+                    foreach (var item in check)
+                    {
+                        var tmp = new WorkerTaskModel
+                        {
+                            workerTaskId = item.id,
+                            leaderTaskId = item.leaderTaskId,
+                            stepId = item.stepId,
+                            userId = item.createById,                           
+                            name = item.name,
+                            description = item.description,
+                            startTime = item.startTime,
+                            endTime = item.endTime,
+                            status = item.status,
+                            Members = item.WorkerTaskDetails.Select(_ => new TaskMember
+                            {
+                                memberId = _.User.Id,
+                                memberFullName = _.User.fullName,
+                            }).ToList(),
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = check.Count
+                    };
+                    result.Succeed = true;
+
+                }
+                catch (Exception e)
+                {
+                    result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                }
+            }
+            return result;         
         }
     }
 }

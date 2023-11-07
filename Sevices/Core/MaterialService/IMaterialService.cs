@@ -9,12 +9,12 @@ namespace Sevices.Core.MaterialService
 {
     public interface IMaterialService
     {
-        ResultModel CreateMaterial(CreateMaterialModel model);
-        ResultModel UpdateMaterial(UpdateMaterialModel model);
-        ResultModel DeleteMaterial(Guid id);
-        ResultModel GetMaterialById(Guid id);
-        ResultModel GetAllMaterial(string? search,int pageIndex, int pageSize);
-        ResultModel GetMaterialByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize);
+        ResultModel Create(CreateMaterialModel model);
+        ResultModel Update(UpdateMaterialModel model);
+        ResultModel Delete(Guid id);
+        ResultModel GetById(Guid id);
+        ResultModel GetAll(string? search,int pageIndex, int pageSize);
+        ResultModel GetByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize);
         
     }
 }

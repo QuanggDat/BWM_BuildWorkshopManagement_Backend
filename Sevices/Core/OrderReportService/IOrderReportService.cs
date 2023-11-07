@@ -10,9 +10,11 @@ namespace Sevices.Core.OrderReportService
 {
     public interface IOrderReportService
     {
-        Task<ResultModel> CreateOrderReport(Guid reporterId, CreateOrderReportModel model);
-        Task<OrderReportModel?> GetOrderReportById(Guid reportId);
-        Task<ResultModel> ReviewsOrderReport(ReviewsOrderReportModel model);
-        Task<List<OrderReportModel>> GetOrderReportsByForemanId(Guid foremanId);    
+        ResultModel Create(Guid id, CreateOrderReportModel model);   
+        ResultModel GetById(Guid id);
+        ResultModel GetByOrderId(Guid orderId);
+        ResultModel GetByForemanId (Guid foremanId);
+        ResultModel GetAll();
+        //ResultModel SendReviews(ReviewsOrderReportModel model);
     }
 }

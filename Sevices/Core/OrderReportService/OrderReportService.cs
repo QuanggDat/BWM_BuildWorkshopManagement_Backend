@@ -1,26 +1,24 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Data.Models.OrderReportModel;
+using Sevices.Core.NotificationService;
 
 namespace Sevices.Core.OrderReportService
 {
     public class OrderReportService : IOrderReportService
     {
         private readonly AppDbContext _dbContext;
+        private readonly INotificationService _notificationService;
 
-        public OrderReportService(AppDbContext dbContext)
+        public OrderReportService(AppDbContext dbContext, INotificationService notificationService)
         {
             _dbContext = dbContext;
+            _notificationService = notificationService;
         }
 
-        public async Task<ResultModel> CreateOrderReport(Guid reporterId, CreateOrderReportModel model)
+        public ResultModel Create (Guid reporterId, CreateOrderReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -30,113 +28,108 @@ namespace Sevices.Core.OrderReportService
             {
                 result.Code = 56;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải quản đốc!";
-                return result;
+                result.ErrorMessage = "Người dùng không phải quản đốc !";
             }
             else
             {
-                var order = await _dbContext.Order
+                var order = _dbContext.Order
                 .Where(x => x.id == model.orderId)
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
                 if (order == null)
                 {
                     result.Code = 57;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
-                    return result;
                 }
                 else
                 {
-                    if (order.status != Data.Enums.OrderStatus.InProgress)
+                    if (order.status != OrderStatus.InProgress)
                     {
                         result.Code = 58;
                         result.Succeed = false;
-                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";
-                        return result;
+                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";                        
                     }
                     else
                     {
-                        var checkReport = await _dbContext.Report.AnyAsync(x => x.orderId == model.orderId);
-
-                        if (checkReport == true)
+                        var report = new Report
                         {
-                            result.Code = 59;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Báo cáo tiến độ cho đơn hàng này đã được thực hiện!";
-                            return result;
+                            orderId = model.orderId,
+                            title = model.title,
+                            content = model.content,
+                            reporterId = reporterId,
+                            reportStatus = model.reportStatus,
+                            createdDate = DateTime.Now,
+                            reportType = ReportType.OrderReport
+                        };
+
+                        try
+                        {
+                            if (model.resource != null)
+                            {
+                                foreach (var resource in model.resource)
+                                {
+                                    _dbContext.Resource.Add(new Resource
+                                    {
+                                        reportId = report.id,
+                                        link = resource
+                                    });
+                                }
+                            }
+
+                            _dbContext.Report.Add(report);
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = report.id;
                         }
-                        else
+
+                        catch (Exception ex)
                         {
-                            var report = new Report
-
-                            {
-                                orderId = model.orderId,
-                                title = model.title,
-                                content = model.content,
-                                reporterId = reporterId,
-                                reportStatus = model.reportStatus,
-                                createdDate = DateTime.Now,
-                            };
-
-                            try
-                            {
-                                await _dbContext.Report.AddAsync(report);
-                                await _dbContext.SaveChangesAsync();
-                                result.Succeed = true;
-                                result.Data = report.id;
-                            }
-
-                            catch (Exception ex)
-                            {
-                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                            }
-                        }            
-                        return result;
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
                     }                 
                 }          
-            }       
+            }
+            return result;
         }
-
-        public async Task<ResultModel> ReviewsOrderReport(ReviewsOrderReportModel model)
+        /*
+        public ResultModel SendReviews (ReviewsOrderReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
-            var report = await _dbContext.Report
-                .Where(x => x.id == model.reportId).SingleOrDefaultAsync();
+            var report = _dbContext.Report
+                .Where(x => x.id == model.reportId).SingleOrDefault();
 
             if (report == null)
             {
                 result.Code = 60;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin báo cáo !";
-                return result;
             }
             else
             {
-                if (report.reportStatus == Data.Enums.ReportStatus.Complete)
+                if (report.reportStatus == ReportStatus.Complete)
                 {
                     result.Code = 61;
                     result.Succeed = false;
                     result.ErrorMessage = "Báo cáo này đã hoàn thành !";
-                    return result;
                 }
                 else
                 {
-                    var order = await _dbContext.Order
-                    .FindAsync(report.orderId);
+                    var order = _dbContext.Order
+                    .Find(report.orderId);
 
                     try
                     {
                         report.reportStatus = model.reportStatus;
                         report.responseContent = model.contentReviews;
 
-                        if (order != null && model.reportStatus == Data.Enums.ReportStatus.Complete)
+                        if (order != null && model.reportStatus == ReportStatus.Complete)
                         {
                             order.acceptanceTime = DateTime.Now;
-                            order.status = Data.Enums.OrderStatus.Completed;
+                            order.status = OrderStatus.Completed;
                         }
 
-                        await _dbContext.SaveChangesAsync();
+                        _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = report.id;
                     }
@@ -145,83 +138,164 @@ namespace Sevices.Core.OrderReportService
                     {
                         result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                     }
-                    return result;
                 }          
-            }          
-        }
-
-        public async Task<OrderReportModel?> GetOrderReportById(Guid reportId)
-        {
-            var report = await _dbContext.Report
-                .Include(x => x.Reporter)
-                .Include(x => x.Order)
-                .Where(x => x.id == reportId)
-                .SingleOrDefaultAsync();
-
-            if (report == null)
-            {
-                return null;
             }
-            else
+            return result;
+        }
+        */
+        public ResultModel GetById(Guid id)
+        {
+            ResultModel result = new ResultModel();
+            try
             {
-                var reporter = report.Reporter;
+                var check = _dbContext.Report.Where(x => x.id == id).SingleOrDefault();
 
-                return new OrderReportModel
+                if (check == null)
                 {
-                    orderName = report.Order.name,
-                    title = report.title,
-                    content = report.content,
-                    createdDate = report.createdDate,
-                    reportStatus = report.reportStatus,
-                    responseContent = report.responseContent,
-
-                    reporter = new ReporterOrderReport
+                    result.Code = 60;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+                }
+                else
+                {
+                    var report = new OrderReportModel
                     {
-                        id = reporter.Id,
-                        fullName = reporter.fullName,
-                        phoneNumber = reporter.UserName,
-                        email = reporter.Email,
-                    },
-                };
+                        orderId = check.orderId,
+                        title = check.title,
+                        content = check.content,
+                        createdDate = check.createdDate,
+                        reportStatus = check.reportStatus,
+                        reporterId = check.reporterId,
+                        resource = check.Resources.Select(x => x.link).ToList()
+                    };
+                }
             }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
         }
 
-        public async Task<List<OrderReportModel>> GetOrderReportsByForemanId(Guid foremanId)
+        public ResultModel GetByForemanId(Guid foremanId)
         {
-            var checkReport = await _dbContext.Report
-                .Include(x => x.Reporter)
-                .Include(x => x.Order)
-                .Where(x => x.reporterId == foremanId && x.reportType == Data.Enums.ReportType.ProgressReport)
-                .ToListAsync();
+            ResultModel result = new ResultModel();
+            try
+            {
+                var checkReport = _dbContext.Report
+                .Where(x => x.reporterId == foremanId).ToList();
 
-            if (checkReport == null)
-            {
-                return new List<OrderReportModel>();
+                if (checkReport == null)
+                {
+                    result.Code = 65;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin quản đốc";
+                }
+                else
+                {
+                    var list = checkReport.Select(report => new OrderReportModel
+                    {
+                        orderId = report.orderId,
+                        title = report.title,
+                        content = report.content,
+                        createdDate = report.createdDate,
+                        reportStatus = report.reportStatus,
+                        reporterId = report.reporterId,
+                        resource = report.Resources.Select(x => x.link).ToList()
+                    }).ToList();
+
+                    var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+                    result.Data = new PagingModel()
+                    {
+                        Data = sortedList,
+                        Total = checkReport.Count
+                    };
+                    result.Succeed = true;
+                }
             }
-            else
+            catch (Exception e)
             {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetByOrderId (Guid orderId)
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var checkReport = _dbContext.Report
+                .Where(x => x.orderId == orderId).ToList();
+
+                if (checkReport == null)
+                {
+                    result.Code = 57;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
+                }
+                else
+                {
+                    var list = checkReport.Select(report => new OrderReportModel
+                    {
+                        
+                        title = report.title,
+                        content = report.content,
+                        createdDate = report.createdDate,
+                        reportStatus = report.reportStatus,
+                        reporterId = report.reporterId,
+                        resource = report.Resources.Select(x => x.link).ToList()
+                    }).ToList();
+
+                    var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
+                    result.Data = new PagingModel()
+                    {
+                        Data = sortedList,
+                        Total = checkReport.Count
+                    };
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAll ()
+        {
+            ResultModel result = new ResultModel();
+            try
+            {
+                var checkReport = _dbContext.Report
+                .Where(x => x.reportType == ReportType.OrderReport).ToList();
+
                 var list = checkReport.Select(report => new OrderReportModel
                 {
-                    orderName = report.Order.name,
+                    orderId = report.orderId,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
                     reportStatus = report.reportStatus,
-                    responseContent = report.responseContent,
-
-                    reporter = new ReporterOrderReport
-                    {
-                        id = report.Reporter.Id,
-                        fullName = report.Reporter.fullName,
-                        phoneNumber = report.Reporter.UserName,
-                        email = report.Reporter.Email,
-                    },
-
+                    reporterId = report.reporterId,
+                    resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
                 var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
-                return sortedList;
-            }         
+                result.Data = new PagingModel()
+                {
+                    Data = sortedList,
+                    Total = checkReport.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
         }
     }
 }

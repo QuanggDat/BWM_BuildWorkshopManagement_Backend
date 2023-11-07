@@ -4,6 +4,7 @@ using WorkshopManagementSystem_BWM.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.Common;
 using Sevices.Core.LeaderTaskService;
+using Data.Enums;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -19,74 +20,63 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateLeaderTask(CreateLeaderTaskModel model)
+        public IActionResult Created(CreateLeaderTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
-            var result = await _leaderTaskService.CreatedLeaderTask(userId, model);
+            var result = _leaderTaskService.Created(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
         
         [HttpGet("[action]/{orderId}")]
-        public async Task<ActionResult> GetLeaderTaskByOrderId(Guid orderId)
+        public IActionResult GetByOrderId(Guid orderId)
         {
-            var result = await _leaderTaskService.GetLeaderTaskByOrderId(orderId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
-            return Ok(result);
+            var result = _leaderTaskService.GetByOrderId(orderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult> GetLeaderTaskByLeaderId()
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetById(Guid id)
         {
-            var userId = User.GetId();         
-            var result = await _leaderTaskService.GetLeaderTaskByLeaderId(userId);
-            if (result == null) return BadRequest("Không tìm thấy công việc");
-            return Ok(result);
+            var result = _leaderTaskService.GetById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult> GetLeaderTaskByForemanId()
+        [HttpGet("[action]/{leaderId}")]
+        public IActionResult GetByLeaderId(Guid leaderId)
         {
-            var userId = User.GetId();
-            var result = await _leaderTaskService.GetLeaderTaskByForemanId(userId);
-            if (result == null) return BadRequest("Không tìm thấy công việc");
-            return Ok(result);
-        }        
-
+            var result = _leaderTaskService.GetByLeaderId(leaderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+     
         [HttpPut("[action]")]
-        public async Task<ActionResult> UpdateLeaderTask(UpdateLeaderTaskModel model)
+        public IActionResult Update(UpdateLeaderTaskModel model)
         {            
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
-            var result = await _leaderTaskService.UpdateLeaderTask(model);
+            var result = _leaderTaskService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]/{leaderTaskId}")]
-        public async Task<ActionResult> UpdateTaskStatus(Guid leaderTaskId, TaskStatus status)
+        [HttpPut("[action]/{id}")]
+        public IActionResult UpdateStatus(Guid id, ETaskStatus status)
         {
-            var result = await _leaderTaskService.UpdateLeaderTaskStatus(leaderTaskId, status);
+            var result =  _leaderTaskService.UpdateStatus(id, status);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]/{leaderTaskId}")]
-        public async Task<ActionResult> DeleteTask(Guid leaderTaskId)
+        [HttpDelete("[action]/{id}")]
+        public IActionResult Delete(Guid id)
         {
-            var result = await _leaderTaskService.DeleteLeaderTask(leaderTaskId);
+            var result = _leaderTaskService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-        /*
-        [HttpPut("[action]/{leaderTaskId}/{groupId}")]
-        public async Task<ActionResult> AssignLeaderTask(Guid leaderTaskId, Guid groupId)
-        {
-            var result = await _leaderTaskService.AssignLeaderTask(leaderTaskId, groupId);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }      
-        */
     }
 }

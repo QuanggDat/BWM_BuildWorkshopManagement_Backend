@@ -16,10 +16,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _groupService = groupService;
         }
 
-        [HttpPost("CreateGroup")]
-        public IActionResult CreateGroup(CreateGroupModel model)
+        [HttpPost("[action]")]
+        public IActionResult Create(CreateGroupModel model)
         {
-            var result = _groupService.CreateGroup(model);
+            var result = _groupService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -41,22 +41,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllGroup(search, pageIndex, pageSize);
+            var result = _groupService.GetAll(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("UpdateGroup")]
-        public IActionResult UpdateGroup(UpdateGroupModel model)
+        [HttpPut("[action]")]
+        public IActionResult Update(UpdateGroupModel model)
         {
-            var result = _groupService.UpdateGroup(model);
+            var result = _groupService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("AddLeaderToGroup")]
+        [HttpPut("[action]")]
         public IActionResult AddLeaderToGroup(AddWorkerToGroupModel model)
         {
             var result = _groupService.AddLeaderToGroup(model);
@@ -64,7 +64,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("AddWorkerToGroup")]
+        [HttpPut("[action]")]
         public IActionResult AddWorkerToGroup(AddWorkerToGroupModel model)
         {
             var result = _groupService.AddWorkerToGroup(model);
@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("RemoveWorkerFromGroup")]
+        [HttpPut("[action]")]
         public IActionResult RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
             var result = _groupService.RemoveUserFromGroup(model);
@@ -81,9 +81,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteGroup(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var result = _groupService.DeleteGroup(id);
+            var result = _groupService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }        

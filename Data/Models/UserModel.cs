@@ -114,14 +114,4 @@ namespace Data.Models
         public Guid groupId { get; set; }
     }
 
-    public class ManagementUserModel
-    {
-        public string fullName { get; set; }
-        public string image { get; set; } 
-        public string roleName { get; set; } 
-        public string teamName { get; set; } 
-        public string groupName { get; set; } 
-        public bool banStatus { get; set; } 
-
-    }
 }

@@ -19,7 +19,7 @@ namespace Sevices.Core.GroupService
         }
 
         //For Foreman role to see all group in the factory.
-        public ResultModel GetAllGroup(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
@@ -95,7 +95,7 @@ namespace Sevices.Core.GroupService
         }
 
         //Foreman will create new group 
-        public ResultModel CreateGroup(CreateGroupModel model)
+        public ResultModel Create(CreateGroupModel model)
         {
             var result = new ResultModel();
             try
@@ -147,7 +147,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel UpdateGroup(UpdateGroupModel model)
+        public ResultModel Update(UpdateGroupModel model)
         {
             var result = new ResultModel();
             try
@@ -370,7 +370,7 @@ namespace Sevices.Core.GroupService
         }
 
         //Not sure about this yet
-        public ResultModel DeleteGroup(Guid id)
+        public ResultModel Delete(Guid id)
         {
             var result = new ResultModel();
             try

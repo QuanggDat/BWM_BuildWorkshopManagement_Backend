@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Data.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.UserService;
 
@@ -15,7 +16,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _userService = userService;
         }
 
-        [HttpPost("CreateAdmin")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CreateAdmin([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -27,7 +28,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage});         
         }
         
-        [HttpPost("CreateForeman")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CeatedForeman([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -39,7 +40,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("CreateLeader")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CeatedLeader([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -63,7 +64,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("Login")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> Login([FromBody] LoginModel model)
         {
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
@@ -74,19 +75,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAll()
+        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result =  _userService.GetAll();
+            var result =  _userService.GetAll(search,pageIndex,pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
-        }
-
-        [HttpGet("GetAllUserForForeman")]
-        public IActionResult GetAllUserForForeman()
-        {
-            var result = _userService.GetAllUserForForeman();
-            if (result == null) return BadRequest("Không tìm thấy công nhân!");
-            return Ok(result);
         }
 
         [HttpGet("{phoneNumber}")]
@@ -153,7 +146,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("ChangePassword")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> ChangePassword([FromBody] UserUpdatePasswordModel model)
         {
             var result = await _userService.ChangePassword(model);

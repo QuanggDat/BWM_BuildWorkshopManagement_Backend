@@ -33,7 +33,7 @@ namespace Sevices.Core.ItemService
             _configuration = configuration;
         }
 
-        public async Task<ResultModel> CreateItem(CreateItemModel model)
+        public ResultModel Create(CreateItemModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -83,7 +83,7 @@ namespace Sevices.Core.ItemService
 
                     foreach (var procedure in model.listProcedureId)
                     {                                               
-                        await _dbContext.ProcedureItem.AddAsync(new ProcedureItem
+                         _dbContext.ProcedureItem.Add(new ProcedureItem
                         {
                             itemId = item.id,
                             procedureId = procedure
@@ -102,7 +102,7 @@ namespace Sevices.Core.ItemService
                         }
                         else
                         {
-                            await _dbContext.ItemMaterial.AddAsync(new ItemMaterial
+                             _dbContext.ItemMaterial.Add(new ItemMaterial
                             {
                                 itemId = item.id,
                                 materialId = material.materialId,
@@ -112,7 +112,7 @@ namespace Sevices.Core.ItemService
                         }                   
                     }
 
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = item.id;
                 }
@@ -126,12 +126,12 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> UpdateItem(UpdateItemModel model)
+        public ResultModel Update(UpdateItemModel model)
         {
             ResultModel result = new ResultModel();
             try
             {   
-                var check = await _dbContext.Item.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefaultAsync();
+                var check =  _dbContext.Item.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
                 
                 if (check == null)
                 {
@@ -170,9 +170,9 @@ namespace Sevices.Core.ItemService
                         check.price = model.price;
 
                         // Remove all old Procedure Item
-                        var currentProcedureItems = await _dbContext.ProcedureItem
+                        var currentProcedureItems =  _dbContext.ProcedureItem
                             .Where(x => x.itemId == model.id)
-                            .ToListAsync();
+                            .ToList();
                         if (currentProcedureItems != null && currentProcedureItems.Count > 0)
                         {
                             _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
@@ -190,9 +190,9 @@ namespace Sevices.Core.ItemService
                         }
 
                         // Remove all old Material Item
-                        var currentMaterialItems = await _dbContext.ItemMaterial
+                        var currentMaterialItems =  _dbContext.ItemMaterial
                             .Where(x => x.itemId == model.id)
-                            .ToListAsync();
+                            .ToList();
                         if (currentMaterialItems != null && currentMaterialItems.Count > 0)
                         {
                             _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
@@ -222,10 +222,10 @@ namespace Sevices.Core.ItemService
                             }                         
                         }
 
-                        await _dbContext.ProcedureItem.AddRangeAsync(procedureItems);
-                        await _dbContext.ItemMaterial.AddRangeAsync(materialItems);
+                         _dbContext.ProcedureItem.AddRange(procedureItems);
+                         _dbContext.ItemMaterial.AddRange(materialItems);
 
-                        await _dbContext.SaveChangesAsync();
+                        _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = check.id;
                     }
@@ -238,12 +238,12 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> DeleteItem(Guid id)
+        public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var check = await _dbContext.Item.Where(x => x.id == id && x.isDeleted != true).FirstOrDefaultAsync();
+                var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
                 if (check == null)
                 {
                     result.Code = 34;
@@ -253,7 +253,7 @@ namespace Sevices.Core.ItemService
                 else
                 {
                     check.isDeleted = true;
-                    await _dbContext.SaveChangesAsync();
+                    _dbContext.SaveChanges();
 
                     result.Data = "Xoá thành công " + check.name;
                     result.Succeed = true;
@@ -267,15 +267,15 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> GetAllItem(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var listItem = await _dbContext.Item.Where(x => x.isDeleted != true)
+                var listItem =  _dbContext.Item.Where(x => x.isDeleted != true)
                     .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
-                   .OrderByDescending(x => x.name).ToListAsync();
+                   .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -323,15 +323,15 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> GetItemById(Guid id)
+        public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var check = await _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
+                var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
                     .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefault();
 
                 if (check == null)
                 {
@@ -371,7 +371,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public async Task<ResultModel> GetItemByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize)
+        public ResultModel GetByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             var check = _dbContext.ItemCategory.Where(x => x.id == itemCategoryId && x.isDeleted != true).FirstOrDefault();
@@ -386,11 +386,10 @@ namespace Sevices.Core.ItemService
             {
                 try
                 {
-                    var listItem = await _dbContext.Item.Where(x => x.itemCategoryId == itemCategoryId && x.isDeleted != true)
+                    var listItem = _dbContext.Item.Where(x => x.itemCategoryId == itemCategoryId && x.isDeleted != true)
                         .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                         .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
-                       .OrderByDescending(x => x.name).ToListAsync();
-
+                       .OrderBy(x => x.name).ToList();
 
                     var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

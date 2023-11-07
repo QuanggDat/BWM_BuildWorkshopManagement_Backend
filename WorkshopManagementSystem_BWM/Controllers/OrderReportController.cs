@@ -19,40 +19,48 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> SendOrderReport(CreateOrderReportModel model)
+        public IActionResult Create(CreateOrderReportModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được orderId!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
-            var result = await _orderReportService.CreateOrderReport(userId, model);
+            var result = _orderReportService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{reportId}")]
-        public async Task<ActionResult> GetReportByReportId(Guid reportId)
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetById(Guid id)
         {
-            var result = await _orderReportService.GetOrderReportById(reportId);
-            if (result == null) return BadRequest("Không tìm thấy reportId");
-            return Ok(result);
+            var result = _orderReportService.GetById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
-        [HttpPut("[action]")]
-        public async Task<ActionResult> ReviewsOrderReport(ReviewsOrderReportModel model)
-        {
-            var result = await _orderReportService.ReviewsOrderReport(model);
+        
+        [HttpGet("[action]")]
+        public IActionResult GetByForemanId(Guid foremanId)
+        {           
+            var result = _orderReportService.GetByForemanId(foremanId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetOrderReportsByFactoryId()
+        public IActionResult GetByOrderId(Guid orderId)
         {
-            var foremanId = User.GetId();
-            var result = await _orderReportService.GetOrderReportsByForemanId(foremanId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
-            return Ok(result);
+            var result = _orderReportService.GetByOrderId(orderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-        
+
+        /*
+        [HttpPut("[action]")]
+        public IActionResult SendReviews(ReviewsOrderReportModel model)
+        {
+            var result = _orderReportService.SendReviews(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+        */
     }
 }

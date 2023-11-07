@@ -9,10 +9,10 @@ namespace Sevices.Core.ItemCategoryService
 {
     public interface IItemCategoryService
     {
-        ResultModel CreateItemCategory(CreateItemCategoryModel model);
-        ResultModel GetAllItemCategory(string? search, int pageIndex, int pageSize);
-        ResultModel GetItemCategoryById(Guid id);
-        ResultModel UpdateItemCategory(UpdateItemCategoryModel model);
-        ResultModel DeleteItemCategory(Guid id);
+        ResultModel Create(CreateItemCategoryModel model);
+        ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetById(Guid id);
+        ResultModel Update(UpdateItemCategoryModel model);
+        ResultModel Delete(Guid id);
     }
 }

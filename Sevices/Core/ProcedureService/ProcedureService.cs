@@ -1,54 +1,47 @@
-﻿using AutoMapper;
-using Data.DataAccess;
+﻿using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sevices.Core.ItemCategoryService
+namespace Sevices.Core.ProcedureService
 {
-    public class ItemCategoryService : IItemCategoryService
+    public class ProcedureService : IProcedureService
     {
         private readonly AppDbContext _dbContext;
-        private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public ItemCategoryService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
+        public ProcedureService(AppDbContext dbContext)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
-            _configuration = configuration;
+            _dbContext = dbContext;         
         }
-
-        public ResultModel Create(CreateItemCategoryModel model)
+        public ResultModel Create(CreateProcedureModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
             try
             {
-                var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+                var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
                 if (checkExists != null)
                 {
-                    result.Code = 30;
+                    result.Code = 70;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên loại mặt hàng này đã tồn tại !";
+                    result.ErrorMessage = "Tên quy trình này đã tồn tại !";
                 }
                 else
                 {
-                    var newCategory = new ItemCategory
+                    var newProcedure = new Procedure
                     {
                         name = model.name,
                         isDeleted = false
                     };
 
-                    _dbContext.ItemCategory.Add(newCategory);
+                    _dbContext.Procedure.Add(newProcedure);
                     _dbContext.SaveChanges();
                     result.Succeed = true;
-                    result.Data = newCategory.id;
+                    result.Data = newProcedure.id;
                 }
             }
             catch (Exception ex)
@@ -58,28 +51,28 @@ namespace Sevices.Core.ItemCategoryService
             return result;
         }
 
-        public ResultModel Update(UpdateItemCategoryModel model)
+        public ResultModel Update(UpdateProcedureModel model)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.ItemCategory.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
+                var check = _dbContext.Procedure.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
                 if (check == null)
                 {
-                    result.Code = 31;
+                    result.Code = 71;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
+                    result.ErrorMessage = "Không tìm thấy thông tin quy trình !";
                 }
                 else
                 {
                     if (model.name != check.name)
                     {
-                        var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
+                        var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
                         if (checkExists != null)
                         {
-                            result.Code = 30;
+                            result.Code = 70;
                             result.Succeed = false;
-                            result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
+                            result.ErrorMessage = "Tên này đã tồn tại !";
                         }
                         else
                         {
@@ -105,27 +98,56 @@ namespace Sevices.Core.ItemCategoryService
             return result;
         }
 
+        public ResultModel Delete(Guid id)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var check = _dbContext.Procedure.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+
+                if (check == null)
+                {
+                    result.Code = 71;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
+                }
+                else
+                {
+                    check.isDeleted = true;
+                    _dbContext.SaveChanges();
+                    result.Data = "Xoá thành công " + check.name;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
             try
             {
-                var listItemCategory = _dbContext.ItemCategory.Where(x => x.isDeleted != true)
+                var listProcedure = _dbContext.Procedure.Where(x => x.isDeleted != true)
                    .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listItemCategory = listItemCategory.Where(x => x.name.Contains(search)).ToList();
+                    listProcedure = listProcedure.Where(x => x.name.Contains(search)).ToList();
                 }
 
-                var listItemCategoryPaging = listItemCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listProcedurePaging = listProcedure.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = new List<ItemCategoryModel>();
-                foreach (var item in listItemCategoryPaging)
+                var list = new List<ProcedureModel>();
+                foreach (var item in listProcedurePaging)
                 {
 
-                    var tmp = new ItemCategoryModel
+                    var tmp = new ProcedureModel
                     {
                         id = item.id,
                         name = item.name,
@@ -135,7 +157,7 @@ namespace Sevices.Core.ItemCategoryService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listItemCategoryPaging.Count
+                    Total = listProcedurePaging.Count
                 };
                 result.Succeed = true;
 
@@ -153,64 +175,27 @@ namespace Sevices.Core.ItemCategoryService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.ItemCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.Procedure.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
-                    result.Code = 31;
+                    result.Code = 71;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
                 }
                 else
                 {
 
-                    var itemCategoryModel = new ItemCategoryModel
+                    var procedureModel = new ProcedureModel
                     {
                         id = check.id,
                         name = check.name,
                     };
 
-                    result.Data = itemCategoryModel;
+                    result.Data = procedureModel;
                     result.Succeed = true;
                 }
 
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
-
-        public ResultModel Delete(Guid id)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var isExistedItem = _dbContext.Item.Any(x => x.itemCategoryId == id && x.isDeleted != true);
-                if (isExistedItem)
-                {
-                    result.Code = 32;
-                    result.ErrorMessage = "Hãy xoá hết mặt hàng trước khi xoá loại mặt hàng !";
-                }
-                else
-                {
-                    var check = _dbContext.ItemCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
-
-                    if (check == null)
-                    {
-                        result.Code = 31;
-                        result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
-                    }
-                    else
-                    {
-                        check.isDeleted = true;
-                        _dbContext.SaveChanges();
-                        result.Data = "Xoá thành công " + check.name;
-                        result.Succeed = true;
-                    }
-                }               
             }
             catch (Exception ex)
             {

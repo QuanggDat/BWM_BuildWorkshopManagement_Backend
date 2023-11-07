@@ -18,12 +18,12 @@ namespace Sevices.Core.UserService
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
-        ResultModel GetAll();
+        ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetById(Guid id);
         ResultModel GetUserRole(Guid id);
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
-        List<ManagementUserModel> GetAllUserForForeman();
+
     }
 }

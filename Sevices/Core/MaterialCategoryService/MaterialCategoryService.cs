@@ -26,7 +26,7 @@ namespace Sevices.Core.CategoryService
             _configuration = configuration;
         }     
 
-        public ResultModel CreateMaterialCategory(CreateMaterialCategoryModel model)
+        public ResultModel Create(CreateMaterialCategoryModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -60,7 +60,7 @@ namespace Sevices.Core.CategoryService
             return result;
         }        
 
-        public ResultModel UpdateMaterialCategory(UpdateMaterialCategoryModel model)
+        public ResultModel Update(UpdateMaterialCategoryModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -107,14 +107,14 @@ namespace Sevices.Core.CategoryService
             return result;
         }       
 
-        public ResultModel GetAllMaterialCategory(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             
             try
             {
                 var listMaterialCategory = _dbContext.MaterialCategory.Where(x => x.isDeleted != true)
-                   .OrderByDescending(x => x.name).ToList();
+                   .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -149,7 +149,7 @@ namespace Sevices.Core.CategoryService
             return result;
         }       
 
-        public ResultModel GetMaterialCategoryById(Guid id)
+        public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -184,7 +184,7 @@ namespace Sevices.Core.CategoryService
             return result;
         }       
 
-        public ResultModel DeleteMaterialCategory(Guid id)
+        public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;

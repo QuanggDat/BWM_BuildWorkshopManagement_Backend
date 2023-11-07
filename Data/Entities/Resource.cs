@@ -14,8 +14,12 @@ namespace Data.Entities
         public Guid id { get; set; }
 
         [ForeignKey("reportId")]
-        public Guid reportId { get; set; }
-        public Report Report { get; set; } = null!;
+        public Guid? reportId { get; set; }
+        public Report? Report { get; set; } 
+
+        [ForeignKey("orderId")]
+        public Guid? orderId { get; set; }
+        public Order? Order { get; set; }
 
         public string link { get; set; } = null!;
         

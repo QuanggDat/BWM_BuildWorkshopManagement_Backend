@@ -17,51 +17,24 @@ namespace Data.Models
         public ReportStatus? reportStatus { get; set; }
         public List<string>? resource { get; set; }
         public DateTime createdDate { get; set; }
-
-    }
-
-    public class UpdateTaskReportModel
-    {
-        public Guid? leaderTaskId { get; set; }
-        public ReportType reportType { get; set; }
-        public string title { get; set; } = null!;
-        public string? content { get; set; } = null!;
-        public ReportStatus? reportStatus { get; set; }
-        public List<string>? resource { get; set; }
     }
 
     public class TaskReportModel
     {
         public Guid id { get; set; }
-        public Guid? leaderTaskId { get; set; }
-        public string orderName { get; set; } = null!;
-        public string leaderTaskName { get; set; } = null!;
+        public Guid? leaderTaskId { get; set; }       
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
         public ReportStatus? reportStatus { get; set; }
         public List<string>? resource { get; set; }
         public DateTime createdDate { get; set; }
-        public ReporterTaskReport reporter { get; set; } = null!;
-        public Reviewer reviewer { get; set; } = null!;
+        public Guid reporterId { get; set; }
+        public Guid? responderId { get; set; } 
         public string? responseContent { get; set; }
     }
 
-    public class Reviewer
-    {
-        public Guid id { get; set; }
-        public string fullName { get; set; } = null!;
-    }
-
-    public class ReporterTaskReport
-    {
-        public Guid id { get; set; }
-        public string fullName { get; set; } = null!;
-        public string phoneNumber { get; set; } = null!;
-        public string email { get; set; } = null!;
-    }
-
-    public class ReviewsReportModel
+    public class SendResponseModel
     {
         public Guid reportId { get; set; }
         public ReportStatus? reportStatus { get; set; }

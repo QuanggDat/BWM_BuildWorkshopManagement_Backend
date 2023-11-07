@@ -20,58 +20,58 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateItem(CreateItemModel model)
+        public IActionResult Create(CreateItemModel model)
         {
             if (!ValidateCreatItem(model))
             {
                 return BadRequest(ModelState);
             }
             
-            var result = await _itemService.CreateItem(model);
+            var result = _itemService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }       
 
         [HttpGet("[action]/{id}")]
-        public async Task<ActionResult> GetItemById(Guid id)
+        public IActionResult GetById(Guid id)
         {
-            var result = await _itemService.GetItemById(id);
+            var result = _itemService.GetById(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetAllItem(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = await _itemService.GetAllItem(search, pageIndex, pageSize);
+            var result = _itemService.GetAll(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult> GetAllItemByCategoryId(Guid itemCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        [HttpGet("[action]/{itemCategoryId}")]
+        public IActionResult GetByItemCategoryId(Guid itemCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = await _itemService.GetItemByItemCategoryId(itemCategoryId, pageIndex, pageSize);
+            var result = _itemService.GetByItemCategoryId(itemCategoryId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> UpdateItem(UpdateItemModel model)
+        public IActionResult Update(UpdateItemModel model)
         {
             if (!ValidateUpdateItem(model))
             {
                 return BadRequest(ModelState);
             }
-            var result = await _itemService.UpdateItem(model);
+            var result = _itemService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
-        public async Task<ActionResult> DeleteItem(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var result = await _itemService.DeleteItem(id);
+            var result = _itemService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

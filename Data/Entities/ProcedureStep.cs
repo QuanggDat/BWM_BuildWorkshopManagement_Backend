@@ -17,8 +17,6 @@ namespace Data.Entities
         public Guid procedureId { get; set; }
         public Procedure Procedure { get; set; } = null!;
 
-        public int priority { get; set; }
-        public int estimatedCompletedTime { get; set; }
 
         [ForeignKey("stepId")]
         public Guid stepId { get; set; }

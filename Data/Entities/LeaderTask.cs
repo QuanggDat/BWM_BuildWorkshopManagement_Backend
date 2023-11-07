@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -36,12 +37,11 @@ namespace Data.Entities
         public virtual Procedure Procedure { get; set; } = null!;        
         public string name { get; set; } = null!;
 
-        public DateTime estimatedStartTime { get; set; }
-        public DateTime estimatedEndTime { get; set; }
         public DateTime startTime { get; set; } 
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
-        public TaskStatus status { get; set; }
+
+        public ETaskStatus status { get; set; }
         public string? description { get; set; }
         public bool isDeleted { get; set; }
 

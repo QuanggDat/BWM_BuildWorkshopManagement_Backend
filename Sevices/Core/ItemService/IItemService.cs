@@ -9,11 +9,11 @@ namespace Sevices.Core.ItemService
 {
     public interface IItemService
     {
-        Task<ResultModel> CreateItem(CreateItemModel model);
-        Task<ResultModel> UpdateItem(UpdateItemModel model);
-        Task<ResultModel> DeleteItem(Guid id);
-        Task<ResultModel> GetAllItem(string? search, int pageIndex, int pageSize);
-        Task<ResultModel> GetItemById(Guid id);
-        Task<ResultModel> GetItemByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize);
+        ResultModel Create(CreateItemModel model);
+        ResultModel Update(UpdateItemModel model);
+        ResultModel Delete(Guid id);
+        ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetById(Guid id);
+        ResultModel GetByItemCategoryId (Guid itemCategoryId, int pageIndex, int pageSize);
     }
 }

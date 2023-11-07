@@ -20,37 +20,37 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
         
         [HttpPost("[action]")]
-        public ActionResult CreateMaterial(CreateMaterialModel model)
+        public ActionResult Create(CreateMaterialModel model)
         {
             if (!ValidateCreateMaterial(model))
             {
                 return BadRequest(ModelState);
             }
-            var result =  _materialService.CreateMaterial(model);
+            var result =  _materialService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllMaterial(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetAllMaterial(search, pageIndex, pageSize);
+            var result = _materialService.GetAll(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetAllMaterialByCategoryId(Guid materialCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        [HttpGet("[action]/{materialCategoryId}")]
+        public IActionResult GetByMaterialCategoryId(Guid materialCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetMaterialByMaterialCategoryId(materialCategoryId, pageIndex, pageSize);
+            var result = _materialService.GetByMaterialCategoryId(materialCategoryId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]/{id}")]
         public IActionResult GetMaterialById(Guid id)
         {
-            var result = _materialService.GetMaterialById(id);
+            var result = _materialService.GetById(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -62,15 +62,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = _materialService.UpdateMaterial(model);
+            var result = _materialService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteMaterial(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var result = _materialService.DeleteMaterial(id);
+            var result = _materialService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }       

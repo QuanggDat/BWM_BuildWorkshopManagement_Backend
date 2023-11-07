@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sevices.Core.CategoryService
+namespace Sevices.Core.StepService
 {
-    public interface IMaterialCategoryService
-    {       
-        ResultModel Create(CreateMaterialCategoryModel model);
+    public interface IStepService
+    {
+        ResultModel Create(CreateStepModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
-        ResultModel Update(UpdateMaterialCategoryModel model);
+        ResultModel Update(UpdateStepModel model);
         ResultModel Delete(Guid id);
     }
 }

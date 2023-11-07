@@ -10,5 +10,7 @@ namespace Data.Enums
     {
         ProgressReport = 0,
         ProblemReport = 1,
+        AcceptanceReport = 2,
+        OrderReport = 3
     }
 }

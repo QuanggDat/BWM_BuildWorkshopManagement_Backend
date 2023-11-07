@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.WorkerTaskService;
 using static Data.Models.WorkerTaskModel;
 using Data.Models;
+using Data.Enums;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -19,63 +20,70 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateWokerTask(CreateWorkerTaskModel model)
+        public IActionResult Create(CreateWorkerTaskModel model)
         {
             if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
-            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
-            var result = await _workerTaskService.CreateWorkerTask(userId, model);
+            var result = _workerTaskService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{leaderTaskId}")]
-        public async Task<ActionResult> GetAllWokerTask(Guid leaderTaskId)
+        [HttpGet("[action]/{leaderId}")]
+        public IActionResult GetAll(Guid leaderId)
         {
-            var result = await _workerTaskService.GetAllWorkerTask(leaderTaskId);
-            if (result == null) return BadRequest("Không tìm thấy công việc!");
-            return Ok(result);
+            var result = _workerTaskService.GetAll(leaderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetById(Guid id)
+        {
+            var result = _workerTaskService.GetById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> UpdateWokerTask(UpdateWorkerTaskModel model)
+        public IActionResult Update(UpdateWorkerTaskModel model)
         {
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
-            var result = await _workerTaskService.UpdateWorkerTask(model);
+            var result = _workerTaskService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]/{wokerTaskId}/{status}")]
-        public async Task<ActionResult> UpdateWokerTaskStatus(Guid wokerTaskId, TaskStatus status)
+        [HttpPut("[action]/{id}/{status}")]
+        public IActionResult UpdateStatus(Guid id, ETaskStatus status)
         {
-            var result = await _workerTaskService.UpdateWorkerTaskStatus(wokerTaskId, status);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpPut("[action]")]
-        public async Task<ActionResult> AssignWokerTask(AssignWorkerTaskModel model)
-        {
-            var result = await _workerTaskService.AssignWorkerTask(model);
+            var result = _workerTaskService.UpdateStatus(id, status);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult> UnAssignWokerTask(AssignWorkerTaskModel model)
+        public IActionResult Assign(AssignWorkerTaskModel model)
         {
-            var result = await _workerTaskService.UnAssignWorkerTask(model);
+            var result = _workerTaskService.Assign(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]/{wokerTaskId}")]
-        public async Task<ActionResult> DeleteWokerTask(Guid wokerTaskId)
+        [HttpPut("[action]")]
+        public IActionResult UnAssign(AssignWorkerTaskModel model)
         {
-            var result = await _workerTaskService.DeleteWorkerTask(wokerTaskId);
+            var result = _workerTaskService.UnAssign(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpDelete("[action]/{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var result = _workerTaskService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }       

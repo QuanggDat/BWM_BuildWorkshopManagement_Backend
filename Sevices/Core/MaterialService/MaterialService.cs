@@ -30,7 +30,7 @@ namespace Sevices.Core.MaterialService
             _configuration = configuration;
         }
         
-        public ResultModel CreateMaterial(CreateMaterialModel model)
+        public ResultModel Create(CreateMaterialModel model)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -89,7 +89,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel UpdateMaterial(UpdateMaterialModel model)
+        public ResultModel Update(UpdateMaterialModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -170,7 +170,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel DeleteMaterial(Guid id)
+        public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
             try
@@ -198,7 +198,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetMaterialById(Guid id)
+        public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -242,14 +242,14 @@ namespace Sevices.Core.MaterialService
         }
        
 
-        public ResultModel GetAllMaterial(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
             try
             {
                 var listMaterialCategory = _dbContext.Material.Where(x => x.isDeleted == false)
-                   .OrderByDescending(x => x.name).ToList();
+                   .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -292,7 +292,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetMaterialByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize)
+        public ResultModel GetByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
@@ -309,7 +309,7 @@ namespace Sevices.Core.MaterialService
                 else
                 {
                     var listMaterialCategory = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
-                   .OrderByDescending(x => x.name).ToList();
+                   .OrderBy(x => x.name).ToList();
 
 
                     var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

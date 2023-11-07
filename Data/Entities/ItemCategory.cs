@@ -12,6 +12,7 @@ namespace Data.Entities
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
         public virtual List<Item> Items { get; set; } = new();

@@ -20,40 +20,42 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }       
 
         [HttpPost("[action]")]
-        public ActionResult CreateMaterialCategory(CreateMaterialCategoryModel model)
+        public ActionResult Create(CreateMaterialCategoryModel model)
         {
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại vật liệu!");
-            var result = _materialCategoryService.CreateMaterialCategory(model);
+            var result = _materialCategoryService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }             
         [HttpGet("[action]")]
-        public IActionResult GetAllMaterialCategory(string? search,int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll(string? search,int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialCategoryService.GetAllMaterialCategory(search,pageIndex, pageSize);
+            var result = _materialCategoryService.GetAll(search,pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }    
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetMaterialCategoryById(Guid id)
+        public IActionResult GetById(Guid id)
         {
-            var result = _materialCategoryService.GetMaterialCategoryById(id);
+            var result = _materialCategoryService.GetById(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
         [HttpPut("[action]")]
-        public IActionResult UpdateMaterialCategory(UpdateMaterialCategoryModel model)
+        public IActionResult Update(UpdateMaterialCategoryModel model)
         {
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại vật liệu!");
-            var result = _materialCategoryService.UpdateMaterialCategory(model);
+            var result = _materialCategoryService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
         [HttpDelete("[action]/{id}")]
-        public IActionResult DeleteMaterialCategory(Guid id)
+        public IActionResult Delete(Guid id)
         {
-            var result = _materialCategoryService.DeleteMaterialCategory(id);
+            var result = _materialCategoryService.Delete(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

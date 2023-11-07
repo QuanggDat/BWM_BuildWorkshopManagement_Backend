@@ -11,10 +11,10 @@ namespace Sevices.Core.ReportService
 {
     public interface ITaskReportService
     {
-        Task<ResultModel> CreateTaskReport(Guid reporterId, CreateTaskReportModel model);
-        Task<TaskReportModel?> GetTaskReportById(Guid reportId);
-        Task<ResultModel> TaskReportResponse(ReviewsReportModel model);
-        Task<List<TaskReportModel>> GetProgressTaskReportsByLeaderId(Guid leaderId);
-        Task<List<TaskReportModel>> GetProblemTaskReportsByLeaderId(Guid leaderId);
+        ResultModel Create(Guid reporterId, CreateTaskReportModel model);     
+        ResultModel SendResponse(SendResponseModel model);
+        ResultModel GetById(Guid reportId);
+        ResultModel GetProblemTaskReportsByLeaderTaskId(Guid leaderTaskId);
+        ResultModel GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId);
     }
 }

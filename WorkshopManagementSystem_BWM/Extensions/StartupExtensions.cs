@@ -16,7 +16,9 @@ using Sevices.Core.NotificationService;
 using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderReportService;
 using Sevices.Core.OrderService;
+using Sevices.Core.ProcedureService;
 using Sevices.Core.ReportService;
+using Sevices.Core.StepService;
 using Sevices.Core.TeamService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
@@ -69,12 +71,13 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IMaterialCategoryService, MaterialCategoryService>();
+            services.AddScoped<IProcedureService, ProcedureService>();
+            services.AddScoped<IStepService, StepService>();
             services.AddScoped<ITaskReportService, TaskReportService>();
             services.AddScoped<IUtilsService, UtilsService>();
             services.AddScoped<IOrderReportService, OrderReportService>();
             services.AddScoped<IWorkerTaskService, WorkerTaskService>();
             services.AddScoped<INotificationService, NotificationService>();
-
             services.AddSingleton<INotificationHub, NotificationHub>();
         }
         public static void AddAutoMapper(this IServiceCollection services)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,28 +10,28 @@ namespace Data.Models
     public class CreateWorkerTaskModel
     {
         public Guid leaderTaskId { get; set; }
-        public string name { get; set; } = null!;
+        public Guid stepId { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         public List<Guid> assignees { get; set; } = null!;
     }
 
     public class UpdateWorkerTaskModel
     {
-        public Guid workerTaskId { get; set; }
+        public Guid id { get; set; }
         public string name { get; set; } = null!;
         public string description { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public List<Guid> assignees { get; set; } = null!;
     }
 
     public class UpdateWorkerTaskStatusModel
     {
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
     }
 
     public class TaskMember
@@ -42,14 +43,18 @@ namespace Data.Models
     public class WorkerTaskModel
     {
         public Guid workerTaskId { get; set; }
+        public Guid stepId { get; set; }
         public Guid? userId { get; set; }
         public string userFullName { get; set; } = null!;
         public Guid leaderTaskId { get; set; }
         public string name { get; set; } = null!;
-        public string description { get; set; } = null!;
-        public DateTime? startTime { get; set; }
-        public DateTime? endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public string? description { get; set; }
+
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+        public DateTime? completeTime { get; set; }
+
+        public ETaskStatus status { get; set; }
         public List<TaskMember> Members { get; set; } = null!;
     }
 

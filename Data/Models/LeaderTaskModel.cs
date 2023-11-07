@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,17 +20,20 @@ namespace Data.Models
     }
     public class LeaderTaskModel
     {
-        public Guid leaderId { get; set; }
-        public string leaderName { get; set; } = null!;
-        public Guid orderId { get; set; }
+        public Guid id { get; set; }
+        public Guid? leaderId { get; set; }
+        public Guid? createdById { get; set; } = null!;
+
+        public Guid? orderId { get; set; }
         public Guid itemId { get; set; }
         public Guid procedureId { get; set; }
-        public Guid? createdById { get; set; } = null!;
+        public string itemName { get; set; } = null!;
+
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string? description { get; set; } = null!;
         public bool isDeleted { get; set; }
     }
@@ -39,7 +43,7 @@ namespace Data.Models
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public TaskStatus status { get; set; }
+        public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
         
     }
