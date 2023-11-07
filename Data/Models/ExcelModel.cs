@@ -10,25 +10,10 @@ namespace Data.Models
 {
     public class ConvertOrderExcelModel
     {
+        public int ErrCode { get; set; } = -1;
         public string? Error { get; set; }
         public List<string> ListCodeItem { get; set; } = new();
-        public List<OrderExcelModel> ListConverted { get; set; } = new();
-    }
-
-    public class OrderExcelModel
-    {
-        public string name { get; set; }
-        public double price { get; set; }
-
-        public List<OrderChildrenExcelModel> children { get; set; } = new();
-    }
-
-    public class OrderChildrenExcelModel 
-    {
-        public string name { get; set; }
-        public double price { get; set; }
-
-        public List<OrderItemExcelModel> listOrderItem { get; set; } = new();
+        public List<OrderItemExcelModel> ListOrderItem { get; set; } = new();
     }
 
     public class OrderItemExcelModel

@@ -65,11 +65,20 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return File(result.Data!, result.ContentType!, result.FileName);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-       
+
         [HttpPut("UpdateStatus/{status}/{id}")]
         public IActionResult UpdateStatus(OrderStatus status, Guid id)
         {
-            var result = _orderService.UpdateStatus(id, status);
+            var userId = User.GetId();
+            var result = _orderService.UpdateStatus(id, status, userId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpPut("ReCalculatePrice/{id}")]
+        public IActionResult ReCalculatePrice(Guid id)
+        {
+            var result = _orderService.ReCalculatePrice(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

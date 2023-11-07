@@ -21,10 +21,6 @@ namespace Data.Entities
         public Guid? itemId { get; set; }
         public Item? Item { get; set; }
 
-        [ForeignKey("areaId")]
-        public Guid areaId { get; set; }
-        public Area area { get; set; } = null!;
-
         public int quantity { get; set; }
         public double price { get; set; } = 0;
         public double totalPrice { get; set; } = 0;

@@ -19,8 +19,6 @@ namespace Data.Models
         public Guid orderId { get; set; }
         public Guid itemId { get; set; }
         public ItemModel? item { get; set; }
-        public Guid areaId { get; set; }
-        public AreaModel area { get; set; }
     }
 
     public class UpdateOrderDetailModel

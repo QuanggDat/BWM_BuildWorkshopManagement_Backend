@@ -43,17 +43,31 @@ namespace Sevices.Core.OrderDetailService
             try
             {
                 var orderDetail = _dbContext.OrderDetail.FirstOrDefault(x => x.id == model.id);
-                if(orderDetail == null)
+                if (orderDetail == null)
                 {
-                    result.Code =  37;
+                    result.Code = 37;
                     result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
                 }
                 else
                 {
                     orderDetail.quantity = model.quantity;
-                    orderDetail.price = model.price;  
+                    orderDetail.price = model.price;
+                    orderDetail.totalPrice = model.price * model.quantity;
                     orderDetail.description = model.description;
-                    _dbContext.Update(orderDetail);
+                    _dbContext.OrderDetail.Update(orderDetail);
+
+                    var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderDetail.orderId);
+                    if (order != null)
+                    {
+                        double total = 0;
+                        foreach (var detail in order.OrderDetails)
+                        {
+                            total += detail.totalPrice;
+                        }
+                        order.totalPrice = total;
+                        _dbContext.Order.Update(order);
+                    }
+
                     _dbContext.SaveChanges();
 
                     result.Data = orderDetail;

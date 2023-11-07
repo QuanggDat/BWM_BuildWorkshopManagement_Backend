@@ -1,4 +1,5 @@
 ﻿using Aspose.Cells;
+using Aspose.Cells.Drawing;
 using Aspose.Cells.Rendering;
 using AutoMapper;
 using Data.DataAccess;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
+using SkiaSharp;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -159,14 +161,13 @@ namespace Sevices.Core.OrderService
 
         public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
-            Console.WriteLine("Create Order URL: " + model.fileQuote);
-            Log.Warning("Create Order URL: " + model.fileQuote);
             var result = new ResultModel();
             try
             {
                 var converData = await ConvertExcelToListOrder(model.fileQuote);
                 if (!string.IsNullOrWhiteSpace(converData.Error))
                 {
+                    result.Code = converData.ErrCode;
                     result.ErrorMessage = converData.Error;
                 }
                 else
@@ -178,10 +179,14 @@ namespace Sevices.Core.OrderService
                     if (converData.ListCodeItem.Any())
                     {
                         listCodeErr = converData.ListCodeItem.Where(x => !listItem.Any(i => i.code.ToUpper() == x)).ToList();
-                        result.ErrorMessage = "Những mã sản phẩm không tìm thấy trong hệ thống: " + string.Join(", ", listCodeErr);
                     }
 
-                    if (!listCodeErr.Any())
+                    if (listCodeErr.Any())
+                    {
+                        result.Code = 68;
+                        result.ErrorMessage = "Những mã sản phẩm không tìm thấy trong hệ thống: " + string.Join(", ", listCodeErr);
+                    }
+                    else
                     {
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
@@ -196,88 +201,55 @@ namespace Sevices.Core.OrderService
                         var listOrderDetailCreate = new List<OrderDetail>();
                         var listItemCodeCreated = new List<string>();
 
-                        // Tầng
-                        foreach (var item in converData.ListConverted)
+                        var listNewItem = converData.ListOrderItem.Where(x => string.IsNullOrWhiteSpace(x.code)).ToList();
+                        var listOldItem = converData.ListOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
+                        // Kiểm tra và tạo item mới + thêm vào list order detail mới
+                        foreach (var newItem in listNewItem)
                         {
-                            // Tạo tầng
-                            var floor = new Floor()
+                            var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeCreated);
+                            listItemCodeCreated.Add(randomCode);
+                            newItem.code = randomCode;
+                            var itemNew = new Item()
                             {
-                                name = item.name,
+                                code = randomCode,
+                                name = newItem.name,
+                                length = newItem.length,
+                                depth = newItem.depth,
+                                height = newItem.height,
+                                unit = newItem.unit,
+                                mass = newItem.mass,
+                                description = "",
+                                drawingsTechnical = "",
+                                drawings2D = "",
+                                drawings3D = "",
                             };
-                            _dbContext.Floor.Add(floor);
-                            double priceFloor = 0;
+                            _dbContext.Item.Add(itemNew);
 
-                            // Khu vực
-                            foreach (var child in item.children)
+                            listOrderDetailCreate.Add(new()
                             {
-                                // Tạo khu vực
-                                double priceArea = 0;
+                                itemId = itemNew.id,
+                                quantity = newItem.quantity,
+                                description = newItem.description ?? "",
+                                orderId = orderId,
+                                isDeleted = false,
+                            });
+                        }
 
-                                var area = new Area()
-                                {
-                                    name = child.name,
-                                    floorId = floor.id
-                                };
-                                _dbContext.Area.Add(area);
-
-                                var listNewItem = child.listOrderItem.Where(x => string.IsNullOrWhiteSpace(x.code)).ToList();
-                                var listOldItem = child.listOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
-                                // Kiểm tra và tạo item mới + thêm vào list order detail mới
-                                foreach (var newItem in listNewItem)
-                                {
-                                    var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeCreated);
-                                    listItemCodeCreated.Add(randomCode);
-                                    newItem.code = randomCode;
-                                    var itemNew = new Item()
-                                    {
-
-                                        code = randomCode,
-                                        name = newItem.name,
-                                        length = newItem.length,
-                                        depth = newItem.depth,
-                                        height = newItem.height,
-                                        unit = newItem.unit,
-                                        mass = newItem.mass,
-                                        description = "",
-                                        drawingsTechnical = "",
-                                        drawings2D = "",
-                                        drawings3D = "",
-                                    };
-                                    _dbContext.Item.Add(itemNew);
-
-                                    listOrderDetailCreate.Add(new()
-                                    {
-                                        itemId = itemNew.id,
-                                        quantity = newItem.quantity,
-                                        description = newItem.description ?? "",
-                                        orderId = orderId,
-                                        areaId = area.id,
-                                        isDeleted = false,
-                                    });
-                                }
-
-                                // Kiểm tra và item cũ + thêm vào list order detail mới
-                                foreach (var oldItem in listOldItem)
-                                {
-                                    var itemFounded = listItem.FirstOrDefault(x => x.code == oldItem.code);
-                                    double detailPrice = oldItem.quantity * itemFounded.price;
-                                    listOrderDetailCreate.Add(new()
-                                    {
-                                        itemId = itemFounded.id,
-                                        price = itemFounded.price,
-                                        quantity = oldItem.quantity,
-                                        totalPrice = detailPrice,
-                                        description = oldItem.description ?? "",
-                                        orderId = orderId,
-                                        areaId = area.id,
-                                        isDeleted = false,
-                                    });
-                                    priceArea += detailPrice;
-                                }
-                                area.price = priceArea;
-                                priceFloor += priceArea;
-                            }
-                            floor.price = priceFloor;
+                        // Kiểm tra và item cũ + thêm vào list order detail mới
+                        foreach (var oldItem in listOldItem)
+                        {
+                            var itemFounded = listItem.FirstOrDefault(x => x.code == oldItem.code);
+                            double detailPrice = oldItem.quantity * itemFounded?.price ?? 0;
+                            listOrderDetailCreate.Add(new()
+                            {
+                                itemId = itemFounded.id,
+                                price = itemFounded.price,
+                                quantity = oldItem.quantity,
+                                totalPrice = detailPrice,
+                                description = oldItem.description ?? "",
+                                orderId = orderId,
+                                isDeleted = false,
+                            });
                         }
 
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
@@ -309,12 +281,48 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel UpdateStatus(Guid id, OrderStatus status)
+        public ResultModel ReCalculatePrice(Guid id)
         {
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
+                if (order == null)
+                {
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
+                }
+                else
+                {
+                    double total = 0;
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        detail.price = detail.Item?.price ?? 0;
+                        detail.totalPrice = detail.price * detail.quantity;
+                        total += detail.totalPrice;
+                    }
+                    order.totalPrice = total;
+
+                    _dbContext.Update(order);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -335,6 +343,14 @@ namespace Sevices.Core.OrderService
                             orderId = order.id
                         };
                         _notificationService.Create(noti);
+                    }
+                    else if (status == OrderStatus.InProgress)
+                    {
+                        // order
+                        order.startTime = DateTime.Now;
+
+                        // gen task
+                        GenerateTaskByOrder(order, userId);
                     }
                     else if (status == OrderStatus.Completed)
                     {
@@ -369,101 +385,153 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
-                    var dictItemImage = order.OrderDetails.Select(x => x.Item).Where(x => !string.IsNullOrWhiteSpace(x?.image))
-                                                            .DistinctBy(x => x?.id).ToDictionary(x => x!.id, y => y?.image!);
-
-                    var dictItemImgStream = await FetchListImageItem(dictItemImage);
-
-                    var listAreaTd = order.OrderDetails.Select(x => x.areaId).Distinct().ToList();
-                    var listArea = _dbContext.Area.Where(x => listAreaTd.Contains(x.id)).ToList();
-
-                    var listFloorId = listArea.Select(x => x.floorId).Distinct().ToList();
-                    var listFloor = _dbContext.Floor.Where(x => listFloorId.Contains(x.id)).ToList();
-
-                    var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
-                    var worksheet = workbook.Worksheets.FirstOrDefault();
-
-                    var rowCount = worksheet?.Cells?.MaxDataRow ?? 0;
-                    var colCount = worksheet?.Cells?.MaxDataColumn ?? 0;
-                    var rowDataBegin = -1;
-                    var rowData = -1;
-
-                    for (var row = 0; row <= rowCount; row++)
+                    if (!order.OrderDetails.Any())
                     {
-                        var cellValue = worksheet?.Cells[row, 0]?.Value?.ToString();
-                        if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "PHAN HOAN THIEN NOI THAT")
-                        {
-                            rowDataBegin = row + 1;
-                            rowData = row + 1;
-                            break;
-                        }
 
-                        cellValue = worksheet?.Cells[row, 1]?.Value?.ToString();
-                        if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "KHACH HANG:")
-                        {
-                            worksheet.Cells[row, 1].Value = $"Khách hàng: {order.customerName?.ToUpper()}";
-                        }
-                    }
-
-                    if (rowData > -1)
-                    {
-                        if (listFloorId.Count > 1)
-                        {
-                            for (var i = 0; i < listFloor.Count; i++)
-                            {
-                                var floor = listFloor[i];
-                                // STT
-                                var cell = worksheet.Cells[rowData, 0];
-                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
-                                cell.Value = FnUtil.NumToAlphabets(i + 1);
-                                // Name
-                                worksheet.Cells.Merge(rowData, 1, 1, 9);
-                                cell = worksheet.Cells[rowData, 1];
-                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle(), true));
-                                cell.Value = floor.name;
-                                // Price
-                                cell = worksheet.Cells[rowData, 10];
-                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
-                                cell.Value = $"{floor.price:n0}";
-
-                                // Others
-                                cell = worksheet.Cells[rowData, 11];
-                                cell.SetStyle(FnExcel.ApplyFloorStyle(cell.GetStyle()));
-
-                                rowData++;
-
-                                var listAreaByFloor = listArea.Where(x => x.floorId == floor.id).ToList();
-                                rowData = AssignDataIntoWorkbook(worksheet, rowData, listAreaByFloor, order.OrderDetails, dictItemImgStream);
-                            }
-                        }
-                        else
-                        {
-                            rowData = AssignDataIntoWorkbook(worksheet, rowData, listArea, order.OrderDetails, dictItemImgStream);
-                        }
-
-                        var range = worksheet.Cells.CreateRange(rowDataBegin, 0, rowData - rowDataBegin, 12);
-                        FnExcel.ApplyRangeCommonStyle(range, workbook.CreateCellsColor());
-
-                        using var pdfStream = new MemoryStream();
-                        var pdfOptions = new PdfSaveOptions
-                        {
-                            AllColumnsInOnePagePerSheet = true,
-                            Compliance = PdfCompliance.PdfA1b
-                        };
-
-                        workbook.Save(pdfStream, pdfOptions);
-
-                        result.Data = pdfStream.ToArray();
-                        result.Succeed = true;
-                        result.FileName = $"JAMA - BG - {order.customerName}.pdf";
-                        result.ContentType = "application/pdf";
+                        result.Code = 67;
+                        result.ErrorMessage = "Đơn hàng không có sản phẩm không thể tạo file báo giá!";
                     }
                     else
                     {
-                        result.Code = 36;
-                        result.ErrorMessage = "Template lỗi!";
-                    }
+                        var dictItemImage = order.OrderDetails.Select(x => x.Item).Where(x => !string.IsNullOrWhiteSpace(x?.image))
+                                                                .DistinctBy(x => x?.id).ToDictionary(x => x!.id, y => y?.image!);
 
+                        var dictItemImgStream = await FetchListImageItem(dictItemImage);
+
+                        var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
+                        var worksheet = workbook.Worksheets.FirstOrDefault();
+
+                        var rowCount = worksheet?.Cells?.MaxDataRow ?? 0;
+                        var colCount = worksheet?.Cells?.MaxDataColumn ?? 0;
+                        var rowDataBegin = -1;
+                        var rowData = -1;
+
+                        for (var row = 0; row <= rowCount; row++)
+                        {
+                            var cellValue = worksheet?.Cells[row, 0]?.Value?.ToString();
+                            if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "PHAN HOAN THIEN NOI THAT")
+                            {
+                                var cell = worksheet.Cells[row, 10];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{order.totalPrice:n0}";
+
+                                rowDataBegin = row + 1;
+                                rowData = row + 1;
+                                break;
+                            }
+
+                            cellValue = worksheet?.Cells[row, 1]?.Value?.ToString();
+                            if (FnUtil.Remove_VN_Accents(cellValue)?.ToUpper() == "KHACH HANG:")
+                            {
+                                worksheet.Cells[row, 1].Value = $"Khách hàng: {order.customerName?.ToUpper()}";
+                            }
+                        }
+
+                        if (rowData > -1)
+                        {
+                            for (var i = 0; i < order.OrderDetails.Count; i++)
+                            {
+                                var isAutoFitRow = true;
+
+                                var detail = order.OrderDetails[i];
+                                // Check Hình ảnh đầu tiên để xem có cần auto fit row hay shink to fit
+                                // Hình ảnh minh hoạ
+                                var cell = worksheet.Cells[rowData, 2];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                if (dictItemImgStream != null && dictItemImgStream.Count > 0 && detail.Item != null && !string.IsNullOrWhiteSpace(detail.Item.image) && dictItemImage.ContainsKey(detail.Item.id))
+                                {
+                                    var image = SKImage.FromEncodedData(dictItemImgStream[detail.Item.id]);
+                                    image = FnUtil.ResizeImage(image);
+                                    worksheet.Cells.SetRowHeightPixel(rowData, image.Height + 10);
+
+                                    var skiaStream = image.Encode().AsStream();
+                                    // Create a Stream from the SKStream
+                                    var stream = new MemoryStream();
+                                    skiaStream.CopyTo(stream);
+
+                                    //var streamImg = new MemoryStream();
+                                    //image.Save(streamImg, ImageFormat.Jpeg);
+
+                                    worksheet.Pictures.Add(rowData, 2, skiaStream);
+
+                                    isAutoFitRow = false;
+                                }
+                                // STT
+                                cell = worksheet.Cells[rowData, 0];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = i + 1;
+                                // Hạng mục
+                                cell = worksheet.Cells[rowData, 1];
+                                cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), true));
+                                cell.Value = detail.Item?.name;
+                                // Dài
+                                cell = worksheet.Cells[rowData, 3];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.Item?.length:n0}";
+                                // Sâu
+                                cell = worksheet.Cells[rowData, 4];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.Item?.depth:n0}";
+                                // Cao
+                                cell = worksheet.Cells[rowData, 5];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.Item?.height:n0}";
+                                // ĐVT
+                                cell = worksheet.Cells[rowData, 6];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = detail.Item?.unit;
+                                // KL
+                                cell = worksheet.Cells[rowData, 7];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.Item?.mass:n0}";
+                                // SL
+                                cell = worksheet.Cells[rowData, 8];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = detail.quantity;
+                                // Đơn giá
+                                cell = worksheet.Cells[rowData, 9];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.price:n0}";
+                                // Thành tiền
+                                cell = worksheet.Cells[rowData, 10];
+                                cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
+                                cell.Value = $"{detail.totalPrice:n0}";
+                                // Ghi chú vật liệu
+                                cell = worksheet.Cells[rowData, 11];
+                                cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), false, !isAutoFitRow));
+                                cell.Value = detail.description;
+
+                                if (isAutoFitRow)
+                                {
+                                    worksheet.AutoFitRow(rowData);
+                                }
+
+                                rowData++;
+                            }
+
+                            var range = worksheet.Cells.CreateRange(rowDataBegin, 0, rowData - rowDataBegin, 12);
+                            FnExcel.ApplyRangeCommonStyle(range, workbook.CreateCellsColor());
+
+                            using var pdfStream = new MemoryStream();
+                            var pdfOptions = new PdfSaveOptions
+                            {
+                                AllColumnsInOnePagePerSheet = true,
+                                Compliance = PdfCompliance.PdfA1b
+                            };
+
+                            workbook.Save(pdfStream, pdfOptions);
+
+                            result.Data = pdfStream.ToArray();
+                            result.Succeed = true;
+                            result.FileName = $"JAMA - BG - {order.customerName}.pdf";
+                            result.ContentType = "application/pdf";
+                        }
+                        else
+                        {
+                            result.Code = 36;
+                            result.ErrorMessage = "Template lỗi!";
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -482,23 +550,17 @@ namespace Sevices.Core.OrderService
             {
                 if (string.IsNullOrWhiteSpace(url))
                 {
+                    result.ErrCode = 62;
                     result.Error = "Vui lòng thêm file báo giá để tạo đơn đặt hàng";
                 }
                 else
                 {
-                    Log.Warning("487 - Create Order URL: " + url);
-                    Console.WriteLine("487 - Create Order URL: " + url);
                     // tải file excel về
                     var httpClient = new HttpClient();
                     var response = await httpClient.GetAsync(url);
-                    Log.Warning("492 - Create Order URL: " + url);
-                    Console.WriteLine("493 - Create Order URL: " + url);
-                    Log.Warning("494 - Create Order URL - response.StatusCode: " + response.StatusCode);
-                    Console.WriteLine("495 - Create Order URL - response.StatusCode: " + response.StatusCode);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine("499 - Create Order URL - response.IsSuccessStatusCode: " + response.IsSuccessStatusCode);
                         // đọc file excel vừa tải về
                         var stream = response.Content.ReadAsStream();
                         var workbook = new Workbook(stream);
@@ -512,10 +574,6 @@ namespace Sevices.Core.OrderService
                         var hasItem = false;
 
                         // chuyển đổi data từ excle sang obj
-                        var listFromExcel = new List<OrderExcelModel>();
-
-                        OrderExcelModel floor = null!;
-                        OrderChildrenExcelModel area = null!;
 
                         for (var row = 0; row <= rowCount; row++)
                         {
@@ -526,103 +584,77 @@ namespace Sevices.Core.OrderService
                             }
                             else if (isDataBegin)
                             {
-                                var cellColB = worksheet?.Cells[row, 1]?.Value?.ToString() ?? "";
-
-                                if (FnUtil.IsAlphabetOnly(cellColA) && !FnUtil.IsFirstWordValid(cellColB, "TANG") && !FnUtil.IsFirstWordValid(cellColB, "PHONG")) break;
-
-                                // Nếu là chữ cái in hoa + bắt đầu bằng từ "Tầng"
-                                if (FnUtil.IsAlphabetOnly(cellColA) && FnUtil.IsFirstWordValid(cellColB, "TANG"))
+                                if (!FnUtil.IsNumberOnly(cellColA))
                                 {
-                                    floor = new OrderExcelModel()
-                                    {
-                                        name = cellColB
-                                    };
-                                    listFromExcel.Add(floor);
+                                    break;
                                 }
-                                // Nếu là số la mã hợp lệ + bắt đầu bằng từ "Phòng"
-                                else if (FnUtil.IsValidRomanNumber(cellColA) && FnUtil.IsFirstWordValid(cellColB, "PHONG"))
+                                // code
+                                var cellCode = worksheet?.Cells[row, 1]?.Value?.ToString() ?? "";
+                                // name
+                                var cellName = worksheet?.Cells[row, 2]?.Value?.ToString() ?? "";
+                                // length
+                                var cellLength = worksheet?.Cells[row, 4]?.Value?.ToString() ?? "";
+                                // depth
+                                var cellDepth = worksheet?.Cells[row, 5]?.Value?.ToString() ?? "";
+                                // height
+                                var cellHeight = worksheet?.Cells[row, 6]?.Value?.ToString() ?? "";
+                                // unit
+                                var cellUnit = worksheet?.Cells[row, 7]?.Value?.ToString() ?? "";
+                                // mass
+                                var cellMass = worksheet?.Cells[row, 8]?.Value?.ToString() ?? "";
+                                // quantity
+                                var cellQty = worksheet?.Cells[row, 9]?.Value?.ToString() ?? "";
+                                // description
+                                var cellDescr = worksheet?.Cells[row, 10]?.Value?.ToString() ?? "";
+
+                                // Nếu ko có mã sản phẩm => kiểm tra lỗi các thuộc tính còn lại
+                                if (string.IsNullOrWhiteSpace(cellCode))
                                 {
-                                    area = new OrderChildrenExcelModel()
+                                    if (string.IsNullOrWhiteSpace(cellName))
                                     {
-                                        name = cellColB
-                                    };
-                                    floor.children.Add(area);
-                                }
-                                else
-                                {
-                                    var listError = new List<string>();
-
-                                    // name
-                                    var cellName = worksheet?.Cells[row, 2]?.Value?.ToString() ?? "";
-                                    // length
-                                    var cellLength = worksheet?.Cells[row, 4]?.Value?.ToString() ?? "";
-                                    // depth
-                                    var cellDepth = worksheet?.Cells[row, 5]?.Value?.ToString() ?? "";
-                                    // height
-                                    var cellHeight = worksheet?.Cells[row, 6]?.Value?.ToString() ?? "";
-                                    // unit
-                                    var cellUnit = worksheet?.Cells[row, 7]?.Value?.ToString() ?? "";
-                                    // mass
-                                    var cellMass = worksheet?.Cells[row, 8]?.Value?.ToString() ?? "";
-                                    // quantity
-                                    var cellQty = worksheet?.Cells[row, 9]?.Value?.ToString() ?? "";
-                                    // description
-                                    var cellDescr = worksheet?.Cells[row, 10]?.Value?.ToString() ?? "";
-
-                                    // Nếu ko có mã sản phẩm => kiểm tra lỗi các thuộc tính còn lại
-                                    if (string.IsNullOrWhiteSpace(cellColB))
-                                    {
-                                        if (string.IsNullOrWhiteSpace(cellName))
-                                        {
-                                            listError.Add("Tên sản phẩm không được trống!");
-                                        }
-
-                                        if (string.IsNullOrWhiteSpace(cellUnit))
-                                        {
-                                            listError.Add("Đơn vị không được trống!");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        result.ListCodeItem.Add(cellColB.ToUpper());
-                                    }
-
-                                    // xác định có lỗi => ngừng tạo order
-                                    if (listError.Any())
-                                    {
-                                        result.Error = string.Join("\n", listError);
+                                        result.ErrCode = 65;
+                                        result.Error = "Tên sản phẩm không được trống!";
                                         break;
                                     }
 
-                                    area.listOrderItem.Add(new()
+                                    if (string.IsNullOrWhiteSpace(cellUnit))
                                     {
-                                        code = cellColB,
-                                        name = cellName,
-                                        length = FnUtil.ParseStringToInt(cellLength),
-                                        depth = FnUtil.ParseStringToInt(cellDepth),
-                                        height = FnUtil.ParseStringToInt(cellHeight),
-                                        unit = cellUnit,
-                                        mass = FnUtil.ParseStringToDouble(cellMass),
-                                        quantity = FnUtil.ParseStringToInt(cellQty),
-                                        description = cellDescr,
-
-                                    });
-                                    hasItem = true;
+                                        result.ErrCode = 66;
+                                        result.Error = "Đơn vị không được trống!";
+                                        break;
+                                    }
                                 }
+                                else
+                                {
+                                    result.ListCodeItem.Add(cellCode.ToUpper());
+                                }
+
+                                result.ListOrderItem.Add(new()
+                                {
+                                    code = cellCode,
+                                    name = cellName,
+                                    length = FnUtil.ParseStringToInt(cellLength),
+                                    depth = FnUtil.ParseStringToInt(cellDepth),
+                                    height = FnUtil.ParseStringToInt(cellHeight),
+                                    unit = cellUnit,
+                                    mass = FnUtil.ParseStringToDouble(cellMass),
+                                    quantity = FnUtil.ParseStringToInt(cellQty),
+                                    description = cellDescr,
+
+                                });
+                                hasItem = true;
                             }
                         }
 
                         if (!hasItem)
                         {
+                            result.ErrCode = 63;
                             result.Error = "Vui lòng thêm sản phẩm vào file báo giá để tạo đơn đặt hàng!";
-                        }
-                        else
-                        {
-                            result.ListConverted = listFromExcel;
                         }
                     }
                     else
                     {
+                        result.ErrCode = 64;
                         result.Error = "Không thể đọc file báo giá!";
                     }
                 }
@@ -632,111 +664,6 @@ namespace Sevices.Core.OrderService
                 result.Error = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
-
-        private static int AssignDataIntoWorkbook(Worksheet worksheet, int rowData, List<Area> listArea, List<OrderDetail> listDetail, Dictionary<Guid, Stream> dictItemImage)
-        {
-            for (var a = 0; a < listArea.Count; a++)
-            {
-                var area = listArea[a];
-                // STT
-                var cell = worksheet.Cells[rowData, 0];
-                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
-                cell.Value = FnUtil.NumToRomanNum(a + 1);
-                // Name
-                worksheet.Cells.Merge(rowData, 1, 1, 9);
-                cell = worksheet.Cells[rowData, 1];
-                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle(), true));
-                cell.Value = area.name;
-                // Price
-                cell = worksheet.Cells[rowData, 10];
-                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
-                cell.Value = $"{area.price:n0}";
-                // Others
-                cell = worksheet.Cells[rowData, 11];
-                cell.SetStyle(FnExcel.ApplyAreaStyle(cell.GetStyle()));
-
-                rowData++;
-
-                var listDetailByArea = listDetail.Where(x => x.areaId == area.id).ToList();
-                for (var d = 0; d < listDetailByArea.Count; d++)
-                {
-                    var isAutoFitRow = true;
-
-                    var detail = listDetailByArea[d];
-                    // Check Hình ảnh đầu tiên để xem có cần auto fit row hay shink to fit
-                    // Hình ảnh minh hoạ
-                    cell = worksheet.Cells[rowData, 2];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    if (detail.Item != null && !string.IsNullOrWhiteSpace(detail.Item.image) && dictItemImage.ContainsKey(detail.Item.id))
-                    {
-
-                        var image = Image.FromStream(dictItemImage[detail.Item.id]);
-                        image = FnUtil.ResizeImage(image);
-                        worksheet.Cells.SetRowHeightPixel(rowData, image.Height + 10);
-
-                        var streamImg = new MemoryStream();
-                        image.Save(streamImg, ImageFormat.Jpeg);
-                        worksheet.Pictures.Add(rowData, 2, streamImg);
-
-                        isAutoFitRow = false;
-                    }
-                    // STT
-                    cell = worksheet.Cells[rowData, 0];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = d + 1;
-                    // Hạng mục
-                    cell = worksheet.Cells[rowData, 1];
-                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), true));
-                    cell.Value = detail.Item?.name;
-                    // Dài
-                    cell = worksheet.Cells[rowData, 3];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.Item?.length:n0}";
-                    // Sâu
-                    cell = worksheet.Cells[rowData, 4];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.Item?.depth:n0}";
-                    // Cao
-                    cell = worksheet.Cells[rowData, 5];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.Item?.height:n0}";
-                    // ĐVT
-                    cell = worksheet.Cells[rowData, 6];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = detail.Item?.unit;
-                    // KL
-                    cell = worksheet.Cells[rowData, 7];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.Item?.mass:n0}";
-                    // SL
-                    cell = worksheet.Cells[rowData, 8];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = detail.quantity;
-                    // Đơn giá
-                    cell = worksheet.Cells[rowData, 9];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.price:n0}";
-                    // Thành tiền
-                    cell = worksheet.Cells[rowData, 10];
-                    cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                    cell.Value = $"{detail.totalPrice:n0}";
-                    // Ghi chú vật liệu
-                    cell = worksheet.Cells[rowData, 11];
-                    cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), false, !isAutoFitRow));
-                    cell.Value = detail.description;
-
-                    if (isAutoFitRow)
-                    {
-                        worksheet.AutoFitRow(rowData);
-                    }
-
-                    rowData++;
-                }
-                worksheet.Cells.SetColumnWidthPixel(2, 300);
-
-            }
-            return rowData;
         }
 
         private static async Task<Dictionary<Guid, Stream>> FetchListImageItem(Dictionary<Guid, string> dictItemImage)
@@ -765,6 +692,68 @@ namespace Sevices.Core.OrderService
             await Task.WhenAll(listTask);
             return res;
         }
+
+        private void GenerateTaskByOrder(Order order, Guid userId)
+        {
+            // Chuan bi tao task
+            var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
+
+            var listProcedureItem = _dbContext.ProcedureItem.Include(x => x.Item).Where(x => listItemId.Contains(x.itemId)).ToList();
+
+            var listProcedureId = listProcedureItem.Select(x => x.procedureId).Distinct().ToList();
+
+            var listProcedure = _dbContext.Procedure.Where(x => !x.isDeleted && listProcedureId.Contains(x.id)).ToList();
+
+            var listProcedureStep = _dbContext.ProcedureStep.Where(x => listProcedureId.Contains(x.procedureId)).ToList();
+
+            var listStepId = listProcedureStep.Select(x => x.stepId).Distinct().ToList();
+
+            var listStep = _dbContext.Step.Where(x => !x.isDeleted && listStepId.Contains(x.id)).ToList();
+
+            foreach (var itemId in listItemId)
+            {
+                var listProcItemByItem = listProcedureItem.Where(x => x.itemId == itemId).OrderBy(x => x.priority).ToList();
+                // Tao leader task
+                foreach (var procItem in listProcItemByItem)
+                {
+                    var leaderTask = new LeaderTask()
+                    {
+                        orderId = order.id,
+                        createById = userId,
+                        itemId = procItem.itemId,
+                        procedureId = procItem.procedureId,
+                        name = listProcedure.FirstOrDefault(x => x.id == procItem.procedureId)?.name ?? "",
+                        status = ETaskStatus.New,
+                        isDeleted = false,
+                        drawingsTechnical = procItem.Item?.drawingsTechnical ?? "",
+                    };
+                    _dbContext.LeaderTask.Add(leaderTask);
+
+                    // Tao worker task
+                    var listWorkerTask = new List<WorkerTask>();
+                    var listProcStepByProcId = listProcedureStep.Where(x => x.procedureId == procItem.procedureId).OrderBy(x => x.priority).ToList();
+                    foreach (var procStep in listProcStepByProcId)
+                    {
+                        listWorkerTask.Add(new()
+                        {
+                            createById = userId,
+                            leaderTaskId = leaderTask.id,
+                            stepId = procStep.stepId,
+                            name = listStep.FirstOrDefault(x => x.id == procStep.stepId)?.name ?? "",
+                            status = ETaskStatus.New,
+                            isDeleted = false,
+                            drawingsTechnical = procItem.Item?.drawingsTechnical ?? "",
+                        });
+                    }
+
+                    if (listWorkerTask.Any())
+                    {
+                        _dbContext.WorkerTask.AddRange(listWorkerTask);
+                    }
+                }
+            }
+        }
+
         #endregion
 
     }

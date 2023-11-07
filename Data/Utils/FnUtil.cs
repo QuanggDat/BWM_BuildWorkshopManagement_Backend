@@ -1,8 +1,7 @@
-﻿using System.Globalization;
+﻿using SkiaSharp;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace Data.Utils
 {
@@ -141,7 +140,36 @@ namespace Data.Utils
         }
 
         // Sua kich tuoc hinh
-        public static Image ResizeImage(Image img, int max = 300)
+        //public static Image ResizeImage(Image img, int max = 300)
+        //{
+        //    double w = img.Width;
+        //    double h = img.Height;
+        //    double ratio = w / h;
+
+        //    w = max;
+        //    h = Math.Round(w / ratio, 0);
+
+        //    var bmp = new Bitmap((Int32)w, (Int32)h);
+        //    try
+        //    {
+        //        using (Graphics g = Graphics.FromImage(bmp))
+        //        {
+        //            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        //            g.SmoothingMode = SmoothingMode.HighQuality;
+        //            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+        //            g.CompositingQuality = CompositingQuality.HighQuality;
+        //            g.DrawImage(img, 0, 0, (Int32)w, (Int32)h);
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw new Exception("Bitmap faild");
+        //    }
+        //    return bmp;
+        //}
+
+        // Sua kich tuoc hinh
+        public static SKImage ResizeImage(SKImage img, int max = 300)
         {
             double w = img.Width;
             double h = img.Height;
@@ -150,23 +178,22 @@ namespace Data.Utils
             w = max;
             h = Math.Round(w / ratio, 0);
 
-            var bmp = new Bitmap((Int32)w, (Int32)h);
-            try
+            using var resizedBitmap = new SKBitmap((int)w, (int)h);
+            using (var canvas = new SKCanvas(resizedBitmap))
             {
-                using (Graphics g = Graphics.FromImage(bmp))
+                // Create a SKPaint object for drawing with interpolation quality
+                var paint = new SKPaint
                 {
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    g.DrawImage(img, 0, 0, (Int32)w, (Int32)h);
-                }
+                    FilterQuality = SKFilterQuality.High
+                };
+
+                // Draw the downloaded image onto the resized canvas with scaling
+                var destRect = new SKRect(0, 0, (int)w, (int)h);
+                canvas.DrawImage(img, destRect, paint);
             }
-            catch (Exception)
-            {
-                throw new Exception("Bitmap faild");
-            }
-            return bmp;
+
+            // Save the resized image to a file
+            return SKImage.FromBitmap(resizedBitmap);
         }
     }
 }
