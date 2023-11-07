@@ -22,8 +22,6 @@ namespace Data.Models
         public Guid? roleId { get; set; }
         public Role? Role { get; set; }
         public Guid? groupId { get; set; }
-        public Team Team { get; set; } = null!;
-        public Guid? squadId { get; set; }
         public Group Group { get; set; } = null!;
         public bool banStatus { get; set; }    
     }

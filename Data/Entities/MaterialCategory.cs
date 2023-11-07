@@ -16,6 +16,7 @@ namespace Data.Entities
 
         public string name { get; set; } = null!;
         public bool isDeleted { get; set; }
+
         public virtual List<Material> Materials { get; set; } = new();
     }
 }

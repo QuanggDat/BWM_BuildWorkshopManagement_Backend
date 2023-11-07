@@ -292,7 +292,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel GetByMaterialCategoryId(Guid materialCategoryId, int pageIndex, int pageSize)
+        public ResultModel GetByMaterialCategoryId(Guid materialCategoryId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
@@ -311,6 +311,10 @@ namespace Sevices.Core.MaterialService
                     var listMaterialCategory = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
                    .OrderBy(x => x.name).ToList();
 
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        listMaterialCategory = listMaterialCategory.Where(x => x.name.Contains(search)).ToList();
+                    }
 
                     var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

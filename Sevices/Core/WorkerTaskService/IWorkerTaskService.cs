@@ -15,7 +15,7 @@ namespace Sevices.Core.WorkerTaskService
         ResultModel Delete(Guid workerTaskId);
         ResultModel Assign(AssignWorkerTaskModel model);
         ResultModel UnAssign(AssignWorkerTaskModel model);
-        ResultModel GetAll(Guid leaderId);
+        ResultModel GetByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel UpdateStatus(Guid workerTaskId, ETaskStatus status);
     }

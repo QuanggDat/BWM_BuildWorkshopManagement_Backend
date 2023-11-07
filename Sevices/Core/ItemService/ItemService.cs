@@ -371,7 +371,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel GetByItemCategoryId(Guid itemCategoryId, int pageIndex, int pageSize)
+        public ResultModel GetByItemCategoryId(Guid itemCategoryId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             var check = _dbContext.ItemCategory.Where(x => x.id == itemCategoryId && x.isDeleted != true).FirstOrDefault();
@@ -390,7 +390,10 @@ namespace Sevices.Core.ItemService
                         .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                         .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
                        .OrderBy(x => x.name).ToList();
-
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        listItem = listItem.Where(x => x.name.Contains(search)).ToList();
+                    }
                     var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                     var list = new List<ItemModel>();

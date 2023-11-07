@@ -25,17 +25,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserByGroupId(Guid id)
+        public IActionResult GetAllUserByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllUserByGroupId(id);
+            var result = _groupService.GetAllUserByGroupId(id, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserNotInGroupId(Guid id)
+        public IActionResult GetAllUserNotInGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllUserNotInGroupId(id);
+            var result = _groupService.GetAllUserNotInGroupId(id, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

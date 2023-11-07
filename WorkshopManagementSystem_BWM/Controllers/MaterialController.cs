@@ -40,9 +40,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{materialCategoryId}")]
-        public IActionResult GetByMaterialCategoryId(Guid materialCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByMaterialCategoryId(Guid materialCategoryId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _materialService.GetByMaterialCategoryId(materialCategoryId, pageIndex, pageSize);
+            var result = _materialService.GetByMaterialCategoryId(materialCategoryId,search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

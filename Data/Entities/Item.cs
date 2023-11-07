@@ -11,7 +11,6 @@ namespace Data.Entities
 {
     public class Item
     {
-
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 

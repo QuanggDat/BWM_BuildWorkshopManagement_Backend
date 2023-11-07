@@ -49,9 +49,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{itemCategoryId}")]
-        public IActionResult GetByItemCategoryId(Guid itemCategoryId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByItemCategoryId(Guid itemCategoryId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _itemService.GetByItemCategoryId(itemCategoryId, pageIndex, pageSize);
+            var result = _itemService.GetByItemCategoryId(itemCategoryId,search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

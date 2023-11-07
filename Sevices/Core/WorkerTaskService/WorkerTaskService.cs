@@ -35,6 +35,7 @@ namespace Sevices.Core.WorkerTaskService
                 var workerTask = new WorkerTask
                 {
                     leaderTaskId = model.leaderTaskId,
+                    stepId = model.stepId,
                     name = stepTmp.name,
                     description = model.description,
                     startTime = model.startTime,
@@ -299,60 +300,59 @@ namespace Sevices.Core.WorkerTaskService
             return result;
         }
 
-        public ResultModel GetAll (Guid leaderTaskId)
+        public ResultModel GetByLeaderId (Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
 
             var result = new ResultModel();
             result.Succeed = false;
 
-            var check =  _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).ToList();
+            var listWorkerTask =  _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderBy(x => x.startTime).ToList();
 
-            if (check == null)
+            try
             {
-                result.Code = 81;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm";
-            }
-            else
-            {
-                try
+                if (!string.IsNullOrEmpty(search))
                 {
-                    var list = new List<WorkerTaskModel>();
-                    foreach (var item in check)
+                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<WorkerTaskModel>();
+                foreach (var item in listWorkerTaskPaging)
+                {
+                    var tmp = new WorkerTaskModel
                     {
-                        var tmp = new WorkerTaskModel
+                        workerTaskId = item.id,
+                        leaderTaskId = item.leaderTaskId,
+                        stepId = item.stepId,
+                        userId = item.createById,
+                        name = item.name,
+                        description = item.description,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        Members = item.WorkerTaskDetails.Select(_ => new TaskMember
                         {
-                            workerTaskId = item.id,
-                            leaderTaskId = item.leaderTaskId,
-                            stepId = item.stepId,
-                            userId = item.createById,                           
-                            name = item.name,
-                            description = item.description,
-                            startTime = item.startTime,
-                            endTime = item.endTime,
-                            status = item.status,
-                            Members = item.WorkerTaskDetails.Select(_ => new TaskMember
-                            {
-                                memberId = _.User.Id,
-                                memberFullName = _.User.fullName,
-                            }).ToList(),
-                        };
-                        list.Add(tmp);
-                    }
-                    result.Data = new PagingModel()
-                    {
-                        Data = list,
-                        Total = check.Count
+                            memberId = _.User.Id,
+                            memberFullName = _.User.fullName,
+                        }).ToList(),
                     };
-                    result.Succeed = true;
-
+                    list.Add(tmp);
                 }
-                catch (Exception e)
+                result.Data = new PagingModel()
                 {
-                    result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-                }
+                    Data = list,
+                    Total = listWorkerTask.Count
+                };
+                result.Succeed = true;
+
             }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+
             return result;         
         }
     }

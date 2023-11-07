@@ -11,9 +11,8 @@ namespace Sevices.Core.LeaderTaskService
     public interface ILeaderTaskService
     {
         ResultModel Created(Guid createById, CreateLeaderTaskModel model);
-        ResultModel GetByOrderId(Guid orderId);
-        ResultModel GetByLeaderId(Guid leadeId);
-        ResultModel GetByOrderIdAndLeaderId(Guid orderId, Guid leaderId);
+        ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
+        ResultModel GetByLeaderId(Guid leadeId, string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel UpdateStatus(Guid id, ETaskStatus status);
         ResultModel Update(UpdateLeaderTaskModel model);

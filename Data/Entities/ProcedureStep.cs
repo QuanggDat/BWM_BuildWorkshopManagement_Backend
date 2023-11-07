@@ -17,9 +17,10 @@ namespace Data.Entities
         public Guid procedureId { get; set; }
         public Procedure Procedure { get; set; } = null!;
 
-
         [ForeignKey("stepId")]
         public Guid stepId { get; set; }
-        public Step Step { get; set; } = null!;                          
+        public Step Step { get; set; } = null!;
+
+        public int priority { get; set; } 
     }
 }

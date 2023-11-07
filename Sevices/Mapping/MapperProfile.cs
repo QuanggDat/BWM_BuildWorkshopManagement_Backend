@@ -17,13 +17,6 @@ namespace Sevices.Mapping
             CreateMap<UserCreateModel, User>().ReverseMap();
             CreateMap<User, UserModel>().ReverseMap();
 
-            //Item
-            CreateMap<Item, ItemModel>();
-
-            //Material
-            CreateMap<Material, MaterialModel>();
-            CreateMap<MaterialCategory, MaterialCategoryModel>();
-
             // Order
             CreateMap<Order, OrderModel>().ReverseMap();
             CreateMap<Order, CreateOrderModel>().ReverseMap();
@@ -32,9 +25,8 @@ namespace Sevices.Mapping
             // Order Detail
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
 
-            //HumanResources
+            //Group
             CreateMap<Group, GroupModel>().ReverseMap();
-            CreateMap<Team, TeamModel>().ReverseMap();
 
             // Notification
             CreateMap<Notification, NotificationModel>().ReverseMap();

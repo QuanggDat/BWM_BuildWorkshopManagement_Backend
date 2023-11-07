@@ -15,6 +15,6 @@ namespace Sevices.Core.OrderReportService
         ResultModel GetByOrderId(Guid orderId);
         ResultModel GetByForemanId (Guid foremanId);
         ResultModel GetAll();
-        //ResultModel SendReviews(ReviewsOrderReportModel model);
+
     }
 }

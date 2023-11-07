@@ -15,7 +15,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _teamService = teamService;
         }
-
+        /*
         [HttpPost("CreateTeam")]
         public IActionResult CreateTeam(CreateTeamModel model)
         {
@@ -71,5 +71,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+        */
     }
 }

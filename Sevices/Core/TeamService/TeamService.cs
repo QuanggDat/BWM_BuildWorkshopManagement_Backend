@@ -15,7 +15,7 @@ namespace Sevices.Core.TeamService
             _dbContext = dbContext;
             _mapper = mapper;
         }
-
+        /*
         public ResultModel GetTeamByGroupId(Guid groupId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
@@ -276,5 +276,6 @@ namespace Sevices.Core.TeamService
             }
             return result;
         }
+        */
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.ReportService;
 using static Data.Models.TaskReportModel;
+using Data.Utils;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -39,18 +40,18 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId)
+        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId);
+            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId, pageIndex, pageSize);
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId)
+        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId);
+            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

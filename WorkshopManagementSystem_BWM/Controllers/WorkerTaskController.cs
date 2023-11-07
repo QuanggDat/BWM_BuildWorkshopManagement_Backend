@@ -5,6 +5,7 @@ using Sevices.Core.WorkerTaskService;
 using static Data.Models.WorkerTaskModel;
 using Data.Models;
 using Data.Enums;
+using Data.Utils;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -31,9 +32,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderId}")]
-        public IActionResult GetAll(Guid leaderId)
+        public IActionResult GetAll(Guid leaderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _workerTaskService.GetAll(leaderId);
+            var result = _workerTaskService.GetByLeaderId(leaderId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.Common;
 using Sevices.Core.LeaderTaskService;
 using Data.Enums;
+using Data.Utils;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -31,9 +32,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
         
         [HttpGet("[action]/{orderId}")]
-        public IActionResult GetByOrderId(Guid orderId)
+        public IActionResult GetByOrderId(Guid orderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _leaderTaskService.GetByOrderId(orderId);
+            var result = _leaderTaskService.GetByOrderId(orderId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -47,9 +48,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderId}")]
-        public IActionResult GetByLeaderId(Guid leaderId)
+        public IActionResult GetByLeaderId(Guid leaderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _leaderTaskService.GetByLeaderId(leaderId);
+            var result = _leaderTaskService.GetByLeaderId(leaderId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

@@ -147,7 +147,7 @@ namespace Sevices.Core.LeaderTaskService
             }
             else
             {
-                if (model.startTime > model.endTime)
+                if (model.startTime >= model.endTime)
                 {
                     result.Code = 43;
                     result.Succeed = false;
@@ -247,173 +247,105 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
-        public ResultModel GetByOrderId(Guid orderId)
+        public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var check = _dbContext.LeaderTask
+            var listLeaderTask = _dbContext.LeaderTask
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
-                .OrderByDescending(x => x.itemName).ToList();
-
-            if (check == null)
+                .OrderBy(x => x.startTime).ToList();
+            try
             {
-                result.Code = 33;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin đơn hàng !";
-            }
-            else
-            {
-                try
+                if (!string.IsNullOrEmpty(search))
                 {
-                    var list = new List<LeaderTaskModel>();
-                    foreach (var item in check)
+                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LeaderTaskModel>();
+                foreach (var item in listLeaderTaskPaging)
+                {
+                    var tmp = new LeaderTaskModel
                     {
-                        var tmp = new LeaderTaskModel
-                        {
-                            id = item.id,
-                            createdById = item.createById,
-                            leaderId = item.leaderId,
-                            itemName = item.itemName,
-                            name = item.name,
-                            startTime = item.startTime,
-                            endTime = item.endTime,
-                            status = item.status,
-                            completedTime = item.completedTime,
-                            description = item.description,
-                            isDeleted = item.isDeleted,
-                        };
-                        list.Add(tmp);
-                    }
-                    result.Data = new PagingModel()
-                    {
-                        Data = list,
-                        Total = check.Count
+                        id = item.id,
+                        createdById = item.createById,
+                        leaderId = item.leaderId,
+                        itemName = item.itemName,
+                        name = item.name,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        completedTime = item.completedTime,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
                     };
-                    result.Succeed = true;
-
+                    list.Add(tmp);
                 }
-                catch (Exception e)
+                result.Data = new PagingModel()
                 {
-                    result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-                }
+                    Data = list,
+                    Total = listLeaderTask.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }
 
-        public ResultModel GetByOrderIdAndLeaderId(Guid orderId, Guid leaderId)
+        public ResultModel GetByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
-
-            var checkOrder = _dbContext.LeaderTask
-                .Where(a => a.orderId == orderId && a.isDeleted == false).SingleOrDefault();
-            if (checkOrder == null)
-            {
-                result.Code = 39;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
-            }
-            else
-            {
-                var checkLeader = _dbContext.LeaderTask
-                .Where(a => a.leaderId == leaderId && a.isDeleted == false).SingleOrDefault();
-                if (checkLeader == null)
-                {
-                    result.Code = 38;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
-                }
-                else
-                {
-                    var listLeaderTask = _dbContext.LeaderTask
-                    .Where(a => a.orderId == orderId && a.leaderId == leaderId && a.isDeleted == false)
-                    .OrderByDescending(x => x.itemName).ToList();
-                    try
-                    {
-                        var list = new List<LeaderTaskModel>();
-                        foreach (var item in listLeaderTask)
-                        {
-                            var tmp = new LeaderTaskModel
-                            {
-                                id = item.id,
-                                createdById = item.createById,
-                                itemName = item.itemName,
-                                name = item.name,
-                                startTime = item.startTime,
-                                endTime = item.endTime,
-                                status = item.status,
-                                completedTime = item.completedTime,
-                                description = item.description,
-                                isDeleted = item.isDeleted,
-                            };
-                            list.Add(tmp);
-                        }
-                        result.Data = new PagingModel()
-                        {
-                            Data = list,
-                            Total = listLeaderTask.Count
-                        };
-                        result.Succeed = true;
-
-                    }
-                    catch (Exception e)
-                    {
-                        result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-                    }
-                }
-            }
-            return result;
-        }
-
-        public ResultModel GetByLeaderId(Guid leaderId)
-        {
-            var result = new ResultModel();
-            result.Succeed = false;
-            var checkLeader = _dbContext.LeaderTask
+            var listLeaderTask = _dbContext.LeaderTask
                     .Where(a => a.leaderId == leaderId && a.isDeleted == false)
-                    .OrderByDescending(x => x.itemName).ToList();
-            if (checkLeader == null)
+                    .OrderBy(x => x.startTime).ToList();
+            try
             {
-                result.Code = 38;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
-            }
-            else 
-            {
-                try
+                if (!string.IsNullOrEmpty(search))
                 {
-                    var list = new List<LeaderTaskModel>();
-                    foreach (var item in checkLeader)
-                    {
-                        var tmp = new LeaderTaskModel
-                        {
-                            id = item.id,
-                            createdById = item.createById,
-                            itemName = item.itemName,
-                            name = item.name,
-                            startTime = item.startTime,
-                            endTime = item.endTime,
-                            status = item.status,
-                            completedTime = item.completedTime,
-                            description = item.description,
-                            isDeleted = item.isDeleted,
-                        };
-                        list.Add(tmp);
-                    }
-                    result.Data = new PagingModel()
-                    {
-                        Data = list,
-                        Total = checkLeader.Count
-                    };
-                    result.Succeed = true;
+                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                }
 
-                }
-                catch (Exception e)
+                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LeaderTaskModel>();
+                foreach (var item in listLeaderTaskPaging)
                 {
-                    result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                    var tmp = new LeaderTaskModel
+                    {
+                        id = item.id,
+                        orderId = item.orderId,
+                        createdById = item.createById,
+                        itemName = item.itemName,
+                        name = item.name,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        status = item.status,
+                        completedTime = item.completedTime,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
+                    };
+                    list.Add(tmp);
                 }
-            }                               
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLeaderTask.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+
             return result;
         }
 

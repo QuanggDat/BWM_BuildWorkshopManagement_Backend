@@ -13,10 +13,6 @@ namespace Data.Entities
         [ForeignKey("roleID")]
         public virtual Role? Role { get; set; }
 
-        public Guid? teamId { get; set; }
-        [ForeignKey("teamId")]
-        public virtual Team? Team { get; set; }
-
         public Guid? groupId { get; set; }
         [ForeignKey("groupId")]
         public virtual Group? Group { get; set; }

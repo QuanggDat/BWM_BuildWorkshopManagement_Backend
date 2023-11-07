@@ -25,11 +25,15 @@ namespace Data.Entities
         [ForeignKey("stepId")]
         public Guid stepId { get; set; }
         public virtual Step Step { get; set; } = null!;
+
         public string name { get; set; } = null!;
+        public string drawingsTechnical { get; set; } = null!;
 
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public DateTime? completedTime { get; set; }     
+        public DateTime? completedTime { get; set; }
+
+        public int priority { get; set; }
 
         public ETaskStatus status { get; set; }
         public string? description { get; set; } = null!;
