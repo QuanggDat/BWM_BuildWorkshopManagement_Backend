@@ -40,18 +40,18 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId,string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId, pageIndex, pageSize);
+            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId, pageIndex, pageSize);
+            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

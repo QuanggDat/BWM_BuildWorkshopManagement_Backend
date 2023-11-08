@@ -12,9 +12,9 @@ namespace Sevices.Core.OrderReportService
     {
         ResultModel Create(Guid id, CreateOrderReportModel model);   
         ResultModel GetById(Guid id);
-        ResultModel GetByOrderId(Guid orderId);
-        ResultModel GetByForemanId (Guid foremanId);
-        ResultModel GetAll();
+        ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
+        ResultModel GetByForemanId (Guid foremanId, string? search, int pageIndex, int pageSize);
+        ResultModel GetAll(string? search, int pageIndex, int pageSize);
 
     }
 }

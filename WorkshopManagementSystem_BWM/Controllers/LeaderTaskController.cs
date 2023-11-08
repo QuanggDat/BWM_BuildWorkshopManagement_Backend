@@ -21,12 +21,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult Created(CreateLeaderTaskModel model)
+        public IActionResult Create(CreateLeaderTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
-            var result = _leaderTaskService.Created(userId, model);
+            var result = _leaderTaskService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

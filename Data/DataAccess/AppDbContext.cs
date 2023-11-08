@@ -10,8 +10,8 @@ namespace Data.DataAccess
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Area> Area { get; set; }
-        public DbSet<Floor> Floor { get; set; }
+        //public DbSet<Area> Area { get; set; }
+        //public DbSet<Floor> Floor { get; set; }
         //public DbSet<Team> Team { get; set; }
         public DbSet<Item> Item { get; set; }
         public DbSet<ItemCategory> ItemCategory { get; set; }

@@ -131,15 +131,23 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
-        public ResultModel GetByForemanId(Guid foremanId)
+        public ResultModel GetByForemanId(Guid foremanId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            try
-            {
-                var checkReport = _dbContext.Report.Include(x => x.Resources)
+
+            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
                 .Where(x => x.reporterId == foremanId).ToList();
 
-                var list = checkReport.Select(report => new OrderReportModel
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                }
+
+                var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = listOrderReportPaging.Select(report => new OrderReportModel
                 {
                     orderId = report.orderId,
                     title = report.title,
@@ -150,11 +158,10 @@ namespace Sevices.Core.OrderReportService
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
-                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
                 result.Data = new PagingModel()
                 {
-                    Data = sortedList,
-                    Total = checkReport.Count
+                    Data = list,
+                    Total = listOrderReport.Count
                 };
                 result.Succeed = true;
 
@@ -166,15 +173,23 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
-        public ResultModel GetByOrderId (Guid orderId)
+        public ResultModel GetByOrderId (Guid orderId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            try
-            {
-                var checkReport = _dbContext.Report.Include(x => x.Resources)
+
+            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
                 .Where(x => x.orderId == orderId).ToList();
 
-                var list = checkReport.Select(report => new OrderReportModel
+            try
+            {               
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                }
+
+                var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = listOrderReport.Select(report => new OrderReportModel
                 {
 
                     title = report.title,
@@ -185,11 +200,10 @@ namespace Sevices.Core.OrderReportService
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
-                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
                 result.Data = new PagingModel()
                 {
-                    Data = sortedList,
-                    Total = checkReport.Count
+                    Data = list,
+                    Total = listOrderReport.Count
                 };
                 result.Succeed = true;
 
@@ -203,15 +217,21 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
-        public ResultModel GetAll ()
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            try
-            {
-                var checkReport = _dbContext.Report
+            var listOrderReport = _dbContext.Report
                 .Where(x => x.reportType == ReportType.OrderReport).ToList();
+            try
+            {               
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                }
 
-                var list = checkReport.Select(report => new OrderReportModel
+                var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = listOrderReport.Select(report => new OrderReportModel
                 {
                     orderId = report.orderId,
                     title = report.title,
@@ -222,11 +242,10 @@ namespace Sevices.Core.OrderReportService
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
-                var sortedList = list.OrderByDescending(x => x.createdDate).ToList();
                 result.Data = new PagingModel()
                 {
-                    Data = sortedList,
-                    Total = checkReport.Count
+                    Data = list,
+                    Total = listOrderReport.Count
                 };
                 result.Succeed = true;
 

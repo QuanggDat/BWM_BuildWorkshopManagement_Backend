@@ -10,7 +10,7 @@ namespace Sevices.Core.LeaderTaskService
 {
     public interface ILeaderTaskService
     {
-        ResultModel Created(Guid createById, CreateLeaderTaskModel model);
+        ResultModel Create(Guid createById, CreateLeaderTaskModel model);
         ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderId(Guid leadeId, string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);

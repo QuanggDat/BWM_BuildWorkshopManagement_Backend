@@ -27,13 +27,13 @@ namespace Data.Entities
         public virtual Order Order { get; set; } = null!;
 
         [ForeignKey("itemId")]
-        public Guid itemId { get; set; }
+        public Guid? itemId { get; set; }
         public virtual Item Item { get; set; } = null!;
         public string itemName { get; set; } = null!;
         public string drawingsTechnical { get; set; } = null!;
 
         [ForeignKey("procedureId")]
-        public Guid procedureId { get; set; }
+        public Guid? procedureId { get; set; }
         public virtual Procedure Procedure { get; set; } = null!;        
         public string name { get; set; } = null!;
 
@@ -41,6 +41,7 @@ namespace Data.Entities
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
 
+        public int amount { get; set; }
         public int priority { get; set; }
         public ETaskStatus status { get; set; }
         public string? description { get; set; }

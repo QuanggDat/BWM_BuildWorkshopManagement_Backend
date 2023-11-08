@@ -25,13 +25,13 @@ namespace Sevices.Core.LeaderTaskService
             _notificationService = notificationService;
         }
 
-        public ResultModel Created(Guid createById, CreateLeaderTaskModel model)
+        public ResultModel Create(Guid createById, CreateLeaderTaskModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = _dbContext.User.Find(model.leaderId);
-            if (check == null)
+            var leaderTmp = _dbContext.User.Find(model.leaderId);
+            if (leaderTmp == null)
             {
                 result.Code = 38;
                 result.Succeed = false;
@@ -66,9 +66,9 @@ namespace Sevices.Core.LeaderTaskService
                         }
                         else
                         {
-                            var check1 = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.procedureId == model.procedureId && a.isDeleted == false);
+                            var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.procedureId == model.procedureId && a.isDeleted == false);
 
-                            if (check1 != null)
+                            if (check != null)
                             {
                                 result.Code = 41;
                                 result.Succeed = false;
@@ -93,37 +93,50 @@ namespace Sevices.Core.LeaderTaskService
                                     }
                                     else
                                     {
-                                        var item = _dbContext.Item.Find(model.itemId);
-                                        var procedure = _dbContext.Procedure.Find(model.procedureId);
-                                        var leaderTask = new LeaderTask
+                                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
+                                        if (checkPriority != null)
                                         {
-                                            createById = createById,
-                                            leaderId = model.leaderId,
-                                            orderId = model.orderId,
-                                            itemId = model.itemId,
-                                            itemName = item!.name,
-                                            procedureId = model.procedureId,
-                                            name = procedure!.name,
-                                            startTime = model.startTime,
-                                            endTime = model.endTime,
-                                            description = model.description,
-                                            status = 0,
-                                            isDeleted = false
-                                        };
-
-                                        try
-                                        {
-                                            _dbContext.LeaderTask.Add(leaderTask);
-                                            _dbContext.SaveChanges();
-                                            result.Succeed = true;
-                                            result.Data = leaderTask.id;
+                                            result.Code = 91;
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
                                         }
-                                        catch (Exception ex)
+                                        else
                                         {
-                                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                                        }
+                                            var item = _dbContext.Item.Find(model.itemId);
+                                            var procedure = _dbContext.Procedure.Find(model.procedureId);
+                                            var leaderTask = new LeaderTask
+                                            {
+                                                createById = createById,
+                                                leaderId = model.leaderId,
+                                                orderId = model.orderId,
+                                                itemId = model.itemId,
+                                                procedureId = model.procedureId,    
+                                                priority = model.priority,
+                                                drawingsTechnical = item!.drawingsTechnical,
+                                                itemName = item!.name,
+                                                amount = model.amount,
+                                                name = procedure!.name,                                       
+                                                startTime = model.startTime,
+                                                endTime = model.endTime,
+                                                description = model.description,
+                                                status = 0,
+                                                isDeleted = false
+                                            };
 
-                                    }
+                                            try
+                                            {
+                                                _dbContext.LeaderTask.Add(leaderTask);
+                                                _dbContext.SaveChanges();
+                                                result.Succeed = true;
+                                                result.Data = leaderTask.id;
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                            }
+
+                                        }
+                                    }                                   
                                 }
                             }
                         }
@@ -139,6 +152,8 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var leaderTask = _dbContext.LeaderTask.Find(model.id);
+            
+
             if (leaderTask == null)
             {
                 result.Code = 38;
@@ -147,31 +162,67 @@ namespace Sevices.Core.LeaderTaskService
             }
             else
             {
+                
                 if (model.startTime >= model.endTime)
                 {
                     result.Code = 43;
                     result.Succeed = false;
                     result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
                 }
+                
                 else
                 {
-                    leaderTask.name = model.name;
-                    leaderTask.startTime = model.startTime;
-                    leaderTask.endTime = model.endTime;
-                    leaderTask.status = model.status;
-                    leaderTask.description = model.description;
+                    if(model.priority != leaderTask.priority)
+                    {
+                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false);
+                        if (checkPriority != null)
+                        {
+                            result.Code = 91;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
+                        }
+                        else
+                        {
+                            leaderTask.name = model.name;
+                            leaderTask.priority = model.priority;
+                            leaderTask.startTime = model.startTime;
+                            leaderTask.endTime = model.endTime;
+                            leaderTask.status = model.status;
+                            leaderTask.description = model.description;
 
-                    try
-                    {
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = leaderTask.id;
+                            try
+                            {
+                                _dbContext.SaveChanges();
+                                result.Succeed = true;
+                                result.Data = leaderTask.id;
+                            }
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        leaderTask.name = model.name;
+                        leaderTask.priority = model.priority;
+                        leaderTask.startTime = model.startTime;
+                        leaderTask.endTime = model.endTime;
+                        leaderTask.status = model.status;
+                        leaderTask.description = model.description;
+
+                        try
+                        {
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = leaderTask.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
                     }
-                }
+                }             
             }
             return result;
         }
@@ -224,15 +275,24 @@ namespace Sevices.Core.LeaderTaskService
                 {
                     var leaderTaskModel = new LeaderTaskModel
                     {
+                        id = check.id,
                         createdById = check.createById,
                         leaderId = check.leaderId,
+
                         orderId = check.orderId,
+                        itemId = check.itemId,
+                        procedureId = check.procedureId,
+
                         itemName = check.itemName,
+                        drawingsTechnical = check.drawingsTechnical,
+
                         name = check.name,
+                        priority = check.priority,                        
                         startTime = check.startTime,
-                        endTime = check.endTime,
-                        status = check.status,
+                        endTime = check.endTime,                        
                         completedTime = check.completedTime,
+
+                        status = check.status,
                         description = check.description,
                         isDeleted = check.isDeleted,
                     };
@@ -254,7 +314,7 @@ namespace Sevices.Core.LeaderTaskService
 
             var listLeaderTask = _dbContext.LeaderTask
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
-                .OrderBy(x => x.startTime).ToList();
+                .OrderByDescending(x => x.startTime).ToList();
             try
             {
                 if (!string.IsNullOrEmpty(search))
@@ -271,13 +331,22 @@ namespace Sevices.Core.LeaderTaskService
                     {
                         id = item.id,
                         createdById = item.createById,
-                        leaderId = item.leaderId,
+                        leaderId = item.leaderId,                      
+                                               
+                        orderId = item.orderId,
+                        itemId = item.itemId,
+                        procedureId = item.procedureId,
+
                         itemName = item.itemName,
+                        drawingsTechnical = item.drawingsTechnical,
+
                         name = item.name,
+                        priority = item.priority,                       
                         startTime = item.startTime,
                         endTime = item.endTime,
-                        status = item.status,
                         completedTime = item.completedTime,
+
+                        status = item.status,                      
                         description = item.description,
                         isDeleted = item.isDeleted,
                     };
@@ -304,7 +373,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
             var listLeaderTask = _dbContext.LeaderTask
                     .Where(a => a.leaderId == leaderId && a.isDeleted == false)
-                    .OrderBy(x => x.startTime).ToList();
+                    .OrderByDescending(x => x.startTime).ToList();
             try
             {
                 if (!string.IsNullOrEmpty(search))
@@ -320,14 +389,23 @@ namespace Sevices.Core.LeaderTaskService
                     var tmp = new LeaderTaskModel
                     {
                         id = item.id,
-                        orderId = item.orderId,
                         createdById = item.createById,
+                        leaderId = item.leaderId,
+
+                        orderId = item.orderId,
+                        itemId = item.itemId,
+                        procedureId = item.procedureId,
+
                         itemName = item.itemName,
+                        drawingsTechnical = item.drawingsTechnical,
+
                         name = item.name,
+                        priority = item.priority,
                         startTime = item.startTime,
                         endTime = item.endTime,
-                        status = item.status,
                         completedTime = item.completedTime,
+
+                        status = item.status,
                         description = item.description,
                         isDeleted = item.isDeleted,
                     };

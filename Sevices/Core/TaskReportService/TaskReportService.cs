@@ -368,19 +368,24 @@ namespace Sevices.Core.ReportService
             }
             return result;
         }
-        public ResultModel GetProblemTaskReportsByLeaderTaskId(Guid leaderTaskId, int pageIndex, int pageSize)
+        public ResultModel GetProblemTaskReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report
+            var listTaskReport = _dbContext.Report
                 .Include(x => x.LeaderTask).Include(x => x.Resources)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport).OrderByDescending(x => x.createdDate)
                 .ToList();
 
             try
             {
-                var listLeaderTaskPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 var list = new List<TaskReportModel>();
                 foreach (var item in listLeaderTaskPaging)
@@ -402,7 +407,7 @@ namespace Sevices.Core.ReportService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listReport.Count
+                    Total = listTaskReport.Count
                 };
                 result.Succeed = true;
 
@@ -415,18 +420,23 @@ namespace Sevices.Core.ReportService
 
             return result;
         }
-        public ResultModel GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, int pageIndex, int pageSize)
+        public ResultModel GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report
+            var listTaskReport = _dbContext.Report
                 .Include(x => x.LeaderTask).Include(x => x.Resources)
                 .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
-                var listLeaderTaskPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 var list = new List<TaskReportModel>();
                 foreach (var item in listLeaderTaskPaging)
@@ -449,7 +459,7 @@ namespace Sevices.Core.ReportService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listReport.Count
+                    Total = listTaskReport.Count
                 };
                 result.Succeed = true;
             }

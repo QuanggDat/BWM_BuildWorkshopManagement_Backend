@@ -28,46 +28,57 @@ namespace Sevices.Core.WorkerTaskService
             {
                 result.Code = 40;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin quy trình!";
+                result.ErrorMessage = "Không tìm thấy thông tin bước!";
             }
             else
             {
-                var workerTask = new WorkerTask
+                var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == model.leaderTaskId && x.priority == model.priority);
+                if (checkPriority != null)
                 {
-                    leaderTaskId = model.leaderTaskId,
-                    stepId = model.stepId,
-                    name = stepTmp.name,
-                    description = model.description,
-                    startTime = model.startTime,
-                    endTime = model.endTime,
-                    status = ETaskStatus.New,
-                    createById = userId,
-                    isDeleted = false,
-                };
-
-                try
+                    result.Code = 92;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
+                }
+                else
                 {
-                    _dbContext.WorkerTask.Add(workerTask);
-
-                    foreach (var assignee in model.assignees)
+                    var workerTask = new WorkerTask
                     {
-                        _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                        createById = userId,
+                        leaderTaskId = model.leaderTaskId,
+
+                        stepId = model.stepId,
+                        name = stepTmp.name,
+
+                        startTime = model.startTime,
+                        endTime = model.endTime,
+                        status = ETaskStatus.New,
+                        description = model.description,
+                        isDeleted = false,
+                    };
+
+                    try
+                    {
+                        _dbContext.WorkerTask.Add(workerTask);
+
+                        foreach (var assignee in model.assignees)
                         {
-                            workerTaskId = workerTask.id,
-                            userId = assignee
-                        });
+                            _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                            {
+                                workerTaskId = workerTask.id,
+                                userId = new Guid(assignee)
+                            });
+                        }
+
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = workerTask.id;
                     }
-
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = workerTask.id;
-
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
                 }
-
-                catch (Exception ex)
-                {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
+                
             }
             return result;
         }
@@ -89,38 +100,86 @@ namespace Sevices.Core.WorkerTaskService
                 }
                 else
                 {
-                    check.name = model.name;
-                    check.description = model.description;
-                    check.startTime = model.startTime;
-                    check.endTime = model.endTime;
-                    check.status = model.status;
-
-                    // Remove all old woker tasks detail
-                    var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
-                        .Where(x => x.workerTaskId == model.id)
-                        .ToList();
-                    if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
+                    if (model.priority != check.priority)
                     {
-                        _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
-                    }
+                        var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == check.leaderTaskId && x.priority == model.priority);
 
-                    // Set new woker tasks detail
-                    var workerTaskDetails = new List<WorkerTaskDetail>();
-                    foreach (var assignee in model.assignees)
-                    {
-                        workerTaskDetails.Add(new WorkerTaskDetail
+                        if (checkPriority != null)
                         {
-                            workerTaskId = model.id,
-                            userId = assignee
-                        });
+                            result.Code = 92;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
+                        }
+                        else
+                        {
+                            check.priority = model.priority;
+                            check.name = model.name;
+                            check.description = model.description;
+                            check.startTime = model.startTime;
+                            check.endTime = model.endTime;
+                            check.status = model.status;
+
+                            // Remove all old woker tasks detail
+                            var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
+                                .Where(x => x.workerTaskId == model.id)
+                                .ToList();
+                            if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
+                            {
+                                _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
+                            }
+
+                            // Set new woker tasks detail
+                            var workerTaskDetails = new List<WorkerTaskDetail>();
+                            foreach (var assignee in model.assignees)
+                            {
+                                workerTaskDetails.Add(new WorkerTaskDetail
+                                {
+                                    workerTaskId = model.id,
+                                    userId = assignee
+                                });
+                            }
+
+                            _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = model.id;
+                        }
                     }
+                    else
+                    {
+                        check.priority = model.priority;
+                        check.name = model.name;
+                        check.description = model.description;
+                        check.startTime = model.startTime;
+                        check.endTime = model.endTime;
+                        check.status = model.status;
 
-                    _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = model.id;
-                }
+                        // Remove all old woker tasks detail
+                        var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
+                            .Where(x => x.workerTaskId == model.id)
+                            .ToList();
+                        if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
+                        {
+                            _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
+                        }
 
+                        // Set new woker tasks detail
+                        var workerTaskDetails = new List<WorkerTaskDetail>();
+                        foreach (var assignee in model.assignees)
+                        {
+                            workerTaskDetails.Add(new WorkerTaskDetail
+                            {
+                                workerTaskId = model.id,
+                                userId = assignee
+                            });
+                        }
+
+                        _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = model.id;
+                    }
+                }               
             }
             catch (Exception ex)
             {
@@ -275,13 +334,20 @@ namespace Sevices.Core.WorkerTaskService
                 {
                     var wokerTaskModel = new WorkerTaskModel
                     {
+                        id = check.id,
+
+                        createById = check.createById,
                         leaderTaskId = check.leaderTaskId,
                         stepId = check.stepId,
-                        userId = check.createById,
+
                         name = check.name,
-                        description = check.description,
+                        priority = check.priority,
+
                         startTime = check.startTime,
                         endTime = check.endTime,
+                        completeTime = check.completedTime,
+
+                        description = check.description,
                         status = check.status,
                         Members = check.WorkerTaskDetails.Select(_ => new TaskMember
                         {
@@ -300,14 +366,14 @@ namespace Sevices.Core.WorkerTaskService
             return result;
         }
 
-        public ResultModel GetByLeaderId (Guid leaderTaskId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByLeaderTaskId (Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
 
             var result = new ResultModel();
             result.Succeed = false;
 
             var listWorkerTask =  _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderBy(x => x.startTime).ToList();
+                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
             {
@@ -323,15 +389,20 @@ namespace Sevices.Core.WorkerTaskService
                 {
                     var tmp = new WorkerTaskModel
                     {
-                        workerTaskId = item.id,
+                        id = item.id,
+                        createById = item.createById,
                         leaderTaskId = item.leaderTaskId,
                         stepId = item.stepId,
-                        userId = item.createById,
+                        
                         name = item.name,
-                        description = item.description,
+                        priority = item.priority,
+                        
                         startTime = item.startTime,
                         endTime = item.endTime,
-                        status = item.status,
+                        completeTime =item.completedTime,
+
+                        description = item.description,
+                        status = item.status,                        
                         Members = item.WorkerTaskDetails.Select(_ => new TaskMember
                         {
                             memberId = _.User.Id,

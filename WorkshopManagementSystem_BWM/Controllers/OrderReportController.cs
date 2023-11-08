@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderReportService;
 using static Data.Models.OrderReportModel;
 using Data.Models;
+using Data.Utils;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -37,22 +38,29 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
         
-        [HttpGet("[action]")]
-        public IActionResult GetByForemanId(Guid foremanId)
+        [HttpGet("[action]/{foremanId}")]
+        public IActionResult GetByForemanId(Guid foremanId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {           
-            var result = _orderReportService.GetByForemanId(foremanId);
+            var result = _orderReportService.GetByForemanId(foremanId, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{orderId}")]
+        public IActionResult GetByOrderId(Guid orderId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _orderReportService.GetByOrderId(orderId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetByOrderId(Guid orderId)
+        public IActionResult GetAll (string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _orderReportService.GetByOrderId(orderId);
+            var result = _orderReportService.GetAll(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
         /*
         [HttpPut("[action]")]
         public IActionResult SendReviews(ReviewsOrderReportModel model)
