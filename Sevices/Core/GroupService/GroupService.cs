@@ -269,7 +269,6 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        //Foreman and Leader can both use this function.
         public ResultModel AddWorkerToGroup(AddWorkerToGroupModel model)
         {
             var result = new ResultModel();

@@ -53,7 +53,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("CreateWoker")]
-        public async Task<ActionResult> CreateWoker([FromBody] UserCreateModel model)
+        public async Task<ActionResult> CreateWorker([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");

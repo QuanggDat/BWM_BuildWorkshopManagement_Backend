@@ -20,12 +20,32 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult Create (CreateTaskReportModel model)
+        public IActionResult CreateProgressReport(CreateProgressReportModel model)
         {
             if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
-            var result = _reportService.Create(userId,model);
+            var result = _reportService.CreateProgressReport(userId,model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        public IActionResult CreateProblemReport(CreateProblemReportModel model)
+        {
+            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
+            if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
+            var userId = User.GetId();
+            var result = _reportService.CreateProblemReport(userId, model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        public IActionResult CreateAcceptanceReport(CreateAcceptanceReportModel model)
+        {
+            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
+            if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
+            var userId = User.GetId();
+            var result = _reportService.CreateAcceptanceReport(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -40,28 +60,36 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProblemReportsByLeaderId(Guid leaderTaskId,string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProblemReportByLeaderTaskId(Guid leaderTaskId,string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProblemTaskReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
+            var result = _reportService.GetProblemReportByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProgressReportByLeaderTaskId(Guid leaderTaskId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetProgressTaskReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
+            var result = _reportService.GetProgressReportByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public IActionResult SendResponse (SendResponseModel model)
+        public IActionResult SendProgressResponse(SendProgressResponseModel model)
         {
-            var result = _reportService.SendResponse(model);
+            var result = _reportService.SendProgressResponse(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }       
+        }
+
+        [HttpPut("[action]")]
+        public IActionResult SendProblemResponse(SendProblemResponseModel model)
+        {
+            var result = _reportService.SendProblemResponse(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
     }
 }

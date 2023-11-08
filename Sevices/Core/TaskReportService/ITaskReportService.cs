@@ -11,10 +11,13 @@ namespace Sevices.Core.ReportService
 {
     public interface ITaskReportService
     {
-        ResultModel Create(Guid reporterId, CreateTaskReportModel model);     
-        ResultModel SendResponse(SendResponseModel model);
+        ResultModel CreateProblemReport(Guid reporterId, CreateProblemReportModel model);
+        ResultModel CreateProgressReport(Guid reporterId, CreateProgressReportModel model);
+        ResultModel CreateAcceptanceReport(Guid reporterId, CreateAcceptanceReportModel model);
+        ResultModel SendProblemResponse(SendProblemResponseModel model);
+        ResultModel SendProgressResponse(SendProgressResponseModel model);
         ResultModel GetById(Guid reportId);
-        ResultModel GetProblemTaskReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
-        ResultModel GetProgressTaskReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
+        ResultModel GetProblemReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
+        ResultModel GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
     }
 }

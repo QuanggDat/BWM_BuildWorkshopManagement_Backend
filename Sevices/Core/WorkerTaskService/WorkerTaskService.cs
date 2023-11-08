@@ -65,7 +65,7 @@ namespace Sevices.Core.WorkerTaskService
                             _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
                             {
                                 workerTaskId = workerTask.id,
-                                userId = new Guid(assignee)
+                                userId = assignee
                             });
                         }
 

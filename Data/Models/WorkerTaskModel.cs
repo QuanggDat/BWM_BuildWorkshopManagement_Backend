@@ -18,7 +18,7 @@ namespace Data.Models
 
         public ETaskStatus status { get; set; }
         public string description { get; set; } = null!;
-        public List<string> assignees { get; set; } = null!;
+        public List<Guid> assignees { get; set; } = null!;
     }
 
     public class UpdateWorkerTaskModel
