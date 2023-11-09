@@ -62,6 +62,9 @@ namespace Sevices.Core.WorkerTaskService
 
                         foreach (var assignee in model.assignees)
                         {
+                            //var checkWorker = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails)
+                                //.FirstOrDefault(x => x.status == ETaskStatus.InProgress);
+
                             _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
                             {
                                 workerTaskId = workerTask.id,

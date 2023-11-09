@@ -9,8 +9,8 @@ namespace Data.Entities
 {
     public class User : IdentityUser<Guid>
     {
-        public Guid? roleID { get; set; }
-        [ForeignKey("roleID")]
+        public Guid? roleId { get; set; }
+        [ForeignKey("roleId")]
         public virtual Role? Role { get; set; }
 
         public Guid? groupId { get; set; }

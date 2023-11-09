@@ -58,7 +58,7 @@ namespace Sevices.Core.UserService
                     banStatus = false,
                     gender = model.gender,
                     image = model.image,
-                    roleID = role.Id
+                    roleId = role.Id
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
@@ -161,7 +161,7 @@ namespace Sevices.Core.UserService
                     banStatus = false,
                     gender = model.gender,
                     image = model.image,
-                    roleID = role.Id
+                    roleId = role.Id
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
@@ -265,7 +265,7 @@ namespace Sevices.Core.UserService
                     banStatus = false,
                     gender = model.gender,
                     image = model.image,
-                    roleID = role.Id
+                    roleId = role.Id
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
@@ -368,7 +368,7 @@ namespace Sevices.Core.UserService
                     banStatus = false,
                     gender = model.gender,
                     image = model.image,
-                    roleID = role.Id
+                    roleId = role.Id
                 };
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
@@ -681,7 +681,7 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        check.roleID = model.roleId;
+                        check.roleId = model.roleId;
 
                         // Remove all old UserRole
                         var currentUserRole = _dbContext.UserRole

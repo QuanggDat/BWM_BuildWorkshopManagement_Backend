@@ -24,7 +24,7 @@ namespace Sevices.Mapping
 
             // Order Detail
             CreateMap<OrderDetail, OrderDetailModel>().ReverseMap();
-
+            CreateMap< Item, ItemModel> ().ReverseMap();
             //Group
             CreateMap<Group, GroupModel>().ReverseMap();
 
