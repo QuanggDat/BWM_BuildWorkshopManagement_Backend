@@ -35,5 +35,6 @@ namespace Data.Entities
         public string? responseContent { get; set; } = null!;
 
         public virtual List<Resource> Resources { get; set; } = new();
+        public virtual List<Supply> Supplies { get; set; } = new();
     }
 }

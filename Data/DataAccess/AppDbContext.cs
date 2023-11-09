@@ -29,6 +29,7 @@ namespace Data.DataAccess
         public DbSet<Resource> Resource { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<Step> Step { get; set; }
+        public DbSet<Supply> Supply { get; set; }
         public DbSet<Group> Group { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserRole> UserRole { get; set; }

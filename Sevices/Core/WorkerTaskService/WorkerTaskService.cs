@@ -28,7 +28,7 @@ namespace Sevices.Core.WorkerTaskService
             {
                 result.Code = 40;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin bước!";
+                result.ErrorMessage = "Không tìm thấy thông tin bước trong hệ th!";
             }
             else
             {
@@ -47,8 +47,8 @@ namespace Sevices.Core.WorkerTaskService
                         leaderTaskId = model.leaderTaskId,
 
                         stepId = model.stepId,
-                        name = stepTmp.name,
-
+                        priority = model.priority,
+                        name = stepTmp.name,                      
                         startTime = model.startTime,
                         endTime = model.endTime,
                         status = ETaskStatus.New,
@@ -62,14 +62,24 @@ namespace Sevices.Core.WorkerTaskService
 
                         foreach (var assignee in model.assignees)
                         {
-                            //var checkWorker = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails)
-                                //.FirstOrDefault(x => x.status == ETaskStatus.InProgress);
+                            bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                                .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
-                            _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                            if (checkWorkerDetail == true)
                             {
-                                workerTaskId = workerTask.id,
-                                userId = assignee
-                            });
+                                result.Code = 93;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
+                                return result;
+                            }
+                            else
+                            {
+                                _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                                {
+                                    workerTaskId = workerTask.id,
+                                    userId = assignee
+                                });
+                            }                           
                         }
 
                         _dbContext.SaveChanges();
@@ -129,17 +139,30 @@ namespace Sevices.Core.WorkerTaskService
                             if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
                             {
                                 _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
-                            }
+                            }                          
 
                             // Set new woker tasks detail
                             var workerTaskDetails = new List<WorkerTaskDetail>();
                             foreach (var assignee in model.assignees)
                             {
-                                workerTaskDetails.Add(new WorkerTaskDetail
+                                bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                                .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+
+                                if (checkWorkerDetail == true)
                                 {
-                                    workerTaskId = model.id,
-                                    userId = assignee
-                                });
+                                    result.Code = 93;
+                                    result.Succeed = false;
+                                    result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
+                                    return result;
+                                }
+                                else
+                                {
+                                    workerTaskDetails.Add(new WorkerTaskDetail
+                                    {
+                                        workerTaskId = model.id,
+                                        userId = assignee
+                                    });
+                                }                               
                             }
 
                             _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
@@ -165,16 +188,30 @@ namespace Sevices.Core.WorkerTaskService
                         {
                             _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
                         }
+                        _dbContext.SaveChanges();
 
                         // Set new woker tasks detail
                         var workerTaskDetails = new List<WorkerTaskDetail>();
                         foreach (var assignee in model.assignees)
                         {
-                            workerTaskDetails.Add(new WorkerTaskDetail
+                            bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                                .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+
+                            if (checkWorkerDetail == true)
                             {
-                                workerTaskId = model.id,
-                                userId = assignee
-                            });
+                                result.Code = 93;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
+                                return result;
+                            }
+                            else
+                            {
+                                workerTaskDetails.Add(new WorkerTaskDetail
+                                {
+                                    workerTaskId = model.id,
+                                    userId = assignee
+                                });
+                            }
                         }
 
                         _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
@@ -191,6 +228,7 @@ namespace Sevices.Core.WorkerTaskService
 
             return result;
         }
+
         public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -202,7 +240,6 @@ namespace Sevices.Core.WorkerTaskService
                 result.Code = 47;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
-                return result;
             }
             else
             {
@@ -216,9 +253,9 @@ namespace Sevices.Core.WorkerTaskService
                 catch (Exception ex)
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-                return result;
-            }            
+                }               
+            }
+            return result;
         }
 
         public ResultModel Assign(AssignWorkerTaskModel model)
@@ -232,28 +269,41 @@ namespace Sevices.Core.WorkerTaskService
                 result.Code = 48;
                 result.Succeed = false;
                 result.ErrorMessage = "Công nhân đã được thêm vào công việc!";
-                return result;
             }
             else
             {
-                var workerTaskDetail = new WorkerTaskDetail
+                var workerTask = _dbContext.WorkerTask.Find(model.workerTaskId);
+
+                bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                                    .Where(x => x.userId == model.memberId && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > workerTask!.startTime && x.WorkerTask.startTime < workerTask!.startTime).Any();
+
+                if (checkWorkerDetail == true)
                 {
-                    userId = model.memberId,
-                    workerTaskId = model.workerTaskId,
-                };
-                try
-                {
-                    _dbContext.WorkerTaskDetail.Add(workerTaskDetail);
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = workerTaskDetail.id;
+                    result.Code = 93;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
                 }
-                catch (Exception ex)
+                else
                 {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    var workerTaskDetail = new WorkerTaskDetail
+                    {
+                        userId = model.memberId,
+                        workerTaskId = model.workerTaskId,
+                    };
+                    try
+                    {
+                        _dbContext.WorkerTaskDetail.Add(workerTaskDetail);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = workerTaskDetail.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }                   
                 }
-                return result;
-            }         
+            }
+            return result;
         }
 
         public ResultModel UnAssign(AssignWorkerTaskModel model)
@@ -324,8 +374,8 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.WorkerTask.Where(x => x.id == id && x.isDeleted != true)
-                    .FirstOrDefault();
+                var check = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -426,7 +476,6 @@ namespace Sevices.Core.WorkerTaskService
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
-
             return result;         
         }
     }

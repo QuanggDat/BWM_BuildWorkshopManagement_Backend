@@ -361,7 +361,7 @@ namespace Sevices.Core.OrderService
                     _dbContext.Update(order);
                     _dbContext.SaveChanges();
 
-                    result.Data = true;
+                    result.Data = order.id;
                     result.Succeed = true;
                 }
             }

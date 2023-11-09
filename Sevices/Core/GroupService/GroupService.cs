@@ -163,6 +163,47 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
+        public ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
+                if (user == null)
+                {
+                    result.Code = 18;
+                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
+                }
+                else
+                {
+                    var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
+                    if (group == null)
+                    {
+                        result.Code = 20;
+                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
+                    }
+                    else
+                    {
+                        //Update GroupId
+                        user.groupId = null;
+                        _dbContext.User.Update(user);
+
+                        group.member -= 1;
+                        _dbContext.Group.Update(group);
+
+                        _dbContext.SaveChanges();
+                        result.Data = _mapper.Map<GroupModel>(group);
+                        result.Succeed = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel Update(UpdateGroupModel model)
         {
             var result = new ResultModel();
@@ -318,46 +359,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model)
-        {
-            var result = new ResultModel();
-            try
-            {
-                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id);
-                if (user == null)
-                {
-                    result.Code = 18;
-                    result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
-                }
-                else
-                {
-                    var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
-                    if (group == null)
-                    {
-                        result.Code = 20;
-                        result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
-                    }
-                    else
-                    {
-                        //Update GroupId
-                        user.groupId = null;
-                        _dbContext.User.Update(user);
-
-                        group.member -= 1;
-                        _dbContext.Group.Update(group);
-
-                        _dbContext.SaveChanges();
-                        result.Data = _mapper.Map<GroupModel>(group);
-                        result.Succeed = true;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
+        
 
         //Not sure about this yet
         public ResultModel Delete(Guid id)
