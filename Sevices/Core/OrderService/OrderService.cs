@@ -12,6 +12,7 @@ using Serilog;
 using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using SkiaSharp;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -281,6 +282,60 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel Update(UpdateOrderModel model)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var order = _dbContext.Order.FirstOrDefault(x => x.id == model.id);
+                if (order == null)
+                {
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    if (model.startTime != null && DateTime.Compare(model.startTime.Value, DateTime.Now) < 0)
+                    {
+                        result.Code = 69;
+                        result.ErrorMessage = "Ngày giờ bắt đầu phải lớn hơn hoặc bằng hiện tại!";
+                    }
+                    else if (model.endTime != null && model.startTime == null)
+                    {
+                        result.Code = 74;
+                        result.ErrorMessage = "Vui lòng nhập ngày giờ bắt đầu trước khi thêm/sửa ngày kết thúc!";
+                    }
+                    else if(model.endTime != null && model.startTime != null && DateTime.Compare(model.startTime.Value, model.endTime.Value) >= 0)
+                    {
+                        result.Code = 75;
+                        result.ErrorMessage = "Ngày giờ kết thúc phải lớn hơn ngày giờ bắt đầu!";
+                    }
+                    else
+                    {
+                        order.name = model.name;
+                        order.customerName = model.customerName;
+                        order.fileContract = model.fileContract;
+                        order.assignToId = model.assignToId;
+                        order.description = model.description;
+                        order.startTime = model.startTime;
+                        order.endTime = model.endTime;
+
+                        _dbContext.Order.Update(order);
+                        _dbContext.SaveChanges();
+
+                        result.Data = true;
+                        result.Succeed = true;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel ReCalculatePrice(Guid id)
         {
             var result = new ResultModel();
@@ -290,7 +345,7 @@ namespace Sevices.Core.OrderService
                 if (order == null)
                 {
                     result.Code = 35;
-                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
@@ -326,7 +381,7 @@ namespace Sevices.Core.OrderService
                 if (order == null)
                 {
                     result.Code = 35;
-                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
@@ -347,7 +402,7 @@ namespace Sevices.Core.OrderService
                     else if (status == OrderStatus.InProgress)
                     {
                         // order
-                        order.startTime = DateTime.Now;
+                        order.inProgressTime = DateTime.Now;
 
                         // gen task
                         GenerateTaskByOrder(order, userId);
@@ -551,7 +606,7 @@ namespace Sevices.Core.OrderService
                 if (string.IsNullOrWhiteSpace(url))
                 {
                     result.ErrCode = 62;
-                    result.Error = "Vui lòng thêm file báo giá để tạo đơn đặt hàng";
+                    result.Error = "Vui lòng thêm file báo giá để tạo đơn đặt hàng!";
                 }
                 else
                 {
@@ -724,7 +779,7 @@ namespace Sevices.Core.OrderService
                         procedureId = procItem.procedureId,
                         name = listProcedure.FirstOrDefault(x => x.id == procItem.procedureId)?.name ?? "",
                         status = ETaskStatus.New,
-                        isDeleted = false,                   
+                        isDeleted = false,
                         itemName = procItem.Item?.name ?? "",
                         drawingsTechnical = procItem.Item?.drawingsTechnical ?? "",
                         priority = procItem.priority,

@@ -10,6 +10,7 @@ namespace Sevices.Core.OrderService
         ResultModel GetById(Guid id);
         ResultModel GetQuoteMaterialById(Guid id);
         Task<ResultModel> Create(CreateOrderModel model, Guid createdById);
+        ResultModel Update(UpdateOrderModel model);
         ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId);
         Task<FileResultModel> ExportQuoteToPDF(Guid id);
         ResultModel ReCalculatePrice(Guid id);

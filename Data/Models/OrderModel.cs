@@ -16,9 +16,9 @@ namespace Data.Models
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;
         public Guid assignToId { get; set; }
-        public UserModel assign { get; set; } = null!;
+        public UserModel AssignTo { get; set; } = null!;
         public Guid createdById { get; set; }
-        public UserModel createdBy { get; set; } = null!;
+        public UserModel CreatedBy { get; set; } = null!;
         public DateTime createTime { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
@@ -27,6 +27,9 @@ namespace Data.Models
         public DateTime quoteTime { get; set; }
         public double totalPrice { get; set; }
         public DateTime? acceptanceTime { get; set; }
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
+        public DateTime? inProgressTime { get; set; }
     }
 
     public class CreateOrderModel
@@ -39,15 +42,27 @@ namespace Data.Models
         public string description { get; set; } = "";
     }
 
+    public class UpdateOrderModel
+    {
+        public Guid id { get; set; }
+        public string name { get; set; }
+        public string customerName { get; set; }
+        public string fileContract { get; set; }
+        public Guid assignToId { get; set; }
+        public string description { get; set; } = "";
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
+    }
+
     public class QuoteMaterialOrderModel
     {
         public Guid id { get; set; }
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;
         public Guid assignToId { get; set; }
-        public UserModel assign { get; set; } = null!;
+        public UserModel AssignTo { get; set; } = null!;
         public Guid createdById { get; set; }
-        public UserModel createdBy { get; set; } = null!;
+        public UserModel CreatedBy { get; set; } = null!;
         public DateTime createTime { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
@@ -56,6 +71,10 @@ namespace Data.Models
         public DateTime quoteTime { get; set; }
         public double totalPrice { get; set; }
         public DateTime? acceptanceTime { get; set; }
+
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
+        public DateTime? inProgressTime { get; set; }
         public List<QuoteMaterialModel> listQuoteMaterial { get; set; } = new();
     }
 

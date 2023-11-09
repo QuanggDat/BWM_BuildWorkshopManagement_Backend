@@ -18,9 +18,16 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _orderService = orderService;
         }
         [HttpPost]
-        public async Task<ActionResult> Create(CreateOrderModel model)
+        public async Task<IActionResult> Create(CreateOrderModel model)
         {
             var result = await _orderService.Create(model, User.GetId());
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+        [HttpPut]
+        public IActionResult Update(UpdateOrderModel model)
+        {
+            var result =  _orderService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
