@@ -8,7 +8,9 @@ namespace Data.Enums
 {
     public enum ESupplyStatus
     {
-        Missing = 0,
-        Fail = 1,
+        Fail = 0,
+        Missing = 1,
+        AcceptByCustomer = 2,
+        RejectByCustomer = 3,
     }
 }
