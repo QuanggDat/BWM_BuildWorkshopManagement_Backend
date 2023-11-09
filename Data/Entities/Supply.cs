@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,6 +20,8 @@ namespace Data.Entities
 
         public string materialName { get; set; } = null!;
         public int amount { get; set; }
+        public ESupplyStatus status { get; set; }
         public double totalPrice { get; set; }
+        
     }
 }

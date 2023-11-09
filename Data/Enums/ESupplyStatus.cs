@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Enums
 {
-    public enum Supply
+    public enum ESupplyStatus
     {
         Missing = 0,
         Fail = 1,
