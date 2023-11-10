@@ -14,7 +14,6 @@ namespace Data.Models
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
         public ReportStatus reportStatus { get; set; }
-        public DateTime createdDate { get; set; }
         public List<string>? resource { get; set; }
     }
 

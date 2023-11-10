@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231107140917_WorkshopManagementSystem_BWM_V12")]
-    partial class WorkshopManagementSystem_BWM_V12
+    [Migration("20231110091224_WorkshopManagementSystem_BWM_V1")]
+    partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,53 +23,6 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("Data.Entities.Area", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("floorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<double>("price")
-                        .HasColumnType("float");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("floorId");
-
-                    b.ToTable("Area");
-                });
-
-            modelBuilder.Entity("Data.Entities.Floor", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<double>("price")
-                        .HasColumnType("float");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Floor");
-                });
 
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
@@ -211,6 +164,9 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("completedTime")
                         .HasColumnType("datetime2");
 
@@ -230,7 +186,7 @@ namespace Data.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("itemId")
+                    b.Property<Guid?>("itemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("itemName")
@@ -250,7 +206,7 @@ namespace Data.Migrations
                     b.Property<int>("priority")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("procedureId")
+                    b.Property<Guid?>("procedureId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("startTime")
@@ -424,6 +380,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("endTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("fileContract")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -431,6 +390,9 @@ namespace Data.Migrations
                     b.Property<string>("fileQuote")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("inProgressTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -463,9 +425,6 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("areaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
 
@@ -488,8 +447,6 @@ namespace Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("id");
-
-                    b.HasIndex("areaId");
 
                     b.HasIndex("itemId");
 
@@ -684,6 +641,35 @@ namespace Data.Migrations
                     b.ToTable("Step");
                 });
 
+            modelBuilder.Entity("Data.Entities.Supply", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("materialName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("reportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("reportId");
+
+                    b.ToTable("Supply");
+                });
+
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -759,7 +745,7 @@ namespace Data.Migrations
                     b.Property<string>("image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("roleID")
+                    b.Property<Guid?>("roleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("skill")
@@ -777,7 +763,7 @@ namespace Data.Migrations
 
                     b.HasIndex("groupId");
 
-                    b.HasIndex("roleID");
+                    b.HasIndex("roleId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -810,10 +796,6 @@ namespace Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("drawingsTechnical")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("endTime")
@@ -967,15 +949,6 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Area", b =>
-                {
-                    b.HasOne("Data.Entities.Floor", "Floor")
-                        .WithMany("Areas")
-                        .HasForeignKey("floorId");
-
-                    b.Navigation("Floor");
-                });
-
             modelBuilder.Entity("Data.Entities.Item", b =>
                 {
                     b.HasOne("Data.Entities.ItemCategory", "ItemCategory")
@@ -1012,9 +985,7 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("itemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("itemId");
 
                     b.HasOne("Data.Entities.User", "Leader")
                         .WithMany()
@@ -1026,9 +997,7 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.Procedure", "Procedure")
                         .WithMany()
-                        .HasForeignKey("procedureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("procedureId");
 
                     b.Navigation("CreateBy");
 
@@ -1108,12 +1077,6 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("Data.Entities.Area", "area")
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("areaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data.Entities.Item", "Item")
                         .WithMany("OrderDetails")
                         .HasForeignKey("itemId");
@@ -1127,8 +1090,6 @@ namespace Data.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Order");
-
-                    b.Navigation("area");
                 });
 
             modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
@@ -1207,6 +1168,17 @@ namespace Data.Migrations
                     b.Navigation("Report");
                 });
 
+            modelBuilder.Entity("Data.Entities.Supply", b =>
+                {
+                    b.HasOne("Data.Entities.Report", "Report")
+                        .WithMany("Supplies")
+                        .HasForeignKey("reportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.HasOne("Data.Entities.Group", "Group")
@@ -1215,7 +1187,7 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("roleID");
+                        .HasForeignKey("roleId");
 
                     b.Navigation("Group");
 
@@ -1315,16 +1287,6 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Data.Entities.Area", b =>
-                {
-                    b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("Data.Entities.Floor", b =>
-                {
-                    b.Navigation("Areas");
-                });
-
             modelBuilder.Entity("Data.Entities.Group", b =>
                 {
                     b.Navigation("Users");
@@ -1378,6 +1340,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
                     b.Navigation("Resources");
+
+                    b.Navigation("Supplies");
                 });
 
             modelBuilder.Entity("Data.Entities.Step", b =>
