@@ -5,11 +5,12 @@ pipeline {
             steps {
                 sh '''
                     docker version
+                    docker info
                     docker-compose version
                 '''
             }
         }
-        stage('Start container') {
+        stage('Check container') {
             steps {
                 script {
                     try {
@@ -20,7 +21,11 @@ pipeline {
                         echo "Cannot find container workshop-management-system-jama"
                     }
                 }
-                sh 'docker-compose up --build --wait'
+            }
+        }
+        stage('Start container') {
+            steps {
+                sh "docker-compose up --build -d"
                 sh 'docker-compose ps'
             }
         }
