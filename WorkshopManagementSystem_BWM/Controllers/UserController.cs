@@ -52,7 +52,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("CreateWoker")]
+        [HttpPost("[action]")]
         public async Task<ActionResult> CreateWorker([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");

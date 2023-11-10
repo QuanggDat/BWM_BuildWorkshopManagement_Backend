@@ -35,7 +35,7 @@ namespace Sevices.Core.LeaderTaskService
             {
                 result.Code = 38;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin trưởng nhóm!";
+                result.ErrorMessage = "Không tìm thấy thông tin tổ trưởng!";
             }
             else
             {
@@ -158,7 +158,7 @@ namespace Sevices.Core.LeaderTaskService
             {
                 result.Code = 38;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
             }
             else
             {
@@ -237,7 +237,7 @@ namespace Sevices.Core.LeaderTaskService
             {
                 result.Code = 44;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
             }
             else
             {
@@ -267,9 +267,9 @@ namespace Sevices.Core.LeaderTaskService
 
                 if (check == null)
                 {
-                    result.Code = 38;
+                    result.Code = 44;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
                 }
                 else
                 {
@@ -434,9 +434,9 @@ namespace Sevices.Core.LeaderTaskService
             var task = _dbContext.LeaderTask.Find(id);
             if (task == null)
             {
+                result.Code = 44;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
-                return result;
+                result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
             }
             else
             {
@@ -451,9 +451,9 @@ namespace Sevices.Core.LeaderTaskService
                 catch (Exception ex)
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-                return result;
-            }           
+                }                
+            }
+            return result;
         }
 
        #region Comment

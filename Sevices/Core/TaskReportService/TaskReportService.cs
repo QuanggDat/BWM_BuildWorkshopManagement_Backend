@@ -34,7 +34,7 @@ namespace Sevices.Core.ReportService
             {
                 result.Code = 50;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải trưởng nhóm!";
+                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
             }
             else
             {
@@ -46,7 +46,7 @@ namespace Sevices.Core.ReportService
                 {
                     result.Code = 51;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
                 }
                 else
                 {
@@ -134,7 +134,7 @@ namespace Sevices.Core.ReportService
             {
                 result.Code = 50;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải trưởng nhóm!";
+                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
             }
             else
             {
@@ -146,7 +146,7 @@ namespace Sevices.Core.ReportService
                 {
                     result.Code = 51;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
                 }
 
                 else
@@ -213,7 +213,7 @@ namespace Sevices.Core.ReportService
             {
                 result.Code = 50;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải trưởng nhóm!";
+                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
             }
             else
             {
@@ -225,7 +225,7 @@ namespace Sevices.Core.ReportService
                 {
                     result.Code = 51;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc trưởng nhóm!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
                 }
                 else
                 {

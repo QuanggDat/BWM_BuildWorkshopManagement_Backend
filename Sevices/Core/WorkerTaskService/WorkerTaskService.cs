@@ -28,7 +28,7 @@ namespace Sevices.Core.WorkerTaskService
             {
                 result.Code = 40;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin bước trong hệ th!";
+                result.ErrorMessage = "Không tìm thấy thông tin bước!";
             }
             else
             {
@@ -146,7 +146,7 @@ namespace Sevices.Core.WorkerTaskService
                             foreach (var assignee in model.assignees)
                             {
                                 bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                .Where(x => x.id != model.id && x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                                .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                                 if (checkWorkerDetail == true)
                                 {

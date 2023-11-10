@@ -5,11 +5,19 @@ pipeline {
             steps {
                 sh '''
                     docker version
+<<<<<<< HEAD
+=======
+                    docker info
+>>>>>>> f7b28846f66237bade012e7ef8dbebae8d84c3ec
                     docker-compose version
                 '''
             }
         }
+<<<<<<< HEAD
         stage('Start container') {
+=======
+        stage('Check container') {
+>>>>>>> f7b28846f66237bade012e7ef8dbebae8d84c3ec
             steps {
                 script {
                     try {
@@ -20,7 +28,15 @@ pipeline {
                         echo "Cannot find container workshop-management-system-jama"
                     }
                 }
+<<<<<<< HEAD
                 sh 'docker-compose up --build --wait'
+=======
+            }
+        }
+        stage('Start container') {
+            steps {
+                sh "docker-compose up --build -d"
+>>>>>>> f7b28846f66237bade012e7ef8dbebae8d84c3ec
                 sh 'docker-compose ps'
             }
         }
