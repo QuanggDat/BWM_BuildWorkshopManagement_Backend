@@ -1,7 +1,16 @@
 pipeline {
     agent any
     stages {
-        stage('Start container') {
+        stage("Verify tooling") {
+            steps {
+                sh '''
+                    docker version
+                    docker info
+                    docker-compose version
+                '''
+            }
+        }
+        stage('Check container') {
             steps {
                 script {
                     try {
@@ -12,6 +21,10 @@ pipeline {
                         echo "Cannot find container workshop-management-system-jama"
                     }
                 }
+            }
+        }
+        stage('Start container') {
+            steps {
                 sh 'docker-compose up --build --wait'
                 sh 'docker-compose ps'
             }
