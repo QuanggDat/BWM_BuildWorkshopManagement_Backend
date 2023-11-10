@@ -1,6 +1,15 @@
 pipeline {
     agent any
     stages {
+        stage("Verify tooling") {
+            steps {
+                sh '''
+                    docker version
+                    docker info
+                    docker-compose version
+                '''
+            }
+        }
         stage('Check container') {
             steps {
                 script {
@@ -16,7 +25,7 @@ pipeline {
         }
         stage('Start container') {
             steps {
-                sh 'docker-compose up --build -d --no-color --wait'
+                sh 'docker-compose up -d --build --no-color --wait'
                 sh 'docker-compose ps'
             }
         }
