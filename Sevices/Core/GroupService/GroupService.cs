@@ -357,9 +357,7 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-
-        
+        }        
 
         //Not sure about this yet
         public ResultModel Delete(Guid id)

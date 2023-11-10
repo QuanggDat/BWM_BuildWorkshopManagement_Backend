@@ -146,7 +146,7 @@ namespace Sevices.Core.WorkerTaskService
                             foreach (var assignee in model.assignees)
                             {
                                 bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                                .Where(x => x.id != model.id && x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                                 if (checkWorkerDetail == true)
                                 {
@@ -188,14 +188,13 @@ namespace Sevices.Core.WorkerTaskService
                         {
                             _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
                         }
-                        _dbContext.SaveChanges();
 
                         // Set new woker tasks detail
                         var workerTaskDetails = new List<WorkerTaskDetail>();
                         foreach (var assignee in model.assignees)
                         {
                             bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                                .Where(x  => x.id != model.id && x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                             if (checkWorkerDetail == true)
                             {
