@@ -781,7 +781,7 @@ namespace Sevices.Core.UserService
             resultModel.Succeed = false;
             try
             {
-                var data = _dbContext.User.Where(s => s.Id == id && s.banStatus != true);
+                var data = _dbContext.User.Where(s => s.Id == id);
                 if (data != null)
                 {
 

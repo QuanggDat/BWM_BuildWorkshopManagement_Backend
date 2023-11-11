@@ -75,7 +75,9 @@ namespace Sevices.Core.ItemService
                     if (string.IsNullOrEmpty(model.image))
                     {
                         model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                    }                  
+                    }
+
+                    _dbContext.Item.Add(item);
 
                     foreach (var procedure in model.listProcedureId)
                     {                                               
@@ -108,8 +110,7 @@ namespace Sevices.Core.ItemService
                             item.price += material.quantity * _material.price;
                         }                   
                     }
-
-                    _dbContext.Item.Add(item);
+                
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = item.id;
@@ -195,6 +196,8 @@ namespace Sevices.Core.ItemService
                             _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
                         }
 
+                        // return price = 0
+                        check.price = 0;
                         // Set new Material Item
                         var materialItems = new List<ItemMaterial>();
                         foreach (var material in model.listMaterial)
@@ -220,7 +223,7 @@ namespace Sevices.Core.ItemService
                             }                         
                         }
                       
-                        _dbContext.ProcedureItem.AddRange(procedureItems);
+                         _dbContext.ProcedureItem.AddRange(procedureItems);
                          _dbContext.ItemMaterial.AddRange(materialItems);
 
                         _dbContext.SaveChanges();

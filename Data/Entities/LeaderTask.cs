@@ -29,8 +29,8 @@ namespace Data.Entities
         [ForeignKey("itemId")]
         public Guid? itemId { get; set; }
         public virtual Item Item { get; set; } = null!;
-        public string itemName { get; set; } = null!;
-        public string drawingsTechnical { get; set; } = null!;
+        public string? itemName { get; set; } 
+        public string? drawingsTechnical { get; set; } 
 
         [ForeignKey("procedureId")]
         public Guid? procedureId { get; set; }
