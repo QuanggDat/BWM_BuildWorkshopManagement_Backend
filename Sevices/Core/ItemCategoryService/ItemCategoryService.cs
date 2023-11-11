@@ -135,7 +135,7 @@ namespace Sevices.Core.ItemCategoryService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listItemCategoryPaging.Count
+                    Total = listItemCategory.Count
                 };
                 result.Succeed = true;
 

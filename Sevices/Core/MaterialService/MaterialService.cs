@@ -280,7 +280,7 @@ namespace Sevices.Core.MaterialService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listMaterialPaging.Count
+                    Total = listMaterial.Count
                 };
                 result.Succeed = true;
 
@@ -341,7 +341,7 @@ namespace Sevices.Core.MaterialService
                     result.Data = new PagingModel()
                     {
                         Data = list,
-                        Total = listMaterialPaging.Count
+                        Total = listMaterial.Count
                     };
                     result.Succeed = true;
                 }               
@@ -352,7 +352,7 @@ namespace Sevices.Core.MaterialService
             }
             return result;
         }
-        /*
+        
         public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
@@ -369,11 +369,12 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
-                    var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material)
-                        .Where(x => listItemId.Contains(x.itemId)).ToList();
+                    var listItemId = order.OrderDetails.Select(x => x.itemId).ToList();
 
-                    var listMaterial = _dbContext.Material.Where(x => x.materialCategoryId == materialId && x.isDeleted == false)
+                    var listMaterialId = _dbContext.ItemMaterial.Include(x => x.Material)
+                        .Where(x => listItemId.Contains(x.itemId)).Select(x => x.materialId).Distinct().ToList();
+
+                    var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false)
                    .OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))
@@ -406,7 +407,7 @@ namespace Sevices.Core.MaterialService
                     result.Data = new PagingModel()
                     {
                         Data = list,
-                        Total = listMaterialPaging.Count
+                        Total = listMaterial.Count
                     };
                     result.Succeed = true;
                 }
@@ -417,6 +418,6 @@ namespace Sevices.Core.MaterialService
             }
             return result;
         }
-        */
+        
     }
 }

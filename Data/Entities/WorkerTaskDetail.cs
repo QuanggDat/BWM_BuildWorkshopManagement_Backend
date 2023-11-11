@@ -19,10 +19,7 @@ namespace Data.Entities
 
         [ForeignKey("userId")]
         public Guid userId { get; set; }
-        public virtual User User { get; set; } = null!;
-
-        public int? productCompleted { get; set; }
-        public int? productFailed { get; set; }
+        public virtual User User { get; set; } = null!;        
 
     }
 }

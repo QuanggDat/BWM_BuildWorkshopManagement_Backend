@@ -82,6 +82,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult GetAll()
+        {
+            var result = _userService.GetAll();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("{phoneNumber}")]
         public IActionResult GetByEmail(string phoneNumber)
         {
@@ -112,23 +120,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _userService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult BanUser(Guid id)
-        {
-            var result = _userService.BannedUser(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{id}")]
-        public IActionResult UnBanUser(Guid id)
-        {
-            var result = _userService.UnBannedUser(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
+        }        
 
         [HttpPut("[action]")]
         public IActionResult UpdatePhone(UserUpdatePhoneModel model)
@@ -152,6 +144,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _userService.ChangePassword(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }       
+        }
+
+        [HttpDelete("[action]/{id}")]
+        public IActionResult BanUser(Guid id)
+        {
+            var result = _userService.BannedUser(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpDelete("[action]/{id}")]
+        public IActionResult UnBanUser(Guid id)
+        {
+            var result = _userService.UnBannedUser(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
     }
 }

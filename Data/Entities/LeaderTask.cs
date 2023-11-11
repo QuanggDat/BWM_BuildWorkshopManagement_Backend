@@ -42,6 +42,9 @@ namespace Data.Entities
         public DateTime? completedTime { get; set; }
 
         public int amount { get; set; }
+        public int? productCompleted { get; set; }
+        public int? productFailed { get; set; }
+
         public int priority { get; set; }
         public ETaskStatus status { get; set; }
         public string? description { get; set; }

@@ -746,6 +746,31 @@ namespace Sevices.Core.UserService
             return result;
         }
 
+        public ResultModel GetAll()
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            try
+            {
+                var listUser = _dbContext.User.Where(x => x.banStatus != true)
+                   .OrderBy(x => x.fullName).ToList();                           
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByPhoneNumber(string phoneNumber)
         {
             ResultModel resultModel = new ResultModel();

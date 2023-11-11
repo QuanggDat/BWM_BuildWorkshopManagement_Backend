@@ -110,7 +110,7 @@ namespace Sevices.Core.StepService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listStepPaging.Count
+                    Total = listStep.Count
                 };
                 result.Succeed = true;
 

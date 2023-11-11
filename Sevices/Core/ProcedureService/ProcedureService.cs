@@ -157,7 +157,7 @@ namespace Sevices.Core.ProcedureService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listProcedurePaging.Count
+                    Total = listProcedure.Count
                 };
                 result.Succeed = true;
 

@@ -309,7 +309,7 @@ namespace Sevices.Core.ItemService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listItemPaging.Count
+                    Total = listItem.Count
                 };
                 result.Succeed = true;
 
@@ -420,7 +420,7 @@ namespace Sevices.Core.ItemService
                     result.Data = new PagingModel()
                     {
                         Data = list,
-                        Total = listItemPaging.Count
+                        Total = listItem.Count
                     };
                     result.Succeed = true;
 
