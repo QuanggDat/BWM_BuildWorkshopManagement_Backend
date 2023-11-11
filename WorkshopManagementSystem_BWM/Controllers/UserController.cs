@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
         
         [HttpPost("[action]")]
-        public async Task<ActionResult> CeatedForeman([FromBody] UserCreateModel model)
+        public async Task<ActionResult> CreateForeman([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
@@ -41,7 +41,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CeatedLeader([FromBody] UserCreateModel model)
+        public async Task<ActionResult> CreateLeader([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
@@ -82,14 +82,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetAll()
-        {
-            var result = _userService.GetAll();
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
-
         [HttpGet("{phoneNumber}")]
         public IActionResult GetByEmail(string phoneNumber)
         {
@@ -106,10 +98,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{id}")]
-        public IActionResult GetUserRole(Guid id)
+        [HttpGet("[action]")]
+        public IActionResult GetRole()
         {
-            var result = _userService.GetUserRole(id);
+            var result = _userService.GetRole();
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -146,7 +138,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]/{id}")]
+        [HttpPost("[action]/{id}")]
         public IActionResult BanUser(Guid id)
         {
             var result = _userService.BannedUser(id);
@@ -154,7 +146,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]/{id}")]
+        [HttpPost("[action]/{id}")]
         public IActionResult UnBanUser(Guid id)
         {
             var result = _userService.UnBannedUser(id);

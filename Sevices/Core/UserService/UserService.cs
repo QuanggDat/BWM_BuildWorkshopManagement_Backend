@@ -746,30 +746,6 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetAll()
-        {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
-
-            try
-            {
-                var listUser = _dbContext.User.Where(x => x.banStatus != true)
-                   .OrderBy(x => x.fullName).ToList();                           
-
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<UserModel>>(listUser),
-                    Total = listUser.Count
-                };
-                result.Succeed = true;
-            }
-
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
 
         public ResultModel GetByPhoneNumber(string phoneNumber)
         {
@@ -827,34 +803,32 @@ namespace Sevices.Core.UserService
             return resultModel;
         }
 
-        public ResultModel GetUserRole(Guid id)
+        public ResultModel GetRole()
         {
             ResultModel resultModel = new ResultModel();
             try
             {
-                var role = _dbContext.UserRoles.Where(s => s.UserId == id).FirstOrDefault();
-                if (role != null)
-                {
-                    var data = _dbContext.Role.Where(s => s.Id == role.RoleId).FirstOrDefault();
+                var role = _dbContext.Role.ToList();
 
-                    if (data != null)
-                    {
-                        resultModel.Data = data;
-                        resultModel.Succeed = true;
-                    }
-                    else
-                    {
-                        resultModel.Code = 11;
-                        resultModel.ErrorMessage = "Không tìm thấy thông tin vai trò người dùng !";
-                        resultModel.Succeed = false;
-                    }
-                }
-                else
+                var list = new List<RoleModel>();
+                foreach (var item in role)
                 {
-                    resultModel.Code = 12;
-                    resultModel.ErrorMessage = "Không tìm thấy thông tin UserRole !";
-                    resultModel.Succeed = false;
+
+                    var tmp = new RoleModel
+                    {
+                        id = item.Id,
+                        name = item.Name,
+                    };
+                    list.Add(tmp);
                 }
+
+                resultModel.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = list.Count
+                };                          
+                resultModel.Succeed = true;
+
             }
             catch (Exception ex)
             {

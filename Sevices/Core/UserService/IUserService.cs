@@ -19,10 +19,9 @@ namespace Sevices.Core.UserService
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
-        ResultModel GetAll();
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetById(Guid id);
-        ResultModel GetUserRole(Guid id);
+        ResultModel GetRole();
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
 

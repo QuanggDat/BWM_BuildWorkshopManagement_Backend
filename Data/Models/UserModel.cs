@@ -67,6 +67,12 @@ namespace Data.Models
 
     }
 
+    public class RoleModel
+    {
+        public Guid id { get; set; }
+        public string name { get; set; } = null!;
+    }
+
     public class UserUpdateUserRoleModel
     {
         public Guid userId { get; set; }
