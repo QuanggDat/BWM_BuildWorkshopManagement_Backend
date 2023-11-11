@@ -56,29 +56,17 @@ namespace Data.Models
 
     public class QuoteMaterialOrderModel
     {
-        public Guid id { get; set; }
-        public string name { get; set; } = null!;
-        public string customerName { get; set; } = null!;
-        public Guid assignToId { get; set; }
-        public UserModel AssignTo { get; set; } = null!;
-        public Guid createdById { get; set; }
-        public UserModel CreatedBy { get; set; } = null!;
-        public DateTime createTime { get; set; }
-        public string? description { get; set; } = null!;
-        public OrderStatus status { get; set; }
-        public string fileContract { get; set; } = null!;
-        public string fileQuote { get; set; } = null!;
-        public DateTime quoteTime { get; set; }
-        public double totalPrice { get; set; }
-        public DateTime? acceptanceTime { get; set; }
+        public Guid orderId { get; set; }
 
-        public DateTime? startTime { get; set; }
-        public DateTime? endTime { get; set; }
-        public DateTime? inProgressTime { get; set; }
-        public List<QuoteMaterialModel> listQuoteMaterial { get; set; } = new();
+        public double totalPriceOrder { get; set; } = 0;
+        public List<QuoteMaterialDetailModel> listFromOrder { get; set; } = new();
+        public double totalPriceSupplyDamage { get; set; } = 0;
+        public List<QuoteMaterialDetailModel> listFromSupplyDamage { get; set; } = new();
+
+        public double percentDamage { get; set; } = 0;
     }
 
-    public class QuoteMaterialModel
+    public class QuoteMaterialDetailModel
     {
         public Guid materialId { get; set; }
         public string? name { get; set; }

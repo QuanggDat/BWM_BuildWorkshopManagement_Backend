@@ -18,7 +18,7 @@ namespace Sevices.Core.OrderReportService
             _notificationService = notificationService;
         }
 
-        public ResultModel Create (Guid reporterId, CreateOrderReportModel model)
+        public ResultModel Create(Guid reporterId, CreateOrderReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -32,9 +32,7 @@ namespace Sevices.Core.OrderReportService
             }
             else
             {
-                var order = _dbContext.Order
-                .Where(x => x.id == model.orderId)
-                .SingleOrDefault();
+                var order = _dbContext.Order.Where(x => x.id == model.orderId).SingleOrDefault();
                 if (order == null)
                 {
                     result.Code = 57;
@@ -47,7 +45,7 @@ namespace Sevices.Core.OrderReportService
                     {
                         result.Code = 58;
                         result.Succeed = false;
-                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";                        
+                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                     }
                     else
                     {
@@ -61,7 +59,7 @@ namespace Sevices.Core.OrderReportService
                             createdDate = DateTime.Now,
                             reportType = ReportType.OrderReport
                         };
-                       
+
                         try
                         {
                             _dbContext.Report.Add(report);
@@ -78,7 +76,30 @@ namespace Sevices.Core.OrderReportService
                                 }
                             }
 
-                            _dbContext.Report.Add(report);
+                            if (model.listSupply.Any())
+                            {
+                                var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+                                var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
+
+                                var listSupply = new List<Supply>();
+                                foreach (var supply in model.listSupply)
+                                {
+                                    var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
+                                    var matePrice = mate != null ? mate.price : 0;
+                                    var newSupply = new Supply()
+                                    {
+                                        reportId = report.id,
+                                        materialId = supply.materialId,
+                                        amount = supply.amount,
+                                        price = matePrice,
+                                        totalPrice = matePrice * supply.amount,
+                                        status = model.supplyStatus,
+                                    };
+                                    listSupply.Add(newSupply);
+                                }
+                                _dbContext.Supply.AddRange(listSupply);
+                            }
+
                             _dbContext.SaveChanges();
                             result.Succeed = true;
                             result.Data = report.id;
@@ -88,12 +109,12 @@ namespace Sevices.Core.OrderReportService
                         {
                             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
-                    }                 
-                }          
+                    }
+                }
             }
             return result;
         }
-        
+
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -173,7 +194,7 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
-        public ResultModel GetByOrderId (Guid orderId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
@@ -181,7 +202,7 @@ namespace Sevices.Core.OrderReportService
                 .Where(x => x.orderId == orderId).ToList();
 
             try
-            {               
+            {
                 if (!string.IsNullOrEmpty(search))
                 {
                     listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
@@ -223,7 +244,7 @@ namespace Sevices.Core.OrderReportService
             var listOrderReport = _dbContext.Report
                 .Where(x => x.reportType == ReportType.OrderReport).ToList();
             try
-            {               
+            {
                 if (!string.IsNullOrEmpty(search))
                 {
                     listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();

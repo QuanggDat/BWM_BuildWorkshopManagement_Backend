@@ -111,6 +111,10 @@ namespace Sevices.Core.OrderService
         public ResultModel GetQuoteMaterialById(Guid id)
         {
             var result = new ResultModel();
+            var listStatusDamage = new List<ESupplyStatus>() {
+                ESupplyStatus.Fail,
+                ESupplyStatus.RejectByCustomer,
+            };
             try
             {
                 var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
@@ -121,11 +125,11 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
-                    var res = _mapper.Map<QuoteMaterialOrderModel>(order);
+                    // get from order
                     var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
                     var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material).Where(x => listItemId.Contains(x.itemId)).ToList();
 
-                    var dict = new Dictionary<Guid, QuoteMaterialModel>();
+                    var dict = new Dictionary<Guid, QuoteMaterialDetailModel>();
                     foreach (var itemMate in listItemMaterial)
                     {
                         if (dict.ContainsKey(itemMate.materialId))
@@ -135,7 +139,7 @@ namespace Sevices.Core.OrderService
                         }
                         else
                         {
-                            var quoteMaterialModel = new QuoteMaterialModel()
+                            var quoteMaterialModel = new QuoteMaterialDetailModel()
                             {
                                 materialId = itemMate.materialId,
                                 name = itemMate.Material.name,
@@ -148,8 +152,42 @@ namespace Sevices.Core.OrderService
                         }
                     }
 
-                    res.listQuoteMaterial = dict.Values.ToList();
-                    result.Data = res;
+                    // get from supply
+                    var listReportByOrder = _dbContext.Report.Where(x => x.orderId == order.id).ToList();
+                    var listReportId = listReportByOrder.Select(x => x.id).ToList();
+
+                    var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material)
+                                                                    .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status))
+                                                                    .Select(x => new QuoteMaterialDetailModel()
+                                                                    {
+                                                                        materialId = x.materialId,
+                                                                        name = x.Material.name,
+                                                                        sku = x.Material.sku,
+                                                                        quantity = x.amount,
+                                                                        price = x.price,
+                                                                        totalPrice = x.totalPrice,
+                                                                    }).ToList();
+
+                    double totalPriceSupplyDamage = listSupplyDamageByReport.Sum(x => x.totalPrice);
+
+                    double percentDamage = 0;
+                    if (order.totalPrice > 0)
+                    {
+                        percentDamage = totalPriceSupplyDamage / order.totalPrice * 100;
+                    }
+
+                    result.Data = new QuoteMaterialOrderModel()
+                    {
+                        orderId = order.id,
+
+                        totalPriceOrder = order.totalPrice,
+                        listFromOrder = dict.Values.ToList(),
+
+                        totalPriceSupplyDamage = totalPriceSupplyDamage,
+                        listFromSupplyDamage = listSupplyDamageByReport,
+
+                        percentDamage = percentDamage
+                    };
                     result.Succeed = true;
                 }
             }
@@ -305,7 +343,7 @@ namespace Sevices.Core.OrderService
                         result.Code = 74;
                         result.ErrorMessage = "Vui lòng nhập ngày giờ bắt đầu trước khi thêm/sửa ngày kết thúc!";
                     }
-                    else if(model.endTime != null && model.startTime != null && DateTime.Compare(model.startTime.Value, model.endTime.Value) >= 0)
+                    else if (model.endTime != null && model.startTime != null && DateTime.Compare(model.startTime.Value, model.endTime.Value) >= 0)
                     {
                         result.Code = 75;
                         result.ErrorMessage = "Ngày giờ kết thúc phải lớn hơn ngày giờ bắt đầu!";

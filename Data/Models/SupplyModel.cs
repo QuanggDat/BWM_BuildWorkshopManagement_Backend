@@ -1,26 +1,22 @@
-﻿using Data.Enums;
+﻿using Data.Entities;
+using Data.Enums;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Entities
+namespace Data.Models
 {
-    public class Supply
+    public class SupplyModel
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
-        [ForeignKey("reportId")]
         public Guid reportId { get; set; }
-        public Report Report { get; set; } = null!;
 
-        [ForeignKey("materialId")]
         public Guid materialId { get; set; }
-        public Material Material { get; set; } = null!;
 
         public int amount { get; set; }
         public double price { get; set; }
