@@ -28,7 +28,7 @@ namespace Data.Models
 
     public class CreateAcceptanceReportModel
     {
-        public Guid? leaderTaskId { get; set; }
+        public Guid? acceptanceTaskId { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
         public DateTime createdDate { get; set; }

@@ -248,18 +248,18 @@ namespace Sevices.Core.MaterialService
 
             try
             {
-                var listMaterialCategory = _dbContext.Material.Where(x => x.isDeleted == false)
+                var listMaterial = _dbContext.Material.Where(x => x.isDeleted == false)
                    .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listMaterialCategory = listMaterialCategory.Where(x => x.name.Contains(search)).ToList();
+                    listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
                 }
 
-                var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 var list = new List<MaterialModel>();
-                foreach (var item in listMaterialCategoryPaging)
+                foreach (var item in listMaterialPaging)
                 {               
                     var tmp = new MaterialModel
                     {
@@ -280,7 +280,7 @@ namespace Sevices.Core.MaterialService
                 result.Data = new PagingModel()
                 {
                     Data = list,
-                    Total = listMaterialCategoryPaging.Count
+                    Total = listMaterialPaging.Count
                 };
                 result.Succeed = true;
 
@@ -308,18 +308,18 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var listMaterialCategory = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
+                    var listMaterial = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
                    .OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listMaterialCategory = listMaterialCategory.Where(x => x.name.Contains(search)).ToList();
+                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
                     }
 
-                    var listMaterialCategoryPaging = listMaterialCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                    var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                     var list = new List<MaterialModel>();
-                    foreach (var item in listMaterialCategoryPaging)
+                    foreach (var item in listMaterialPaging)
                     {
                                             
                         var tmp = new MaterialModel
@@ -341,7 +341,7 @@ namespace Sevices.Core.MaterialService
                     result.Data = new PagingModel()
                     {
                         Data = list,
-                        Total = listMaterialCategoryPaging.Count
+                        Total = listMaterialPaging.Count
                     };
                     result.Succeed = true;
                 }               
@@ -352,5 +352,71 @@ namespace Sevices.Core.MaterialService
             }
             return result;
         }
+        /*
+        public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var order = _dbContext.Order.Include(x => x.OrderDetails).Where(x => x.id == orderId).FirstOrDefault();
+
+                if (order == null)
+                {
+                    result.Code = 97;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
+                    var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material)
+                        .Where(x => listItemId.Contains(x.itemId)).ToList();
+
+                    var listMaterial = _dbContext.Material.Where(x => x.materialCategoryId == materialId && x.isDeleted == false)
+                   .OrderBy(x => x.name).ToList();
+
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                    }
+
+                    var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<MaterialModel>();
+                    foreach (var item in listMaterialPaging)
+                    {
+
+                        var tmp = new MaterialModel
+                        {
+                            id = item.id,
+                            materialCategoryId = item.materialCategoryId,
+                            name = item.name,
+                            image = item.image,
+                            color = item.color,
+                            supplier = item.supplier,
+                            thickness = item.thickness,
+                            unit = item.unit,
+                            sku = item.sku,
+                            importPlace = item.importPlace,
+                            price = item.price,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listMaterialPaging.Count
+                    };
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+        */
     }
 }

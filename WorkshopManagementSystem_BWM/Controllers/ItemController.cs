@@ -128,11 +128,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.description),
                     $"{model.description} không được để trống !");
             }
-            if (model.price <= 0)
-            {
-                ModelState.AddModelError(nameof(model.price),
-                    $"{model.price} nhỏ hơn hoặc bằng 0 !");
-            }
             if (ModelState.ErrorCount > 0)
             {
                 return false;
@@ -193,11 +188,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.description),
                     $"{model.description} không được để trống !");
             }
-            if (model.price <= 0)
-            {
-                ModelState.AddModelError(nameof(model.price),
-                    $"{model.price} nhỏ hơn hoặc bằng 0 !");
-            }   
             if (ModelState.ErrorCount > 0)
             {
                 return false;

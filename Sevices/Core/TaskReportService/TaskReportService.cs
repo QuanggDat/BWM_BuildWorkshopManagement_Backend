@@ -39,18 +39,18 @@ namespace Sevices.Core.ReportService
             else
             {
                 var leaderTask = _dbContext.LeaderTask
-                .Where(x => x.id == model.leaderTaskId)
+                .Where(x => x.id == model.acceptanceTaskId && x.name == "Công việc nghiệm thu")
                 .SingleOrDefault();
 
                 if (leaderTask == null)
                 {
                     result.Code = 51;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc nghiệm thu!";
                 }
                 else
                 {
-                    var checkReport = _dbContext.Report.Any(x => x.leaderTaskId == model.leaderTaskId && x.reportType == ReportType.AcceptanceReport);
+                    var checkReport = _dbContext.Report.Any(x => x.leaderTaskId == model.acceptanceTaskId && x.reportType == ReportType.AcceptanceReport);
                     var canSendReport = CanSendProgressTaskReport(leaderTask);
                     if (!canSendReport)
                     {
@@ -70,7 +70,7 @@ namespace Sevices.Core.ReportService
                         {
                             var report = new Report
                             {
-                                leaderTaskId = model.leaderTaskId,
+                                leaderTaskId = model.acceptanceTaskId,
                                 reporterId = reporterId,
                                 title = model.title,
                                 content = model.content,

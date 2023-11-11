@@ -119,7 +119,7 @@ namespace Sevices.Core.LeaderTaskService
                                                 startTime = model.startTime,
                                                 endTime = model.endTime,
                                                 description = model.description,
-                                                status = 0,
+                                                status = ETaskStatus.New,
                                                 isDeleted = false
                                             };
 
@@ -142,6 +142,87 @@ namespace Sevices.Core.LeaderTaskService
                         }
                     }
                 }
+            }
+            return result;
+        }
+
+        public ResultModel CreateAcceptanceTask(Guid createById, CreateAcceptanceTaskModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var leaderTmp = _dbContext.User.Find(model.leaderId);
+            if (leaderTmp == null)
+            {
+                result.Code = 38;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin tổ trưởng!";
+            }
+            else
+            {
+                var orderTmp = _dbContext.Order.Find(model.orderId);
+                if (orderTmp == null)
+                {
+                    result.Code = 39;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
+                    if (check != null)
+                    {
+                        result.Code = 41;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Công việc đã được tạo!";
+                    }
+                    else
+                    {
+                        if (orderTmp.status != OrderStatus.InProgress)
+                        {
+                            result.Code = 42;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Đơn hàng đang không tiến hành!";
+                        }
+                        else
+                        {
+                            if (model.startTime >= model.endTime)
+                            {
+                                result.Code = 43;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                            }
+                            else
+                            {
+                                var leaderTask = new LeaderTask
+                                {
+                                    createById = createById,
+                                    leaderId = model.leaderId,
+                                    orderId = model.orderId,
+                                    name = "Công việc nghiệm thu",
+                                    startTime = model.startTime,
+                                    endTime = model.endTime,
+                                    description = model.description,
+                                    status = ETaskStatus.New,
+                                    isDeleted = false
+                                };
+
+                                try
+                                {
+                                    _dbContext.LeaderTask.Add(leaderTask);
+                                    _dbContext.SaveChanges();
+                                    result.Succeed = true;
+                                    result.Data = leaderTask.id;
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                }
+                            }
+                        }    
+                    }
+                }                                      
+                        
             }
             return result;
         }
@@ -456,7 +537,9 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
-       #region Comment
+        
+
+        #region Comment
         /*
          public async Task<List<LeaderTaskModel>> GetByLeaderId(Guid leaderId)
         {

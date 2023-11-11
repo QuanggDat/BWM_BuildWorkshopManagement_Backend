@@ -21,11 +21,13 @@ namespace Sevices.Core.OrderDetailService
             var result = new ResultModel();
             try
             {
-                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId).Include(x => x.Item)
-                                                        .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId).Include(x => x.Item).ToList();
+
+                var listOrderDetailPaging = listOrderDetail.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<OrderDetailModel>>(listOrderDetail),
+                    Data = _mapper.Map<List<OrderDetailModel>>(listOrderDetailPaging),
                     Total = listOrderDetail.Count
                 };
                 result.Succeed = true;

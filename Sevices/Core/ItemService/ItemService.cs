@@ -48,12 +48,7 @@ namespace Sevices.Core.ItemService
 
                 }
                 else
-                {
-                    if (string.IsNullOrEmpty(model.image))
-                    {
-                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                    }
-
+                {                   
                     var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
                     var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
                     var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
@@ -73,13 +68,14 @@ namespace Sevices.Core.ItemService
                         drawingsTechnical = model.drawingsTechnical,
                         drawings2D = model.drawings2D,
                         drawings3D = model.drawings3D,
-                        description = model.description,
-                        price = model.price,
+                        description = model.description,                       
                         isDeleted = false
                     };
 
-
-                    _dbContext.Item.Add(item);
+                    if (string.IsNullOrEmpty(model.image))
+                    {
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                    }                  
 
                     foreach (var procedure in model.listProcedureId)
                     {                                               
@@ -109,9 +105,11 @@ namespace Sevices.Core.ItemService
                                 quantity = material.quantity,
                                 totalPrice = material.quantity * _material.price
                             });
+                            item.price += material.quantity * _material.price;
                         }                   
                     }
 
+                    _dbContext.Item.Add(item);
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = item.id;
@@ -150,12 +148,7 @@ namespace Sevices.Core.ItemService
 
                     }
                     else
-                    {
-                        if (string.IsNullOrEmpty(model.image))
-                        {
-                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                        }
-
+                    {                      
                         check.name = model.name;
                         check.image = model.image;
                         check.length = model.length;
@@ -166,8 +159,12 @@ namespace Sevices.Core.ItemService
                         check.drawingsTechnical = model.drawingsTechnical;
                         check.drawings2D = model.drawings2D;
                         check.drawings3D = model.drawings3D;
-                        check.description = model.description;
-                        check.price = model.price;
+                        check.description = model.description;                      
+
+                        if (string.IsNullOrEmpty(model.image))
+                        {
+                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        }
 
                         // Remove all old Procedure Item
                         var currentProcedureItems =  _dbContext.ProcedureItem
@@ -219,10 +216,11 @@ namespace Sevices.Core.ItemService
                                     quantity = material.quantity,
                                     totalPrice = material.quantity * _material!.price
                                 });
+                                check.price += material.quantity * _material.price;
                             }                         
                         }
-
-                         _dbContext.ProcedureItem.AddRange(procedureItems);
+                      
+                        _dbContext.ProcedureItem.AddRange(procedureItems);
                          _dbContext.ItemMaterial.AddRange(materialItems);
 
                         _dbContext.SaveChanges();

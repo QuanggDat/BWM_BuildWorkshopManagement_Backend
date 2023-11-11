@@ -41,7 +41,6 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public double price { get; set; }
         public List<Guid> listProcedureId { get; set; } = null!;
         public List<AddMaterial> listMaterial { get; set; } = null!;
     }
@@ -67,7 +66,6 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public double price { get; set; }
         public List<Guid> listProcedureId { get; set; } = null!;
         public List<AddMaterial> listMaterial { get; set; } = null!;
     }

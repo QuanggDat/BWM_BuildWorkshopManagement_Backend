@@ -44,7 +44,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public IActionResult CreateAcceptanceReport(CreateAcceptanceReportModel model)
         {
-            if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
+            if (model.acceptanceTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
             if (string.IsNullOrEmpty(model.title)) return BadRequest("Không nhận được tiêu đề!");
             var userId = User.GetId();
             var result = _reportService.CreateAcceptanceReport(userId, model);

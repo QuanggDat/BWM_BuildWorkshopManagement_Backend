@@ -18,8 +18,15 @@ namespace Data.Models
         public int amount { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-
         public string description { get; set; } = null!;        
+    }
+    public class CreateAcceptanceTaskModel
+    {
+        public Guid leaderId { get; set; }
+        public Guid orderId { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+        public string description { get; set; } = null!;
     }
 
     public class LeaderTaskModel

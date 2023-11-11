@@ -23,14 +23,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public IActionResult Create(CreateLeaderTaskModel model)
         {
-            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id!");
+            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id đơn hàng!");
             if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
             var result = _leaderTaskService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-        
+
+        [HttpPost("[action]")]
+        public IActionResult CreateAcceptanceTask(CreateAcceptanceTaskModel model)
+        {
+            if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id đơn hàng!");
+            if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
+            var userId = User.GetId();
+            var result = _leaderTaskService.CreateAcceptanceTask(userId, model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpGet("[action]/{orderId}")]
         public IActionResult GetByOrderId(Guid orderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
