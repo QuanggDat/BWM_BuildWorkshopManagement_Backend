@@ -721,7 +721,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Where(x => x.banStatus != true)
+                var listUser = _dbContext.User
                    .OrderBy(x => x.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))

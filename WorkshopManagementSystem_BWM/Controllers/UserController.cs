@@ -138,7 +138,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult BanUser(Guid id)
         {
             var result = _userService.BannedUser(id);
@@ -146,7 +146,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("[action]/{id}")]
+        [HttpPut("[action]/{id}")]
         public IActionResult UnBanUser(Guid id)
         {
             var result = _userService.UnBannedUser(id);
