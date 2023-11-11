@@ -4,10 +4,6 @@
       "ignored": "true",
       "type": "apis.azure"
     },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:DefaultConnection"
-    },
     "mssql1": {
       "ignored": "true",
       "type": "mssql",
@@ -16,6 +12,11 @@
     "signalr1": {
       "type": "signalr",
       "connectionId": "Azure:SignalR:ConnectionString",
+      "dynamicId": null
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnection",
       "dynamicId": null
     }
   }
