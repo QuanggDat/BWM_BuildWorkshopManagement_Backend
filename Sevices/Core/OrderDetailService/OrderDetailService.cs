@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace Sevices.Core.OrderDetailService
@@ -16,12 +17,25 @@ namespace Sevices.Core.OrderDetailService
             _mapper = mapper;
         }
 
-        public ResultModel GetByOrderIdWithPaging(Guid orderId, int pageIndex, int pageSize)
+        public ResultModel GetByOrderIdWithPaging(Guid orderId, int pageIndex, int pageSize, string? search = null)
         {
             var result = new ResultModel();
             try
             {
-                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId).Include(x => x.Item).ToList();
+                var listOrderDetail = _dbContext.OrderDetail.Include(x => x.Item).Where(x => x.orderId == orderId).ToList();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrderDetail = listOrderDetail.Where(x =>
+                                                            string.IsNullOrWhiteSpace(searchValue) ||
+                                                            (x.Item != null && string.IsNullOrWhiteSpace(x.Item.name) && FnUtil.Remove_VN_Accents(x.Item.name).ToUpper().Contains(searchValue)) ||
+                                                            x.quantity.ToString().Contains(searchValue) ||
+                                                            x.price.ToString().Contains(searchValue) ||
+                                                            x.totalPrice.ToString().Contains(searchValue) ||
+                                                            (!string.IsNullOrWhiteSpace(x.description) && FnUtil.Remove_VN_Accents(x.description).ToUpper().Contains(searchValue))
+                                                    ).ToList();
+                }
 
                 var listOrderDetailPaging = listOrderDetail.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

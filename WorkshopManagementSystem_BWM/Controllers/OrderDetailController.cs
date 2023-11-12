@@ -17,9 +17,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetByOrderIdWithPaging")]
-        public IActionResult GetByOrderIdWithPaging(Guid orderId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByOrderIdWithPaging(Guid orderId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {
-            var result = _orderDetailService.GetByOrderIdWithPaging(orderId, pageIndex, pageSize);
+            var result = _orderDetailService.GetByOrderIdWithPaging(orderId, pageIndex, pageSize, search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

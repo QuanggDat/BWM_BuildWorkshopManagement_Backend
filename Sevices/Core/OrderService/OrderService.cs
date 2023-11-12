@@ -8,6 +8,7 @@ using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
@@ -33,12 +34,24 @@ namespace Sevices.Core.OrderService
             _notificationService = notificationService;
         }
 
-        public ResultModel GetAllWithPaging(int pageIndex, int pageSize)
+        public ResultModel GetAllWithPaging(int pageIndex, int pageSize, string? search = null)
         {
             var result = new ResultModel();
             try
             {
                 var listOrder = _dbContext.Order.OrderByDescending(x => x.createTime).ToList();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrder = listOrder.Where(x =>
+                                            (!string.IsNullOrWhiteSpace(x.name) && FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(searchValue)) ||
+                                            (!string.IsNullOrWhiteSpace(x.customerName) && FnUtil.Remove_VN_Accents(x.customerName).ToUpper().Contains(searchValue)) ||
+                                            x.totalPrice.ToString().Contains(searchValue) ||
+                                            x.createTime.ToString("dd/MM/yyyy").Contains(searchValue) ||
+                                            (x.acceptanceTime != null && x.acceptanceTime.Value.ToString("dd/MM/yyyy").Contains(searchValue))
+                                        ).ToList();
+                }
 
                 var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

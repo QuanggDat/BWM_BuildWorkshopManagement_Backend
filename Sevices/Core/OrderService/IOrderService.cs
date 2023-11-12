@@ -5,7 +5,7 @@ namespace Sevices.Core.OrderService
 {
     public interface IOrderService
     {
-        ResultModel GetAllWithPaging(int pageIndex, int pageSize);
+        ResultModel GetAllWithPaging(int pageIndex, int pageSize, string? search = null);
         ResultModel GetQuotesByUserWithPaging(Guid userId, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel GetQuoteMaterialById(Guid id);

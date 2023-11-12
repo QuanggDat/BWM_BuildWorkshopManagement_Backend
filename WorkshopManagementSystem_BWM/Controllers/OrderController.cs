@@ -33,9 +33,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetAllWithPaging")]
-        public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllWithPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {
-            var result = _orderService.GetAllWithPaging(pageIndex, pageSize);
+            var result = _orderService.GetAllWithPaging(pageIndex, pageSize, search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
