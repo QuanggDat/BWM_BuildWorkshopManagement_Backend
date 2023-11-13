@@ -114,7 +114,7 @@ namespace Sevices.Core.LeaderTaskService
                                                 priority = model.priority,
                                                 drawingsTechnical = item!.drawingsTechnical,
                                                 itemName = item!.name,
-                                                amount = model.amount,
+                                                itemQuantity = model.itemQuantity,
                                                 name = procedure!.name,                                       
                                                 startTime = model.startTime,
                                                 endTime = model.endTime,
