@@ -13,7 +13,7 @@ namespace Data.Models
         public Guid? leaderTaskId { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
-        public ReportStatus reportStatus { get; set; }
+        public int itemFailed { get; set; }
         public List<string>? resource { get; set; }
     }
 
@@ -42,7 +42,8 @@ namespace Data.Models
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
-        public ReportStatus? reportStatus { get; set; }
+        public ReportStatus? status { get; set; }
+        public int? itemFailed { get; set; }
         public List<string>? resource { get; set; }
         public DateTime createdDate { get; set; }
         public Guid reporterId { get; set; }
@@ -58,7 +59,7 @@ namespace Data.Models
     public class SendProgressResponseModel
     {
         public Guid reportId { get; set; }
-        public ReportStatus? reportStatus { get; set; }
+        public ReportStatus? status { get; set; }
         public string responseContent { get; set; } = null!;
     }
 

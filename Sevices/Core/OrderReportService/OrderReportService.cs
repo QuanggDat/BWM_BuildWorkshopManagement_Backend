@@ -55,7 +55,7 @@ namespace Sevices.Core.OrderReportService
                             title = model.title,
                             content = model.content,
                             reporterId = reporterId,
-                            reportStatus = model.reportStatus,
+                            status = model.reportStatus,
                             createdDate = DateTime.Now,
                             reportType = ReportType.OrderReport
                         };
@@ -75,7 +75,7 @@ namespace Sevices.Core.OrderReportService
                                     });
                                 }
                             }
-
+                            /*
                             if (model.listSupply.Any())
                             {
                                 var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
@@ -99,7 +99,7 @@ namespace Sevices.Core.OrderReportService
                                 }
                                 _dbContext.Supply.AddRange(listSupply);
                             }
-
+                            */
                             _dbContext.SaveChanges();
                             result.Succeed = true;
                             result.Data = report.id;
@@ -137,7 +137,7 @@ namespace Sevices.Core.OrderReportService
                         title = check.title,
                         content = check.content,
                         createdDate = check.createdDate,
-                        reportStatus = check.reportStatus,
+                        reportStatus = check.status,
                         reporterId = check.reporterId,
                         resource = check.Resources.Select(x => x.link).ToList()
                     };
@@ -170,11 +170,12 @@ namespace Sevices.Core.OrderReportService
 
                 var list = listOrderReportPaging.Select(report => new OrderReportModel
                 {
+                    id = report.id,
                     orderId = report.orderId,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.reportStatus,
+                    reportStatus = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
@@ -212,11 +213,11 @@ namespace Sevices.Core.OrderReportService
 
                 var list = listOrderReport.Select(report => new OrderReportModel
                 {
-
+                    id = report.id,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.reportStatus,
+                    reportStatus = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
@@ -227,9 +228,6 @@ namespace Sevices.Core.OrderReportService
                     Total = listOrderReport.Count
                 };
                 result.Succeed = true;
-
-
-
             }
             catch (Exception e)
             {
@@ -241,7 +239,7 @@ namespace Sevices.Core.OrderReportService
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            var listOrderReport = _dbContext.Report
+            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
                 .Where(x => x.reportType == ReportType.OrderReport).ToList();
             try
             {
@@ -254,11 +252,12 @@ namespace Sevices.Core.OrderReportService
 
                 var list = listOrderReport.Select(report => new OrderReportModel
                 {
+                    id = report.id,
                     orderId = report.orderId,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.reportStatus,
+                    reportStatus = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
@@ -277,7 +276,7 @@ namespace Sevices.Core.OrderReportService
             }
             return result;
         }
-
+        #region comment
         /*
         public ResultModel SendReviews (ReviewsOrderReportModel model)
         {
@@ -330,5 +329,6 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
         */
+        #endregion
     }
 }

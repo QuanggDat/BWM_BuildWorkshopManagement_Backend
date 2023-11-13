@@ -62,7 +62,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProblemReportByLeaderTaskId(Guid leaderTaskId,string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProblemReportByLeaderTaskId(Guid leaderTaskId,string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _reportService.GetProblemReportByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
@@ -71,7 +71,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProgressReportByLeaderTaskId(Guid leaderTaskId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _reportService.GetProgressReportByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);

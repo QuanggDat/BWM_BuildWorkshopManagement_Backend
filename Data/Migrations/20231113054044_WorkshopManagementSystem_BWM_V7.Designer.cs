@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231113054044_WorkshopManagementSystem_BWM_V7")]
+    partial class WorkshopManagementSystem_BWM_V7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -544,6 +546,9 @@ namespace Data.Migrations
                     b.Property<Guid?>("orderId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("reportStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("reportType")
                         .HasColumnType("int");
 
@@ -552,9 +557,6 @@ namespace Data.Migrations
 
                     b.Property<string>("responseContent")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("status")
-                        .HasColumnType("int");
 
                     b.Property<string>("title")
                         .IsRequired()

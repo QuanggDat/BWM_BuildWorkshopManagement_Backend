@@ -51,79 +51,148 @@ namespace Sevices.Core.ReportService
                 else
                 {
                     var checkReport = _dbContext.Report.Any(x => x.leaderTaskId == model.acceptanceTaskId && x.reportType == ReportType.AcceptanceReport);
-                    var canSendReport = CanSendProgressTaskReport(leaderTask);
-                    if (!canSendReport)
+
+                    if (checkReport == true)
                     {
-                        result.Code = 53;
+                        result.Code = 52;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không thể gửi báo cáo vào lúc này!";
+                        result.ErrorMessage = "Báo cáo nghiệm thu cho công việc này đã được thực hiện!";
                     }
                     else
                     {
-                        if (checkReport == true)
+                        var report = new Report
                         {
-                            result.Code = 52;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Báo cáo nghiệm thu cho công việc này đã được thực hiện!";
+                            leaderTaskId = model.acceptanceTaskId,
+                            reporterId = reporterId,
+                            title = model.title,
+                            content = model.content,
+                            reportType = ReportType.AcceptanceReport,
+                            createdDate = DateTime.Now,
+                        };
+                        var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).SingleOrDefault();
+
+                        if (order != null)
+                        {
+                            order.acceptanceTime = DateTime.Now;
                         }
-                        else
+
+                        try
                         {
-                            var report = new Report
-                            {
-                                leaderTaskId = model.acceptanceTaskId,
-                                reporterId = reporterId,
-                                title = model.title,
-                                content = model.content,
-                                reportType = ReportType.AcceptanceReport,
-                                createdDate = DateTime.Now,
-                            };
-                            var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).SingleOrDefault();
+                            _dbContext.Report.Add(report);
 
-                            if (order != null)
+                            if (model.resource != null)
                             {
-                                order.acceptanceTime = DateTime.Now;
-                            }
-
-                            try
-                            {
-                                _dbContext.Report.Add(report);
-
-                                if (model.resource != null)
+                                foreach (var resource in model.resource)
                                 {
-                                    foreach (var resource in model.resource)
+                                    _dbContext.Resource.Add(new Resource
                                     {
-                                        _dbContext.Resource.Add(new Resource
-                                        {
-                                            reportId = report.id,
-                                            link = resource
-                                        });
-                                    }
-
-                                    foreach (var resource in model.resource)
-                                    {
-                                        _dbContext.Resource.Add(new Resource
-                                        {
-                                            orderId = order!.id,
-                                            link = resource
-                                        });
-                                    }
+                                        reportId = report.id,
+                                        link = resource
+                                    });
                                 }
-                                _dbContext.SaveChanges();
 
-                                result.Succeed = true;
-                                result.Data = report.id;
+                                foreach (var resource in model.resource)
+                                {
+                                    _dbContext.Resource.Add(new Resource
+                                    {
+                                        orderId = order!.id,
+                                        link = resource
+                                    });
+                                }
                             }
+                            _dbContext.SaveChanges();
 
-                            catch (Exception ex)
-                            {
-                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                            }
+                            result.Succeed = true;
+                            result.Data = report.id;
+                        }
+
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
                 }
             }
             return result;
         }
+        public ResultModel CreateProgressReport(Guid reporterId, CreateProgressReportModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+            if (user!.Role != null && user.Role.Name != "Leader")
+            {
+                result.Code = 50;
+                result.Succeed = false;
+                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
+            }
+            else
+            {
+                var leaderTask = _dbContext.LeaderTask
+                .Where(x => x.id == model.leaderTaskId)
+                .SingleOrDefault();
+
+                if (leaderTask == null)
+                {
+                    result.Code = 51;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
+                }
+                else
+                {
+                    if(model.itemFailed > leaderTask.itemQuantity)
+                    {
+                        result.Code = 98;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Số lượng mặt hàng thất bại không lớn hơn số lượng mặt hàng!";
+                    }
+                    else
+                    {
+                        var report = new Report
+                        {
+                            reporterId = reporterId,
+                            leaderTaskId = model.leaderTaskId,
+                            title = model.title,
+                            content = model.content,
+                            itemFailed = model.itemFailed,
+                            reportType = ReportType.ProgressReport,
+                            createdDate = DateTime.Now,
+                        };
+
+                        try
+                        {
+                            _dbContext.Report.Add(report);
+
+                            if (model.resource != null)
+                            {
+                                foreach (var resource in model.resource)
+                                {
+                                    _dbContext.Resource.Add(new Resource
+                                    {
+                                        reportId = report.id,
+                                        link = resource
+                                    });
+                                }
+                            }
+
+                            _dbContext.Report.Add(report);
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = report.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                        }
+                    }
+                
+                }
+            }
+            return result;
+        }
+
+        // Cần thêm supply
         public ResultModel CreateProblemReport(Guid reporterId, CreateProblemReportModel model)
         {
             ResultModel result = new ResultModel();
@@ -203,83 +272,64 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel CreateProgressReport(Guid reporterId, CreateProgressReportModel model)
+        public ResultModel SendProgressResponse(SendProgressResponseModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
-            if (user!.Role != null && user.Role.Name != "Leader")
+            var report = _dbContext.Report.Include(x => x.LeaderTask)
+                .Where(x => x.id == model.reportId).SingleOrDefault();
+
+            if (report == null && report!.reportType != ReportType.ProgressReport)
             {
-                result.Code = 50;
+                result.Code = 54;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo tiến độ!";
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask
-                .Where(x => x.id == model.leaderTaskId)
-                .SingleOrDefault();
-
-                if (leaderTask == null)
+                if (report.status == ReportStatus.Complete)
                 {
-                    result.Code = 51;
+                    result.Code = 55;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
+                    result.ErrorMessage = "Báo cáo này đã hoàn thành!";
                 }
                 else
                 {
-                    var canSendReport = CanSendProgressTaskReport(leaderTask);
+                    var leaderTask = _dbContext.LeaderTask
+                    .Find(report.leaderTaskId);
 
-                    if (!canSendReport)
+                    try
                     {
-                        result.Code = 53;
-                        result.Succeed = false;
-                        result.ErrorMessage = "Không thể gửi báo cáo vào lúc này!";
+                        report.status = model.status;
+                        report.responseContent = model.responseContent;
+
+                        if (leaderTask != null && model.status == ReportStatus.Complete)
+                        {
+                            leaderTask.itemFailed = report.itemFailed;
+                            leaderTask.itemCompleted = leaderTask.itemQuantity - leaderTask.itemFailed;
+                            leaderTask.completedTime = DateTime.Now;
+                            leaderTask.status = ETaskStatus.Completed;
+                        }
+                        else if (leaderTask != null && model.status == ReportStatus.Uncomplete)
+                        {
+                            leaderTask.status = ETaskStatus.NotAchived;
+                        }
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = report.id;
                     }
-                    else
+
+                    catch (Exception ex)
                     {
-                        var report = new Report
-                        {
-                            reporterId = reporterId,
-                            leaderTaskId = model.leaderTaskId,
-                            title = model.title,
-                            content = model.content,
-                            reportType = ReportType.ProgressReport,
-                            reportStatus = model.reportStatus,
-                            createdDate = DateTime.Now,
-                        };
-
-                        try
-                        {
-                            _dbContext.Report.Add(report);
-
-                            if (model.resource != null)
-                            {
-                                foreach (var resource in model.resource)
-                                {
-                                    _dbContext.Resource.Add(new Resource
-                                    {
-                                        reportId = report.id,
-                                        link = resource
-                                    });
-                                }
-                            }
-
-                            _dbContext.Report.Add(report);
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = report.id;
-                        }
-                        catch (Exception ex)
-                        {
-                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                        }
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                     }
                 }
             }
             return result;
         }
+
+        // Cần sửa lại sau khi thêm supply
         public ResultModel SendProblemResponse(SendProblemResponseModel model)
         {
             ResultModel result = new ResultModel();
@@ -288,11 +338,11 @@ namespace Sevices.Core.ReportService
             var report = _dbContext.Report.Include(x => x.LeaderTask)
                 .Where(x => x.id == model.reportId).SingleOrDefault();
 
-            if (report == null)
+            if (report == null && report!.reportType != ReportType.ProblemReport)
             {
-                result.Code = 54;
+                result.Code = 13;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo vấn đề!";
             }
             else
             {
@@ -310,61 +360,8 @@ namespace Sevices.Core.ReportService
             }
             return result;
         }
-        public ResultModel SendProgressResponse(SendProgressResponseModel model)
-        {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
 
-            var report = _dbContext.Report.Include(x => x.LeaderTask)
-                .Where(x => x.id == model.reportId).SingleOrDefault();
-
-            if (report == null)
-            {
-                result.Code = 54;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
-            }
-            else
-            {
-
-                if (report.reportStatus == ReportStatus.Complete)
-                {
-                    result.Code = 55;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Báo cáo này đã hoàn thành!";
-                }
-                else
-                {
-                    var leaderTask = _dbContext.LeaderTask
-                    .Find(report.leaderTaskId);
-
-                    try
-                    {
-                        report.reportStatus = model.reportStatus;
-                        report.responseContent = model.responseContent;
-
-                        if (leaderTask != null && model.reportStatus == ReportStatus.Complete)
-                        {
-                            leaderTask.completedTime = DateTime.Now;
-                            leaderTask.status = ETaskStatus.Completed;
-                        }
-                        else if (leaderTask != null && model.reportStatus == ReportStatus.Uncomplete)
-                        {
-                            leaderTask.status = ETaskStatus.NotAchived;
-                        }
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = report.id;
-                    }
-
-                    catch (Exception ex)
-                    {
-                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    }
-                }
-            }
-            return result;
-        }       
+        // Cần sửa lại sau khi thêm supply
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -395,8 +392,9 @@ namespace Sevices.Core.ReportService
                             title = report.title,
                             content = report.content,
                             createdDate = report.createdDate,
-                            reportStatus = report.reportStatus,
+                            status = report.status,
                             responseContent = report.responseContent,
+                            itemFailed = report.itemFailed,
                             reporterId = report.reporterId,
                             responderId = report.LeaderTask.createById,
                             resource = report.Resources.Select(x => x.link).ToList()
@@ -431,7 +429,9 @@ namespace Sevices.Core.ReportService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }            
+        }
+
+        // Cần sửa lại sau khi thêm supply
         public ResultModel GetProblemReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
@@ -484,6 +484,7 @@ namespace Sevices.Core.ReportService
 
             return result;
         }
+
         public ResultModel GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
@@ -510,8 +511,9 @@ namespace Sevices.Core.ReportService
                         id = item.id,
                         title = item.title,
                         content = item.content,
+                        itemFailed = item.itemFailed,
                         createdDate = item.createdDate,
-                        reportStatus = item.reportStatus,
+                        status = item.status,
                         responseContent = item.responseContent,
                         reporterId = item.reporterId,
                         responderId = item.LeaderTask.createById,
@@ -535,11 +537,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
         #region Validate
-        private bool CanSendProgressTaskReport(LeaderTask leaderTask)
-        {
-            var now = DateTime.Now;
-            return now >= leaderTask.endTime;
-        }
+
         private bool CanSendProblemTaskReport(LeaderTask leaderTask)
         {
             var now = DateTime.Now;

@@ -39,7 +39,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
         
         [HttpGet("[action]/{foremanId}")]
-        public IActionResult GetByForemanId(Guid foremanId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByForemanId(Guid foremanId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {           
             var result = _orderReportService.GetByForemanId(foremanId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
@@ -47,7 +47,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{orderId}")]
-        public IActionResult GetByOrderId(Guid orderId, string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByOrderId(Guid orderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _orderReportService.GetByOrderId(orderId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
@@ -55,7 +55,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAll (string search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll (string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _orderReportService.GetAll(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);

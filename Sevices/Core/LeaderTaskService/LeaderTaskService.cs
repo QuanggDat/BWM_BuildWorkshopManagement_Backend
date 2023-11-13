@@ -51,7 +51,7 @@ namespace Sevices.Core.LeaderTaskService
                     var itemTmp = _dbContext.Item.Find(model.itemId);
                     if (itemTmp == null)
                     {
-                        result.Code = 80;
+                        result.Code = 14;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                     }
@@ -368,7 +368,12 @@ namespace Sevices.Core.LeaderTaskService
                         drawingsTechnical = check.drawingsTechnical,
 
                         name = check.name,
-                        priority = check.priority,                        
+                        priority = check.priority,    
+                        
+                        itemQuantity = check.itemQuantity,
+                        itemCompleted = check.itemCompleted,
+                        itemFailed = check.itemFailed,
+
                         startTime = check.startTime,
                         endTime = check.endTime,                        
                         completedTime = check.completedTime,
@@ -420,6 +425,10 @@ namespace Sevices.Core.LeaderTaskService
 
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
+
+                        itemQuantity = item.itemQuantity,
+                        itemCompleted = item.itemCompleted,
+                        itemFailed = item.itemFailed,
 
                         name = item.name,
                         priority = item.priority,                       
@@ -479,6 +488,10 @@ namespace Sevices.Core.LeaderTaskService
 
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
+
+                        itemQuantity = item.itemQuantity,
+                        itemCompleted = item.itemCompleted,
+                        itemFailed = item.itemFailed,
 
                         name = item.name,
                         priority = item.priority,

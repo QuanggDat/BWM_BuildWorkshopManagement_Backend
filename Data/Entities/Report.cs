@@ -29,9 +29,10 @@ namespace Data.Entities
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
+        public int? itemFailed { get; set; }
         public DateTime createdDate { get; set; }
-
-        public ReportStatus? reportStatus { get; set; }
+        
+        public ReportStatus? status { get; set; }
         public string? responseContent { get; set; } = null!;
 
         public virtual List<Resource> Resources { get; set; } = new();
