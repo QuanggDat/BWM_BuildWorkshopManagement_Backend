@@ -1,4 +1,5 @@
-﻿using Data.DataAccess;
+﻿using AutoMapper;
+using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
@@ -17,20 +18,22 @@ namespace Sevices.Core.ReportService
     {
         private readonly AppDbContext _dbContext;
         private readonly INotificationService _notificationService;
+        private readonly IMapper _mapper;
 
-        public TaskReportService(AppDbContext dbContext, INotificationService notificationService)
+        public TaskReportService(AppDbContext dbContext, INotificationService notificationService, IMapper mapper)
         {
             _dbContext = dbContext;
             _notificationService = notificationService;
+            _mapper = mapper;
         }
 
         public ResultModel CreateAcceptanceReport(Guid reporterId, CreateAcceptanceReportModel model)
-        {            
+        {
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
-            if(user!.Role != null && user.Role.Name != "Leader")
+            if (user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Code = 50;
                 result.Succeed = false;
@@ -129,9 +132,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask
-                .Where(x => x.id == model.leaderTaskId)
-                .SingleOrDefault();
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId);
 
                 if (leaderTask == null)
                 {
@@ -141,7 +142,7 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-                    if(model.itemFailed > leaderTask.itemQuantity)
+                    if (model.itemFailed > leaderTask.itemQuantity)
                     {
                         result.Code = 98;
                         result.Succeed = false;
@@ -186,7 +187,7 @@ namespace Sevices.Core.ReportService
                             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
-                
+
                 }
             }
             return result;
@@ -207,9 +208,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask
-                .Where(x => x.id == model.leaderTaskId)
-                .SingleOrDefault();
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId);
 
                 if (leaderTask == null)
                 {
@@ -236,7 +235,7 @@ namespace Sevices.Core.ReportService
                             reporterId = reporterId,
                             title = model.title,
                             content = model.content,
-                            reportType = ReportType.ProgressReport,
+                            reportType = ReportType.ProblemReport,
                             createdDate = DateTime.Now,
                         };
 
@@ -255,7 +254,44 @@ namespace Sevices.Core.ReportService
                                     });
                                 }
                             }
+
+                            if (model.listSupply.Any())
+                            {
+                                var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+                                var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
+
+                                var listSupply = new List<Supply>();
+                                foreach (var supply in model.listSupply)
+                                {
+                                    var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
+                                    var matePrice = mate != null ? mate.price : 0;
+                                    var newSupply = new Supply()
+                                    {
+                                        reportId = report.id,
+                                        materialId = supply.materialId,
+                                        amount = supply.amount,
+                                        price = matePrice,
+                                        totalPrice = matePrice * supply.amount,
+                                        status = model.supplyStatus,
+                                    };
+                                    listSupply.Add(newSupply);
+                                }
+                                _dbContext.Supply.AddRange(listSupply);
+                            }
+
                             _dbContext.SaveChanges();
+
+                            if (leaderTask.createById != null)
+                            {
+                                _notificationService.Create(new Notification
+                                {
+                                    userId = leaderTask.createById.Value,
+                                    reportId = report.id,
+                                    title = "Báo cáo vấn đề",
+                                    content = "Bạn vừa nhận được 1 báo cáo vấn đề mới!",
+                                    type = NotificationType.TaskReport
+                                });
+                            }
 
                             result.Succeed = true;
                             result.Data = report.id;
@@ -329,7 +365,6 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        // Cần sửa lại sau khi thêm supply
         public ResultModel SendProblemResponse(SendProblemResponseModel model)
         {
             ResultModel result = new ResultModel();
@@ -369,8 +404,10 @@ namespace Sevices.Core.ReportService
             try
             {
                 var report = _dbContext.Report
-               .Include(x => x.LeaderTask).Include(x => x.Resources)
-               .Where(x => x.id == id).SingleOrDefault();
+                    .Include(x => x.LeaderTask)
+                    .Include(x => x.Resources)
+                    .Include(x => x.Supplies)
+                    .FirstOrDefault(x => x.id == id);
 
                 if (report == null)
                 {
@@ -417,11 +454,12 @@ namespace Sevices.Core.ReportService
                             responseContent = report.responseContent,
                             reporterId = report.reporterId,
                             responderId = report.LeaderTask.createById,
-                            resource = report.Resources.Select(x => x.link).ToList()
+                            resource = report.Resources.Select(x => x.link).ToList(),
+                            listSupply = _mapper.Map<List<SupplyModel>>(report.Supplies)
                         };
                         result.Data = taskReport;
                         result.Succeed = true;
-                    }                    
+                    }
                 }
             }
             catch (Exception ex)
@@ -438,9 +476,9 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report
-                .Include(x => x.LeaderTask).Include(x => x.Resources)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport).OrderByDescending(x => x.createdDate)
-                .ToList();
+                .Include(x => x.LeaderTask).Include(x => x.Resources).Include(x => x.Supplies)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport)
+                .OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
@@ -463,7 +501,8 @@ namespace Sevices.Core.ReportService
                         responseContent = item.responseContent,
                         reporterId = item.reporterId,
                         responderId = item.LeaderTask.createById,
-                        resource = item.Resources.Select(x => x.link).ToList()
+                        resource = item.Resources.Select(x => x.link).ToList(),
+                        listSupply = _mapper.Map<List<SupplyModel>>(item.Supplies)
                     };
                     list.Add(tmp);
                 }
