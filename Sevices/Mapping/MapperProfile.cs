@@ -32,6 +32,8 @@ namespace Sevices.Mapping
             CreateMap<Notification, NotificationModel>().ReverseMap();
             CreateMap<Notification, NotificationCreateModel>().ReverseMap();
 
+            // Supply
+            CreateMap<Supply, SupplyModel>().ReverseMap();
         }
     }
 }

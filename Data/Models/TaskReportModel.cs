@@ -24,6 +24,8 @@ namespace Data.Models
         public string? content { get; set; } = null!;
         public DateTime createdDate { get; set; }
         public List<string>? resource { get; set; }
+        public ESupplyStatus supplyStatus { get; set; }
+        public List<MaterialAmount> listSupply { get; set; } = new();
     }
 
     public class CreateAcceptanceReportModel
@@ -49,6 +51,7 @@ namespace Data.Models
         public Guid reporterId { get; set; }
         public Guid? responderId { get; set; } 
         public string? responseContent { get; set; }
+        public List<SupplyModel> listSupply { get; set; } = new();
     }
 
     public class SendProblemResponseModel
@@ -63,4 +66,9 @@ namespace Data.Models
         public string responseContent { get; set; } = null!;
     }
 
+    public class MaterialAmount
+    {
+        public Guid materialId { get; set; }
+        public int amount { get; set; }
+    }
 }

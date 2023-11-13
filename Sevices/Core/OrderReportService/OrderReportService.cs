@@ -75,31 +75,7 @@ namespace Sevices.Core.OrderReportService
                                     });
                                 }
                             }
-                            /*
-                            if (model.listSupply.Any())
-                            {
-                                var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
-                                var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
 
-                                var listSupply = new List<Supply>();
-                                foreach (var supply in model.listSupply)
-                                {
-                                    var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
-                                    var matePrice = mate != null ? mate.price : 0;
-                                    var newSupply = new Supply()
-                                    {
-                                        reportId = report.id,
-                                        materialId = supply.materialId,
-                                        amount = supply.amount,
-                                        price = matePrice,
-                                        totalPrice = matePrice * supply.amount,
-                                        status = model.supplyStatus,
-                                    };
-                                    listSupply.Add(newSupply);
-                                }
-                                _dbContext.Supply.AddRange(listSupply);
-                            }
-                            */
                             _dbContext.SaveChanges();
                             result.Succeed = true;
                             result.Data = report.id;

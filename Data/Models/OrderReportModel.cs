@@ -14,8 +14,6 @@ namespace Data.Models
         public string? content { get; set; } = null!;
         public ReportStatus? reportStatus { get; set; }
         public List<string>? resource { get; set; }
-        //public ESupplyStatus supplyStatus { get; set; }
-        //public List<MaterialAmount> listSupply { get; set; } = new();
     }
 
     public class OrderReportModel
@@ -29,11 +27,4 @@ namespace Data.Models
         public Guid reporterId { get; set; }
         public List<string>? resource { get; set; }
     }
-
-    public class MaterialAmount
-    {
-        public Guid materialId { get; set; }
-        public int amount { get; set; }
-    }
-
 }
