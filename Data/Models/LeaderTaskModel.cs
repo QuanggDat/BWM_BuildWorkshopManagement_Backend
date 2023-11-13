@@ -39,10 +39,9 @@ namespace Data.Models
         public Guid? itemId { get; set; }
         public Guid? procedureId { get; set; }
 
-        public string itemName { get; set; } = null!;
-        public string drawingsTechnical { get; set; } = null!;
+        public string? itemName { get; set; } 
+        public string? drawingsTechnical { get; set; }
         public string name { get; set; } = null!;
-
         public int priority { get; set; }
 
         public DateTime startTime { get; set; }

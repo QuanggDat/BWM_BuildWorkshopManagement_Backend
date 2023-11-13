@@ -199,10 +199,10 @@ namespace Sevices.Core.ReportService
                     }
                 }
 
-
             }
             return result;
         }
+
         public ResultModel CreateProgressReport(Guid reporterId, CreateProgressReportModel model)
         {
             ResultModel result = new ResultModel();
@@ -229,9 +229,7 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-
                     var canSendReport = CanSendProgressTaskReport(leaderTask);
-
 
                     if (!canSendReport)
                     {
