@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.UserService;
 
@@ -16,7 +17,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _userService = userService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]"), Authorize]
         public async Task<ActionResult> CreateAdmin([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");

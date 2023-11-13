@@ -474,7 +474,6 @@ namespace Sevices.Core.ReportService
                     Total = listTaskReport.Count
                 };
                 result.Succeed = true;
-
             }
 
             catch (Exception e)
