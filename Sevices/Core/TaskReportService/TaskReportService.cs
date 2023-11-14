@@ -371,9 +371,9 @@ namespace Sevices.Core.ReportService
                             leaderTask.completedTime = DateTime.Now;
                             leaderTask.status = ETaskStatus.Completed;
                         }
-                        else if (leaderTask != null && model.status == ReportStatus.Uncomplete)
+                        else if (leaderTask != null && model.status == ReportStatus.NotAchieved)
                         {
-                            leaderTask.status = ETaskStatus.NotAchived;
+                            leaderTask.status = ETaskStatus.NotAchieved;
                         }
                         _dbContext.SaveChanges();
 

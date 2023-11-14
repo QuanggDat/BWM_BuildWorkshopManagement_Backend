@@ -10,5 +10,6 @@ namespace Data.Enums
     {        
         Uncomplete = 0,
         Complete = 1,
+        NotAchieved = 2,
     }
 }

@@ -41,6 +41,7 @@ namespace Data.Models
         public Guid? orderId { get; set; }
         public string orderName { get; set; } = null!;
 
+        public Guid? itemId { get; set; }
         public string? itemName { get; set; } 
         public string? drawingsTechnical { get; set; }
         public string name { get; set; } = null!;

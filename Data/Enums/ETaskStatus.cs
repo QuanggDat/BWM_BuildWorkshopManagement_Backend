@@ -11,7 +11,7 @@ namespace Data.Enums
         New = 0,
         InProgress = 1,
         Pending = 2,
-        NotAchived = 3,
+        NotAchieved = 3,
         Completed = 4
     }
 }

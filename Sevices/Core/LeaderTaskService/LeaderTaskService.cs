@@ -389,6 +389,7 @@ namespace Sevices.Core.LeaderTaskService
                         orderName = order!.name,
                         itemName = check.itemName,
                         drawingsTechnical = check.drawingsTechnical,
+                        itemId = check.itemId,
                         name = check.name,
                         priority = check.priority,                        
                         itemQuantity = check.itemQuantity,
@@ -445,6 +446,7 @@ namespace Sevices.Core.LeaderTaskService
                         leaderName = leader!.fullName,
                         orderId = item.orderId,
                         orderName = order!.name,
+                        itemId = item.itemId,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
                         itemQuantity = item.itemQuantity,
@@ -508,6 +510,7 @@ namespace Sevices.Core.LeaderTaskService
                         leaderName = leader!.fullName,
                         orderId = item.orderId,
                         orderName = order!.name,
+                        itemId = item.itemId,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
                         itemQuantity = item.itemQuantity,
@@ -567,9 +570,7 @@ namespace Sevices.Core.LeaderTaskService
                 }                
             }
             return result;
-        }
-
-        
+        }   
 
         #region Comment
         /*
