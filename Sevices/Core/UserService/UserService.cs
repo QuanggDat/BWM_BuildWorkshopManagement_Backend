@@ -919,6 +919,35 @@ namespace Sevices.Core.UserService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
-        }        
+        }
+      
+        public ResultModel GetByRoleId(Guid roleId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus)
+                    .OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
     }
 }

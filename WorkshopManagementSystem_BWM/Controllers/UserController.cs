@@ -84,6 +84,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+        [HttpGet("[action]/{roleId}")]
+        public IActionResult GetByRoleId(Guid roleId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _userService.GetByRoleId( roleId,search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
 
         [HttpGet("{phoneNumber}")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetByEmail(string phoneNumber)

@@ -439,7 +439,6 @@ namespace Sevices.Core.LeaderTaskService
                     var tmp = new LeaderTaskModel
                     {
                         id = item.id,
-
                         createdById = item.createById,
                         createdByName = createBy!.fullName,
                         leaderId = item.leaderId,
@@ -509,20 +508,16 @@ namespace Sevices.Core.LeaderTaskService
                         leaderName = leader!.fullName,
                         orderId = item.orderId,
                         orderName = order!.name,
-
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
-
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
-
                         name = item.name,
                         priority = item.priority,
                         startTime = item.startTime,
                         endTime = item.endTime,
                         completedTime = item.completedTime,
-
                         status = item.status,
                         description = item.description,
                         isDeleted = item.isDeleted,
