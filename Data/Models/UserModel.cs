@@ -22,7 +22,7 @@ namespace Data.Models
         public Guid? roleId { get; set; }
         public Role? Role { get; set; }
         public Guid? groupId { get; set; }
-        public Group? Group { get; set; } = null!;
+        public Group? Group { get; set; }
         public bool banStatus { get; set; }    
     }
 

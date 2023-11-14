@@ -19,6 +19,7 @@ namespace Sevices.Core.UserService
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetAllUser();
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetById(Guid id);
         ResultModel GetByRoleId(Guid rolerId, string? search, int pageIndex, int pageSize);
