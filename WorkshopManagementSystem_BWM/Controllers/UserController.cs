@@ -78,9 +78,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
-        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAll( string? search = null, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result =  _userService.GetAll(search,pageIndex,pageSize);
+            var result =  _userService.GetAll(pageIndex,pageSize,search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

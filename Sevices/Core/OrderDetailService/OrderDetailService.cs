@@ -28,7 +28,6 @@ namespace Sevices.Core.OrderDetailService
                 {
                     var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
                     listOrderDetail = listOrderDetail.Where(x =>
-                                                            string.IsNullOrWhiteSpace(searchValue) ||
                                                             (x.Item != null && string.IsNullOrWhiteSpace(x.Item.name) && FnUtil.Remove_VN_Accents(x.Item.name).ToUpper().Contains(searchValue)) ||
                                                             x.quantity.ToString().Contains(searchValue) ||
                                                             x.price.ToString().Contains(searchValue) ||

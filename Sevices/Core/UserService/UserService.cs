@@ -2,6 +2,7 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Data.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -742,7 +743,7 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAll(int pageIndex, int pageSize, string? search = null)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false; 
@@ -754,7 +755,15 @@ namespace Sevices.Core.UserService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x =>
+                                              (!string.IsNullOrWhiteSpace(x.fullName) && FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(searchValue)) ||
+                                                            (!string.IsNullOrWhiteSpace(x.address) && FnUtil.Remove_VN_Accents(x.address).ToUpper().Contains(searchValue)) ||
+                                                            (!string.IsNullOrWhiteSpace(x.Email) && FnUtil.Remove_VN_Accents(x.Email).ToUpper().Contains(searchValue)) ||
+                                                            (!string.IsNullOrWhiteSpace(x.UserName) && FnUtil.Remove_VN_Accents(x.UserName).ToUpper().Contains(searchValue)) ||
+                                                            x.dob.ToString().Contains(searchValue) ||
+                                                            (x.Role != null && !string.IsNullOrWhiteSpace(x.Role.Name) && FnUtil.Remove_VN_Accents(x.Role.Name).ToUpper().Contains(searchValue))
+                                                    ).ToList();
                 }
 
                 var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
