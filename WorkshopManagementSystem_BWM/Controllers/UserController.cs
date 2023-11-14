@@ -8,6 +8,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -17,7 +18,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _userService = userService;
         }
 
-        [HttpPost("[action]"), Authorize]
+        [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> CreateAdmin([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -27,9 +28,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = await _userService.CreateAdmin(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage});         
-        }
-        
-        [HttpPost("[action]")]
+        }       
+
+        [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> CreateForeman([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -41,7 +42,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]")/* Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> CreateLeader([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -53,7 +54,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> CreateWorker([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -65,7 +66,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPost("[action]")]
+        //[AllowAnonymous]
+        [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> Login([FromBody] LoginModel model)
         {
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
@@ -75,7 +77,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result =  _userService.GetAll(search,pageIndex,pageSize);
@@ -83,7 +85,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("{phoneNumber}")]
+        [HttpGet("{phoneNumber}")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetByEmail(string phoneNumber)
         {
             var result = _userService.GetByPhoneNumber(phoneNumber);
@@ -91,7 +93,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{id}")]
+        [HttpGet("[action]/{id}")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetById(Guid id)
         {
             var result = _userService.GetById(id);
@@ -99,7 +101,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetRole()
         {
             var result = _userService.GetRole();
@@ -115,7 +117,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }        
 
-        [HttpPut("[action]")]
+        [HttpPut("[action]")/*, Authorize(Roles = "Admin")*/]
         public IActionResult UpdatePhone(UserUpdatePhoneModel model)
         {
             var result = _userService.UpdatePhone(model);
@@ -123,7 +125,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]")]
+        [HttpPut("[action]")/*, Authorize(Roles = "Admin")*/]
         public IActionResult UpdateRole(UserUpdateUserRoleModel model)
         {
             var result = _userService.UpdateRole(model);
@@ -139,7 +141,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]/{id}")]
+        [HttpPut("[action]/{id}")/*, Authorize(Roles = "Admin")*/]
         public IActionResult BanUser(Guid id)
         {
             var result = _userService.BannedUser(id);
@@ -147,7 +149,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("[action]/{id}")]
+        [HttpPut("[action]/{id}")/*, Authorize(Roles = "Admin")*/]
         public IActionResult UnBanUser(Guid id)
         {
             var result = _userService.UnBannedUser(id);

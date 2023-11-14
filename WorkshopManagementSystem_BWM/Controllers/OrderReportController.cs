@@ -5,11 +5,13 @@ using Sevices.Core.OrderReportService;
 using static Data.Models.OrderReportModel;
 using Data.Models;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class OrderReportController : ControllerBase
     {
         private readonly IOrderReportService _orderReportService;

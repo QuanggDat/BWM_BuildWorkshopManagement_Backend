@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.CategoryService;
@@ -10,6 +11,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class MaterialCategoryController : Controller
     {
         private readonly IMaterialCategoryService _materialCategoryService;

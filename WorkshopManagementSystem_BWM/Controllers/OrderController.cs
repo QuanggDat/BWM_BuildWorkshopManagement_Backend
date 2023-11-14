@@ -4,11 +4,13 @@ using Data.Utils;
 using WorkshopManagementSystem_BWM.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;

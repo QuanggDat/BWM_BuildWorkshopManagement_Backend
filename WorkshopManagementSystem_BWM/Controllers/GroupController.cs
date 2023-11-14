@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.GroupService;
 
@@ -7,6 +8,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;

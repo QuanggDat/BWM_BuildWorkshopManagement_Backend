@@ -1,5 +1,6 @@
 ﻿using Data.Models;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderDetailService;
 
@@ -7,6 +8,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class OrderDetailController : ControllerBase
     {
         private readonly IOrderDetailService _orderDetailService;

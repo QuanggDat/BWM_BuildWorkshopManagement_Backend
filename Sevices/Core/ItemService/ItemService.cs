@@ -53,6 +53,11 @@ namespace Sevices.Core.ItemService
                     var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
                     var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
 
+                    if (string.IsNullOrEmpty(model.image))
+                    {
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                    }
+
                     //Create Item
                     var item = new Item
                     {
@@ -71,12 +76,7 @@ namespace Sevices.Core.ItemService
                         description = model.description,                       
                         isDeleted = false
                     };
-
-                    if (string.IsNullOrEmpty(model.image))
-                    {
-                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                    }
-
+                   
                     _dbContext.Item.Add(item);
 
                     foreach (var procedure in model.listProcedureId)
@@ -149,7 +149,12 @@ namespace Sevices.Core.ItemService
 
                     }
                     else
-                    {                      
+                    {
+                        if (string.IsNullOrEmpty(model.image))
+                        {
+                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        }
+
                         check.name = model.name;
                         check.image = model.image;
                         check.length = model.length;
@@ -160,12 +165,7 @@ namespace Sevices.Core.ItemService
                         check.drawingsTechnical = model.drawingsTechnical;
                         check.drawings2D = model.drawings2D;
                         check.drawings3D = model.drawings3D;
-                        check.description = model.description;                      
-
-                        if (string.IsNullOrEmpty(model.image))
-                        {
-                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                        }
+                        check.description = model.description;                                           
 
                         // Remove all old Procedure Item
                         var currentProcedureItems =  _dbContext.ProcedureItem

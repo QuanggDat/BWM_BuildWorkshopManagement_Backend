@@ -12,7 +12,7 @@ namespace Data.Models
         public Guid? orderId { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
-        public ReportStatus? reportStatus { get; set; }
+        public ReportStatus? status { get; set; }
         public List<string>? resource { get; set; }
     }
 
@@ -22,7 +22,7 @@ namespace Data.Models
         public Guid? orderId { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
-        public ReportStatus? reportStatus { get; set; }
+        public ReportStatus? status { get; set; }
         public DateTime createdDate { get; set; }
         public Guid reporterId { get; set; }
         public List<string>? resource { get; set; }

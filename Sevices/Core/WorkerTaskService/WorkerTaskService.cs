@@ -83,6 +83,16 @@ namespace Sevices.Core.WorkerTaskService
                         }
 
                         _dbContext.SaveChanges();
+
+                        _notificationService.CreateForManyUser(new Notification
+                        {
+                            workerTaskId = workerTask.id,
+                            title = "Công việc",
+                            content = "Bạn vừa nhận được 1 công việc mới!",
+                            type = NotificationType.TaskReport
+                        }, 
+                        model.assignees);
+
                         result.Succeed = true;
                         result.Data = workerTask.id;
                     }
@@ -167,6 +177,14 @@ namespace Sevices.Core.WorkerTaskService
 
                             _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
                             _dbContext.SaveChanges();
+                            _notificationService.CreateForManyUser(new Notification
+                            {
+                                workerTaskId = model.id,
+                                title = "Công việc",
+                                content = "Bạn vừa nhận được 1 công việc mới!",
+                                type = NotificationType.TaskReport
+                            },
+                            model.assignees);
                             result.Succeed = true;
                             result.Data = model.id;
                         }
@@ -215,6 +233,16 @@ namespace Sevices.Core.WorkerTaskService
 
                         _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
                         _dbContext.SaveChanges();
+
+                        _notificationService.CreateForManyUser(new Notification
+                        {
+                            workerTaskId = model.id,
+                            title = "Công việc",
+                            content = "Bạn vừa nhận được 1 công việc mới!",
+                            type = NotificationType.TaskReport
+                        },
+                        model.assignees);
+
                         result.Succeed = true;
                         result.Data = model.id;
                     }

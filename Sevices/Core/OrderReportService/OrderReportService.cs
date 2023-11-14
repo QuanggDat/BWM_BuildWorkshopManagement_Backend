@@ -55,7 +55,7 @@ namespace Sevices.Core.OrderReportService
                             title = model.title,
                             content = model.content,
                             reporterId = reporterId,
-                            status = model.reportStatus,
+                            status = model.status,
                             createdDate = DateTime.Now,
                             reportType = ReportType.OrderReport
                         };
@@ -78,6 +78,16 @@ namespace Sevices.Core.OrderReportService
 
                             _dbContext.SaveChanges();
                             result.Succeed = true;
+
+                            _notificationService.Create(new Notification
+                            {
+                                userId = order.createdById,
+                                reportId = report.id,
+                                title = "Báo cáo đơn hàng",
+                                content = "Bạn vừa nhận được 1 báo cáo đơn hàng mới!",
+                                type = NotificationType.TaskReport
+                            });
+
                             result.Data = report.id;
                         }
 
@@ -113,7 +123,7 @@ namespace Sevices.Core.OrderReportService
                         title = check.title,
                         content = check.content,
                         createdDate = check.createdDate,
-                        reportStatus = check.status,
+                        status = check.status,
                         reporterId = check.reporterId,
                         resource = check.Resources.Select(x => x.link).ToList()
                     };
@@ -151,7 +161,7 @@ namespace Sevices.Core.OrderReportService
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.status,
+                    status = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
@@ -193,7 +203,7 @@ namespace Sevices.Core.OrderReportService
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.status,
+                    status = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
@@ -233,7 +243,7 @@ namespace Sevices.Core.OrderReportService
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    reportStatus = report.status,
+                    status = report.status,
                     reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();

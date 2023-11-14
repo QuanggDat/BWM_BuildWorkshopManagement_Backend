@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.ReportService;
 using static Data.Models.TaskReportModel;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class TaskReportController : ControllerBase
     {
         private readonly ITaskReportService _reportService;
@@ -79,17 +81,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public IActionResult SendProgressResponse(SendProgressResponseModel model)
+        public IActionResult SendProgressReportFeedback(SendProgressReportFeedbackModel model)
         {
-            var result = _reportService.SendProgressResponse(model);
+            var result = _reportService.SendProgressReportFeedback(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpPut("[action]")]
-        public IActionResult SendProblemResponse(SendProblemResponseModel model)
+        public IActionResult SendProblemReportFeedback(SendProblemReportFeedbackModel model)
         {
-            var result = _reportService.SendProblemResponse(model);
+            var result = _reportService.SendProblemReportFeedback(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

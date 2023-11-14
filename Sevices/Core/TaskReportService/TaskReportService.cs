@@ -105,6 +105,18 @@ namespace Sevices.Core.ReportService
                             }
                             _dbContext.SaveChanges();
 
+                            if (leaderTask.createById != null)
+                            {
+                                _notificationService.Create(new Notification
+                                {
+                                    userId = leaderTask.createById.Value,
+                                    reportId = report.id,
+                                    title = "Báo cáo nghiệm thu",
+                                    content = "Bạn vừa nhận được 1 báo cáo nghiệm thu mới!",
+                                    type = NotificationType.TaskReport
+                                });
+                            }
+
                             result.Succeed = true;
                             result.Data = report.id;
                         }
@@ -179,6 +191,19 @@ namespace Sevices.Core.ReportService
 
                             _dbContext.Report.Add(report);
                             _dbContext.SaveChanges();
+
+                            if (leaderTask.createById != null)
+                            {
+                                _notificationService.Create(new Notification
+                                {
+                                    userId = leaderTask.createById.Value,
+                                    reportId = report.id,
+                                    title = "Báo cáo tiến độ",
+                                    content = "Bạn vừa nhận được 1 báo cáo tiến độ mới!",
+                                    type = NotificationType.TaskReport
+                                });
+                            }
+
                             result.Succeed = true;
                             result.Data = report.id;
                         }
@@ -193,7 +218,6 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        // Cần thêm supply
         public ResultModel CreateProblemReport(Guid reporterId, CreateProblemReportModel model)
         {
             ResultModel result = new ResultModel();
@@ -308,7 +332,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel SendProgressResponse(SendProgressResponseModel model)
+        public ResultModel SendProgressReportFeedback(SendProgressReportFeedbackModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -352,6 +376,16 @@ namespace Sevices.Core.ReportService
                             leaderTask.status = ETaskStatus.NotAchived;
                         }
                         _dbContext.SaveChanges();
+
+                        _notificationService.Create(new Notification
+                        {
+                            userId = report.reporterId,
+                            reportId = report.id,
+                            title = "Phản hồi báo cáo tiến độ",
+                            content = "Bạn vừa nhận được 1 phản hồi báo cáo tiến độ mới!",
+                            type = NotificationType.TaskReport
+                        });
+
                         result.Succeed = true;
                         result.Data = report.id;
                     }
@@ -365,7 +399,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel SendProblemResponse(SendProblemResponseModel model)
+        public ResultModel SendProblemReportFeedback(SendProblemReportFeedbackModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -385,6 +419,16 @@ namespace Sevices.Core.ReportService
                 {
                     report.responseContent = model.responseContent;
                     _dbContext.SaveChanges();
+
+                    _notificationService.Create(new Notification
+                    {
+                        userId = report.reporterId,
+                        reportId = report.id,
+                        title = "Phản hồi báo cáo vấn đề",
+                        content = "Bạn vừa nhận được 1 phản hồi báo cáo vấn đề mới!",
+                        type = NotificationType.TaskReport
+                    });
+
                     result.Succeed = true;
                     result.Data = report.id;
                 }
@@ -396,7 +440,6 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        // Cần sửa lại sau khi thêm supply
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -469,7 +512,6 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        // Cần sửa lại sau khi thêm supply
         public ResultModel GetProblemReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();

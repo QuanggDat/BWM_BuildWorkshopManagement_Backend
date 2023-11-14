@@ -47,6 +47,12 @@ namespace Sevices.Core.UserService
                     await _roleManager.CreateAsync(new Role { description = "Role for Admin", Name = "Admin" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+
+                if (string.IsNullOrEmpty(model.image))                    
+                {
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fuser.jpg?alt=media&token=e87bcb1c-87d1-4969-bb32-bbe012cc4a7d&_gl=1%2A1a966xl%2A_ga%2ANzMzMjUwODQ2LjE2OTY2NTU2NjA.%2A_ga_CW55HF8NVT%2AMTY5ODIyMjgyNC40LjEuMTY5ODIyMzI4My4xMS4wLjA&fbclid=IwAR3ddevBAa093zzwoZcb5f5leF0RFyzOuOWeDQnVWtuK9jzDxyyklHoemnY";
+                }
+
                 var user = new User
                 {
                     Email = model.email,
@@ -150,6 +156,12 @@ namespace Sevices.Core.UserService
                     await _roleManager.CreateAsync(new Role { description = "Role for Foreman", Name = "Foreman" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Foreman");
+
+                if (string.IsNullOrEmpty(model.image))
+                {
+                    model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fuser.jpg?alt=media&token=e87bcb1c-87d1-4969-bb32-bbe012cc4a7d&_gl=1%2A1a966xl%2A_ga%2ANzMzMjUwODQ2LjE2OTY2NTU2NjA.%2A_ga_CW55HF8NVT%2AMTY5ODIyMjgyNC40LjEuMTY5ODIyMzI4My4xMS4wLjA&fbclid=IwAR3ddevBAa093zzwoZcb5f5leF0RFyzOuOWeDQnVWtuK9jzDxyyklHoemnY";
+                }
+
                 var user = new User
                 {
                     Email = model.email,
@@ -254,6 +266,12 @@ namespace Sevices.Core.UserService
                     await _roleManager.CreateAsync(new Role { description = "Role for Leader", Name = "Leader" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Leader");
+
+                if (string.IsNullOrEmpty(model.image))
+                {
+                    model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fuser.jpg?alt=media&token=e87bcb1c-87d1-4969-bb32-bbe012cc4a7d&_gl=1%2A1a966xl%2A_ga%2ANzMzMjUwODQ2LjE2OTY2NTU2NjA.%2A_ga_CW55HF8NVT%2AMTY5ODIyMjgyNC40LjEuMTY5ODIyMzI4My4xMS4wLjA&fbclid=IwAR3ddevBAa093zzwoZcb5f5leF0RFyzOuOWeDQnVWtuK9jzDxyyklHoemnY";
+                }
+
                 var user = new User
                 {
                     Email = model.email,
@@ -357,6 +375,12 @@ namespace Sevices.Core.UserService
                     await _roleManager.CreateAsync(new Role { description = "Role for Worker", Name = "Worker" });
                 }
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Worker");
+
+                if (string.IsNullOrEmpty(model.image))
+                {
+                    model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fuser.jpg?alt=media&token=e87bcb1c-87d1-4969-bb32-bbe012cc4a7d&_gl=1%2A1a966xl%2A_ga%2ANzMzMjUwODQ2LjE2OTY2NTU2NjA.%2A_ga_CW55HF8NVT%2AMTY5ODIyMjgyNC40LjEuMTY5ODIyMzI4My4xMS4wLjA&fbclid=IwAR3ddevBAa093zzwoZcb5f5leF0RFyzOuOWeDQnVWtuK9jzDxyyklHoemnY";
+                }
+
                 var user = new User
                 {
                     Email = model.email,
@@ -565,6 +589,10 @@ namespace Sevices.Core.UserService
                 
                 if (data != null)
                 {
+                    if (string.IsNullOrEmpty(model.image))
+                    {
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fuser.jpg?alt=media&token=e87bcb1c-87d1-4969-bb32-bbe012cc4a7d&_gl=1%2A1a966xl%2A_ga%2ANzMzMjUwODQ2LjE2OTY2NTU2NjA.%2A_ga_CW55HF8NVT%2AMTY5ODIyMjgyNC40LjEuMTY5ODIyMzI4My4xMS4wLjA&fbclid=IwAR3ddevBAa093zzwoZcb5f5leF0RFyzOuOWeDQnVWtuK9jzDxyyklHoemnY";
+                    }
                     data.fullName = model.fullName;
                     data.address = model.address;
                     data.image = model.image;

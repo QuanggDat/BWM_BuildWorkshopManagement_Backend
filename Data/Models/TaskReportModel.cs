@@ -54,12 +54,12 @@ namespace Data.Models
         public List<SupplyModel> listSupply { get; set; } = new();
     }
 
-    public class SendProblemResponseModel
+    public class SendProblemReportFeedbackModel
     {
         public Guid reportId { get; set; }
         public string responseContent { get; set; } = null!;
     }
-    public class SendProgressResponseModel
+    public class SendProgressReportFeedbackModel
     {
         public Guid reportId { get; set; }
         public ReportStatus? status { get; set; }

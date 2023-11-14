@@ -6,11 +6,13 @@ using System.Data.Common;
 using Sevices.Core.LeaderTaskService;
 using Data.Enums;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class LeaderTaskController : Controller
     {
         private readonly ILeaderTaskService _leaderTaskService;

@@ -127,6 +127,16 @@ namespace Sevices.Core.LeaderTaskService
                                             {
                                                 _dbContext.LeaderTask.Add(leaderTask);
                                                 _dbContext.SaveChanges();
+
+                                                _notificationService.Create(new Notification
+                                                {
+                                                    userId = model.leaderId,
+                                                    leaderTaskId = leaderTask.id,
+                                                    title = "Công việc",
+                                                    content = "Bạn vừa nhận được 1 công việc mới!",
+                                                    type = NotificationType.TaskReport
+                                                });
+
                                                 result.Succeed = true;
                                                 result.Data = leaderTask.id;
                                             }
@@ -211,6 +221,16 @@ namespace Sevices.Core.LeaderTaskService
                                 {
                                     _dbContext.LeaderTask.Add(leaderTask);
                                     _dbContext.SaveChanges();
+
+                                    _notificationService.Create(new Notification
+                                    {
+                                        userId = model.leaderId,
+                                        leaderTaskId = leaderTask.id,
+                                        title = "Công việc",
+                                        content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
+                                        type = NotificationType.TaskReport
+                                    });
+
                                     result.Succeed = true;
                                     result.Data = leaderTask.id;
                                 }

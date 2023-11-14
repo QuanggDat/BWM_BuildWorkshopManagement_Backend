@@ -6,11 +6,13 @@ using static Data.Models.WorkerTaskModel;
 using Data.Models;
 using Data.Enums;
 using Data.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
     public class WorkerTaskController : ControllerBase
     {
         private readonly IWorkerTaskService _workerTaskService;
