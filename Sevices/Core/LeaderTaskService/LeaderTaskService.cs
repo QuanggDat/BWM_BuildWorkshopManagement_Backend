@@ -374,30 +374,29 @@ namespace Sevices.Core.LeaderTaskService
                 }
                 else
                 {
+                    var order = _dbContext.Order.Find(check.orderId);
+                    var leader = _dbContext.User.Find(check.leaderId);
+                    var createBy = _dbContext.User.Find(check.createById);
+
                     var leaderTaskModel = new LeaderTaskModel
                     {
                         id = check.id,
                         createdById = check.createById,
+                        createdByName = createBy!.fullName,
                         leaderId = check.leaderId,
-
+                        leaderName = leader!.fullName,
                         orderId = check.orderId,
-                        itemId = check.itemId,
-                        procedureId = check.procedureId,
-
+                        orderName = order!.name,
                         itemName = check.itemName,
                         drawingsTechnical = check.drawingsTechnical,
-
                         name = check.name,
-                        priority = check.priority,    
-                        
+                        priority = check.priority,                        
                         itemQuantity = check.itemQuantity,
                         itemCompleted = check.itemCompleted,
                         itemFailed = check.itemFailed,
-
                         startTime = check.startTime,
                         endTime = check.endTime,                        
                         completedTime = check.completedTime,
-
                         status = check.status,
                         description = check.description,
                         isDeleted = check.isDeleted,
@@ -433,29 +432,30 @@ namespace Sevices.Core.LeaderTaskService
                 var list = new List<LeaderTaskModel>();
                 foreach (var item in listLeaderTaskPaging)
                 {
+                    var order = _dbContext.Order.Find(item.orderId);
+                    var leader = _dbContext.User.Find(item.leaderId);
+                    var createBy = _dbContext.User.Find(item.createById);
+
                     var tmp = new LeaderTaskModel
                     {
                         id = item.id,
-                        createdById = item.createById,
-                        leaderId = item.leaderId,                      
-                                               
-                        orderId = item.orderId,
-                        itemId = item.itemId,
-                        procedureId = item.procedureId,
 
+                        createdById = item.createById,
+                        createdByName = createBy!.fullName,
+                        leaderId = item.leaderId,
+                        leaderName = leader!.fullName,
+                        orderId = item.orderId,
+                        orderName = order!.name,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
-
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
-
                         name = item.name,
                         priority = item.priority,                       
                         startTime = item.startTime,
                         endTime = item.endTime,
                         completedTime = item.completedTime,
-
                         status = item.status,                      
                         description = item.description,
                         isDeleted = item.isDeleted,
@@ -496,15 +496,19 @@ namespace Sevices.Core.LeaderTaskService
                 var list = new List<LeaderTaskModel>();
                 foreach (var item in listLeaderTaskPaging)
                 {
+                    var order = _dbContext.Order.Find(item.orderId);
+                    var leader = _dbContext.User.Find(item.leaderId);
+                    var createBy = _dbContext.User.Find(item.createById);
+
                     var tmp = new LeaderTaskModel
                     {
                         id = item.id,
                         createdById = item.createById,
+                        createdByName = createBy!.fullName,
                         leaderId = item.leaderId,
-
+                        leaderName = leader!.fullName,
                         orderId = item.orderId,
-                        itemId = item.itemId,
-                        procedureId = item.procedureId,
+                        orderName = order!.name,
 
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,

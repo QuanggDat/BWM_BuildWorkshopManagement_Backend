@@ -33,11 +33,13 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? leaderId { get; set; }
+        public string leaderName { get; set; } = null!;
+
         public Guid? createdById { get; set; } = null!;
+        public string createdByName { get; set; } = null!;
 
         public Guid? orderId { get; set; }
-        public Guid? itemId { get; set; }
-        public Guid? procedureId { get; set; }
+        public string orderName { get; set; } = null!;
 
         public string? itemName { get; set; } 
         public string? drawingsTechnical { get; set; }

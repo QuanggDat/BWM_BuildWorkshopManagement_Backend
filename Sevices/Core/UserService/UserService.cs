@@ -749,7 +749,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r=>r.Role)
+                var listUser = _dbContext.User.Include(r => r.Role)
                    .OrderBy(x => x.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
