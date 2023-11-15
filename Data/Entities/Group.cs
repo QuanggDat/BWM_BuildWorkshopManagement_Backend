@@ -17,7 +17,7 @@ namespace Data.Entities
         public int member { get; set; }
         public bool isDeleted { get; set; }
 
-        public virtual List<User> Users { get; set; } = new();
+        //public virtual List<User> Users { get; set; } = new();
     }
 }
 

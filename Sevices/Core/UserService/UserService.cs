@@ -750,7 +750,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r => r.Role)
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
                    .OrderBy(x => x.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
@@ -790,7 +790,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r => r.Role)
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
                    .OrderBy(x => x.fullName).ToList();                
 
                 result.Data = new PagingModel()
@@ -959,7 +959,7 @@ namespace Sevices.Core.UserService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus)
+                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus).Include(r => r.Group)
                     .OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
