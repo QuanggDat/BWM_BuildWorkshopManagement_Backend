@@ -10,6 +10,7 @@ namespace Data.Models
     public class ItemModel
     {
         public Guid id { get; set; }
+        public Guid? itemCategoryId { get; set; }
         public string name { get; set; } = null!;
         public string? image { get; set; }
         public double length { get; set; }
@@ -21,8 +22,7 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public double price { get; set; }
-        public Guid? itemCategoryId { get; set; }
+        public double price { get; set; }      
         public List<Guid> listProcedureId { get; set; } = null!;
         public List<Guid> listMaterialId { get; set; } = null!;
     }
@@ -41,8 +41,14 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<AddtProcedure> listProcedure { get; set; } = null!;
         public List<AddMaterial> listMaterial { get; set; } = null!;
+    }
+
+    public class AddtProcedure
+    {
+        public Guid procedureId { get; set; }
+        public int priority { get; set; }
     }
 
     public class AddMaterial
@@ -53,8 +59,8 @@ namespace Data.Models
 
     public class UpdateItemModel
     {
-        public Guid itemCategoryId { get; set; }
         public Guid id { get; set; }
+        public Guid itemCategoryId { get; set; }     
         public string name { get; set; } = null!;
         public string? image { get; set; }
         public double length { get; set; } 
@@ -66,7 +72,7 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public List<Guid> listProcedureId { get; set; } = null!;
+        public List<AddtProcedure> listProcedure { get; set; } = null!;
         public List<AddMaterial> listMaterial { get; set; } = null!;
     }
 
