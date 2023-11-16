@@ -101,7 +101,7 @@ namespace Data.Models
 
     public class AddWorkerToGroupModel
     {
-        public Guid id { get; set; }
+        public Guid userId { get; set; }
         public Guid groupId { get; set; }
     }
 

@@ -23,7 +23,7 @@ namespace Data.Entities
         public LeaderTask LeaderTask { get; set; } = null!;
 
         [ForeignKey("stepId")]
-        public Guid stepId { get; set; }
+        public Guid? stepId { get; set; }
         public virtual Step Step { get; set; } = null!;
 
         public string name { get; set; } = null!;

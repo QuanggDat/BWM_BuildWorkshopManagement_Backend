@@ -318,7 +318,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id && i.banStatus != true);
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.userId && i.banStatus != true);
                 if (user == null)
                 {
                     result.Code = 18;
@@ -376,7 +376,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id && i.banStatus != true);
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.userId && i.banStatus != true);
                 if (user == null)
                 {
                     result.Code = 18;
