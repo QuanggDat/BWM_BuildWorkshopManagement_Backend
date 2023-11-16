@@ -959,7 +959,7 @@ namespace Sevices.Core.UserService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus).Include(r => r.Group)
+                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus).Include(r => r.Group) 
                     .OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))

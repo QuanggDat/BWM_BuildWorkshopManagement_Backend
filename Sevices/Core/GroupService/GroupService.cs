@@ -67,7 +67,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(x => x.groupId == id && !x.banStatus)
+                var listUser = _dbContext.User.Include(x => x.Role).Where(x => x.groupId == id && !x.banStatus)
                     .OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
@@ -96,7 +96,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var listUser = _dbContext.User.Where(x => x.groupId != id && !x.banStatus).OrderBy(s => s.fullName).ToList();
+                var listUser = _dbContext.User.Include(x => x.Role).Where(x => x.groupId != id && !x.banStatus).OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
