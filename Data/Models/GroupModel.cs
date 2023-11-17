@@ -17,7 +17,7 @@ namespace Data.Models
     public class CreateGroupModel
     {
         public string name { get; set; }
-        public List<string?>? listUserId { get; set; } 
+        public List<Guid>? listUserId { get; set; } 
     }
 
     public class UpdateGroupModel

@@ -11,6 +11,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }      
         public string name { get; set; } = null!;
+        public int quantityItem { get; set; }
     }
 
     public class CreateItemCategoryModel

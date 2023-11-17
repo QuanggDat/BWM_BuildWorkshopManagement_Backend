@@ -2,6 +2,7 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -111,7 +112,8 @@ namespace Sevices.Core.ItemCategoryService
 
             try
             {
-                var listItemCategory = _dbContext.ItemCategory.Where(x => x.isDeleted != true)
+                var listItemCategory = _dbContext.ItemCategory.Include(x => x.Items)
+                    .Where(x => x.isDeleted != true)
                    .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
@@ -129,6 +131,7 @@ namespace Sevices.Core.ItemCategoryService
                     {
                         id = item.id,
                         name = item.name,
+                        quantityItem = item.Items.Count,
                     };
                     list.Add(tmp);
                 }
@@ -153,7 +156,8 @@ namespace Sevices.Core.ItemCategoryService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.ItemCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.ItemCategory.Include(x => x.Items)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -168,6 +172,7 @@ namespace Sevices.Core.ItemCategoryService
                     {
                         id = check.id,
                         name = check.name,
+                        quantityItem = check.Items.Count,
                     };
 
                     result.Data = itemCategoryModel;

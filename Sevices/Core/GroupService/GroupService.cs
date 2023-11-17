@@ -145,7 +145,7 @@ namespace Sevices.Core.GroupService
 
                         foreach (var userId in model.listUserId)
                         {
-                            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(x => x.Id == new Guid(userId!) && x.banStatus != true);
+                            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(x => x.Id == userId && x.banStatus != true);
                             if (user == null)
                             {
                                 result.Code = 18;
@@ -196,9 +196,7 @@ namespace Sevices.Core.GroupService
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = newGroup.id;
-                    }
-                    
-                    
+                    }                                       
                 }              
             }
             catch (Exception ex)

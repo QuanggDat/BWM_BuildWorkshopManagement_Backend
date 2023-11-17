@@ -113,8 +113,8 @@ namespace Sevices.Core.CategoryService
             
             try
             {
-                var listMaterialCategory = _dbContext.MaterialCategory.Where(x => x.isDeleted != true)
-                   .OrderBy(x => x.name).ToList();
+                var listMaterialCategory = _dbContext.MaterialCategory.Include(x => x.Materials)
+                    .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -130,7 +130,8 @@ namespace Sevices.Core.CategoryService
                     var tmp = new MaterialCategoryModel
                     {
                         id = item.id,                       
-                        name = item.name,                    
+                        name = item.name, 
+                        quantityMaterial = item.Materials.Count,
                     };
                     list.Add(tmp);
                 } 
@@ -155,7 +156,8 @@ namespace Sevices.Core.CategoryService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.MaterialCategory.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.MaterialCategory.Include(x => x.Materials)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -170,6 +172,7 @@ namespace Sevices.Core.CategoryService
                     {
                         id = check.id,
                         name = check.name,
+                        quantityMaterial = check.Materials.Count,
                     };
 
                     result.Data = materialCategoryModel;

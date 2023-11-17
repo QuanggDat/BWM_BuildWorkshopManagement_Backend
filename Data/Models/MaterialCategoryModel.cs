@@ -10,7 +10,8 @@ namespace Data.Models
     public class MaterialCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; } = null!;        
+        public string name { get; set; } = null!;
+        public int quantityMaterial { get; set; }
     }
 
     public class CreateMaterialCategoryModel
@@ -21,6 +22,6 @@ namespace Data.Models
     public class UpdateMaterialCategoryModel
     {
         public Guid id { get; set; }
-        public string name { get; set; } = null!;
+        public string name { get; set; } = null!;        
     }
 }
