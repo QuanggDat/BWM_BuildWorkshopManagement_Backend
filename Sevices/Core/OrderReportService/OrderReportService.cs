@@ -1,4 +1,5 @@
-﻿using Data.DataAccess;
+﻿using AutoMapper;
+using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
@@ -11,11 +12,13 @@ namespace Sevices.Core.OrderReportService
     {
         private readonly AppDbContext _dbContext;
         private readonly INotificationService _notificationService;
+        private readonly IMapper _mapper;
 
-        public OrderReportService(AppDbContext dbContext, INotificationService notificationService)
+        public OrderReportService(AppDbContext dbContext, INotificationService notificationService, IMapper mapper)
         {
             _dbContext = dbContext;
             _notificationService = notificationService;
+            _mapper = mapper;
         }
 
         public ResultModel Create(Guid reporterId, CreateOrderReportModel model)
@@ -142,7 +145,10 @@ namespace Sevices.Core.OrderReportService
         {
             ResultModel result = new ResultModel();
 
-            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
+            var listOrderReport = _dbContext.Report
+                .Include(x => x.Resources)
+                .Include(x => x.Order)
+                .Include(x => x.Reporter)
                 .Where(x => x.reporterId == foremanId).ToList();
 
             try
@@ -158,6 +164,7 @@ namespace Sevices.Core.OrderReportService
                 {
                     id = report.id,
                     orderId = report.orderId,
+                    order = report.Order != null ? _mapper.Map<OrderModel>(report.Order) : null,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -225,7 +232,10 @@ namespace Sevices.Core.OrderReportService
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
+            var listOrderReport = _dbContext.Report
+                .Include(x => x.Resources)
+                .Include(x => x.Order)
+                .Include(x => x.Reporter)
                 .Where(x => x.reportType == ReportType.OrderReport).ToList();
             try
             {
@@ -236,15 +246,17 @@ namespace Sevices.Core.OrderReportService
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = listOrderReport.Select(report => new OrderReportModel
+                var list = listOrderReportPaging.Select(report => new OrderReportModel
                 {
                     id = report.id,
                     orderId = report.orderId,
+                    order = report.Order != null ? _mapper.Map<OrderModel>(report.Order) : null,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
                     status = report.status,
                     reporterId = report.reporterId,
+                    reporter = report.Reporter != null ? _mapper.Map<UserModel>(report.Reporter) : null,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
