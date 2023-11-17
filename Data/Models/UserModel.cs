@@ -104,6 +104,7 @@ namespace Data.Models
         public List<Guid> listUserId { get; set; } = null!;
         public Guid groupId { get; set; }
     }
+
     public class AddLeaderToGroupModel
     {
         public Guid userId { get; set; }
@@ -112,15 +113,7 @@ namespace Data.Models
 
     public class RemoveWorkerFromGroupModel
     {
-        public Guid id { get; set; }
+        public Guid userId { get; set; }
         public Guid groupId { get; set; }
     }
-
-    public class AddManagerToGroupModel
-    {
-        public Guid id { get; set; }
-        public Guid roleId { get; set; }
-        public Guid groupId { get; set; }
-    }
-
 }

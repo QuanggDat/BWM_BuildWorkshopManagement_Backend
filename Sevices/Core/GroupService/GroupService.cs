@@ -119,7 +119,6 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        // cần validate
         //Foreman will create new group 
         public ResultModel Create(CreateGroupModel model)
         {
@@ -136,9 +135,17 @@ namespace Sevices.Core.GroupService
                 {
                     if(model.listUserId != null)
                     {
+                        var newGroup = new Group
+                        {
+                            name = model.name,
+                            member = 0,
+                            isDeleted = false
+                        };
+                        _dbContext.Group.Add(newGroup);
+
                         foreach (var userId in model.listUserId)
                         {
-                            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(x => x.Id == userId && x.banStatus != true);
+                            var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(x => x.Id == new Guid(userId!) && x.banStatus != true);
                             if (user == null)
                             {
                                 result.Code = 18;
@@ -164,50 +171,34 @@ namespace Sevices.Core.GroupService
                                         result.ErrorMessage = "Công nhân đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
                                         return result;
                                     }
-
+                                    else
+                                    {
+                                        user.groupId = newGroup.id;
+                                        newGroup.member += 1;
+                                    }
                                 }
-                            }
-                        }                    
+                            }                           
+                        }
+                        
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = newGroup.id;
                     }
-
                     else
                     {
-                        var listUser = _dbContext.User.Where(x => model.listUserId.Contains(x.Id)).ToList();
-
-                        if (listUser.Any())
+                        var newGroup = new Group
                         {
-                            var newGroup = new Group
-                            {
-                                name = model.name,
-                                member = model.listUserId.Count,
-                                isDeleted = false
-                            };
-                            _dbContext.Group.Add(newGroup);
-
-                            foreach (var user in listUser)
-                            {
-                                user.groupId = newGroup.id;
-                            }
-                            _dbContext.User.UpdateRange(listUser);
-
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = newGroup.id;
-                        }
-                        else
-                        {
-                            var newGroup = new Group
-                            {
-                                name = model.name,
-                                member = 0,
-                                isDeleted = false
-                            };
-                            _dbContext.Group.Add(newGroup);
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = newGroup.id;
-                        }
-                    }                    
+                            name = model.name,
+                            member = 0,
+                            isDeleted = false
+                        };
+                        _dbContext.Group.Add(newGroup);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = newGroup.id;
+                    }
+                    
+                    
                 }              
             }
             catch (Exception ex)
@@ -217,7 +208,6 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        // cần sửa 
         public ResultModel AddWorkersToGroup(AddWorkersToGroupModel model)
         {
             var result = new ResultModel();
@@ -230,7 +220,7 @@ namespace Sevices.Core.GroupService
                     result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
                 }
                 else
-                {                    
+                {
                     var listUser = _dbContext.User.Include(r => r.Role).Where(x => model.listUserId.Contains(x.Id) && x.banStatus != true).ToList();
                     foreach (var userId in model.listUserId)
                     {
@@ -264,7 +254,7 @@ namespace Sevices.Core.GroupService
                                 {
                                     user.groupId = model.groupId;
                                     group.member += 1;
-                                    _dbContext.User.Update(user);                                                                     
+                                    _dbContext.User.Update(user);
                                 }
                             }
                         }
@@ -275,54 +265,7 @@ namespace Sevices.Core.GroupService
                     result.Succeed = true;
                     result.Data = group.id;
                 }
-                    /*
-                    var listUser = _dbContext.User.Include(r => r.Role).Where(x => model.listUserId.Contains(x.Id) && x.banStatus != true).ToList();
-                    var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.userId && i.banStatus != true);
-                    if (user == null)
-                    {
-                        result.Code = 18;
-                        result.ErrorMessage = "Không tìm thấy người dùng trong hệ thống!";
-                    }
-                    else
-                    {
-                        var group = _dbContext.Group.FirstOrDefault(g => g.id == model.groupId);
-                        if (group == null)
-                        {
-                            result.Code = 20;
-                            result.ErrorMessage = "Không tìm thấy tổ trong hệ thống!";
-                        }
-                        else
-                        {
-                            if (user.groupId != null)
-                            {
-                                result.Code = 95;
-                                result.ErrorMessage = "Công nhân đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
-                            }
-                            else
-                            {
-                                if (user.Role != null && user.Role.Name == "Worker")
-                                {
-                                    //Update GroupId
-                                    user.groupId = model.groupId;
-                                    _dbContext.User.Update(user);
-
-                                    group.member += 1;
-                                    _dbContext.Group.Update(group);
-
-                                    _dbContext.SaveChanges();
-                                    result.Succeed = true;
-                                    result.Data = _mapper.Map<GroupModel>(group);
-                                }
-                                else
-                                {
-                                    result.Code = 22;
-                                    result.ErrorMessage = "Người dùng không phải công nhân!";
-                                }
-                            }
-                        }
-                    }
-                    */
-                }
+            }
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
@@ -335,7 +278,7 @@ namespace Sevices.Core.GroupService
             var result = new ResultModel();
             try
             {
-                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.id && i.banStatus != true);
+                var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == model.userId && i.banStatus != true);
                 if (user == null)
                 {
                     result.Code = 18;
@@ -442,7 +385,7 @@ namespace Sevices.Core.GroupService
                         }
                         else
                         {
-                            if (newLeader.Role != null && newLeader.Role.Name == "Leader")
+                            if (newLeader.Role != null && newLeader.Role.Name != "Leader")
                             {
                                 result.Code = 21;
                                 result.ErrorMessage = "Người dùng không phải tổ trưởng!";
@@ -452,8 +395,8 @@ namespace Sevices.Core.GroupService
                                 // Delete group for old Leader
                                 if(oldLeader != null)
                                 {
-                                    oldLeader.roleId = null;
-                                    oldLeader.Role = null;
+                                    oldLeader.groupId = null;
+                                    oldLeader.Group = null;
                                 }
                                 data.name = model.name;
                                 newLeader.groupId = model.id;
@@ -526,8 +469,6 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-
-        
+        }        
     }
 }

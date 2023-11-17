@@ -67,7 +67,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public IActionResult AddWorkerToGroup(AddWorkersToGroupModel model)
+        public IActionResult AddWorkersToGroup(AddWorkersToGroupModel model)
         {
             var result = _groupService.AddWorkersToGroup(model);
             if (result.Succeed) return Ok(result.Data);
