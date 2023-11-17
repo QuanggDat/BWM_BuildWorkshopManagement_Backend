@@ -59,7 +59,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public IActionResult AddLeaderToGroup(AddWorkerToGroupModel model)
+        public IActionResult AddLeaderToGroup(AddLeaderToGroupModel model)
         {
             var result = _groupService.AddLeaderToGroup(model);
             if (result.Succeed) return Ok(result.Data);
@@ -67,9 +67,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public IActionResult AddWorkerToGroup(AddWorkerToGroupModel model)
+        public IActionResult AddWorkerToGroup(AddWorkersToGroupModel model)
         {
-            var result = _groupService.AddWorkerToGroup(model);
+            var result = _groupService.AddWorkersToGroup(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

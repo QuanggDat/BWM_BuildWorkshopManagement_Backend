@@ -14,6 +14,7 @@ namespace Sevices.Core.LeaderTaskService
         ResultModel CreateAcceptanceTask(Guid createById, CreateAcceptanceTaskModel model);
         ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderId(Guid leadeId, string? search, int pageIndex, int pageSize);
+        ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel UpdateStatus(Guid id, ETaskStatus status);
         ResultModel Update(UpdateLeaderTaskModel model);

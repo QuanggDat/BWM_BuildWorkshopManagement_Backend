@@ -34,7 +34,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? leaderId { get; set; }
-        public string leaderName { get; set; } = null!;
+        public string? leaderName { get; set; } 
 
         public Guid? createdById { get; set; } = null!;
         public string createdByName { get; set; } = null!;

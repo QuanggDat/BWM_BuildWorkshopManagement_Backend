@@ -9,8 +9,8 @@ namespace Sevices.Core.GroupService
         ResultModel GetAllUserByGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetAllUserNotInGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model);
-        ResultModel AddLeaderToGroup(AddWorkerToGroupModel model);
-        ResultModel AddWorkerToGroup(AddWorkerToGroupModel model);
+        ResultModel AddLeaderToGroup(AddLeaderToGroupModel model);
+        ResultModel AddWorkersToGroup(AddWorkersToGroupModel model);
         ResultModel Update(UpdateGroupModel model);
         ResultModel Delete(Guid id);
     }

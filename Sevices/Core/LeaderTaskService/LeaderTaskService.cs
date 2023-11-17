@@ -360,8 +360,8 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.LeaderTask.Where(x => x.id == id && x.isDeleted != true)
-                    .FirstOrDefault();
+                var check = _dbContext.LeaderTask.Include(x => x.Leader)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -372,7 +372,6 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var order = _dbContext.Order.Find(check.orderId);
-                    var leader = _dbContext.User.Find(check.leaderId);
                     var createBy = _dbContext.User.Find(check.createById);
 
                     var leaderTaskModel = new LeaderTaskModel
@@ -381,7 +380,7 @@ namespace Sevices.Core.LeaderTaskService
                         createdById = check.createById,
                         createdByName = createBy!.fullName,
                         leaderId = check.leaderId,
-                        leaderName = leader!.fullName,
+                        leaderName = check.Leader?.fullName ?? "",
                         orderId = check.orderId,
                         orderName = order!.name,
                         itemName = check.itemName,
@@ -410,12 +409,76 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
+        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
+                .Where(a => a.isDeleted == false)
+                .OrderByDescending(x => x.startTime).ToList();
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LeaderTaskModel>();
+                foreach (var item in listLeaderTaskPaging)
+                {
+                    var order = _dbContext.Order.Find(item.orderId);
+                    var createBy = _dbContext.User.Find(item.createById);
+
+                    var tmp = new LeaderTaskModel
+                    {
+                        id = item.id,
+                        createdById = item.createById,
+                        createdByName = createBy!.fullName,
+                        leaderId = item.leaderId,
+                        leaderName = item.Leader?.fullName ?? "",
+                        orderId = item.orderId,
+                        orderName = order!.name,
+                        itemId = item.itemId,
+                        itemName = item.itemName,
+                        drawingsTechnical = item.drawingsTechnical,
+                        itemQuantity = item.itemQuantity,
+                        itemCompleted = item.itemCompleted,
+                        itemFailed = item.itemFailed,
+                        name = item.name,
+                        priority = item.priority,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        completedTime = item.completedTime,
+                        status = item.status,
+                        description = item.description,
+                        isDeleted = item.isDeleted,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLeaderTask.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listLeaderTask = _dbContext.LeaderTask
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
             try
@@ -431,7 +494,6 @@ namespace Sevices.Core.LeaderTaskService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var order = _dbContext.Order.Find(item.orderId);
-                    var leader = _dbContext.User.Find(item.leaderId);
                     var createBy = _dbContext.User.Find(item.createById);
 
                     var tmp = new LeaderTaskModel
@@ -440,7 +502,7 @@ namespace Sevices.Core.LeaderTaskService
                         createdById = item.createById,
                         createdByName = createBy!.fullName,
                         leaderId = item.leaderId,
-                        leaderName = leader!.fullName,
+                        leaderName = item.Leader?.fullName ?? "",
                         orderId = item.orderId,
                         orderName = order!.name,
                         itemId = item.itemId,
@@ -479,7 +541,7 @@ namespace Sevices.Core.LeaderTaskService
         {
             var result = new ResultModel();
             result.Succeed = false;
-            var listLeaderTask = _dbContext.LeaderTask
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
                     .Where(a => a.leaderId == leaderId && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
             try
@@ -495,7 +557,6 @@ namespace Sevices.Core.LeaderTaskService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var order = _dbContext.Order.Find(item.orderId);
-                    var leader = _dbContext.User.Find(item.leaderId);
                     var createBy = _dbContext.User.Find(item.createById);
 
                     var tmp = new LeaderTaskModel
@@ -504,7 +565,7 @@ namespace Sevices.Core.LeaderTaskService
                         createdById = item.createById,
                         createdByName = createBy!.fullName,
                         leaderId = item.leaderId,
-                        leaderName = leader!.fullName,
+                        leaderName = item.Leader?.fullName ?? "",
                         orderId = item.orderId,
                         orderName = order!.name,
                         itemId = item.itemId,
@@ -567,7 +628,9 @@ namespace Sevices.Core.LeaderTaskService
                 }                
             }
             return result;
-        }   
+        }
+
+        
 
         #region Comment
         /*

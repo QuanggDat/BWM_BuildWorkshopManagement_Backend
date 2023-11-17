@@ -99,7 +99,12 @@ namespace Data.Models
         public Guid teamId { get; set; }
     }
 
-    public class AddWorkerToGroupModel
+    public class AddWorkersToGroupModel
+    {
+        public List<Guid> listUserId { get; set; } = null!;
+        public Guid groupId { get; set; }
+    }
+    public class AddLeaderToGroupModel
     {
         public Guid userId { get; set; }
         public Guid groupId { get; set; }

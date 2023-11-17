@@ -505,5 +505,65 @@ namespace Sevices.Core.WorkerTaskService
             }
             return result;         
         }
+        public ResultModel GetByUserId(Guid userId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listWorkerTaskId = _dbContext.WorkerTaskDetail.Where(x => x.userId == userId).Select(x => x.workerTaskId).ToList();
+
+            var listWorkerTask = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+                .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<WorkerTaskModel>();
+                foreach (var item in listWorkerTaskPaging)
+                {
+                    var tmp = new WorkerTaskModel
+                    {
+                        id = item.id,
+                        createById = item.createById,
+                        leaderTaskId = item.leaderTaskId,
+                        stepId = item.stepId,
+
+                        name = item.name,
+                        priority = item.priority,
+
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        completeTime = item.completedTime,
+
+                        description = item.description,
+                        status = item.status,
+                        Members = item.WorkerTaskDetails.Select(_ => new TaskMember
+                        {
+                            memberId = _.User.Id,
+                            memberFullName = _.User.fullName,
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listWorkerTask.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; }
-        public List<Guid> listUserId { get; set; } = new();
+        public Guid leaderId { get; set; }
     }
 
     public class DeleteGroupModel
