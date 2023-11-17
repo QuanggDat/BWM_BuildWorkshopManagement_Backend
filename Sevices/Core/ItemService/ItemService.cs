@@ -295,6 +295,7 @@ namespace Sevices.Core.ItemService
             try
             {
                 var listItem =  _dbContext.Item.Where(x => x.isDeleted != true)
+                    .Include(x => x.ItemCategory)
                     .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
                    .OrderBy(x => x.name).ToList();
@@ -313,6 +314,7 @@ namespace Sevices.Core.ItemService
                     {
                         id = item.id,
                         itemCategoryId = item.itemCategoryId,
+                        itemCategoryName = item.ItemCategory?.name?? "",
                         name = item.name,
                         image = item.image,
                         length = item.length,
@@ -351,6 +353,7 @@ namespace Sevices.Core.ItemService
             try
             {
                 var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
+                    .Include(x => x.ItemCategory)
                     .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
                     .FirstOrDefault();
@@ -367,6 +370,7 @@ namespace Sevices.Core.ItemService
                     {
                         id = check.id,
                         itemCategoryId = check.itemCategoryId,
+                        itemCategoryName = check.ItemCategory?.name ?? "",
                         name = check.name,
                         image = check.image,
                         length = check.length,

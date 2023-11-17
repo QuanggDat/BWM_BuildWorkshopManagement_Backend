@@ -204,7 +204,8 @@ namespace Sevices.Core.MaterialService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.Material.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.Material.Include(x => x.MaterialCategory)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -218,6 +219,7 @@ namespace Sevices.Core.MaterialService
                     {
                         id = check.id,
                         materialCategoryId = check.materialCategoryId,
+                        materialCategoryName = check.MaterialCategory.name,
                         name = check.name,
                         image = check.image,
                         color = check.color,
@@ -248,8 +250,8 @@ namespace Sevices.Core.MaterialService
 
             try
             {
-                var listMaterial = _dbContext.Material.Where(x => x.isDeleted == false)
-                   .OrderBy(x => x.name).ToList();
+                var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory)
+                    .Where(x => x.isDeleted == false).OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -264,7 +266,8 @@ namespace Sevices.Core.MaterialService
                     var tmp = new MaterialModel
                     {
                         id = item.id,
-                        materialCategoryId = item.materialCategoryId,                        
+                        materialCategoryId = item.materialCategoryId,        
+                        materialCategoryName =item.MaterialCategory.name,
                         name = item.name,
                         image = item.image,
                         color = item.color,
@@ -298,7 +301,8 @@ namespace Sevices.Core.MaterialService
 
             try
             {
-                var check = _dbContext.MaterialCategory.Where(x => x.id == materialCategoryId && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.MaterialCategory
+                    .Where(x => x.id == materialCategoryId && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -308,8 +312,9 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var listMaterial = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
-                   .OrderBy(x => x.name).ToList();
+                    var listMaterial = _dbContext.Material
+                        .Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
+                            .OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))
                     {
@@ -324,8 +329,7 @@ namespace Sevices.Core.MaterialService
                                             
                         var tmp = new MaterialModel
                         {
-                            id = item.id,
-                            materialCategoryId = item.materialCategoryId,
+                            id = item.id,                      
                             name = item.name,
                             image = item.image,
                             color = item.color,
@@ -374,8 +378,9 @@ namespace Sevices.Core.MaterialService
                     var listMaterialId = _dbContext.ItemMaterial.Include(x => x.Material)
                         .Where(x => listItemId.Contains(x.itemId)).Select(x => x.materialId).Distinct().ToList();
 
-                    var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false)
-                   .OrderBy(x => x.name).ToList();
+                    var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory)
+                        .Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false)
+                            .OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))
                     {
@@ -392,6 +397,7 @@ namespace Sevices.Core.MaterialService
                         {
                             id = item.id,
                             materialCategoryId = item.materialCategoryId,
+                            materialCategoryName = item.MaterialCategory.name,
                             name = item.name,
                             image = item.image,
                             color = item.color,

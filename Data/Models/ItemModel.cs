@@ -11,6 +11,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? itemCategoryId { get; set; }
+        public string? itemCategoryName { get; set; } 
         public string name { get; set; } = null!;
         public string? image { get; set; }
         public double length { get; set; }
@@ -81,38 +82,6 @@ namespace Data.Models
         public Guid id { get; set; }
         public bool isDeleted { get; set; } = true;
     }
-
-    /*
-    public class ItemMaterialModel
-    {
-        public Guid id { get; set; }
-        public Guid itemId { get; set; }
-        public Guid materialId { get; set; }
-        public Guid createById { get; set; }
-        public int quantity { get; set; }
-        public double price { get; set; }
-        public double totalPrice { get; set; }
-    }
-    
-    public class AddMaterialToItemModel
-    {
-        [Required] public Guid itemId { get; set; }
-        [Required] public Guid materialId { get; set; }
-        public Guid createById { get; set; }
-        [Required] public int quantity { get; set; }
-        [Required] public double price { get; set; }
-        public double totalPrice { get; set; }
-    }
-
-    public class UpdateMaterialToItemModel
-    {
-        [Required] public Guid id { get; set; }
-        public Guid createById { get; set; }
-        [Required] public int quantity { get; set; }
-        [Required] public double price { get; set; }
-        public double totalPrice { get; set; }
-    }
-    */
 }
 
     

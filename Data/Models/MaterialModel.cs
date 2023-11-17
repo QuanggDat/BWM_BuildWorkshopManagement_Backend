@@ -10,6 +10,8 @@ namespace Data.Models
     public class MaterialModel
     {
         public Guid id { get; set; }
+        public Guid materialCategoryId { get; set; }
+        public string materialCategoryName { get; set; } = null!;
         public string name { get; set; } = null!;
         public string? image { get; set; } = null!;
         public string color { get; set; } = null!;
@@ -18,8 +20,7 @@ namespace Data.Models
         public string unit { get; set; } = null!;
         public string sku { get; set; } = null!;
         public string importPlace { get; set; } = null!;
-        public double price { get; set; }
-        public Guid materialCategoryId { get; set; }
+        public double price { get; set; }       
     }
 
     public class CreateMaterialModel
