@@ -63,6 +63,13 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+        [HttpPut("[action]")]
+        public IActionResult Update(UpdateOrderReportModel model)
+        {
+            var result = _orderReportService.Update(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
         /*
         [HttpPut("[action]")]
         public IActionResult SendReviews(ReviewsOrderReportModel model)

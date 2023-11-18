@@ -393,7 +393,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel UpdateProblemTaskReportModel(UpdateProblemTaskReportModel model)
+        public ResultModel UpdateProblemTaskReport(UpdateProblemTaskReportModel model)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;

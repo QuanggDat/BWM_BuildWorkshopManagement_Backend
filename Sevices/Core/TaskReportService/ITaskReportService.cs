@@ -15,7 +15,7 @@ namespace Sevices.Core.ReportService
         ResultModel CreateProgressReport(Guid reporterId, CreateProgressReportModel model);
         ResultModel CreateAcceptanceReport(Guid reporterId, CreateAcceptanceReportModel model);
         ResultModel Update(UpdateTaskReportModel model);
-        ResultModel UpdateProblemTaskReportModel(UpdateProblemTaskReportModel model);
+        ResultModel UpdateProblemTaskReport(UpdateProblemTaskReportModel model);
         ResultModel SendProblemReportFeedback(SendProblemReportFeedbackModel model);
         ResultModel SendProgressReportFeedback(SendProgressReportFeedbackModel model);
         ResultModel GetById(Guid reportId);

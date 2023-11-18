@@ -95,5 +95,21 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
+        [HttpPut("[action]")]
+        public IActionResult Update(UpdateTaskReportModel model)
+        {
+            var result = _reportService.Update(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpPut("[action]")]
+        public IActionResult UpdateProblemTaskReport(UpdateProblemTaskReportModel model)
+        {
+            var result = _reportService.UpdateProblemTaskReport(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
     }
 }
