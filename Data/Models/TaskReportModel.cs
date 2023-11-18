@@ -36,8 +36,19 @@ namespace Data.Models
         public List<string>? resource { get; set; }
     }
 
-    public class UpdateReportModel
+    public class UpdateProblemTaskReportModel
     {
+        public Guid id { get; set; }
+        public string title { get; set; } = null!;
+        public string? content { get; set; } = null!;
+        public List<string>? resource { get; set; }
+        public ESupplyStatus supplyStatus { get; set; }
+        public List<MaterialAmount> listSupply { get; set; } = new();
+    }
+
+    public class UpdateTaskReportModel
+    {
+        public Guid id { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
         public List<string>? resource { get; set; }
@@ -60,7 +71,6 @@ namespace Data.Models
         public int? itemFailed { get; set; }    
         public List<string>? resource { get; set; }
         public DateTime createdDate { get; set; }
-
         public string? responseContent { get; set; }
         public List<SupplyModel> listSupply { get; set; } = new();
     }

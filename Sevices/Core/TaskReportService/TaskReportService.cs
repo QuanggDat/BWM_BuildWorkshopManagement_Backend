@@ -332,9 +332,159 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel Update(UpdateReportModel model)
+        public ResultModel Update(UpdateTaskReportModel model)
         {
-            throw new NotImplementedException();
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var check = _dbContext.Report.Find(model.id);
+
+            if (check == null)
+            {
+                result.Code = 60;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+            }
+            else
+            {
+                if (DateTime.Now >= check.createdDate.AddDays(1))
+                {
+                    result.Code = 100;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đã quá hạn sửa báo cáo!";
+                }
+                else
+                {
+                    check.title = model.title;
+                    check.content = model.content;
+
+                    // Remove all old resource
+                    var currentResources = _dbContext.Resource
+                                    .Where(x => x.reportId == check.id).ToList();
+
+                    if (currentResources != null && currentResources.Count > 0)
+                    {
+                        _dbContext.Resource.RemoveRange(currentResources);
+                    }
+
+                    if (model.resource != null)
+                    {
+                        foreach (var resource in model.resource)
+                        {
+                            _dbContext.Resource.Add(new Resource
+                            {
+                                reportId = check.id,
+                                link = resource
+                            });
+                        }
+                    }
+                    try
+                    {
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = check.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public ResultModel UpdateProblemTaskReportModel(UpdateProblemTaskReportModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var check = _dbContext.Report.Find(model.id);
+
+            if (check == null)
+            {
+                result.Code = 60;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+            }
+            else
+            {
+                if (DateTime.Now >= check.createdDate.AddDays(1))
+                {
+                    result.Code = 100;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đã quá hạn sửa báo cáo!";
+                }
+                else
+                {
+                    check.title = model.title;
+                    check.content = model.content;
+
+                    // Remove all old resource
+                    var currentResources = _dbContext.Resource
+                                    .Where(x => x.reportId == check.id).ToList();
+
+                    if (currentResources != null && currentResources.Count > 0)
+                    {
+                        _dbContext.Resource.RemoveRange(currentResources);
+                    }
+
+                    if (model.resource != null)
+                    {
+                        foreach (var resource in model.resource)
+                        {
+                            _dbContext.Resource.Add(new Resource
+                            {
+                                reportId = check.id,
+                                link = resource
+                            });
+                        }
+                    }
+
+                    // Remove all old supply
+                    var currentSupply = _dbContext.Supply
+                                    .Where(x => x.reportId == check.id).ToList();
+
+                    if (currentSupply != null && currentSupply.Count > 0)
+                    {
+                        _dbContext.Supply.RemoveRange(currentSupply);
+                    }
+
+                    if (model.listSupply.Any())
+                    {
+                        var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+                        var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
+
+                        var listSupply = new List<Supply>();
+                        foreach (var supply in model.listSupply)
+                        {
+                            var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
+                            var matePrice = mate != null ? mate.price : 0;
+                            var newSupply = new Supply()
+                            {
+                                reportId = check.id,
+                                materialId = supply.materialId,
+                                amount = supply.amount,
+                                price = matePrice,
+                                totalPrice = matePrice * supply.amount,
+                                status = model.supplyStatus,
+                            };
+                            listSupply.Add(newSupply);
+                        }
+                        _dbContext.Supply.AddRange(listSupply);
+                    }
+                    try
+                    {
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = check.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                }
+            }
+            return result;
         }
 
         public ResultModel SendProgressReportFeedback(SendProgressReportFeedbackModel model)
@@ -366,9 +516,6 @@ namespace Sevices.Core.ReportService
 
                     try
                     {
-                        report.status = model.status;
-                        report.responseContent = model.responseContent;
-
                         if (leaderTask != null && model.status == ReportStatus.Complete)
                         {
                             leaderTask.itemFailed = report.itemFailed;
@@ -452,7 +599,8 @@ namespace Sevices.Core.ReportService
             try
             {
                 var report = _dbContext.Report
-                    .Include(x => x.LeaderTask)
+                    .Include(x => x.Reporter)
+                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy)
                     .Include(x => x.Resources)
                     .Include(x => x.Supplies)
                     .FirstOrDefault(x => x.id == id);
@@ -467,47 +615,71 @@ namespace Sevices.Core.ReportService
                 {
                     if (report.reportType == ReportType.ProgressReport)
                     {
-                        var reviewer = report.LeaderTask.CreateBy;
-                        var reporter = report.Reporter;
-
                         var taskReport = new TaskReportModel
                         {
                             id = report.id,
                             leaderTaskId = report.LeaderTask.id,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
+                            responderId = report.LeaderTask.createById,
+                            responderName = report.LeaderTask.CreateBy?.fullName ?? "",
+                            reportType = report.reportType,
                             title = report.title,
                             content = report.content,
                             createdDate = report.createdDate,
                             status = report.status,
                             responseContent = report.responseContent,
-                            itemFailed = report.itemFailed,
-                            reporterId = report.reporterId,
-                            responderId = report.LeaderTask.createById,
+                            itemQuantity = report.LeaderTask.itemQuantity,
+                            itemFailed = report.itemFailed,                          
+                          
                             resource = report.Resources.Select(x => x.link).ToList()
                         };
                         result.Data = taskReport;
                         result.Succeed = true;
                     }
-                    else
+                    else if(report.reportType == ReportType.ProblemReport)
                     {
-                        var reviewer = report.LeaderTask.CreateBy;
-                        var reporter = report.Reporter;
-
                         var taskReport = new TaskReportModel
                         {
                             id = report.id,
-                            leaderTaskId = report.leaderTaskId,
+
+                            leaderTaskId = report.LeaderTask.id,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
+                            responderId = report.LeaderTask.createById,
+                            responderName = report.LeaderTask.CreateBy?.fullName ?? "",
+                            reportType = report.reportType,
                             title = report.title,
                             content = report.content,
                             createdDate = report.createdDate,
                             responseContent = report.responseContent,
-                            reporterId = report.reporterId,
-                            responderId = report.LeaderTask.createById,
                             resource = report.Resources.Select(x => x.link).ToList(),
                             listSupply = _mapper.Map<List<SupplyModel>>(report.Supplies)
                         };
                         result.Data = taskReport;
                         result.Succeed = true;
                     }
+                    else
+                    {
+                        var taskReport = new TaskReportModel
+                        {
+                            id = report.id,
+                            leaderTaskId = report.LeaderTask.id,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
+                            responderId = report.LeaderTask.createById,
+                            responderName = report.LeaderTask.CreateBy?.fullName ?? "",
+                            title = report.title,
+                            content = report.content,
+                            createdDate = report.createdDate,
+                            resource = report.Resources.Select(x => x.link).ToList(),
+                        };
+                        result.Data = taskReport;
+                        result.Succeed = true;
+                    }    
                 }
             }
             catch (Exception ex)
@@ -523,7 +695,10 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report
-                .Include(x => x.LeaderTask).Include(x => x.Resources).Include(x => x.Supplies)
+                .Include(x => x.Reporter)
+                .Include(x => x.LeaderTask)
+                .Include(x => x.Resources)
+                .Include(x => x.Supplies)
                 .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport)
                 .OrderByDescending(x => x.createdDate).ToList();
 
@@ -542,12 +717,16 @@ namespace Sevices.Core.ReportService
                     var tmp = new TaskReportModel
                     {
                         id = item.id,
+                        leaderTaskId = item.LeaderTask.id,
+                        reporterId = item.reporterId,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.createById,
+                        responderName = item.LeaderTask.CreateBy?.fullName??"",
+                        reportType = item.reportType,
                         title = item.title,
                         content = item.content,
                         createdDate = item.createdDate,
                         responseContent = item.responseContent,
-                        reporterId = item.reporterId,
-                        responderId = item.LeaderTask.createById,
                         resource = item.Resources.Select(x => x.link).ToList(),
                         listSupply = _mapper.Map<List<SupplyModel>>(item.Supplies)
                     };
@@ -576,8 +755,11 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report
-                .Include(x => x.LeaderTask).Include(x => x.Resources)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport).OrderByDescending(x => x.createdDate).ToList();
+                .Include(x => x.Reporter)
+                .Include(x => x.LeaderTask)
+                .Include(x => x.Resources)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport)
+                .OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
@@ -594,14 +776,18 @@ namespace Sevices.Core.ReportService
                     var tmp = new TaskReportModel
                     {
                         id = item.id,
+                        leaderTaskId = item.LeaderTask.id,
+                        reporterId = item.reporterId,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.createById,
+                        responderName = item.LeaderTask.CreateBy?.fullName ?? "",
+                        reportType = item.reportType,
                         title = item.title,
                         content = item.content,
                         itemFailed = item.itemFailed,
                         createdDate = item.createdDate,
                         status = item.status,
                         responseContent = item.responseContent,
-                        reporterId = item.reporterId,
-                        responderId = item.LeaderTask.createById,
                         resource = item.Resources.Select(x => x.link).ToList()
                     };
                     list.Add(tmp);

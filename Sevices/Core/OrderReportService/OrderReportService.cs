@@ -106,7 +106,64 @@ namespace Sevices.Core.OrderReportService
 
         public ResultModel Update(UpdateOrderReportModel model)
         {
-            throw new NotImplementedException();
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var check = _dbContext.Report.Find(model.id);
+
+            if (check == null)
+            {
+                result.Code = 60;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+            }
+            else
+            {
+                if (DateTime.Now >= check.createdDate.AddDays(1))
+                {
+                    result.Code = 100;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đã quá hạn sửa báo cáo!";
+                }
+                else
+                {
+                    check.title = model.title;
+                    check.content = model.content;
+                    check.status = model.status;
+
+                    // Remove all old resource
+                    var currentResources = _dbContext.Resource
+                                    .Where(x => x.reportId == check.id).ToList();
+
+                    if (currentResources != null && currentResources.Count > 0)
+                    {
+                        _dbContext.Resource.RemoveRange(currentResources);
+                    }
+
+                    if (model.resource != null)
+                    {
+                        foreach (var resource in model.resource)
+                        {
+                            _dbContext.Resource.Add(new Resource
+                            {
+                                reportId = check.id,
+                                link = resource
+                            });
+                        }
+                    }
+                    try
+                    {
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = check.id;
+                    }
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                }
+            }
+            return result;
         }
 
         public ResultModel GetById(Guid id)
@@ -131,7 +188,9 @@ namespace Sevices.Core.OrderReportService
                     {
                         id = check.id,
                         orderId = check.orderId,
-                        reporterId = check.reporterId,
+                        order = check.Order != null ? _mapper.Map<OrderModel>(check.Order) : null,
+                        reporterId = check.reporterId,                       
+                        reporter = check.Reporter != null ? _mapper.Map<UserModel>(check.Reporter) : null,
                         title = check.title,
                         content = check.content,
                         createdDate = check.createdDate,
@@ -200,7 +259,9 @@ namespace Sevices.Core.OrderReportService
         {
             ResultModel result = new ResultModel();
 
-            var listOrderReport = _dbContext.Report.Include(x => x.Resources)
+            var listOrderReport = _dbContext.Report
+                .Include(x => x.Reporter)
+                .Include(x => x.Resources)
                 .Where(x => x.orderId == orderId).ToList();
 
             try
