@@ -32,11 +32,7 @@ namespace Data.Entities
         public string? itemName { get; set; } 
         public string? drawingsTechnical { get; set; } 
 
-        [ForeignKey("procedureId")]
-        public Guid? procedureId { get; set; }
-        public virtual Procedure Procedure { get; set; } = null!;        
         public string name { get; set; } = null!;
-
         public DateTime startTime { get; set; } 
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }

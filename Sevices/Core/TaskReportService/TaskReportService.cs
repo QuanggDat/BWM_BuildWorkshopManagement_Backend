@@ -462,43 +462,64 @@ namespace Sevices.Core.ReportService
                 {
                     if (report.reportType == ReportType.ProgressReport)
                     {
-                        var reviewer = report.LeaderTask.CreateBy;
-                        var reporter = report.Reporter;
-
                         var taskReport = new TaskReportModel
                         {
                             id = report.id,
                             leaderTaskId = report.LeaderTask.id,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
+                            responderId = report.LeaderTask.createById,
+                            responderName = report.LeaderTask.name,
                             title = report.title,
-                            content = report.content,
+                            content = report.content,                           
+                            reportType = report.reportType,                           
                             createdDate = report.createdDate,
                             status = report.status,
                             responseContent = report.responseContent,
+                            itemQuantity = report.LeaderTask.itemQuantity,
                             itemFailed = report.itemFailed,
-                            reporterId = report.reporterId,
-                            responderId = report.LeaderTask.createById,
                             resource = report.Resources.Select(x => x.link).ToList()
+                        };
+                        result.Data = taskReport;
+                        result.Succeed = true;
+                    }
+                    else if (report.reportType == ReportType.ProblemReport)
+                    {
+                        var taskReport = new TaskReportModel
+                        {
+                            id = report.id,
+                            leaderTaskId = report.leaderTaskId,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
+                            responderId = report.LeaderTask.createById,
+                            responderName = report.LeaderTask.name,
+                            title = report.title,
+                            content = report.content,
+                            reportType = report.reportType,
+                            createdDate = report.createdDate,
+                            responseContent = report.responseContent,
+                            resource = report.Resources.Select(x => x.link).ToList(),
+                            listSupply = _mapper.Map<List<SupplyModel>>(report.Supplies)
                         };
                         result.Data = taskReport;
                         result.Succeed = true;
                     }
                     else
                     {
-                        var reviewer = report.LeaderTask.CreateBy;
-                        var reporter = report.Reporter;
-
                         var taskReport = new TaskReportModel
                         {
                             id = report.id,
                             leaderTaskId = report.leaderTaskId,
+                            leaderTaskName = report.LeaderTask.name,
+                            reporterId = report.reporterId,
+                            reporterName = report.Reporter.fullName,
                             title = report.title,
                             content = report.content,
-                            createdDate = report.createdDate,
-                            responseContent = report.responseContent,
-                            reporterId = report.reporterId,
-                            responderId = report.LeaderTask.createById,
+                            reportType = report.reportType,
+                            createdDate = report.createdDate,                   
                             resource = report.Resources.Select(x => x.link).ToList(),
-                            listSupply = _mapper.Map<List<SupplyModel>>(report.Supplies)
                         };
                         result.Data = taskReport;
                         result.Succeed = true;
@@ -535,14 +556,19 @@ namespace Sevices.Core.ReportService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var tmp = new TaskReportModel
-                    {
+                    {                       
                         id = item.id,
+                        leaderTaskId = item.leaderTaskId,
+                        leaderTaskName = item.LeaderTask.name,
+                        reporterId = item.reporterId,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.createById,
+                        responderName = item.LeaderTask.name,
                         title = item.title,
                         content = item.content,
+                        reportType = item.reportType,
                         createdDate = item.createdDate,
-                        responseContent = item.responseContent,
-                        reporterId = item.reporterId,
-                        responderId = item.LeaderTask.createById,
+                        responseContent = item.responseContent,                      
                         resource = item.Resources.Select(x => x.link).ToList(),
                         listSupply = _mapper.Map<List<SupplyModel>>(item.Supplies)
                     };
@@ -556,7 +582,6 @@ namespace Sevices.Core.ReportService
                 };
                 result.Succeed = true;
             }
-
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
@@ -571,7 +596,9 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report
-                .Include(x => x.LeaderTask).Include(x => x.Resources)
+                .Include(x => x.LeaderTask)
+                .Include(x => x.Reporter)
+                .Include(x => x.Resources)
                 .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport).OrderByDescending(x => x.createdDate).ToList();
 
             try
@@ -589,19 +616,24 @@ namespace Sevices.Core.ReportService
                     var tmp = new TaskReportModel
                     {
                         id = item.id,
+                        leaderTaskId = item.leaderTaskId,
+                        leaderTaskName = item.LeaderTask.name,
+                        reporterId = item.reporterId,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.createById,
+                        responderName = item.LeaderTask.name,
                         title = item.title,
                         content = item.content,
+                        itemQuantity = item.LeaderTask.itemQuantity,
                         itemFailed = item.itemFailed,
+                        reportType = item.reportType,
                         createdDate = item.createdDate,
                         status = item.status,
                         responseContent = item.responseContent,
-                        reporterId = item.reporterId,
-                        responderId = item.LeaderTask.createById,
                         resource = item.Resources.Select(x => x.link).ToList()
                     };
                     list.Add(tmp);
                 }
-
                 result.Data = new PagingModel()
                 {
                     Data = list,

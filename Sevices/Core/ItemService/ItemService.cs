@@ -427,6 +427,7 @@ namespace Sevices.Core.ItemService
                     {
                         var tmp = new ItemModel
                         {
+                            itemCategoryId = item.itemCategoryId,
                             id = item.id,
                             name = item.name,
                             image = item.image,

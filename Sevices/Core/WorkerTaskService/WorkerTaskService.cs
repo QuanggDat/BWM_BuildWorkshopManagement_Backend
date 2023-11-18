@@ -30,12 +30,6 @@ namespace Sevices.Core.WorkerTaskService
                 result.Succeed = false;
                 result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
             }
-
-            var stepTmp = _dbContext.Step.Find(model.stepId);
-            if (stepTmp != null)
-            {
-                model.name = stepTmp.name;
-            }
             
             else
             {
@@ -51,10 +45,7 @@ namespace Sevices.Core.WorkerTaskService
                     description = model.description,
                     isDeleted = false,
                 };
-                if (stepTmp != null)
-                {
-                    workerTask.stepId = model.stepId;
-                }
+
                 try
                 {
                     _dbContext.WorkerTask.Add(workerTask);
@@ -99,9 +90,6 @@ namespace Sevices.Core.WorkerTaskService
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 }
-
-
-
             }
             return result;
         }
@@ -401,7 +389,10 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+                var check = _dbContext.WorkerTask
+                    .Include(x => x.LeaderTask)
+                    .Include(x => x.CreateBy)
+                    .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                     .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
@@ -415,18 +406,15 @@ namespace Sevices.Core.WorkerTaskService
                     var wokerTaskModel = new WorkerTaskModel
                     {
                         id = check.id,
-
                         createById = check.createById,
+                        createByName = check.CreateBy.fullName,
                         leaderTaskId = check.leaderTaskId,
-                        stepId = check.stepId,
-
+                        leaderTaskName = check.LeaderTask.name,
                         name = check.name,
                         priority = check.priority,
-
                         startTime = check.startTime,
                         endTime = check.endTime,
                         completeTime = check.completedTime,
-
                         description = check.description,
                         status = check.status,
                         Members = check.WorkerTaskDetails.Select(_ => new TaskMember
@@ -452,7 +440,10 @@ namespace Sevices.Core.WorkerTaskService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listWorkerTask =  _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+            var listWorkerTask =  _dbContext.WorkerTask
+                .Include(x => x.LeaderTask)
+                .Include(x => x.CreateBy)
+                .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                 .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -472,15 +463,13 @@ namespace Sevices.Core.WorkerTaskService
                         id = item.id,
                         createById = item.createById,
                         leaderTaskId = item.leaderTaskId,
-                        stepId = item.stepId,
-                        
+                        createByName = item.CreateBy.fullName,
+                        leaderTaskName = item.LeaderTask.name,
                         name = item.name,
-                        priority = item.priority,
-                        
+                        priority = item.priority,                        
                         startTime = item.startTime,
                         endTime = item.endTime,
                         completeTime =item.completedTime,
-
                         description = item.description,
                         status = item.status,                        
                         Members = item.WorkerTaskDetails.Select(_ => new TaskMember
@@ -512,7 +501,10 @@ namespace Sevices.Core.WorkerTaskService
 
             var listWorkerTaskId = _dbContext.WorkerTaskDetail.Where(x => x.userId == userId).Select(x => x.workerTaskId).ToList();
 
-            var listWorkerTask = _dbContext.WorkerTask.Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+            var listWorkerTask = _dbContext.WorkerTask
+                .Include(x => x.LeaderTask)
+                .Include(x => x.CreateBy)
+                .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                 .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -532,15 +524,13 @@ namespace Sevices.Core.WorkerTaskService
                         id = item.id,
                         createById = item.createById,
                         leaderTaskId = item.leaderTaskId,
-                        stepId = item.stepId,
-
+                        createByName = item.CreateBy.fullName,
+                        leaderTaskName = item.LeaderTask.name,
                         name = item.name,
                         priority = item.priority,
-
                         startTime = item.startTime,
                         endTime = item.endTime,
                         completeTime = item.completedTime,
-
                         description = item.description,
                         status = item.status,
                         Members = item.WorkerTaskDetails.Select(_ => new TaskMember

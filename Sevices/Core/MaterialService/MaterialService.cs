@@ -328,8 +328,9 @@ namespace Sevices.Core.MaterialService
                     {
                                             
                         var tmp = new MaterialModel
-                        {
-                            id = item.id,                      
+                        {                           
+                            id = item.id,
+                            materialCategoryId = item.materialCategoryId,
                             name = item.name,
                             image = item.image,
                             color = item.color,

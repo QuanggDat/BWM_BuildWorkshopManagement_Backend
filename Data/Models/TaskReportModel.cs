@@ -40,16 +40,21 @@ namespace Data.Models
     public class TaskReportModel
     {
         public Guid id { get; set; }
-        public Guid? leaderTaskId { get; set; }       
+        public Guid? leaderTaskId { get; set; }
+        public string leaderTaskName { get; set; } = null!;
+        public Guid reporterId { get; set; }
+        public string reporterName { get; set; } = null!;
+        public Guid? responderId { get; set; }
+        public string responderName { get; set; } = null!;
         public ReportType reportType { get; set; }
         public string title { get; set; } = null!;
-        public string? content { get; set; } = null!;
+        public string? content { get; set; } 
         public ReportStatus? status { get; set; }
-        public int? itemFailed { get; set; }
+        public int? itemQuantity { get; set; }
+        public int? itemFailed { get; set; }    
         public List<string>? resource { get; set; }
         public DateTime createdDate { get; set; }
-        public Guid reporterId { get; set; }
-        public Guid? responderId { get; set; } 
+
         public string? responseContent { get; set; }
         public List<SupplyModel> listSupply { get; set; } = new();
     }

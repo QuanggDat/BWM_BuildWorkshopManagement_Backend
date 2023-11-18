@@ -107,6 +107,8 @@ namespace Sevices.Core.OrderReportService
             try
             {
                 var check = _dbContext.Report.Where(x => x.id == id)
+                    .Include(x => x.Order)
+                    .Include(x => x.Reporter)
                     .Include(x => x.Resources).SingleOrDefault();
 
                 if (check == null)
@@ -119,12 +121,15 @@ namespace Sevices.Core.OrderReportService
                 {
                     var report = new OrderReportModel
                     {
+                        id = check.id,
                         orderId = check.orderId,
+                        orderName = check.Order.name,
+                        reporterId = check.reporterId,
+                        reporterName = check.Reporter.fullName,
                         title = check.title,
                         content = check.content,
                         createdDate = check.createdDate,
-                        status = check.status,
-                        reporterId = check.reporterId,
+                        status = check.status,                      
                         resource = check.Resources.Select(x => x.link).ToList()
                     };
                     result.Data = report;
@@ -158,11 +163,13 @@ namespace Sevices.Core.OrderReportService
                 {
                     id = report.id,
                     orderId = report.orderId,
+                    orderName = report.Order.name,
+                    reporterId = report.reporterId,
+                    reporterName = report.Reporter.fullName,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
                     status = report.status,
-                    reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
@@ -200,11 +207,13 @@ namespace Sevices.Core.OrderReportService
                 var list = listOrderReport.Select(report => new OrderReportModel
                 {
                     id = report.id,
+                    orderId = report.orderId,
+                    reporterId = report.reporterId,
+                    reporterName = report.Reporter.fullName,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
                     status = report.status,
-                    reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
@@ -240,11 +249,13 @@ namespace Sevices.Core.OrderReportService
                 {
                     id = report.id,
                     orderId = report.orderId,
+                    orderName = report.Order.name,
+                    reporterId = report.reporterId,
+                    reporterName = report.Reporter.fullName,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
                     status = report.status,
-                    reporterId = report.reporterId,
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
@@ -261,61 +272,6 @@ namespace Sevices.Core.OrderReportService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-
-        #region comment
-        /*
-        public ResultModel SendReviews (ReviewsOrderReportModel model)
-        {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
-            var report = _dbContext.Report
-                .Where(x => x.id == model.reportId).SingleOrDefault();
-
-            if (report == null)
-            {
-                result.Code = 60;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin báo cáo !";
-            }
-            else
-            {
-                if (report.reportStatus == ReportStatus.Complete)
-                {
-                    result.Code = 61;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Báo cáo này đã hoàn thành !";
-                }
-                else
-                {
-                    var order = _dbContext.Order
-                    .Find(report.orderId);
-
-                    try
-                    {
-                        report.reportStatus = model.reportStatus;
-                        report.responseContent = model.contentReviews;
-
-                        if (order != null && model.reportStatus == ReportStatus.Complete)
-                        {
-                            order.acceptanceTime = DateTime.Now;
-                            order.status = OrderStatus.Completed;
-                        }
-
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = report.id;
-                    }
-
-                    catch (Exception ex)
-                    {
-                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    }
-                }          
-            }
-            return result;
-        }
-        */
-        #endregion
+        }       
     }
 }

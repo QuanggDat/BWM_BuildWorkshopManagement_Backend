@@ -56,14 +56,7 @@ namespace Sevices.Core.LeaderTaskService
                         result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                     }
                     else
-                    {
-                        var procedureTmp = _dbContext.Procedure.Find(model.procedureId);
-
-                        if (procedureTmp != null)
-                        {
-                            model.name = procedureTmp!.name;
-                        }
-
+                    {                       
                         var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == model.name && a.isDeleted == false);
 
                         if (check != null)
@@ -118,10 +111,7 @@ namespace Sevices.Core.LeaderTaskService
                                             status = ETaskStatus.New,
                                             isDeleted = false
                                         };
-                                        if (procedureTmp != null)
-                                        {
-                                            leaderTask.procedureId = model.procedureId;
-                                        }
+                                        
                                         try
                                         {
                                             _dbContext.LeaderTask.Add(leaderTask);

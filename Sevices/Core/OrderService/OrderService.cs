@@ -827,7 +827,6 @@ namespace Sevices.Core.OrderService
                         orderId = order.id,
                         createById = userId,
                         itemId = procItem.itemId,
-                        procedureId = procItem.procedureId,
                         name = listProcedure.FirstOrDefault(x => x.id == procItem.procedureId)?.name ?? "",
                         status = ETaskStatus.New,
                         isDeleted = false,
@@ -846,7 +845,6 @@ namespace Sevices.Core.OrderService
                         {
                             createById = userId,
                             leaderTaskId = leaderTask.id,
-                            stepId = procStep.stepId,
                             priority = procStep.priority,
                             name = listStep.FirstOrDefault(x => x.id == procStep.stepId)?.name ?? "",
                             status = ETaskStatus.New,
