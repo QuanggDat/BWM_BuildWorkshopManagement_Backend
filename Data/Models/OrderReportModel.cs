@@ -20,13 +20,13 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? orderId { get; set; }
-        public string orderName { get; set; } = null!;
-        public Guid reporterId { get; set; }
-        public string reporterName { get; set; } = null!;
+        public OrderModel? order { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
         public ReportStatus? status { get; set; }
-        public DateTime createdDate { get; set; }     
+        public DateTime createdDate { get; set; }
+        public Guid reporterId { get; set; }
+        public UserModel? reporter { get; set; }
         public List<string>? resource { get; set; }
     }
 }
