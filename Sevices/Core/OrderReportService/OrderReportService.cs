@@ -104,6 +104,11 @@ namespace Sevices.Core.OrderReportService
             return result;
         }
 
+        public ResultModel Update(UpdateOrderReportModel model)
+        {
+            throw new NotImplementedException();
+        }
+
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
@@ -126,9 +131,7 @@ namespace Sevices.Core.OrderReportService
                     {
                         id = check.id,
                         orderId = check.orderId,
-                        orderName = check.Order.name,
                         reporterId = check.reporterId,
-                        reporterName = check.Reporter.fullName,
                         title = check.title,
                         content = check.content,
                         createdDate = check.createdDate,
@@ -170,10 +173,11 @@ namespace Sevices.Core.OrderReportService
                     id = report.id,
                     orderId = report.orderId,
                     order = report.Order != null ? _mapper.Map<OrderModel>(report.Order) : null,
+                    reporterId = report.reporterId,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    status = report.status,
+                    status = report.status,                   
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 
@@ -213,7 +217,7 @@ namespace Sevices.Core.OrderReportService
                     id = report.id,
                     orderId = report.orderId,
                     reporterId = report.reporterId,
-                    reporterName = report.Reporter.fullName,
+                    reporter = report.Reporter != null ? _mapper.Map<UserModel>(report.Reporter) : null,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
@@ -257,12 +261,12 @@ namespace Sevices.Core.OrderReportService
                     id = report.id,
                     orderId = report.orderId,
                     order = report.Order != null ? _mapper.Map<OrderModel>(report.Order) : null,
+                    reporterId = report.reporterId,
+                    reporter = report.Reporter != null ? _mapper.Map<UserModel>(report.Reporter) : null,
                     title = report.title,
                     content = report.content,
                     createdDate = report.createdDate,
-                    status = report.status,
-                    reporterId = report.reporterId,
-                    reporter = report.Reporter != null ? _mapper.Map<UserModel>(report.Reporter) : null,
+                    status = report.status,                   
                     resource = report.Resources.Select(x => x.link).ToList()
                 }).ToList();
 

@@ -16,6 +16,15 @@ namespace Data.Models
         public List<string>? resource { get; set; }
     }
 
+    public class UpdateOrderReportModel
+    {
+        public Guid? id { get; set; }
+        public string title { get; set; } = null!;
+        public string? content { get; set; } = null!;
+        public ReportStatus? status { get; set; }
+        public List<string>? resource { get; set; }
+    }
+
     public class OrderReportModel
     {
         public Guid id { get; set; }
