@@ -10,7 +10,8 @@ namespace Sevices.Core.OrderReportService
 {
     public interface IOrderReportService
     {
-        ResultModel Create(Guid id, CreateOrderReportModel model);   
+        ResultModel Create(Guid id, CreateOrderReportModel model);
+        ResultModel Update(UpdateOrderReportModel model);
         ResultModel GetById(Guid id);
         ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
         ResultModel GetByForemanId (Guid foremanId, string? search, int pageIndex, int pageSize);

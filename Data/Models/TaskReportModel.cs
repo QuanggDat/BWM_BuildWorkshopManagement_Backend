@@ -33,7 +33,13 @@ namespace Data.Models
         public Guid? acceptanceTaskId { get; set; }
         public string title { get; set; } = null!;
         public string? content { get; set; } = null!;
-        public DateTime createdDate { get; set; }
+        public List<string>? resource { get; set; }
+    }
+
+    public class UpdateReportModel
+    {
+        public string title { get; set; } = null!;
+        public string? content { get; set; } = null!;
         public List<string>? resource { get; set; }
     }
 
