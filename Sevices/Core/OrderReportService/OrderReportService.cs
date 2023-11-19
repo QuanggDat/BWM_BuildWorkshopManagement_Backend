@@ -171,7 +171,7 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.Report.Where(x => x.id == id)
+                var check = _dbContext.Report.Include(x => x.Resources).Where(x => x.id == id)
                     .Include(x => x.Order)
                     .Include(x => x.Reporter)
                     .Include(x => x.Resources).SingleOrDefault();

@@ -43,6 +43,5 @@ namespace Data.Entities
         public virtual List<OrderDetail> OrderDetails { get; set; } = new();
         public virtual List<LeaderTask> LeaderTasks { get; set; } = new();
         public virtual List<Resource> Resources { get; set; } = new();
-
     }
 }

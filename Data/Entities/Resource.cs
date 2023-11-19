@@ -21,7 +21,6 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public Order? Order { get; set; }
 
-        public string link { get; set; } = null!;
-        
+        public string link { get; set; } = null!;        
     }
 }
