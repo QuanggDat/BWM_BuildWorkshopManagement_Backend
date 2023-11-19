@@ -743,7 +743,7 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetAll(int pageIndex, int pageSize, string? search = null)
+        public ResultModel GetAllWithSearchAndPaging(int pageIndex, int pageSize, string? search = null)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false; 
@@ -783,7 +783,7 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetAllUser()
+        public ResultModel GetAll()
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;

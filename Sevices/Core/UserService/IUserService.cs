@@ -18,8 +18,8 @@ namespace Sevices.Core.UserService
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
-        ResultModel GetAll(int pageIndex, int pageSize, string? search = null);
-        ResultModel GetAllUser();
+        ResultModel GetAllWithSearchAndPaging(int pageIndex, int pageSize, string? search = null);
+        ResultModel GetAll();
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetById(Guid id);
         ResultModel GetByRoleId(Guid rolerId, string? search, int pageIndex, int pageSize);

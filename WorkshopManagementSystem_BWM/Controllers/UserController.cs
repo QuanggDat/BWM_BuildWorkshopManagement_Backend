@@ -78,17 +78,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
-        public IActionResult GetAll( string? search = null, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllWithSearchAndPaging( string? search = null, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result =  _userService.GetAll(pageIndex,pageSize,search);
+            var result =  _userService.GetAllWithSearchAndPaging(pageIndex,pageSize,search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
-        public IActionResult GetAllUser()
+        public IActionResult GetAll()
         {
-            var result = _userService.GetAllUser();
+            var result = _userService.GetAll();
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

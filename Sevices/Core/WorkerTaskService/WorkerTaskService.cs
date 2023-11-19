@@ -23,7 +23,7 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == model.leaderTaskId && x.priority == model.priority);
+            var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == model.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
             if (checkPriority != null)
             {
                 result.Code = 92;
@@ -113,7 +113,7 @@ namespace Sevices.Core.WorkerTaskService
                 {
                     if (model.priority != check.priority)
                     {
-                        var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == check.leaderTaskId && x.priority == model.priority);
+                        var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == check.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
 
                         if (checkPriority != null)
                         {

@@ -13,7 +13,6 @@ namespace Data.Models
         public Guid leaderId { get; set; }
         public Guid orderId { get; set; }
         public Guid? itemId { get; set; }
-        public Guid? procedureId { get; set; }
         public int priority { get; set; }
         public int itemQuantity { get; set; }
         public DateTime startTime { get; set; }
