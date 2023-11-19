@@ -51,7 +51,34 @@ namespace Sevices.Core.DashboardService
 
         public ResultModel WorkerTaskDashboard(Guid leaderId)
         {
-            throw new NotImplementedException();
+            ResultModel result = new ResultModel();
+            try
+            {
+                var listStatusLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
+                    .Where(x => x.LeaderTask.leaderId == leaderId)
+                    .Select(x => x.status).Distinct().ToList();
+
+                var list = new List<TaskDashboardModel>();
+                foreach (var item in listStatusLeaderTask)
+                {
+                    var listLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
+                        .Where(x => x.LeaderTask.leaderId == leaderId && x.status == item).ToList();
+
+                    var tmp = new TaskDashboardModel
+                    {
+                        taskStatus = item,
+                        total = listLeaderTask.Count,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = result.Data = list;
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
         }
 
         public ResultModel OrderByMonthDashboard(int year)
@@ -124,7 +151,7 @@ namespace Sevices.Core.DashboardService
                 var list = new List<UseDashboardModel>();
                 foreach (var item in listRole)
                 {
-                    var listUser = _dbContext.User.Where(x => x.roleId == item.Id && x.banStatus == false).ToList();
+                    var listUser = _dbContext.User.Where(x => x.roleId == item.Id).ToList();
 
                     var tmp = new UseDashboardModel
                     {
