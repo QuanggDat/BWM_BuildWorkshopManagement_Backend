@@ -34,6 +34,9 @@ namespace Sevices.Mapping
 
             // Supply
             CreateMap<Supply, SupplyModel>().ReverseMap();
+
+            // Resource
+            CreateMap<Resource, ResourceModel>().ReverseMap();
         }
     }
 }

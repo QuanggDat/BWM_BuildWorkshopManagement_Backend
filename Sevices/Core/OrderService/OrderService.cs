@@ -79,7 +79,9 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var listOrder = _dbContext.Order.Where(x => x.assignToId == userId && listStatus.Contains(x.status)).OrderByDescending(x => x.createTime).ToList();
+                var listOrder = _dbContext.Order
+                    .Where(x => x.assignToId == userId && listStatus.Contains(x.status))
+                    .OrderByDescending(x => x.createTime).ToList();
 
                 var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
@@ -102,7 +104,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.Resources).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;

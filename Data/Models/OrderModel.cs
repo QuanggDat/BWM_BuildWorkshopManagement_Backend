@@ -30,6 +30,7 @@ namespace Data.Models
         public DateTime? startTime { get; set; }
         public DateTime? endTime { get; set; }
         public DateTime? inProgressTime { get; set; }
+        public List<ResourceModel> Resources { get; set; } = new();
     }
 
     public class CreateOrderModel
@@ -40,6 +41,8 @@ namespace Data.Models
         public string fileContract { get; set; }
         public Guid assignToId { get; set; }
         public string description { get; set; } = "";
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
     }
 
     public class UpdateOrderModel
