@@ -834,6 +834,8 @@ namespace Sevices.Core.OrderService
                         isDeleted = false,
                         itemName = procItem.Item?.name ?? "",
                         drawingsTechnical = procItem.Item?.drawingsTechnical ?? "",
+                        drawings2D = procItem.Item?.drawings2D ?? "",
+                        drawings3D = procItem.Item?.drawings3D ?? "",
                         priority = procItem.priority,
                     };
                     _dbContext.LeaderTask.Add(leaderTask);

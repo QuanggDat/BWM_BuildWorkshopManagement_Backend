@@ -8,6 +8,7 @@ namespace Sevices.Core.GroupService
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel GetAllUserByGroupId(Guid id, string? search, int pageIndex, int pageSize);
+        ResultModel GetWorkersByGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetAllUserNotInGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model);
         ResultModel ChangeLeader(ChangeLeaderModel model);

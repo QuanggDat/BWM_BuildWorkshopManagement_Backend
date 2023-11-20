@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,7 +20,6 @@ namespace Data.Entities
 
         [ForeignKey("userId")]
         public Guid userId { get; set; }
-        public virtual User User { get; set; } = null!;        
-
+        public virtual User User { get; set; } = null!;
     }
 }

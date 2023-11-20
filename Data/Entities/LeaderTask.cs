@@ -30,7 +30,9 @@ namespace Data.Entities
         public Guid? itemId { get; set; }
         public virtual Item Item { get; set; } = null!;
         public string? itemName { get; set; } 
-        public string? drawingsTechnical { get; set; } 
+        public string? drawingsTechnical { get; set; }
+        public string? drawings2D { get; set; } 
+        public string? drawings3D { get; set; } 
 
         public string name { get; set; } = null!;
         public DateTime startTime { get; set; } 

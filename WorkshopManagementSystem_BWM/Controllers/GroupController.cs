@@ -33,6 +33,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+        public IActionResult GetWorkersByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetWorkersByGroupId(id, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetAllUserNotInGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)

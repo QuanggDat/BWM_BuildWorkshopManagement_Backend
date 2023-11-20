@@ -171,6 +171,12 @@ namespace Data.Migrations
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("drawings2D")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("drawings3D")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("drawingsTechnical")
                         .HasColumnType("nvarchar(max)");
 

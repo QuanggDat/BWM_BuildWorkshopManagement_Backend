@@ -156,7 +156,7 @@ namespace Sevices.Core.WorkerTaskService
                                 workerTaskDetails.Add(new WorkerTaskDetail
                                 {
                                     workerTaskId = model.id,
-                                    userId = assignee
+                                    userId = assignee                                  
                                 });
                             }
                         }

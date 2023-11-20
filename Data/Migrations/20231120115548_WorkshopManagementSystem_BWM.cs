@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class WorkshopManagementSystem_BWM_V1 : Migration
+    public partial class WorkshopManagementSystem_BWM : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -426,14 +426,17 @@ namespace Data.Migrations
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    itemName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    drawingsTechnical = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    procedureId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    itemName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    drawingsTechnical = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    drawings2D = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    drawings3D = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     startTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     endTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     completedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    amount = table.Column<int>(type: "int", nullable: false),
+                    itemQuantity = table.Column<int>(type: "int", nullable: false),
+                    itemCompleted = table.Column<int>(type: "int", nullable: true),
+                    itemFailed = table.Column<int>(type: "int", nullable: true),
                     priority = table.Column<int>(type: "int", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -461,11 +464,6 @@ namespace Data.Migrations
                         name: "FK_LeaderTask_Order_orderId",
                         column: x => x.orderId,
                         principalTable: "Order",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "FK_LeaderTask_Procedure_procedureId",
-                        column: x => x.procedureId,
-                        principalTable: "Procedure",
                         principalColumn: "id");
                 });
 
@@ -509,8 +507,9 @@ namespace Data.Migrations
                     reportType = table.Column<int>(type: "int", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    itemFailed = table.Column<int>(type: "int", nullable: true),
                     createdDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    reportStatus = table.Column<int>(type: "int", nullable: true),
+                    status = table.Column<int>(type: "int", nullable: true),
                     responseContent = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -541,7 +540,6 @@ namespace Data.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     leaderTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    stepId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     priority = table.Column<int>(type: "int", nullable: false),
                     startTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -563,12 +561,6 @@ namespace Data.Migrations
                         name: "FK_WorkerTask_LeaderTask_leaderTaskId",
                         column: x => x.leaderTaskId,
                         principalTable: "LeaderTask",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WorkerTask_Step_stepId",
-                        column: x => x.stepId,
-                        principalTable: "Step",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -603,14 +595,21 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    materialName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    materialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     amount = table.Column<int>(type: "int", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false),
-                    totalPrice = table.Column<double>(type: "float", nullable: false)
+                    price = table.Column<double>(type: "float", nullable: false),
+                    totalPrice = table.Column<double>(type: "float", nullable: false),
+                    status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Supply", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Supply_Material_materialId",
+                        column: x => x.materialId,
+                        principalTable: "Material",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Supply_Report_reportId",
                         column: x => x.reportId,
@@ -673,9 +672,7 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     workerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    productCompleted = table.Column<int>(type: "int", nullable: true),
-                    productFailed = table.Column<int>(type: "int", nullable: true)
+                    userId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -778,11 +775,6 @@ namespace Data.Migrations
                 column: "orderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LeaderTask_procedureId",
-                table: "LeaderTask",
-                column: "procedureId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Material_materialCategoryId",
                 table: "Material",
                 column: "materialCategoryId");
@@ -878,6 +870,11 @@ namespace Data.Migrations
                 column: "reportId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Supply_materialId",
+                table: "Supply",
+                column: "materialId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Supply_reportId",
                 table: "Supply",
                 column: "reportId");
@@ -891,11 +888,6 @@ namespace Data.Migrations
                 name: "IX_WorkerTask_leaderTaskId",
                 table: "WorkerTask",
                 column: "leaderTaskId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WorkerTask_stepId",
-                table: "WorkerTask",
-                column: "stepId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkerTaskDetail_userId",
@@ -950,6 +942,12 @@ namespace Data.Migrations
                 name: "WorkerTaskDetail");
 
             migrationBuilder.DropTable(
+                name: "Procedure");
+
+            migrationBuilder.DropTable(
+                name: "Step");
+
+            migrationBuilder.DropTable(
                 name: "Material");
 
             migrationBuilder.DropTable(
@@ -965,16 +963,10 @@ namespace Data.Migrations
                 name: "LeaderTask");
 
             migrationBuilder.DropTable(
-                name: "Step");
-
-            migrationBuilder.DropTable(
                 name: "Item");
 
             migrationBuilder.DropTable(
                 name: "Order");
-
-            migrationBuilder.DropTable(
-                name: "Procedure");
 
             migrationBuilder.DropTable(
                 name: "ItemCategory");

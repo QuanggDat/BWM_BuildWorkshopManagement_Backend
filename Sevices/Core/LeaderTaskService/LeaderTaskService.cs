@@ -56,89 +56,98 @@ namespace Sevices.Core.LeaderTaskService
                         result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
                     }
                     else
-                    {                       
-                        var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == model.name && a.isDeleted == false);
-
-                        if (check != null)
+                    {
+                        if (itemTmp.drawingsTechnical == null || itemTmp.drawings2D == null || itemTmp.drawings3D == null)
                         {
-                            result.Code = 41;
+                            result.Code = 103;
                             result.Succeed = false;
-                            result.ErrorMessage = "Công việc đã được tạo!";
+                            result.ErrorMessage = "Mặt hàng chưa đủ 3 bản vẽ, hãy cập nhập lại mặt hàng trước khi tạo công việc!";
                         }
                         else
                         {
-                            if (orderTmp.status != OrderStatus.InProgress)
-                            {
-                                result.Code = 42;
-                                result.Succeed = false;
-                                result.ErrorMessage = "Đơn hàng đang không tiến hành!";
-                            }
+                            var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == model.name && a.isDeleted == false);
 
+                            if (check != null)
+                            {
+                                result.Code = 41;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Công việc đã được tạo!";
+                            }
                             else
                             {
-                                if (model.startTime >= model.endTime)
+                                if (orderTmp.status != OrderStatus.InProgress)
                                 {
-                                    result.Code = 43;
+                                    result.Code = 42;
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
+                                    result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                                 }
+
                                 else
                                 {
-                                    var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
-                                    if (checkPriority != null)
+                                    if (model.startTime >= model.endTime)
                                     {
-                                        result.Code = 91;
+                                        result.Code = 43;
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
+                                        result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
                                     }
                                     else
                                     {
-                                        var item = _dbContext.Item.Find(model.itemId);                                      
-                                        var leaderTask = new LeaderTask
+                                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
+                                        if (checkPriority != null)
                                         {
-                                            createById = createById,
-                                            leaderId = model.leaderId,
-                                            orderId = model.orderId,
-                                            itemId = model.itemId,                                           
-                                            priority = model.priority,
-                                            drawingsTechnical = item!.drawingsTechnical,
-                                            itemName = item!.name,
-                                            itemQuantity = model.itemQuantity,
-                                            name = model.name,
-                                            startTime = model.startTime,
-                                            endTime = model.endTime,
-                                            description = model.description,
-                                            status = ETaskStatus.New,
-                                            isDeleted = false
-                                        };
-                                        
-                                        try
+                                            result.Code = 91;
+                                            result.Succeed = false;
+                                            result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
+                                        }
+                                        else
                                         {
-                                            _dbContext.LeaderTask.Add(leaderTask);
-                                            _dbContext.SaveChanges();
-
-                                            _notificationService.Create(new Notification
+                                            var item = _dbContext.Item.Find(model.itemId);
+                                            var leaderTask = new LeaderTask
                                             {
-                                                userId = model.leaderId,
-                                                leaderTaskId = leaderTask.id,
-                                                title = "Công việc",
-                                                content = "Bạn vừa nhận được 1 công việc mới!",
-                                                type = NotificationType.TaskReport
-                                            });
+                                                createById = createById,
+                                                leaderId = model.leaderId,
+                                                orderId = model.orderId,
+                                                itemId = model.itemId,
+                                                priority = model.priority,
+                                                drawingsTechnical = item!.drawingsTechnical,
+                                                itemName = item!.name,
+                                                itemQuantity = model.itemQuantity,
+                                                name = model.name,
+                                                startTime = model.startTime,
+                                                endTime = model.endTime,
+                                                description = model.description,
+                                                status = ETaskStatus.New,
+                                                isDeleted = false
+                                            };
 
-                                            result.Succeed = true;
-                                            result.Data = leaderTask.id;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                                        }
+                                            try
+                                            {
+                                                _dbContext.LeaderTask.Add(leaderTask);
+                                                _dbContext.SaveChanges();
 
+                                                _notificationService.Create(new Notification
+                                                {
+                                                    userId = model.leaderId,
+                                                    leaderTaskId = leaderTask.id,
+                                                    title = "Công việc",
+                                                    content = "Bạn vừa nhận được 1 công việc mới!",
+                                                    type = NotificationType.TaskReport
+                                                });
+
+                                                result.Succeed = true;
+                                                result.Data = leaderTask.id;
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                            }
+
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
+                    }                    
                 }
             }
             return result;
@@ -351,6 +360,8 @@ namespace Sevices.Core.LeaderTaskService
                         orderName = order!.name,
                         itemName = check.itemName,
                         drawingsTechnical = check.drawingsTechnical,
+                        drawings2D = check.drawings2D,
+                        drawings3D = check.drawings3D,
                         itemId = check.itemId,
                         name = check.name,
                         priority = check.priority,                        
@@ -410,6 +421,8 @@ namespace Sevices.Core.LeaderTaskService
                         itemId = item.itemId,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
+                        drawings2D = item.drawings2D,
+                        drawings3D = item.drawings3D,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
@@ -474,6 +487,8 @@ namespace Sevices.Core.LeaderTaskService
                         itemId = item.itemId,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
+                        drawings2D = item.drawings2D,
+                        drawings3D = item.drawings3D,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
@@ -537,6 +552,8 @@ namespace Sevices.Core.LeaderTaskService
                         itemId = item.itemId,
                         itemName = item.itemName,
                         drawingsTechnical = item.drawingsTechnical,
+                        drawings2D = item.drawings2D,
+                        drawings3D = item.drawings3D,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
@@ -563,7 +580,6 @@ namespace Sevices.Core.LeaderTaskService
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
-
             return result;
         }
 
