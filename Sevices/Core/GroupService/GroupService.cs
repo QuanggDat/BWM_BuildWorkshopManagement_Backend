@@ -524,8 +524,6 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
-
-       
+        }      
     }
 }

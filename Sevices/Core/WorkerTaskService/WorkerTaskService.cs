@@ -445,7 +445,8 @@ namespace Sevices.Core.WorkerTaskService
                 .Include(x => x.LeaderTask)
                 .Include(x => x.CreateBy)
                 .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+                .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false)
+                .OrderByDescending(x => x.startTime).ToList();
 
             try
             {

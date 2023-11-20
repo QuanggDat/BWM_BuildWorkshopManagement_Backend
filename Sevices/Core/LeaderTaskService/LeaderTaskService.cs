@@ -30,7 +30,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTmp = _dbContext.User.Find(model.leaderId);
+            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader");
             if (leaderTmp == null)
             {
                 result.Code = 38;
@@ -57,11 +57,11 @@ namespace Sevices.Core.LeaderTaskService
                     }
                     else
                     {
-                        if (itemTmp.drawingsTechnical == null || itemTmp.drawings2D == null || itemTmp.drawings3D == null)
+                        if (string.IsNullOrWhiteSpace(itemTmp.drawingsTechnical)  || string.IsNullOrWhiteSpace(itemTmp.drawings2D) || string.IsNullOrWhiteSpace(itemTmp.drawings3D))
                         {
                             result.Code = 103;
                             result.Succeed = false;
-                            result.ErrorMessage = "Mặt hàng chưa đủ 3 bản vẽ, hãy cập nhập lại mặt hàng trước khi tạo công việc!";
+                            result.ErrorMessage = "Mặt hàng chưa đủ 3 bản vẽ, hãy cập nhập đủ bản vẽ trong mặt hàng trước khi tạo công việc!";
                         }
                         else
                         {
@@ -101,7 +101,6 @@ namespace Sevices.Core.LeaderTaskService
                                         }
                                         else
                                         {
-                                            var item = _dbContext.Item.Find(model.itemId);
                                             var leaderTask = new LeaderTask
                                             {
                                                 createById = createById,
@@ -109,8 +108,10 @@ namespace Sevices.Core.LeaderTaskService
                                                 orderId = model.orderId,
                                                 itemId = model.itemId,
                                                 priority = model.priority,
-                                                drawingsTechnical = item!.drawingsTechnical,
-                                                itemName = item!.name,
+                                                drawingsTechnical = itemTmp.drawingsTechnical,
+                                                drawings2D = itemTmp.drawings2D,
+                                                drawings3D = itemTmp.drawings3D,
+                                                itemName = itemTmp.name,
                                                 itemQuantity = model.itemQuantity,
                                                 name = model.name,
                                                 startTime = model.startTime,
@@ -522,8 +523,8 @@ namespace Sevices.Core.LeaderTaskService
         {
             var result = new ResultModel();
             result.Succeed = false;
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
-                    .Where(a => a.leaderId == leaderId && a.isDeleted == false)
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Order)
+                    .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
             try
             {
