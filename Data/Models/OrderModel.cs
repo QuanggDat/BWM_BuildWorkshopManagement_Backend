@@ -30,7 +30,7 @@ namespace Data.Models
         public DateTime? startTime { get; set; }
         public DateTime? endTime { get; set; }
         public DateTime? inProgressTime { get; set; }
-        public List<ResourceModel> Resources { get; set; } = new();
+        public List<string> resources { get; set; } = new();
     }
 
     public class CreateOrderModel

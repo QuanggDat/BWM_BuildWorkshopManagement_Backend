@@ -112,7 +112,9 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
-                    result.Data = _mapper.Map<OrderModel>(order);
+                    var data = _mapper.Map<OrderModel>(order);
+                    data.resources = order.Resources.Select(x => x.link).Distinct().ToList();
+                    result.Data = data;
                     result.Succeed = true;
                 }
             }
