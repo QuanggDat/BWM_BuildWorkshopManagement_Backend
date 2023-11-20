@@ -89,7 +89,7 @@ namespace Sevices.Core.LeaderTaskService
                                     {
                                         result.Code = 91;
                                         result.Succeed = false;
-                                        result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
+                                        result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
                                     }
                                     else
                                     {
@@ -229,8 +229,7 @@ namespace Sevices.Core.LeaderTaskService
                             }
                         }    
                     }
-                }                                      
-                        
+                }                                                             
             }
             return result;
         }
@@ -259,40 +258,17 @@ namespace Sevices.Core.LeaderTaskService
                 }               
                 else
                 {
-                    if(model.priority != leaderTask.priority)
+                    var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.priority != leaderTask.priority && x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false); 
+                    if (checkPriority != null)
                     {
-                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false);
-                        if (checkPriority != null)
-                        {
-                            result.Code = 91;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
-                        }
-                        else
-                        {
-                            leaderTask.name = model.name;
-                            leaderTask.leaderId = model.leaderId;
-                            leaderTask.priority = model.priority;
-                            leaderTask.startTime = model.startTime;
-                            leaderTask.endTime = model.endTime;
-                            leaderTask.status = model.status;
-                            leaderTask.description = model.description;
-
-                            try
-                            {
-                                _dbContext.SaveChanges();
-                                result.Succeed = true;
-                                result.Data = leaderTask.id;
-                            }
-                            catch (Exception ex)
-                            {
-                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                            }
-                        }
+                        result.Code = 91;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
                     }
                     else
                     {
                         leaderTask.name = model.name;
+                        leaderTask.leaderId = model.leaderId;
                         leaderTask.priority = model.priority;
                         leaderTask.startTime = model.startTime;
                         leaderTask.endTime = model.endTime;
@@ -618,9 +594,7 @@ namespace Sevices.Core.LeaderTaskService
                 }                
             }
             return result;
-        }
-
-        
+        }        
 
         #region Comment
         /*

@@ -277,7 +277,7 @@ namespace Sevices.Core.ItemService
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
 
-                    result.Data = "Xoá thành công " + check.name;
+                    result.Data = check.id;
                     result.Succeed = true;
                 }
                 
@@ -296,8 +296,8 @@ namespace Sevices.Core.ItemService
             {
                 var listItem =  _dbContext.Item.Where(x => x.isDeleted != true)
                     .Include(x => x.ItemCategory)
-                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
-                    .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
+                    .Include(x => x.ItemMaterials)
                    .OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
@@ -327,8 +327,18 @@ namespace Sevices.Core.ItemService
                         drawings3D = item.drawings3D,
                         description = item.description,
                         price = item.price,
-                        listMaterialId = item.ItemMaterials.Select(x => x.id).ToList(),
-                        listProcedureId = item.ProcedureItems.Select(x => x.id).ToList()
+                        listMaterial = item.ItemMaterials.Select(x => new ItemMaterialModel
+                        {
+                            materialId = x.materialId,
+                            quantity = x.quantity,
+                        }).ToList(),
+
+                        listProcedure = item.ProcedureItems.Select(x => new ProcedureItemModel
+                        {
+                            procedureId = x.procedureId,
+                            priority = x.priority,
+                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                        }).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -354,7 +364,7 @@ namespace Sevices.Core.ItemService
             {
                 var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
                     .Include(x => x.ItemCategory)
-                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
                     .FirstOrDefault();
 
@@ -383,8 +393,18 @@ namespace Sevices.Core.ItemService
                         drawings3D = check.drawings3D,
                         description = check.description,
                         price = check.price,
-                        listMaterialId = check.ItemMaterials.Select(x => x.id).ToList(),
-                        listProcedureId = check.ProcedureItems.Select(x => x.id).ToList(),
+                        listMaterial = check.ItemMaterials.Select(x => new ItemMaterialModel
+                        {
+                            materialId = x.materialId,
+                            quantity = x.quantity,
+                        }).ToList(),
+
+                        listProcedure = check.ProcedureItems.Select(x => new ProcedureItemModel
+                        {
+                            procedureId = x.procedureId,
+                            priority = x.priority,
+                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                        }).ToList(),
                     };
                     result.Data = item;
                     result.Succeed = true;
@@ -413,7 +433,7 @@ namespace Sevices.Core.ItemService
                 try
                 {
                     var listItem = _dbContext.Item.Where(x => x.itemCategoryId == itemCategoryId && x.isDeleted != true)
-                        .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                        .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
                         .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
                        .OrderBy(x => x.name).ToList();
                     if (!string.IsNullOrEmpty(search))
@@ -441,8 +461,18 @@ namespace Sevices.Core.ItemService
                             drawings3D = item.drawings3D,
                             description = item.description,
                             price = item.price,
-                            listMaterialId = item.ItemMaterials.Select(x => x.id).ToList(),
-                            listProcedureId = item.ProcedureItems.Select(x => x.id).ToList(),
+                            listMaterial = item.ItemMaterials.Select(x => new ItemMaterialModel
+                            {
+                                materialId = x.materialId,
+                                quantity = x.quantity,
+                            }).ToList(),
+
+                            listProcedure = item.ProcedureItems.Select(x => new ProcedureItemModel
+                            {
+                                procedureId = x.procedureId,
+                                priority = x.priority,
+                                stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                            }).ToList(),
                         };
                         list.Add(tmp);
                     }

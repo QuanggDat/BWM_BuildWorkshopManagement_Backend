@@ -9,21 +9,21 @@ namespace Data.Models
     public class GroupModel
     {
         public Guid id {  get; set; }
-        public string name { get; set; }
+        public string name { get; set; } = null!;
+        public string leaderName { get; set; } = null!;
         public int member { get; set; }
-        public bool isDeleted { get; set; }
     }
 
     public class CreateGroupModel
     {
-        public string name { get; set; }
-        public List<Guid>? listUserId { get; set; } 
+        public string name { get; set; } = null!;
+        public Guid leaderId { get; set; } 
     }
 
     public class UpdateGroupModel
     {
         public Guid id { get; set; }
-        public string name { get; set; }
+        public string name { get; set; } = null!;
         public Guid leaderId { get; set; }
     }
 

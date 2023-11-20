@@ -41,7 +41,7 @@ namespace Sevices.Core.MaterialService
                 {
                     result.Code = 27;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên vật liệu này đã tồn tại !";
+                    result.ErrorMessage = "Tên vật liệu đã tồn tại !";
                 }
                 else 
                 {
@@ -116,32 +116,12 @@ namespace Sevices.Core.MaterialService
                     }
                     else
                     {
-                        if (model.name != check.name)
+                        var checkExists = _dbContext.Material.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+                        if (checkExists != null)
                         {
-                            var checkExists = _dbContext.Material.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
-                            if (checkExists != null)
-                            {
-                                result.Code = 27;
-                                result.Succeed = false;
-                                result.ErrorMessage = "Tên vật liệu đã tồn tại !";
-                            }
-                            else
-                            {
-                                check.name = model.name;
-                                check.image = model.image;
-                                check.color = model.color;
-                                check.supplier = model.supplier;
-                                check.thickness = model.thickness;
-                                check.unit = model.unit;                                
-                                check.importPlace = model.importPlace;
-                                check.price = model.price;
-                                check.sku = $"{model.name[0]}-{model.supplier}-{model.thickness}";
-                                check.materialCategoryId = model.materialCategoryId;
-
-                                _dbContext.SaveChanges();
-                                result.Succeed = true;
-                                result.Data = "Cập nhập thành công " + check.name;
-                            }
+                            result.Code = 27;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Tên vật liệu đã tồn tại !";
                         }
                         else
                         {
@@ -158,7 +138,7 @@ namespace Sevices.Core.MaterialService
 
                             _dbContext.SaveChanges();
                             result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.name;
+                            result.Data = check.id;
                         }
                     }
                 }               
@@ -187,7 +167,7 @@ namespace Sevices.Core.MaterialService
                 {
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.name;
+                    result.Data = check.id;
                     result.Succeed = true;
                 }
             }

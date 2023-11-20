@@ -69,7 +69,7 @@ namespace Sevices.Core.StepService
                 {
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.name;
+                    result.Data = check.id;
                     result.Succeed = true;
                 }
             }
@@ -171,29 +171,19 @@ namespace Sevices.Core.StepService
                 }
                 else
                 {
-                    if (model.name != check.name)
+                    var checkExists = _dbContext.Step.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+                    if (checkExists != null)
                     {
-                        var checkExists = _dbContext.Step.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
-                        if (checkExists != null)
-                        {
-                            result.Code = 72;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Tên bước này đã tồn tại !";
-                        }
-                        else
-                        {
-                            check.name = model.name;
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.name;
-                        }
+                        result.Code = 72;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Tên bước này đã tồn tại !";
                     }
                     else
                     {
                         check.name = model.name;
                         _dbContext.SaveChanges();
                         result.Succeed = true;
-                        result.Data = "Cập nhập thành công " + check.name;
+                        result.Data = check.id;
                     }
                 }
             }

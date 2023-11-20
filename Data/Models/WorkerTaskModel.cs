@@ -15,7 +15,7 @@ namespace Data.Models
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public ETaskStatus status { get; set; }
-        public string description { get; set; } = null!;
+        public string? description { get; set; } 
         public List<Guid> assignees { get; set; } = null!;
     }
 
@@ -27,7 +27,7 @@ namespace Data.Models
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public ETaskStatus status { get; set; }
-        public string description { get; set; } = null!;
+        public string? description { get; set; } 
         public List<Guid> assignees { get; set; } = null!;
     }
 

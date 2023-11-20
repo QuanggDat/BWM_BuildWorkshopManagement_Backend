@@ -37,7 +37,7 @@ namespace Sevices.Core.CategoryService
                 {
                     result.Code = 24;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên loại vật liệu này đã tồn tại !";
+                    result.ErrorMessage = "Tên loại vật liệu đã tồn tại !";
                 }
                 else
                 {
@@ -74,29 +74,19 @@ namespace Sevices.Core.CategoryService
                 }
                 else
                 {
-                    if (model.name != check.name)
+                    var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+                    if (checkExists != null)
                     {
-                        var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
-                        if (checkExists != null)
-                        {
-                            result.Code = 24;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Tên này đã tồn tại !";
-                        }
-                        else
-                        {
-                            check.name = model.name;
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.name;
-                        }
+                        result.Code = 24;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Tên loại vật liệu đã tồn tại!";
                     }
                     else
                     {
                         check.name = model.name;
                         _dbContext.SaveChanges();
                         result.Succeed = true;
-                        result.Data = "Cập nhập thành công " + check.name;
+                        result.Data = check.id;
                     }
                 }               
             }
@@ -214,7 +204,7 @@ namespace Sevices.Core.CategoryService
                     {
                         check.isDeleted = true;
                         _dbContext.SaveChanges();
-                        result.Data = "Xoá thành công " + check.name;
+                        result.Data = check.id;
                         result.Succeed = true;
                     }
                 }    

@@ -105,9 +105,9 @@ namespace Data.Models
         public Guid groupId { get; set; }
     }
 
-    public class AddLeaderToGroupModel
+    public class ChangeLeaderModel
     {
-        public Guid userId { get; set; }
+        public Guid leaderId { get; set; }
         public Guid groupId { get; set; }
     }
 

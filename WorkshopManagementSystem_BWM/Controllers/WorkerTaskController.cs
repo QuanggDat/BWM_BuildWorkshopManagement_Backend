@@ -26,7 +26,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult Create(CreateWorkerTaskModel model)
         {
             if (model.leaderTaskId == Guid.Empty) return BadRequest("Không nhận được công việc trưởng nhóm!");
-            if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var userId = User.GetId();
             var result = _workerTaskService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
@@ -61,7 +60,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult Update(UpdateWorkerTaskModel model)
         {
             if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên công việc!");
-            if (string.IsNullOrEmpty(model.description)) return BadRequest("Không nhận được mô tả!");
             var result = _workerTaskService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });

@@ -24,8 +24,8 @@ namespace Data.Models
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
         public double price { get; set; }      
-        public List<Guid> listProcedureId { get; set; } = null!;
-        public List<Guid> listMaterialId { get; set; } = null!;
+        public List<ItemMaterialModel> listMaterial { get; set; } = null!;
+        public List<ProcedureItemModel> listProcedure { get; set; } = null!;
     }
   
     public class CreateItemModel
@@ -42,17 +42,24 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public List<AddtProcedure> listProcedure { get; set; } = null!;
-        public List<AddMaterial> listMaterial { get; set; } = null!;
+        public List<AddProcedureItemModel> listProcedure { get; set; } = null!;
+        public List<ItemMaterialModel> listMaterial { get; set; } = null!;
     }
 
-    public class AddtProcedure
+    public class AddProcedureItemModel
     {
         public Guid procedureId { get; set; }
         public int priority { get; set; }
     }
+    public class ProcedureItemModel
+    {
+        public Guid procedureId { get; set; }
+        public int priority { get; set; }
+        public List<Guid>? stepId { get; set; }
+    }
 
-    public class AddMaterial
+
+    public class ItemMaterialModel
     {
         public Guid materialId { get; set; }
         public int quantity { get; set; }
@@ -73,8 +80,8 @@ namespace Data.Models
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;
         public string description { get; set; } = null!;
-        public List<AddtProcedure> listProcedure { get; set; } = null!;
-        public List<AddMaterial> listMaterial { get; set; } = null!;
+        public List<AddProcedureItemModel> listProcedure { get; set; } = null!;
+        public List<ItemMaterialModel> listMaterial { get; set; } = null!;
     }
 
     public class DeleteItemModel

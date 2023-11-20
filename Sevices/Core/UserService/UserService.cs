@@ -863,6 +863,65 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
+        public ResultModel GetByRoleId(Guid roleId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
+                    .Where(x => x.roleId == roleId && !x.banStatus)
+                    .OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetByLeaderRole(string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
+                    .Where(x => x.Role != null && x.Role.Name == "Leader" && !x.banStatus)
+                    .OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
 
         public ResultModel GetRole()
         {
@@ -953,34 +1012,7 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
-      
-        public ResultModel GetByRoleId(Guid roleId, string? search, int pageIndex, int pageSize)
-        {
-            var result = new ResultModel();
-            try
-            {
-                var listUser = _dbContext.User.Where(x => x.roleId == roleId && !x.banStatus).Include(r => r.Group) 
-                    .OrderBy(s => s.fullName).ToList();
 
-                if (!string.IsNullOrEmpty(search))
-                {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
-                }
-
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<UserModel>>(listUser),
-                    Total = listUser.Count
-                };
-                result.Succeed = true;
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
+       
     }
 }

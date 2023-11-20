@@ -50,6 +50,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetById(Guid id)
+        {
+            var result = _groupService.GetById(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut("[action]")]
         public IActionResult Update(UpdateGroupModel model)
         {
@@ -59,9 +67,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]")]
-        public IActionResult AddLeaderToGroup(AddLeaderToGroupModel model)
+        public IActionResult ChangeLeader(ChangeLeaderModel model)
         {
-            var result = _groupService.AddLeaderToGroup(model);
+            var result = _groupService.ChangeLeader(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

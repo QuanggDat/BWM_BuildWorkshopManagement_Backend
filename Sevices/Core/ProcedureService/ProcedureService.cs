@@ -1,6 +1,7 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace Sevices.Core.ProcedureService
                 {
                     result.Code = 70;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên quy trình này đã tồn tại !";
+                    result.ErrorMessage = "Tên quy trình đã tồn tại !";
                 }
                 else
                 {
@@ -37,11 +38,31 @@ namespace Sevices.Core.ProcedureService
                         name = model.name,
                         isDeleted = false
                     };
-
                     _dbContext.Procedure.Add(newProcedure);
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = newProcedure.id;
+
+                    bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+                    if (hasDuplicates)
+                    {
+                        result.Code = 101;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Mức độ ưu tiên của các bước không được trùng nhau !";
+                    }
+                    else
+                    {
+                        foreach (var step in model.listStep)
+                        {
+                            _dbContext.ProcedureStep.Add(new ProcedureStep
+                            {
+                                procedureId = newProcedure.id,
+                                stepId = step.stepId,
+                                priority = step.priority
+                            });
+                        }
+                        _dbContext.Procedure.Add(newProcedure);
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = newProcedure.id;
+                    }
                 }
             }
             catch (Exception ex)
@@ -65,30 +86,50 @@ namespace Sevices.Core.ProcedureService
                 }
                 else
                 {
-                    if (model.name != check.name)
+                    var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+                    if (checkExists != null)
                     {
-                        var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && !x.isDeleted);
-                        if (checkExists != null)
-                        {
-                            result.Code = 70;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Tên này đã tồn tại !";
-                        }
-                        else
-                        {
-                            check.name = model.name;
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = "Cập nhập thành công " + check.name;
-                        }
+                        result.Code = 70;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Tên quy trình đã tồn tại !";
                     }
                     else
                     {
-                        check.name = model.name;
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = "Cập nhập thành công " + check.name;
-                    }
+                        bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+                        if (hasDuplicates)
+                        {
+                            result.Code = 101;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Mức độ ưu tiên của các bước không được trùng nhau !";
+                        }
+                        else
+                        {
+                            // Remove all old Procedure Step
+                            var currentProcedureStep = _dbContext.ProcedureStep
+                                .Where(x => x.procedureId == model.id)
+                                .ToList();
+                            if (currentProcedureStep != null && currentProcedureStep.Count > 0)
+                            {
+                                _dbContext.ProcedureStep.RemoveRange(currentProcedureStep);
+                            }
+
+                            // Set new Procedure Step
+                            foreach (var step in model.listStep)
+                            {
+                                _dbContext.ProcedureStep.Add(new ProcedureStep
+                                {
+                                    procedureId = model.id,
+                                    stepId = step.stepId,
+                                    priority = step.priority
+                                });
+                            }
+
+                            check.name = model.name;
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = check.id;
+                        }
+                    }                                      
                 }
             }
             catch (Exception e)
@@ -116,7 +157,7 @@ namespace Sevices.Core.ProcedureService
                 {
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
-                    result.Data = "Xoá thành công " + check.name;
+                    result.Data = check.id;
                     result.Succeed = true;
                 }
             }
@@ -133,8 +174,9 @@ namespace Sevices.Core.ProcedureService
 
             try
             {
-                var listProcedure = _dbContext.Procedure.Where(x => x.isDeleted != true)
-                   .OrderBy(x => x.name).ToList();
+                var listProcedure = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
+                    .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
+
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -151,6 +193,12 @@ namespace Sevices.Core.ProcedureService
                     {
                         id = item.id,
                         name = item.name,
+                        listStep = item.ProcedureSteps.Select(x => new ProcedureStepModel
+                        {
+                            stepId = x.stepId,
+                            stepName = x.Step.name,
+                            priority = x.priority,
+                        }).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -175,7 +223,8 @@ namespace Sevices.Core.ProcedureService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.Procedure.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.Procedure.Include(x => x.ProcedureSteps)
+                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -190,6 +239,12 @@ namespace Sevices.Core.ProcedureService
                     {
                         id = check.id,
                         name = check.name,
+                        listStep = check.ProcedureSteps.Select(x => new ProcedureStepModel
+                        {
+                            stepId = x.stepId,
+                            stepName = x.Step.name,
+                            priority = x.priority,
+                        }).ToList(),
                     };
 
                     result.Data = procedureModel;

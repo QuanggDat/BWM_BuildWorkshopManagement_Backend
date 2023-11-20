@@ -111,71 +111,13 @@ namespace Sevices.Core.WorkerTaskService
                 }
                 else
                 {
-                    if (model.priority != check.priority)
+                    var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.priority != check.priority && x.leaderTaskId == check.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
+
+                    if (checkPriority != null)
                     {
-                        var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == check.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
-
-                        if (checkPriority != null)
-                        {
-                            result.Code = 92;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
-                        }
-                        else
-                        {
-                            check.priority = model.priority;
-                            check.name = model.name;
-                            check.description = model.description;
-                            check.startTime = model.startTime;
-                            check.endTime = model.endTime;
-                            check.status = model.status;
-
-                            // Remove all old woker tasks detail
-                            var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
-                                .Where(x => x.workerTaskId == model.id)
-                                .ToList();
-                            if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
-                            {
-                                _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
-                            }                          
-
-                            // Set new woker tasks detail
-                            var workerTaskDetails = new List<WorkerTaskDetail>();
-                            foreach (var assignee in model.assignees)
-                            {
-                                bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
-
-                                if (checkWorkerDetail == true)
-                                {
-                                    result.Code = 93;
-                                    result.Succeed = false;
-                                    result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
-                                    return result;
-                                }
-                                else
-                                {
-                                    workerTaskDetails.Add(new WorkerTaskDetail
-                                    {
-                                        workerTaskId = model.id,
-                                        userId = assignee
-                                    });
-                                }                               
-                            }
-
-                            _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
-                            _dbContext.SaveChanges();
-                            _notificationService.CreateForManyUser(new Notification
-                            {
-                                workerTaskId = model.id,
-                                title = "Công việc",
-                                content = "Bạn vừa nhận được 1 công việc mới!",
-                                type = NotificationType.TaskReport
-                            },
-                            model.assignees);
-                            result.Succeed = true;
-                            result.Data = model.id;
-                        }
+                        result.Code = 92;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
                     }
                     else
                     {
@@ -200,7 +142,7 @@ namespace Sevices.Core.WorkerTaskService
                         foreach (var assignee in model.assignees)
                         {
                             bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                .Where(x  => x.id != model.id && x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                             if (checkWorkerDetail == true)
                             {
@@ -221,7 +163,6 @@ namespace Sevices.Core.WorkerTaskService
 
                         _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
                         _dbContext.SaveChanges();
-
                         _notificationService.CreateForManyUser(new Notification
                         {
                             workerTaskId = model.id,
@@ -230,7 +171,6 @@ namespace Sevices.Core.WorkerTaskService
                             type = NotificationType.TaskReport
                         },
                         model.assignees);
-
                         result.Succeed = true;
                         result.Data = model.id;
                     }
