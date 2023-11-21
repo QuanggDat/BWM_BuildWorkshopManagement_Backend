@@ -41,7 +41,7 @@ namespace Sevices.Core.WorkerTaskService
                     name = model.name,
                     startTime = model.startTime,
                     endTime = model.endTime,
-                    status = ETaskStatus.New,
+                    status = EWorkerTaskStatus.New,
                     description = model.description,
                     isDeleted = false,
                 };
@@ -53,7 +53,7 @@ namespace Sevices.Core.WorkerTaskService
                     foreach (var assignee in model.assignees)
                     {
                         bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                            .Where(x => x.userId == assignee && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                         if (checkWorkerDetail == true)
                         {
@@ -142,7 +142,7 @@ namespace Sevices.Core.WorkerTaskService
                         foreach (var assignee in model.assignees)
                         {
                             bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                            .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                             if (checkWorkerDetail == true)
                             {
@@ -230,7 +230,7 @@ namespace Sevices.Core.WorkerTaskService
                 var workerTask = _dbContext.WorkerTask.Find(model.workerTaskId);
 
                 bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                                    .Where(x => x.userId == model.memberId && x.WorkerTask.status != ETaskStatus.Completed && x.WorkerTask.endTime > workerTask!.startTime && x.WorkerTask.startTime < workerTask!.startTime).Any();
+                                    .Where(x => x.userId == model.memberId && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.endTime > workerTask!.startTime && x.WorkerTask.startTime < workerTask!.startTime).Any();
 
                 if (checkWorkerDetail == true)
                 {
@@ -289,7 +289,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             return result;
         }
-        public ResultModel UpdateStatus(Guid id, ETaskStatus status)
+        public ResultModel UpdateStatus(Guid id, EWorkerTaskStatus status)
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
@@ -306,7 +306,7 @@ namespace Sevices.Core.WorkerTaskService
             {
                 try
                 {
-                    if (status == ETaskStatus.Completed)
+                    if (status == EWorkerTaskStatus.Completed)
                     {
                         workerTask.completedTime = DateTime.Now;
                     }

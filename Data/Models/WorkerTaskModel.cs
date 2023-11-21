@@ -14,7 +14,7 @@ namespace Data.Models
         public int priority { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public ETaskStatus status { get; set; }
+        public EWorkerTaskStatus status { get; set; }
         public string? description { get; set; } 
         public List<Guid> assignees { get; set; } = null!;
     }
@@ -26,14 +26,14 @@ namespace Data.Models
         public int priority { get; set; }    
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
-        public ETaskStatus status { get; set; }
+        public EWorkerTaskStatus status { get; set; }
         public string? description { get; set; } 
         public List<Guid> assignees { get; set; } = null!;
     }
 
     public class UpdateWorkerTaskStatusModel
     {
-        public ETaskStatus status { get; set; }
+        public EWorkerTaskStatus status { get; set; }
     }
 
     public class TaskMember
@@ -55,7 +55,7 @@ namespace Data.Models
         public DateTime endTime { get; set; }
         public DateTime? completeTime { get; set; }
         public string? description { get; set; }
-        public ETaskStatus status { get; set; }
+        public EWorkerTaskStatus status { get; set; }
         public bool isDeleted { get; set; }
         public List<TaskMember> Members { get; set; } = null!;
     }

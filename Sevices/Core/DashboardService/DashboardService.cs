@@ -58,13 +58,13 @@ namespace Sevices.Core.DashboardService
                     .Where(x => x.LeaderTask.leaderId == leaderId)
                     .Select(x => x.status).Distinct().ToList();
 
-                var list = new List<TaskDashboardModel>();
+                var list = new List<WorkerTaskDashboardModel>();
                 foreach (var item in listStatusLeaderTask)
                 {
                     var listLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
                         .Where(x => x.LeaderTask.leaderId == leaderId && x.status == item).ToList();
 
-                    var tmp = new TaskDashboardModel
+                    var tmp = new WorkerTaskDashboardModel
                     {
                         taskStatus = item,
                         total = listLeaderTask.Count,
