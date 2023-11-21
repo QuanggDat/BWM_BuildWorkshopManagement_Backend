@@ -30,7 +30,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader");
+            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == true);
             if (leaderTmp == null)
             {
                 result.Code = 38;
@@ -108,10 +108,6 @@ namespace Sevices.Core.LeaderTaskService
                                                 orderId = model.orderId,
                                                 itemId = model.itemId,
                                                 priority = model.priority,
-                                                drawingsTechnical = itemTmp.drawingsTechnical,
-                                                drawings2D = itemTmp.drawings2D,
-                                                drawings3D = itemTmp.drawings3D,
-                                                itemName = itemTmp.name,
                                                 itemQuantity = model.itemQuantity,
                                                 name = model.name,
                                                 startTime = model.startTime,
@@ -178,66 +174,58 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
-                    if (check != null)
+
+                    if (orderTmp.status != OrderStatus.InProgress)
                     {
-                        result.Code = 41;
+                        result.Code = 42;
                         result.Succeed = false;
-                        result.ErrorMessage = "Công việc đã được tạo!";
+                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                     }
                     else
                     {
-                        if (orderTmp.status != OrderStatus.InProgress)
+                        if (model.startTime >= model.endTime)
                         {
-                            result.Code = 42;
+                            result.Code = 43;
                             result.Succeed = false;
-                            result.ErrorMessage = "Đơn hàng đang không tiến hành!";
+                            result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
                         }
                         else
                         {
-                            if (model.startTime >= model.endTime)
+                            var leaderTask = new LeaderTask
                             {
-                                result.Code = 43;
-                                result.Succeed = false;
-                                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
-                            }
-                            else
+                                createById = createById,
+                                leaderId = model.leaderId,
+                                orderId = model.orderId,
+                                name = "Công việc nghiệm thu",
+                                startTime = model.startTime,
+                                endTime = model.endTime,
+                                description = model.description,
+                                status = ETaskStatus.New,
+                                isDeleted = false
+                            };
+
+                            try
                             {
-                                var leaderTask = new LeaderTask
-                                {
-                                    createById = createById,
-                                    leaderId = model.leaderId,
-                                    orderId = model.orderId,
-                                    name = "Công việc nghiệm thu",
-                                    startTime = model.startTime,
-                                    endTime = model.endTime,
-                                    description = model.description,
-                                    status = ETaskStatus.New,
-                                    isDeleted = false
-                                };
+                                _dbContext.LeaderTask.Add(leaderTask);
+                                _dbContext.SaveChanges();
 
-                                try
+                                _notificationService.Create(new Notification
                                 {
-                                    _dbContext.LeaderTask.Add(leaderTask);
-                                    _dbContext.SaveChanges();
+                                    userId = model.leaderId,
+                                    leaderTaskId = leaderTask.id,
+                                    title = "Công việc",
+                                    content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
+                                    type = NotificationType.TaskReport
+                                });
 
-                                    _notificationService.Create(new Notification
-                                    {
-                                        userId = model.leaderId,
-                                        leaderTaskId = leaderTask.id,
-                                        title = "Công việc",
-                                        content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
-                                        type = NotificationType.TaskReport
-                                    });
-
-                                    result.Succeed = true;
-                                    result.Data = leaderTask.id;
-                                }
-                                catch (Exception ex)
-                                {
-                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                                }
+                                result.Succeed = true;
+                                result.Data = leaderTask.id;
                             }
-                        }    
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
+                        }
                     }
                 }                                                             
             }
@@ -249,8 +237,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTask = _dbContext.LeaderTask.Find(model.id);
-            
+            var leaderTask = _dbContext.LeaderTask.Find(model.id);     
 
             if (leaderTask == null)
             {
@@ -336,7 +323,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.LeaderTask.Include(x => x.Leader)
+                var check = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
                     .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
@@ -354,16 +341,13 @@ namespace Sevices.Core.LeaderTaskService
                     {
                         id = check.id,
                         createdById = check.createById,
-                        createdByName = createBy!.fullName,
+                        createdByName = createBy?.fullName ?? "",
                         leaderId = check.leaderId,
                         leaderName = check.Leader?.fullName ?? "",
                         orderId = check.orderId,
                         orderName = order!.name,
-                        itemName = check.itemName,
-                        drawingsTechnical = check.drawingsTechnical,
-                        drawings2D = check.drawings2D,
-                        drawings3D = check.drawings3D,
                         itemId = check.itemId,
+                        Item = check.Item,
                         name = check.name,
                         priority = check.priority,                        
                         itemQuantity = check.itemQuantity,
@@ -392,7 +376,7 @@ namespace Sevices.Core.LeaderTaskService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
                 .Where(a => a.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
             try
@@ -414,16 +398,13 @@ namespace Sevices.Core.LeaderTaskService
                     {
                         id = item.id,
                         createdById = item.createById,
-                        createdByName = createBy!.fullName,
+                        createdByName = createBy?.fullName?? "",
                         leaderId = item.leaderId,
                         leaderName = item.Leader?.fullName ?? "",
                         orderId = item.orderId,
                         orderName = order!.name,
                         itemId = item.itemId,
-                        itemName = item.itemName,
-                        drawingsTechnical = item.drawingsTechnical,
-                        drawings2D = item.drawings2D,
-                        drawings3D = item.drawings3D,
+                        Item = item.Item,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
@@ -458,7 +439,7 @@ namespace Sevices.Core.LeaderTaskService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader)
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
             try
@@ -480,16 +461,13 @@ namespace Sevices.Core.LeaderTaskService
                     {
                         id = item.id,
                         createdById = item.createById,
-                        createdByName = createBy!.fullName,
+                        createdByName = createBy?.fullName ?? "",
                         leaderId = item.leaderId,
                         leaderName = item.Leader?.fullName ?? "",
                         orderId = item.orderId,
                         orderName = order!.name,
                         itemId = item.itemId,
-                        itemName = item.itemName,
-                        drawingsTechnical = item.drawingsTechnical,
-                        drawings2D = item.drawings2D,
-                        drawings3D = item.drawings3D,
+                        Item = item.Item,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,
@@ -523,7 +501,7 @@ namespace Sevices.Core.LeaderTaskService
         {
             var result = new ResultModel();
             result.Succeed = false;
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Order)
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
             try
@@ -545,16 +523,13 @@ namespace Sevices.Core.LeaderTaskService
                     {
                         id = item.id,
                         createdById = item.createById,
-                        createdByName = createBy!.fullName,
+                        createdByName = createBy?.fullName ?? "",
                         leaderId = item.leaderId,
                         leaderName = item.Leader?.fullName ?? "",
                         orderId = item.orderId,
                         orderName = order!.name,
                         itemId = item.itemId,
-                        itemName = item.itemName,
-                        drawingsTechnical = item.drawingsTechnical,
-                        drawings2D = item.drawings2D,
-                        drawings3D = item.drawings3D,
+                        Item = item.Item,
                         itemQuantity = item.itemQuantity,
                         itemCompleted = item.itemCompleted,
                         itemFailed = item.itemFailed,

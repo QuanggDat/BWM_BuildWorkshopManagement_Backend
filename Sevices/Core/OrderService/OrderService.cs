@@ -871,10 +871,6 @@ namespace Sevices.Core.OrderService
                         name = listProcedure.FirstOrDefault(x => x.id == procItem.procedureId)?.name ?? "",
                         status = ETaskStatus.New,
                         isDeleted = false,
-                        itemName = procItem.Item?.name ?? "",
-                        drawingsTechnical = procItem.Item?.drawingsTechnical ?? "",
-                        drawings2D = procItem.Item?.drawings2D ?? "",
-                        drawings3D = procItem.Item?.drawings3D ?? "",
                         priority = procItem.priority,
                     };
                     _dbContext.LeaderTask.Add(leaderTask);
@@ -890,7 +886,7 @@ namespace Sevices.Core.OrderService
                             leaderTaskId = leaderTask.id,
                             priority = procStep.priority,
                             name = listStep.FirstOrDefault(x => x.id == procStep.stepId)?.name ?? "",
-                            status = ETaskStatus.New,
+                            status = EWorkerTaskStatus.New,
                             isDeleted = false,
                         });
                     }

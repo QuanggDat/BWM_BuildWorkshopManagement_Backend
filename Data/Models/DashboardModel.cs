@@ -30,6 +30,11 @@ namespace Data.Models
             public ETaskStatus taskStatus { get; set; }
             public int total { get; set; }
         }
+        public class WorkerTaskDashboardModel
+        {
+            public EWorkerTaskStatus taskStatus { get; set; }
+            public int total { get; set; }
+        }
 
     }
 }

@@ -66,7 +66,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("[action]/{id}/{status}")]
-        public IActionResult UpdateStatus(Guid id, ETaskStatus status)
+        public IActionResult UpdateStatus(Guid id, EWorkerTaskStatus status)
         {
             var result = _workerTaskService.UpdateStatus(id, status);
             if (result.Succeed) return Ok(result.Data);

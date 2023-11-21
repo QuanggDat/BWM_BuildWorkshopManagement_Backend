@@ -1,4 +1,5 @@
-﻿using Data.Enums;
+﻿using Data.Entities;
+using Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,10 +43,8 @@ namespace Data.Models
         public string orderName { get; set; } = null!;
 
         public Guid? itemId { get; set; }
-        public string? itemName { get; set; } 
-        public string? drawingsTechnical { get; set; }
-        public string? drawings2D { get; set; }
-        public string? drawings3D { get; set; }
+        public Item? Item { get; set; }
+
         public string name { get; set; } = null!;
         public int priority { get; set; }
 

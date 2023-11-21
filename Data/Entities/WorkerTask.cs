@@ -29,7 +29,7 @@ namespace Data.Entities
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
       
-        public ETaskStatus status { get; set; }
+        public EWorkerTaskStatus status { get; set; }
         public string? description { get; set; } = null!;
         public bool isDeleted { get; set; }
    
