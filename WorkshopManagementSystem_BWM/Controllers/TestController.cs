@@ -39,5 +39,24 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return Ok(demoNoti);
 
         }
+        [HttpGet("SignalRByUserId")]
+        public IActionResult TestSignalRByUser(Guid userId)
+        {
+            var demoNoti = new NewNotificationModel()
+            {
+                CountUnseen = new Random().Next(0, 100),
+                Notification = new()
+                {
+                    id = Guid.NewGuid(),
+                    userId = Guid.NewGuid(),
+                    title = FnUtil.GenerateCode(),
+                    content  = FnUtil.GenerateCode(),
+                    dateCreated = DateTime.Now,
+                }
+            };
+            _notiHub.NewNotification(userId.ToString(), demoNoti);
+            return Ok(demoNoti);
+
+        }
     }
 }

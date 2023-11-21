@@ -432,7 +432,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -442,17 +442,54 @@ namespace Sevices.Core.OrderService
                 {
                     if (status == OrderStatus.Request)
                     {
-                        order.quoteTime = DateTime.Now;
+                        var hasError = false;
 
-                        var noti = new Notification()
+                        foreach (var detail in order.OrderDetails)
                         {
-                            userId = order.createdById,
-                            title = "Báo giá đơn đặt hàng",
-                            content = "Bạn vừa nhận được báo giá đơn hàng",
-                            type = NotificationType.Order,
-                            orderId = order.id
-                        };
-                        _notificationService.Create(noti);
+                            var listError = new List<string>();
+                            if (detail.Item != null)
+                            {
+                                if (string.IsNullOrWhiteSpace(detail.Item.drawingsTechnical))
+                                {
+                                    listError.Add("Bản vẽ kỹ thuật");
+                                }
+
+                                if (string.IsNullOrWhiteSpace(detail.Item.drawings2D))
+                                {
+                                    listError.Add("Bản vẽ 2D");
+                                }
+
+                                if (string.IsNullOrWhiteSpace(detail.Item.drawings3D))
+                                {
+                                    listError.Add("Bản vẽ 3d");
+                                }
+
+                                if (listError.Any())
+                                {
+                                    result.Code = 106;
+                                    result.ErrorMessage = $"Sản phẩm \"{detail.Item.name}\" chưa được cập nhật: {string.Join(", ", listError)}";
+
+                                    hasError = true;
+                                    break;
+                                }
+                            }
+
+                        }
+
+                        if (hasError)
+                        {
+                            order.quoteTime = DateTime.Now;
+
+                            var noti = new Notification()
+                            {
+                                userId = order.createdById,
+                                title = "Báo giá đơn đặt hàng",
+                                content = "Bạn vừa nhận được báo giá đơn hàng",
+                                type = NotificationType.Order,
+                                orderId = order.id
+                            };
+                            _notificationService.Create(noti);
+                        }
                     }
                     else if (status == OrderStatus.InProgress)
                     {
