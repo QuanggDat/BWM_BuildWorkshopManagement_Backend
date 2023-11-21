@@ -30,7 +30,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader");
+            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == true);
             if (leaderTmp == null)
             {
                 result.Code = 38;
@@ -174,66 +174,58 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
-                    if (check != null)
+
+                    if (orderTmp.status != OrderStatus.InProgress)
                     {
-                        result.Code = 41;
+                        result.Code = 42;
                         result.Succeed = false;
-                        result.ErrorMessage = "Công việc đã được tạo!";
+                        result.ErrorMessage = "Đơn hàng đang không tiến hành!";
                     }
                     else
                     {
-                        if (orderTmp.status != OrderStatus.InProgress)
+                        if (model.startTime >= model.endTime)
                         {
-                            result.Code = 42;
+                            result.Code = 43;
                             result.Succeed = false;
-                            result.ErrorMessage = "Đơn hàng đang không tiến hành!";
+                            result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
                         }
                         else
                         {
-                            if (model.startTime >= model.endTime)
+                            var leaderTask = new LeaderTask
                             {
-                                result.Code = 43;
-                                result.Succeed = false;
-                                result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn hoặc bằng ngày kết thúc!";
-                            }
-                            else
+                                createById = createById,
+                                leaderId = model.leaderId,
+                                orderId = model.orderId,
+                                name = "Công việc nghiệm thu",
+                                startTime = model.startTime,
+                                endTime = model.endTime,
+                                description = model.description,
+                                status = ETaskStatus.New,
+                                isDeleted = false
+                            };
+
+                            try
                             {
-                                var leaderTask = new LeaderTask
-                                {
-                                    createById = createById,
-                                    leaderId = model.leaderId,
-                                    orderId = model.orderId,
-                                    name = "Công việc nghiệm thu",
-                                    startTime = model.startTime,
-                                    endTime = model.endTime,
-                                    description = model.description,
-                                    status = ETaskStatus.New,
-                                    isDeleted = false
-                                };
+                                _dbContext.LeaderTask.Add(leaderTask);
+                                _dbContext.SaveChanges();
 
-                                try
+                                _notificationService.Create(new Notification
                                 {
-                                    _dbContext.LeaderTask.Add(leaderTask);
-                                    _dbContext.SaveChanges();
+                                    userId = model.leaderId,
+                                    leaderTaskId = leaderTask.id,
+                                    title = "Công việc",
+                                    content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
+                                    type = NotificationType.TaskReport
+                                });
 
-                                    _notificationService.Create(new Notification
-                                    {
-                                        userId = model.leaderId,
-                                        leaderTaskId = leaderTask.id,
-                                        title = "Công việc",
-                                        content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
-                                        type = NotificationType.TaskReport
-                                    });
-
-                                    result.Succeed = true;
-                                    result.Data = leaderTask.id;
-                                }
-                                catch (Exception ex)
-                                {
-                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                                }
+                                result.Succeed = true;
+                                result.Data = leaderTask.id;
                             }
-                        }    
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
+                        }
                     }
                 }                                                             
             }
@@ -245,8 +237,7 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTask = _dbContext.LeaderTask.Find(model.id);
-            
+            var leaderTask = _dbContext.LeaderTask.Find(model.id);     
 
             if (leaderTask == null)
             {

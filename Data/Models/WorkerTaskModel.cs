@@ -1,4 +1,5 @@
-﻿using Data.Enums;
+﻿using Data.Entities;
+using Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,7 @@ namespace Data.Models
         public string createByName { get; set; } = null!;
         public Guid? leaderTaskId { get; set; }
         public string leaderTaskName { get; set; } = null!;
+        public Item? Item { get; set; }
         public string name { get; set; } = null!;
         public int priority { get; set; }
         public DateTime startTime { get; set; }

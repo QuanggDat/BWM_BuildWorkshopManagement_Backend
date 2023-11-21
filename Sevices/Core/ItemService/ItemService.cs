@@ -274,13 +274,23 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
+                    var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order)
+                        .FirstOrDefault(x => x.itemId == check.id); 
+                    if (checkItemExist != null)
+                    {
+                        result.Code = 104;
+                        result.Succeed = false;
+                        result.ErrorMessage = $"Không thể xoá mặt hàng, mặt hàng đang trong đơn hàng {checkItemExist.Order.name}!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
 
-                    result.Data = check.id;
-                    result.Succeed = true;
-                }
-                
+                        result.Data = check.id;
+                        result.Succeed = true;
+                    }
+                }                
             }
             catch (Exception ex)
             {

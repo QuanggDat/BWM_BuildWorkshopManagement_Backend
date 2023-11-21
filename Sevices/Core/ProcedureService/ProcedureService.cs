@@ -58,7 +58,6 @@ namespace Sevices.Core.ProcedureService
                                 priority = step.priority
                             });
                         }
-                        _dbContext.Procedure.Add(newProcedure);
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = newProcedure.id;
@@ -223,7 +222,7 @@ namespace Sevices.Core.ProcedureService
             result.Succeed = false;
             try
             {
-                var check = _dbContext.Procedure.Include(x => x.ProcedureSteps)
+                var check = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
                     .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
 
                 if (check == null)
