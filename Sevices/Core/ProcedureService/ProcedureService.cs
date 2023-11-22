@@ -22,9 +22,11 @@ namespace Sevices.Core.ProcedureService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+
                 if (checkExists != null)
                 {
                     result.Code = 70;
@@ -41,6 +43,7 @@ namespace Sevices.Core.ProcedureService
                     _dbContext.Procedure.Add(newProcedure);
 
                     bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+
                     if (hasDuplicates)
                     {
                         result.Code = 101;
@@ -74,9 +77,11 @@ namespace Sevices.Core.ProcedureService
         public ResultModel Update(UpdateProcedureModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var check = _dbContext.Procedure.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
+                var check = _dbContext.Procedure.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+
                 if (check == null)
                 {
                     result.Code = 71;
@@ -86,6 +91,7 @@ namespace Sevices.Core.ProcedureService
                 else
                 {
                     var checkExists = _dbContext.Procedure.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+
                     if (checkExists != null)
                     {
                         result.Code = 70;
@@ -95,6 +101,7 @@ namespace Sevices.Core.ProcedureService
                     else
                     {
                         bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+
                         if (hasDuplicates)
                         {
                             result.Code = 101;
@@ -105,8 +112,8 @@ namespace Sevices.Core.ProcedureService
                         {
                             // Remove all old Procedure Step
                             var currentProcedureStep = _dbContext.ProcedureStep
-                                .Where(x => x.procedureId == model.id)
-                                .ToList();
+                                .Where(x => x.procedureId == model.id).ToList();
+
                             if (currentProcedureStep != null && currentProcedureStep.Count > 0)
                             {
                                 _dbContext.ProcedureStep.RemoveRange(currentProcedureStep);
@@ -142,6 +149,7 @@ namespace Sevices.Core.ProcedureService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var check = _dbContext.Procedure.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
@@ -176,7 +184,6 @@ namespace Sevices.Core.ProcedureService
                 var listProcedure = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
                     .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
 
-
                 if (!string.IsNullOrEmpty(search))
                 {
                     listProcedure = listProcedure.Where(x => x.name.Contains(search)).ToList();
@@ -187,7 +194,6 @@ namespace Sevices.Core.ProcedureService
                 var list = new List<ProcedureModel>();
                 foreach (var item in listProcedurePaging)
                 {
-
                     var tmp = new ProcedureModel
                     {
                         id = item.id,
@@ -201,6 +207,7 @@ namespace Sevices.Core.ProcedureService
                     };
                     list.Add(tmp);
                 }
+
                 result.Data = new PagingModel()
                 {
                     Data = list,
@@ -220,6 +227,7 @@ namespace Sevices.Core.ProcedureService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var check = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
@@ -233,7 +241,6 @@ namespace Sevices.Core.ProcedureService
                 }
                 else
                 {
-
                     var procedureModel = new ProcedureModel
                     {
                         id = check.id,
@@ -249,7 +256,6 @@ namespace Sevices.Core.ProcedureService
                     result.Data = procedureModel;
                     result.Succeed = true;
                 }
-
             }
             catch (Exception ex)
             {

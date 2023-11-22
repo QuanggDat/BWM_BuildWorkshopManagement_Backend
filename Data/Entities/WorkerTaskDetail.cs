@@ -21,5 +21,10 @@ namespace Data.Entities
         [ForeignKey("userId")]
         public Guid userId { get; set; }
         public virtual User User { get; set; } = null!;
+
+        public EWorkerTaskDetailsStatus status { get; set; }
+        public string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }
+        public virtual List<Resource> Resources { get; set; } = new();
     }
 }

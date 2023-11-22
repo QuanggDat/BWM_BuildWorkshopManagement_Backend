@@ -27,6 +27,7 @@ namespace Sevices.Core.OrderReportService
             result.Succeed = false;
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+
             if (user!.Role != null && user.Role.Name != "Foreman")
             {
                 result.Code = 56;
@@ -35,7 +36,8 @@ namespace Sevices.Core.OrderReportService
             }
             else
             {
-                var order = _dbContext.Order.Where(x => x.id == model.orderId).SingleOrDefault();
+                var order = _dbContext.Order.Where(x => x.id == model.orderId).FirstOrDefault();
+
                 if (order == null)
                 {
                     result.Code = 57;
@@ -132,8 +134,7 @@ namespace Sevices.Core.OrderReportService
                     check.status = model.status;
 
                     // Remove all old resource
-                    var currentResources = _dbContext.Resource
-                                    .Where(x => x.reportId == check.id).ToList();
+                    var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
 
                     if (currentResources != null && currentResources.Count > 0)
                     {
@@ -171,10 +172,8 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
             try
             {
-                var check = _dbContext.Report.Include(x => x.Resources).Where(x => x.id == id)
-                    .Include(x => x.Order)
-                    .Include(x => x.Reporter)
-                    .Include(x => x.Resources).SingleOrDefault();
+                var check = _dbContext.Report.Where(x => x.id == id).Include(x => x.Resources)
+                    .Include(x => x.Order).Include(x => x.Reporter).FirstOrDefault();
 
                 if (check == null)
                 {
@@ -197,6 +196,7 @@ namespace Sevices.Core.OrderReportService
                         status = check.status,                      
                         resource = check.Resources.Select(x => x.link).ToList()
                     };
+
                     result.Data = report;
                     result.Succeed = true;
                 }
@@ -212,11 +212,8 @@ namespace Sevices.Core.OrderReportService
         {
             ResultModel result = new ResultModel();
 
-            var listOrderReport = _dbContext.Report
-                .Include(x => x.Resources)
-                .Include(x => x.Order)
-                .Include(x => x.Reporter)
-                .Where(x => x.reporterId == foremanId).ToList();
+            var listOrderReport = _dbContext.Report.Where(x => x.reporterId == foremanId)
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).ToList();
 
             try
             {
@@ -259,10 +256,8 @@ namespace Sevices.Core.OrderReportService
         {
             ResultModel result = new ResultModel();
 
-            var listOrderReport = _dbContext.Report
-                .Include(x => x.Reporter)
-                .Include(x => x.Resources)
-                .Where(x => x.orderId == orderId).ToList();
+            var listOrderReport = _dbContext.Report.Where(x => x.orderId == orderId)
+                .Include(x => x.Reporter).Include(x => x.Resources).ToList();
 
             try
             {
@@ -303,11 +298,10 @@ namespace Sevices.Core.OrderReportService
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
-            var listOrderReport = _dbContext.Report
-                .Include(x => x.Resources)
-                .Include(x => x.Order)
-                .Include(x => x.Reporter)
-                .Where(x => x.reportType == ReportType.OrderReport).ToList();
+
+            var listOrderReport = _dbContext.Report.Where(x => x.reportType == ReportType.OrderReport)
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).ToList();
+
             try
             {
                 if (!string.IsNullOrEmpty(search))

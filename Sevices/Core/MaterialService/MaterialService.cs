@@ -34,9 +34,11 @@ namespace Sevices.Core.MaterialService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var checkMaterial = _dbContext.Material.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+
                 if (checkMaterial != null)
                 {
                     result.Code = 27;
@@ -45,7 +47,8 @@ namespace Sevices.Core.MaterialService
                 }
                 else 
                 {
-                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
+                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).FirstOrDefault();
+
                     if (checkCategory == null)
                     {
                         result.Code = 28;
@@ -92,9 +95,11 @@ namespace Sevices.Core.MaterialService
         public ResultModel Update(UpdateMaterialModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {              
                 var check = _dbContext.Material.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+
                 if (check == null)
                 {
                     result.Code = 29;
@@ -107,7 +112,9 @@ namespace Sevices.Core.MaterialService
                     {
                         model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
                     }
-                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).SingleOrDefault();
+
+                    var checkCategory = _dbContext.MaterialCategory.Where(x => x.id == model.materialCategoryId && x.isDeleted != true).FirstOrDefault();
+
                     if (checkCategory == null)
                     {
                         result.Code = 28;
@@ -117,6 +124,7 @@ namespace Sevices.Core.MaterialService
                     else
                     {
                         var checkExists = _dbContext.Material.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+
                         if (checkExists != null)
                         {
                             result.Code = 27;
@@ -153,10 +161,11 @@ namespace Sevices.Core.MaterialService
         public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-
                 var check = _dbContext.Material.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+
                 if (check == null)
                 {
                     result.Code = 29;
@@ -182,6 +191,7 @@ namespace Sevices.Core.MaterialService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var check = _dbContext.Material.Include(x => x.MaterialCategory)
@@ -292,8 +302,7 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var listMaterial = _dbContext.Material
-                        .Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
+                    var listMaterial = _dbContext.Material.Where(x => x.materialCategoryId == materialCategoryId && x.isDeleted == false)
                             .OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))

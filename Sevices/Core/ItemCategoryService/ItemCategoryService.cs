@@ -29,14 +29,16 @@ namespace Sevices.Core.ItemCategoryService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+
                 if (checkExists != null)
                 {
                     result.Code = 30;
                     result.Succeed = false;
-                    result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
+                    result.ErrorMessage = "Tên loại sản phẩm đã tồn tại !";
                 }
                 else
                 {
@@ -62,23 +64,26 @@ namespace Sevices.Core.ItemCategoryService
         public ResultModel Update(UpdateItemCategoryModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var check = _dbContext.ItemCategory.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
+                var check = _dbContext.ItemCategory.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+
                 if (check == null)
                 {
                     result.Code = 31;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm !";
                 }
                 else
                 {
                     var checkExists = _dbContext.ItemCategory.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+
                     if (checkExists != null)
                     {
                         result.Code = 30;
                         result.Succeed = false;
-                        result.ErrorMessage = "Tên loại mặt hàng đã tồn tại !";
+                        result.ErrorMessage = "Tên loại sản phẩm đã tồn tại !";
                     }
                     else
                     {
@@ -103,8 +108,7 @@ namespace Sevices.Core.ItemCategoryService
             try
             {
                 var listItemCategory = _dbContext.ItemCategory.Include(x => x.Items)
-                    .Where(x => x.isDeleted != true)
-                   .OrderBy(x => x.name).ToList();
+                    .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -144,6 +148,7 @@ namespace Sevices.Core.ItemCategoryService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var check = _dbContext.ItemCategory.Include(x => x.Items)
@@ -153,7 +158,7 @@ namespace Sevices.Core.ItemCategoryService
                 {
                     result.Code = 31;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
                 }
                 else
                 {
@@ -180,13 +185,14 @@ namespace Sevices.Core.ItemCategoryService
         public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var isExistedItem = _dbContext.Item.Any(x => x.itemCategoryId == id && x.isDeleted != true);
                 if (isExistedItem)
                 {
                     result.Code = 32;
-                    result.ErrorMessage = "Hãy xoá hết mặt hàng trước khi xoá loại mặt hàng !";
+                    result.ErrorMessage = "Hãy xoá hết sản phẩm trước khi xoá loại sản phẩm !";
                 }
                 else
                 {
@@ -196,7 +202,7 @@ namespace Sevices.Core.ItemCategoryService
                     {
                         result.Code = 31;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
                     }
                     else
                     {

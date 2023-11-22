@@ -21,6 +21,10 @@ namespace Data.Entities
         public Guid? orderId { get; set; }
         public Order? Order { get; set; }
 
+        [ForeignKey("workerTaskDetailId")]
+        public Guid? workerTaskDetailId { get; set; }
+        public WorkerTaskDetail? WorkerTaskDetail { get; set; }
+
         public string link { get; set; } = null!;        
     }
 }

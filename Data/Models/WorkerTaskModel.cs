@@ -68,4 +68,26 @@ namespace Data.Models
         public Guid workerTaskId { get; set; }
     }
 
+    public class SendFeedbackModel
+    {
+        public Guid workerTaskDetailId { get; set; }
+        public EWorkerTaskDetailsStatus status { get; set; }
+        public string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }
+        public List<string>? resource { get; set; }
+    }
+
+    public class WorkerTaskDetailModel
+    {
+        public Guid workerTaskDetailId { get; set; }
+        public Guid? workerTaskId { get; set; }
+        public string workerTaskName { get; set; } = null!;
+        public Guid? userId { get; set; }
+        public string userName { get; set; } = null!;
+        public EWorkerTaskDetailsStatus status { get; set; }
+        public string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }
+        public List<string>? resource { get; set; }
+    }
+
 }

@@ -19,10 +19,10 @@ namespace Sevices.Core.DashboardService
         {
             _dbContext = dbContext;           
         }
-
         public ResultModel LeaderTaskDashboard()
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var listStatusLeaderTask = _dbContext.LeaderTask.Select(x => x.status).Distinct().ToList();
@@ -52,11 +52,11 @@ namespace Sevices.Core.DashboardService
         public ResultModel WorkerTaskDashboard(Guid leaderId)
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var listStatusLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
-                    .Where(x => x.LeaderTask.leaderId == leaderId)
-                    .Select(x => x.status).Distinct().ToList();
+                    .Where(x => x.LeaderTask.leaderId == leaderId).Select(x => x.status).Distinct().ToList();
 
                 var list = new List<WorkerTaskDashboardModel>();
                 foreach (var item in listStatusLeaderTask)
@@ -84,9 +84,11 @@ namespace Sevices.Core.DashboardService
         public ResultModel OrderByMonthDashboard(int year)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var listMonthOrder = _dbContext.Order.Where(x => x.createTime.Year == year).Select(x => x.createTime.Month).Distinct().ToList();
+                var listMonthOrder = _dbContext.Order.Where(x => x.createTime.Year == year)
+                    .Select(x => x.createTime.Month).Distinct().ToList();
 
                 var list = new List<OrderByMonthDashboardModel>();
                 foreach (var item in listMonthOrder)
@@ -113,6 +115,7 @@ namespace Sevices.Core.DashboardService
         public ResultModel OrderDashboard()
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var listStatusOrder = _dbContext.Order.Select(x => x.status).Distinct().ToList();

@@ -47,6 +47,7 @@ namespace Sevices.Core.UserService
                 {
                     await _roleManager.CreateAsync(new Role { description = "Role for Admin", Name = "Admin" });
                 }
+
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
 
                 if (string.IsNullOrEmpty(model.image))                    
@@ -67,8 +68,11 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleId = role.Id
                 };
+
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
+
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
                 {
                     result.Code = 1;
@@ -102,6 +106,7 @@ namespace Sevices.Core.UserService
                             else
                             {
                                 var ageDifference = DateTime.Now - model.dob;
+
                                 int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
 
                                 if (age < 18 || age > 60)
@@ -114,6 +119,7 @@ namespace Sevices.Core.UserService
                                 else
                                 {
                                     var check = await _userManager.CreateAsync(user, model.password);
+
                                     if (check != null)
                                     {
                                         var userRole = new UserRole
@@ -156,6 +162,7 @@ namespace Sevices.Core.UserService
                 {
                     await _roleManager.CreateAsync(new Role { description = "Role for Foreman", Name = "Foreman" });
                 }
+
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Foreman");
 
                 if (string.IsNullOrEmpty(model.image))
@@ -176,7 +183,9 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleId = role.Id
                 };
+
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
@@ -212,6 +221,7 @@ namespace Sevices.Core.UserService
                             else
                             {
                                 var ageDifference = DateTime.Now - model.dob;
+
                                 int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
 
                                 if (age < 18 || age > 60)
@@ -223,6 +233,7 @@ namespace Sevices.Core.UserService
                                 else
                                 {
                                     var check = await _userManager.CreateAsync(user, model.password);
+
                                     if (check != null)
                                     {
                                         var userRole = new UserRole
@@ -266,6 +277,7 @@ namespace Sevices.Core.UserService
                 {
                     await _roleManager.CreateAsync(new Role { description = "Role for Leader", Name = "Leader" });
                 }
+
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Leader");
 
                 if (string.IsNullOrEmpty(model.image))
@@ -286,7 +298,9 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleId = role.Id
                 };
+
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
@@ -322,6 +336,7 @@ namespace Sevices.Core.UserService
                             else
                             {
                                 var ageDifference = DateTime.Now - model.dob;
+
                                 int age = (int)(ageDifference.TotalDays / 365.25);// Tính tuổi xấp xỉ
 
                                 if (age < 18 || age > 60)
@@ -333,6 +348,7 @@ namespace Sevices.Core.UserService
                                 else
                                 {
                                     var check = await _userManager.CreateAsync(user, model.password);
+
                                     if (check != null)
                                     {
                                         var userRole = new UserRole
@@ -375,6 +391,7 @@ namespace Sevices.Core.UserService
                 {
                     await _roleManager.CreateAsync(new Role { description = "Role for Worker", Name = "Worker" });
                 }
+
                 var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == "Worker");
 
                 if (string.IsNullOrEmpty(model.image))
@@ -395,7 +412,9 @@ namespace Sevices.Core.UserService
                     image = model.image,
                     roleId = role.Id
                 };
+
                 var userByPhone = _dbContext.User.Where(s => s.UserName == user.UserName).FirstOrDefault();
+
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
                 if (user.UserName.Length < 9 || user.UserName.Length > 10)
@@ -498,7 +517,9 @@ namespace Sevices.Core.UserService
             if (userByPhone != null)
             {
                 var user = await _userManager.FindByNameAsync(userByPhone.UserName);
+
                 var check = await _signInManager.CheckPasswordSignInAsync(user, model.password, false);
+
                 if (!check.Succeeded)
                 {
                     result.Code = 7;
@@ -516,7 +537,9 @@ namespace Sevices.Core.UserService
                     else
                     {
                         var userRoles = _dbContext.UserRoles.Where(ur => ur.UserId == user.Id).ToList();
+
                         var roles = new List<string>();
+
                         foreach (var userRole in userRoles)
                         {
                             var role = await _dbContext.Role.FindAsync(userRole.RoleId);
@@ -563,6 +586,7 @@ namespace Sevices.Core.UserService
                 Role = user.Role
             };
         }
+
         private List<Claim> GetClaims(User user, List<string> roles)
         {
             IdentityOptions _options = new IdentityOptions();
@@ -629,6 +653,7 @@ namespace Sevices.Core.UserService
                 if (data != null)
                 {
                     var check = await _userManager.CheckPasswordAsync(data, model.oldPassword);
+
                     if (check != null)
                     {
                         var change = _userManager.ChangePasswordAsync(data, model.oldPassword, model.newPassword);
@@ -660,6 +685,7 @@ namespace Sevices.Core.UserService
             {
                 var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
                 //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
+
                 if (data != null)
                 {
                     data.PhoneNumber = model.phoneNumber;
@@ -691,6 +717,7 @@ namespace Sevices.Core.UserService
             try
             {
                 var check = _dbContext.User.Find(model.userId);
+
                 if (check == null)
                 {
                     result.Succeed = false;
@@ -701,6 +728,7 @@ namespace Sevices.Core.UserService
                 else
                 {
                     var checkRole = _dbContext.Role.Find(model.roleId);
+
                     if (checkRole == null)
                     {
                         result.Code = 11;
@@ -733,8 +761,7 @@ namespace Sevices.Core.UserService
                         result.Succeed = true;
                         result.Data = model.userId;
                     }
-                }
-               
+                }              
             }
             catch (Exception e)
             {
@@ -758,12 +785,11 @@ namespace Sevices.Core.UserService
                     var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
                     listUser = listUser.Where(x =>
                                               (!string.IsNullOrWhiteSpace(x.fullName) && FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(searchValue)) ||
-                                                            (!string.IsNullOrWhiteSpace(x.address) && FnUtil.Remove_VN_Accents(x.address).ToUpper().Contains(searchValue)) ||
-                                                            (!string.IsNullOrWhiteSpace(x.Email) && FnUtil.Remove_VN_Accents(x.Email).ToUpper().Contains(searchValue)) ||
-                                                            (!string.IsNullOrWhiteSpace(x.UserName) && FnUtil.Remove_VN_Accents(x.UserName).ToUpper().Contains(searchValue)) ||
-                                                            x.dob.ToString().Contains(searchValue) ||
-                                                            (x.Role != null && !string.IsNullOrWhiteSpace(x.Role.Name) && FnUtil.Remove_VN_Accents(x.Role.Name).ToUpper().Contains(searchValue))
-                                                    ).ToList();
+                                               (!string.IsNullOrWhiteSpace(x.address) && FnUtil.Remove_VN_Accents(x.address).ToUpper().Contains(searchValue)) ||
+                                                (!string.IsNullOrWhiteSpace(x.Email) && FnUtil.Remove_VN_Accents(x.Email).ToUpper().Contains(searchValue)) ||
+                                                 (!string.IsNullOrWhiteSpace(x.UserName) && FnUtil.Remove_VN_Accents(x.UserName).ToUpper().Contains(searchValue)) ||
+                                                   x.dob.ToString().Contains(searchValue) ||
+                                                   (x.Role != null && !string.IsNullOrWhiteSpace(x.Role.Name) && FnUtil.Remove_VN_Accents(x.Role.Name).ToUpper().Contains(searchValue))).ToList();
                 }
 
                 var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -790,8 +816,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
-                   .OrderBy(x => x.fullName).ToList();                
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group).OrderBy(x => x.fullName).ToList();
 
                 result.Data = new PagingModel()
                 {
@@ -816,6 +841,7 @@ namespace Sevices.Core.UserService
             try
             {
                 var data = _dbContext.User.Where(s => s.UserName == phoneNumber && !s.banStatus == true);
+
                 if (data != null)
                 {
                     var view = _mapper.ProjectTo<UserModel>(data).FirstOrDefault();
@@ -840,12 +866,13 @@ namespace Sevices.Core.UserService
         {
             ResultModel resultModel = new ResultModel();
             resultModel.Succeed = false;
+
             try
             {
                 var data = _dbContext.User.Where(s => s.Id == id);
+
                 if (data != null)
                 {
-
                     var view = _mapper.ProjectTo<UserModel>(data).FirstOrDefault();
                     resultModel.Data = view!;
                     resultModel.Succeed = true;
@@ -863,14 +890,14 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
+
         public ResultModel GetByRoleId(Guid roleId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             try
             {
                 var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
-                    .Where(x => x.roleId == roleId && !x.banStatus)
-                    .OrderBy(s => s.fullName).ToList();
+                    .Where(x => x.roleId == roleId && !x.banStatus).OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -899,8 +926,7 @@ namespace Sevices.Core.UserService
             try
             {
                 var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
-                    .Where(x => x.Role != null && x.Role.Name == "Leader" && !x.banStatus)
-                    .OrderBy(s => s.fullName).ToList();
+                    .Where(x => x.Role != null && x.Role.Name == "Leader" && !x.banStatus).OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -963,6 +989,7 @@ namespace Sevices.Core.UserService
             try
             {
                 var data = _dbContext.User.Where(s => s.Id == id).FirstOrDefault();
+
                 if (data != null)
                 {
                     data.banStatus = true;
@@ -988,9 +1015,11 @@ namespace Sevices.Core.UserService
         public ResultModel UnBannedUser(Guid id)
         {
             ResultModel resultModel = new ResultModel();
+
             try
             {
                 var data = _dbContext.User.Where(s => s.Id == id).FirstOrDefault();
+
                 if (data != null)
                 {
                     data.banStatus = false;
@@ -1011,8 +1040,6 @@ namespace Sevices.Core.UserService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
-        }
-
-       
+        }      
     }
 }

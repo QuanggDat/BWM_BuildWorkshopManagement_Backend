@@ -24,6 +24,7 @@ namespace Sevices.Core.WorkerTaskService
             result.Succeed = false;
 
             var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == model.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
+
             if (checkPriority != null)
             {
                 result.Code = 92;
@@ -53,7 +54,8 @@ namespace Sevices.Core.WorkerTaskService
                     foreach (var assignee in model.assignees)
                     {
                         bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                            .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed 
+                            && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                         if (checkWorkerDetail == true)
                         {
@@ -102,6 +104,7 @@ namespace Sevices.Core.WorkerTaskService
             try
             {
                 var check = _dbContext.WorkerTask.Find(model.id);
+
                 if (check == null)
                 {
                     result.Code = 47;
@@ -111,7 +114,8 @@ namespace Sevices.Core.WorkerTaskService
                 }
                 else
                 {
-                    var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.priority != check.priority && x.leaderTaskId == check.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
+                    var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.priority != check.priority 
+                    && x.leaderTaskId == check.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
 
                     if (checkPriority != null)
                     {
@@ -130,8 +134,8 @@ namespace Sevices.Core.WorkerTaskService
 
                         // Remove all old woker tasks detail
                         var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
-                            .Where(x => x.workerTaskId == model.id)
-                            .ToList();
+                            .Where(x => x.workerTaskId == model.id).ToList();
+
                         if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
                         {
                             _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
@@ -142,7 +146,8 @@ namespace Sevices.Core.WorkerTaskService
                         foreach (var assignee in model.assignees)
                         {
                             bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                            .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != EWorkerTaskStatus.Completed 
+                                     && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
 
                             if (checkWorkerDetail == true)
                             {
@@ -190,6 +195,7 @@ namespace Sevices.Core.WorkerTaskService
             result.Succeed = false;
 
             var check = _dbContext.WorkerTask.Find(id);
+
             if (check == null)
             {
                 result.Code = 47;
@@ -218,7 +224,8 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = _dbContext.WorkerTaskDetail.SingleOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
+            var check = _dbContext.WorkerTaskDetail.FirstOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
+
             if (check != null)
             {
                 result.Code = 48;
@@ -266,7 +273,7 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var check = _dbContext.WorkerTaskDetail.SingleOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
+            var check = _dbContext.WorkerTaskDetail.FirstOrDefault(x => x.userId == model.memberId && x.workerTaskId == model.workerTaskId);
             if (check == null)
             {
                 result.Code = 49;
@@ -300,7 +307,6 @@ namespace Sevices.Core.WorkerTaskService
                 result.Code = 47;
                 result.Succeed = false;
                 result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân!";
-                return result;
             }
             else
             {
@@ -319,14 +325,15 @@ namespace Sevices.Core.WorkerTaskService
                 catch (Exception ex)
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
-                return result;
-            }           
+                }                
+            }
+            return result;
         }
 
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var check = _dbContext.WorkerTask.Include(x => x.CreateBy)
@@ -493,6 +500,133 @@ namespace Sevices.Core.WorkerTaskService
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel SendFeedback(SendFeedbackModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var workTaskDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                .Where(x => x.id == model.workerTaskDetailId).FirstOrDefault();
+
+            if (workTaskDetail == null )
+            {
+                result.Code = 107;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân chi tiết!";
+            }
+            else
+            {
+                if (workTaskDetail.status == EWorkerTaskDetailsStatus.Completed)
+                {
+                    result.Code = 108;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Công việc này đã hoàn thành!";
+                }
+                else
+                {                  
+                    try
+                    {
+                        workTaskDetail.status = model.status;
+                        workTaskDetail.feedbackTitle = model.feedbackTitle;
+                        workTaskDetail.feedbackContent= model.feedbackContent;
+
+                        if (model.resource != null)
+                        {
+                            foreach (var resource in model.resource)
+                            {
+                                _dbContext.Resource.Add(new Resource
+                                {
+                                    workerTaskDetailId = model.workerTaskDetailId,
+                                    link = resource
+                                });
+                            }
+                        }
+
+                        _dbContext.SaveChanges();                        
+
+                        result.Succeed = true;
+                        result.Data = workTaskDetail.id;
+                    }
+
+                    catch (Exception ex)
+                    {
+                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public ResultModel UpdateStatusWorkerTaskDetail (Guid workerTaskDetailId, EWorkerTaskDetailsStatus status)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var workTaskDetail = _dbContext.WorkerTaskDetail.Find(workerTaskDetailId);
+
+            if (workTaskDetail == null)
+            {
+                result.Code = 107;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân chi tiết!";
+            }
+            else
+            {
+                try
+                {
+                    workTaskDetail.status = status;
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = workTaskDetail.id;
+                }
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }       
+            }
+            return result;
+        }
+
+        public ResultModel GetWorkerTaskDetail(Guid workerTaskDetailId)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var check = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask).Include(x => x.User).Include(x => x.Resources)
+                    .Where(x => x.id == workerTaskDetailId).FirstOrDefault();
+
+                if (check == null)
+                {
+                    result.Code = 107;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân chi tiết!";
+                }
+                else
+                {
+                    var wokerTaskDetailModel = new WorkerTaskDetailModel
+                    {
+                        workerTaskDetailId = check.id,
+                        workerTaskId = check.workerTaskId,
+                        workerTaskName = check.WorkerTask.name,
+                        userId = check.userId,
+                        userName = check.User.fullName,
+                        status = check.status,
+                        feedbackTitle = check.feedbackTitle,
+                        feedbackContent = check.feedbackContent,
+                        resource = check.Resources.Select(x => x.link).ToList()
+                    };
+                    result.Data = wokerTaskDetailModel;
+                    result.Succeed = true;
+                };
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
         }

@@ -18,6 +18,9 @@ namespace Sevices.Core.WorkerTaskService
         ResultModel GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
         ResultModel GetByUserId(Guid userId, string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
+        ResultModel GetWorkerTaskDetail(Guid workerTaskDetailId);
         ResultModel UpdateStatus(Guid workerTaskId, EWorkerTaskStatus status);
+        ResultModel SendFeedback(SendFeedbackModel model);
+        ResultModel UpdateStatusWorkerTaskDetail(Guid workerTaskDetailId, EWorkerTaskDetailsStatus status);
     }
 }

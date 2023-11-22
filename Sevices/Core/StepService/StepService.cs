@@ -20,10 +20,12 @@ namespace Sevices.Core.StepService
         public ResultModel Create(CreateStepModel model)
         {
             var result = new ResultModel();
+
             result.Succeed = false;
             try
             {
                 var checkExists = _dbContext.Step.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+
                 if (checkExists != null)
                 {
                     result.Code = 72;
@@ -54,6 +56,7 @@ namespace Sevices.Core.StepService
         public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
+
             result.Succeed = false;
             try
             {
@@ -107,13 +110,13 @@ namespace Sevices.Core.StepService
                     };
                     list.Add(tmp);
                 }
+
+                result.Succeed = true;
                 result.Data = new PagingModel()
                 {
                     Data = list,
                     Total = listStep.Count
-                };
-                result.Succeed = true;
-
+                };          
             }
             catch (Exception e)
             {
@@ -125,6 +128,7 @@ namespace Sevices.Core.StepService
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
+
             result.Succeed = false;
             try
             {
@@ -138,7 +142,6 @@ namespace Sevices.Core.StepService
                 }
                 else
                 {
-
                     var stepModel = new StepModel
                     {
                         id = check.id,
@@ -148,7 +151,6 @@ namespace Sevices.Core.StepService
                     result.Data = stepModel;
                     result.Succeed = true;
                 }
-
             }
             catch (Exception ex)
             {
@@ -160,9 +162,11 @@ namespace Sevices.Core.StepService
         public ResultModel Update(UpdateStepModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var check = _dbContext.Step.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
+                var check = _dbContext.Step.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+
                 if (check == null)
                 {
                     result.Code = 73;
@@ -172,6 +176,7 @@ namespace Sevices.Core.StepService
                 else
                 {
                     var checkExists = _dbContext.Step.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+
                     if (checkExists != null)
                     {
                         result.Code = 72;

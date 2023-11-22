@@ -33,6 +33,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+
             if (user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Code = 50;
@@ -41,9 +42,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask
-                .Where(x => x.id == model.acceptanceTaskId && x.name == "Công việc nghiệm thu")
-                .SingleOrDefault();
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.acceptanceTaskId && x.name == "Công việc nghiệm thu");
 
                 if (leaderTask == null)
                 {
@@ -72,7 +71,8 @@ namespace Sevices.Core.ReportService
                             reportType = ReportType.AcceptanceReport,
                             createdDate = DateTime.Now,
                         };
-                        var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).SingleOrDefault();
+
+                        var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).FirstOrDefault();
 
                         if (order != null)
                         {
@@ -136,6 +136,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+
             if (user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Code = 50;
@@ -212,7 +213,6 @@ namespace Sevices.Core.ReportService
                             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
-
                 }
             }
             return result;
@@ -224,6 +224,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
+
             if (user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Code = 50;
@@ -282,6 +283,7 @@ namespace Sevices.Core.ReportService
                             if (model.listSupply.Any())
                             {
                                 var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+
                                 var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
 
                                 var listSupply = new List<Supply>();
@@ -359,8 +361,7 @@ namespace Sevices.Core.ReportService
                     check.content = model.content;
 
                     // Remove all old resource
-                    var currentResources = _dbContext.Resource
-                                    .Where(x => x.reportId == check.id).ToList();
+                    var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
 
                     if (currentResources != null && currentResources.Count > 0)
                     {
@@ -420,8 +421,7 @@ namespace Sevices.Core.ReportService
                     check.content = model.content;
 
                     // Remove all old resource
-                    var currentResources = _dbContext.Resource
-                                    .Where(x => x.reportId == check.id).ToList();
+                    var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
 
                     if (currentResources != null && currentResources.Count > 0)
                     {
@@ -441,8 +441,7 @@ namespace Sevices.Core.ReportService
                     }
 
                     // Remove all old supply
-                    var currentSupply = _dbContext.Supply
-                                    .Where(x => x.reportId == check.id).ToList();
+                    var currentSupply = _dbContext.Supply.Where(x => x.reportId == check.id).ToList();
 
                     if (currentSupply != null && currentSupply.Count > 0)
                     {
@@ -452,6 +451,7 @@ namespace Sevices.Core.ReportService
                     if (model.listSupply.Any())
                     {
                         var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+
                         var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
 
                         var listSupply = new List<Supply>();
@@ -493,7 +493,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var report = _dbContext.Report.Include(x => x.LeaderTask)
-                .Where(x => x.id == model.reportId).SingleOrDefault();
+                .Where(x => x.id == model.reportId).FirstOrDefault();
 
             if (report == null && report!.reportType != ReportType.ProgressReport)
             {
@@ -511,8 +511,7 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-                    var leaderTask = _dbContext.LeaderTask
-                    .Find(report.leaderTaskId);
+                    var leaderTask = _dbContext.LeaderTask.Find(report.leaderTaskId);
 
                     try
                     {
@@ -527,6 +526,8 @@ namespace Sevices.Core.ReportService
                         {
                             leaderTask.status = ETaskStatus.NotAchieved;
                         }
+
+                        report.responseContent = model.responseContent;
                         _dbContext.SaveChanges();
 
                         _notificationService.Create(new Notification
@@ -557,7 +558,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var report = _dbContext.Report.Include(x => x.LeaderTask)
-                .Where(x => x.id == model.reportId).SingleOrDefault();
+                .FirstOrDefault(x => x.id == model.reportId);
 
             if (report == null && report!.reportType != ReportType.ProblemReport)
             {
@@ -598,12 +599,8 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
             try
             {
-                var report = _dbContext.Report
-                    .Include(x => x.Reporter)
-                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy)
-                    .Include(x => x.Resources)
-                    .Include(x => x.Supplies)
-                    .FirstOrDefault(x => x.id == id);
+                var report = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Resources).Include(x => x.Supplies)
+                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).FirstOrDefault(x => x.id == id);
 
                 if (report == null)
                 {
@@ -694,13 +691,8 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listTaskReport = _dbContext.Report
-                .Include(x => x.Reporter)
-                .Include(x => x.LeaderTask)
-                .Include(x => x.Resources)
-                .Include(x => x.Supplies)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport)
-                .OrderByDescending(x => x.createdDate).ToList();
+            var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources).Include(x => x.Supplies)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
@@ -754,10 +746,7 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listTaskReport = _dbContext.Report
-                .Include(x => x.Reporter)
-                .Include(x => x.LeaderTask)
-                .Include(x => x.Resources)
+            var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources)
                 .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport)
                 .OrderByDescending(x => x.createdDate).ToList();
 

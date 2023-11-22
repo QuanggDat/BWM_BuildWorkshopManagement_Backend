@@ -30,7 +30,9 @@ namespace Sevices.Core.LeaderTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var leaderTmp = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == true);
+            var leaderTmp = _dbContext.User.Include(x => x.Role)
+                .FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == true);
+
             if (leaderTmp == null)
             {
                 result.Code = 38;
@@ -40,6 +42,7 @@ namespace Sevices.Core.LeaderTaskService
             else
             {
                 var orderTmp = _dbContext.Order.Find(model.orderId);
+
                 if (orderTmp == null)
                 {
                     result.Code = 39;
@@ -49,11 +52,12 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var itemTmp = _dbContext.Item.Find(model.itemId);
+
                     if (itemTmp == null)
                     {
                         result.Code = 14;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
+                        result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                     }
                     else
                     {
@@ -61,11 +65,11 @@ namespace Sevices.Core.LeaderTaskService
                         {
                             result.Code = 103;
                             result.Succeed = false;
-                            result.ErrorMessage = "Mặt hàng chưa đủ 3 bản vẽ, hãy cập nhập đủ bản vẽ trong mặt hàng trước khi tạo công việc!";
+                            result.ErrorMessage = "Sản phẩm chưa đủ 3 bản vẽ, hãy cập nhập đủ bản vẽ trong sản phẩm trước khi tạo công việc!";
                         }
                         else
                         {
-                            var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == model.name && a.isDeleted == false);
+                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == model.name && a.isDeleted == false);
 
                             if (check != null)
                             {
@@ -93,6 +97,7 @@ namespace Sevices.Core.LeaderTaskService
                                     else
                                     {
                                         var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
+
                                         if (checkPriority != null)
                                         {
                                             result.Code = 91;
@@ -156,6 +161,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var leaderTmp = _dbContext.User.Find(model.leaderId);
+
             if (leaderTmp == null)
             {
                 result.Code = 38;
@@ -165,6 +171,7 @@ namespace Sevices.Core.LeaderTaskService
             else
             {
                 var orderTmp = _dbContext.Order.Find(model.orderId);
+
                 if (orderTmp == null)
                 {
                     result.Code = 39;
@@ -173,7 +180,7 @@ namespace Sevices.Core.LeaderTaskService
                 }
                 else
                 {
-                    var check = _dbContext.LeaderTask.SingleOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
+                    var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
 
                     if (orderTmp.status != OrderStatus.InProgress)
                     {
@@ -256,6 +263,7 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.priority != leaderTask.priority && x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false); 
+                    
                     if (checkPriority != null)
                     {
                         result.Code = 91;
@@ -294,6 +302,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var check = _dbContext.LeaderTask.Find(id);
+
             if (check == null)
             {
                 result.Code = 44;
@@ -309,7 +318,6 @@ namespace Sevices.Core.LeaderTaskService
                     result.Succeed = true;
                     result.Data = check.id;
                 }
-
                 catch (Exception ex)
                 {
                     result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
@@ -321,10 +329,11 @@ namespace Sevices.Core.LeaderTaskService
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var check = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                    .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                    .FirstOrDefault(x => x.id == id && x.isDeleted != true);
 
                 if (check == null)
                 {
@@ -335,6 +344,7 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var order = _dbContext.Order.Find(check.orderId);
+
                     var createBy = _dbContext.User.Find(check.createById);
 
                     var leaderTaskModel = new LeaderTaskModel
@@ -377,8 +387,8 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                .Where(a => a.isDeleted == false)
-                .OrderByDescending(x => x.startTime).ToList();
+                .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+
             try
             {
                 if (!string.IsNullOrEmpty(search))
@@ -392,6 +402,7 @@ namespace Sevices.Core.LeaderTaskService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var order = _dbContext.Order.Find(item.orderId);
+
                     var createBy = _dbContext.User.Find(item.createById);
 
                     var tmp = new LeaderTaskModel
@@ -442,6 +453,7 @@ namespace Sevices.Core.LeaderTaskService
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
+
             try
             {
                 if (!string.IsNullOrEmpty(search))
@@ -455,6 +467,7 @@ namespace Sevices.Core.LeaderTaskService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var order = _dbContext.Order.Find(item.orderId);
+
                     var createBy = _dbContext.User.Find(item.createById);
 
                     var tmp = new LeaderTaskModel
@@ -501,9 +514,11 @@ namespace Sevices.Core.LeaderTaskService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
+
             try
             {
                 if (!string.IsNullOrEmpty(search))
@@ -517,6 +532,7 @@ namespace Sevices.Core.LeaderTaskService
                 foreach (var item in listLeaderTaskPaging)
                 {
                     var order = _dbContext.Order.Find(item.orderId);
+
                     var createBy = _dbContext.User.Find(item.createById);
 
                     var tmp = new LeaderTaskModel
@@ -562,8 +578,11 @@ namespace Sevices.Core.LeaderTaskService
         public ResultModel UpdateStatus(Guid id, ETaskStatus status)
         {
             ResultModel result = new ResultModel();
+
             result.Succeed = false;
+
             var task = _dbContext.LeaderTask.Find(id);
+
             if (task == null)
             {
                 result.Code = 44;

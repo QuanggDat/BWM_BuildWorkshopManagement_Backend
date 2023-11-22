@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using System.Drawing.Printing;
 using Sevices.Core.UtilsService;
 using Microsoft.EntityFrameworkCore;
+using Data.Enums;
 
 namespace Sevices.Core.ItemService
 {
@@ -37,19 +38,21 @@ namespace Sevices.Core.ItemService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             try
             {
-                var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
+                var checkCategory = _dbContext.ItemCategory.FirstOrDefault(x => x.id == model.itemCategoryId && x.isDeleted != true);
+
                 if (checkCategory == null)
                 {
                     result.Code = 33;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
-
+                    result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm !";
                 }
                 else
                 {
                     bool hasDuplicates = model.listProcedure.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+
                     if (hasDuplicates)
                     {
                         result.Code = 15;
@@ -59,7 +62,9 @@ namespace Sevices.Core.ItemService
                     else
                     {
                         var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
+
                         var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+
                         var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
 
                         if (string.IsNullOrEmpty(model.image))
@@ -101,6 +106,7 @@ namespace Sevices.Core.ItemService
                         foreach (var material in model.listMaterial)
                         {
                             var _material = _dbContext.Material.Find(material.materialId);
+
                             if (_material == null)
                             {
                                 result.Code = 62;
@@ -138,15 +144,16 @@ namespace Sevices.Core.ItemService
         public ResultModel Update(UpdateItemModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {   
-                var check =  _dbContext.Item.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+                var check =  _dbContext.Item.FirstOrDefault(x => x.id == model.id && x.isDeleted != true);
                 
                 if (check == null)
                 {
                     result.Code = 34;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                 }
                 else
                 {
@@ -159,98 +166,114 @@ namespace Sevices.Core.ItemService
                     }
                     else
                     {
-                        var checkCategory = _dbContext.ItemCategory.Where(x => x.id == model.itemCategoryId && x.isDeleted != true).SingleOrDefault();
+                        var checkCategory = _dbContext.ItemCategory.FirstOrDefault(x => x.id == model.itemCategoryId && x.isDeleted != true);
+
                         if (checkCategory == null)
                         {
                             result.Code = 33;
                             result.Succeed = false;
-                            result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng !";
-
+                            result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm !";
                         }
                         else
                         {
-                            if (string.IsNullOrEmpty(model.image))
+                            var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order).FirstOrDefault(x => x.itemId == check.id
+                                    && x.Order.status == OrderStatus.InProgress || x.Order.status == OrderStatus.Cancel || x.Order.status == OrderStatus.Completed);
+
+                            if (checkItemExist != null)
                             {
-                                model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                                result.Code = 105;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Sản phẩm đã đi vào sản xuất, không thể chỉnh sửa sản phẩm!";
                             }
-
-                            check.name = model.name;
-                            check.image = model.image;
-                            check.length = model.length;
-                            check.depth = model.depth;
-                            check.height = model.height;
-                            check.unit = model.unit;
-                            check.mass = model.mass;
-                            check.drawingsTechnical = model.drawingsTechnical;
-                            check.drawings2D = model.drawings2D;
-                            check.drawings3D = model.drawings3D;
-                            check.description = model.description;
-
-                            // Remove all old Procedure Item
-                            var currentProcedureItems = _dbContext.ProcedureItem
-                                .Where(x => x.itemId == model.id)
-                                .ToList();
-                            if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                            else
                             {
-                                _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
-                            }
-
-                            // Set new Procedure Item
-                            var procedureItems = new List<ProcedureItem>();
-                            foreach (var procedure in model.listProcedure)
-                            {
-                                procedureItems.Add(new ProcedureItem
+                                if (string.IsNullOrEmpty(model.image))
                                 {
-                                    itemId = model.id,
-                                    procedureId = procedure.procedureId,
-                                    priority = procedure.priority
-                                });
-                            }
-
-                            // Remove all old Material Item
-                            var currentMaterialItems = _dbContext.ItemMaterial
-                                .Where(x => x.itemId == model.id)
-                                .ToList();
-                            if (currentMaterialItems != null && currentMaterialItems.Count > 0)
-                            {
-                                _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
-                            }
-
-                            // return price = 0
-                            check.price = 0;
-                            // Set new Material Item
-                            var materialItems = new List<ItemMaterial>();
-                            foreach (var material in model.listMaterial)
-                            {
-                                var _material = _dbContext.Material.Find(material.materialId);
-                                if (_material == null)
-                                {
-                                    result.Code = 62;
-                                    result.Succeed = false;
-                                    result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
-                                    return result;
+                                    model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
                                 }
-                                else
+
+                                check.name = model.name;
+                                check.image = model.image;
+                                check.length = model.length;
+                                check.depth = model.depth;
+                                check.height = model.height;
+                                check.unit = model.unit;
+                                check.mass = model.mass;
+                                check.drawingsTechnical = model.drawingsTechnical;
+                                check.drawings2D = model.drawings2D;
+                                check.drawings3D = model.drawings3D;
+                                check.description = model.description;
+
+                                // Remove all old Procedure Item
+                                var currentProcedureItems = _dbContext.ProcedureItem
+                                    .Where(x => x.itemId == model.id).ToList();
+
+                                if (currentProcedureItems != null && currentProcedureItems.Count > 0)
                                 {
-                                    materialItems.Add(new ItemMaterial
+                                    _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
+                                }
+
+                                // Set new Procedure Item
+                                var procedureItems = new List<ProcedureItem>();
+
+                                foreach (var procedure in model.listProcedure)
+                                {
+                                    procedureItems.Add(new ProcedureItem
                                     {
                                         itemId = model.id,
-                                        materialId = material.materialId,
-                                        quantity = material.quantity,
-                                        totalPrice = material.quantity * _material!.price
+                                        procedureId = procedure.procedureId,
+                                        priority = procedure.priority
                                     });
-                                    check.price += material.quantity * _material.price;
                                 }
+
+                                // Remove all old Material Item
+                                var currentMaterialItems = _dbContext.ItemMaterial
+                                    .Where(x => x.itemId == model.id).ToList();
+
+                                if (currentMaterialItems != null && currentMaterialItems.Count > 0)
+                                {
+                                    _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
+                                }
+
+                                // return price = 0
+                                check.price = 0;
+
+                                // Set new Material Item
+                                var materialItems = new List<ItemMaterial>();
+
+                                foreach (var material in model.listMaterial)
+                                {
+                                    var _material = _dbContext.Material.Find(material.materialId);
+
+                                    if (_material == null)
+                                    {
+                                        result.Code = 62;
+                                        result.Succeed = false;
+                                        result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        materialItems.Add(new ItemMaterial
+                                        {
+                                            itemId = model.id,
+                                            materialId = material.materialId,
+                                            quantity = material.quantity,
+                                            totalPrice = material.quantity * _material!.price
+                                        });
+                                        check.price += material.quantity * _material.price;
+                                    }
+                                }
+
+                                _dbContext.ProcedureItem.AddRange(procedureItems);
+                                _dbContext.ItemMaterial.AddRange(materialItems);
+
+                                _dbContext.SaveChanges();
+                                result.Succeed = true;
+                                result.Data = check.id;
                             }
-
-                            _dbContext.ProcedureItem.AddRange(procedureItems);
-                            _dbContext.ItemMaterial.AddRange(materialItems);
-
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = check.id;
                         }
-                    }
+                    }                       
                 }                  
             }
             catch (Exception e)
@@ -263,24 +286,27 @@ namespace Sevices.Core.ItemService
         public ResultModel Delete(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
+                var check = _dbContext.Item.FirstOrDefault(x => x.id == id && x.isDeleted != true);
+
                 if (check == null)
                 {
                     result.Code = 34;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                 }
                 else
                 {
                     var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order)
                         .FirstOrDefault(x => x.itemId == check.id); 
+
                     if (checkItemExist != null)
                     {
                         result.Code = 104;
                         result.Succeed = false;
-                        result.ErrorMessage = $"Không thể xoá mặt hàng, mặt hàng đang trong đơn hàng {checkItemExist.Order.name}!";
+                        result.ErrorMessage = $"Không thể xoá sản phẩm, sản phẩm đang trong đơn hàng {checkItemExist.Order.name}!";
                     }
                     else
                     {
@@ -302,13 +328,12 @@ namespace Sevices.Core.ItemService
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var listItem =  _dbContext.Item.Where(x => x.isDeleted != true)
-                    .Include(x => x.ItemCategory)
+                var listItem =  _dbContext.Item.Where(x => x.isDeleted != true)                   
                     .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
-                    .Include(x => x.ItemMaterials)
-                   .OrderBy(x => x.name).ToList();
+                    .Include(x => x.ItemCategory).Include(x => x.ItemMaterials).OrderBy(x => x.name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -352,6 +377,7 @@ namespace Sevices.Core.ItemService
                     };
                     list.Add(tmp);
                 }
+
                 result.Data = new PagingModel()
                 {
                     Data = list,
@@ -370,19 +396,19 @@ namespace Sevices.Core.ItemService
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();
+
             try
             {
                 var check = _dbContext.Item.Where(x => x.id == id && x.isDeleted != true)
-                    .Include(x => x.ItemCategory)
-                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
                     .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
-                    .FirstOrDefault();
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)     
+                    .Include(x => x.ItemCategory).FirstOrDefault();
 
                 if (check == null)
                 {
                     result.Code = 34;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin mặt hàng!";
+                    result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                 }
                 else
                 {
@@ -403,6 +429,7 @@ namespace Sevices.Core.ItemService
                         drawings3D = check.drawings3D,
                         description = check.description,
                         price = check.price,
+
                         listMaterial = check.ItemMaterials.Select(x => new ItemMaterialModel
                         {
                             materialId = x.materialId,
@@ -430,13 +457,14 @@ namespace Sevices.Core.ItemService
         public ResultModel GetByItemCategoryId(Guid itemCategoryId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
+
             var check = _dbContext.ItemCategory.Where(x => x.id == itemCategoryId && x.isDeleted != true).FirstOrDefault();
 
             if (check == null)
             {
                 result.Code = 33;
                 result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin loại mặt hàng!";
+                result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
             }
             else
             {
@@ -444,8 +472,8 @@ namespace Sevices.Core.ItemService
                 {
                     var listItem = _dbContext.Item.Where(x => x.itemCategoryId == itemCategoryId && x.isDeleted != true)
                         .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
-                        .Include(x => x.ItemMaterials).ThenInclude(x => x.Material)
-                       .OrderBy(x => x.name).ToList();
+                        .Include(x => x.ItemMaterials).ThenInclude(x => x.Material).OrderBy(x => x.name).ToList();
+
                     if (!string.IsNullOrEmpty(search))
                     {
                         listItem = listItem.Where(x => x.name.Contains(search)).ToList();

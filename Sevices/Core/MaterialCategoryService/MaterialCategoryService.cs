@@ -30,9 +30,11 @@ namespace Sevices.Core.CategoryService
         {
             var result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && x.isDeleted == false);
+
                 if (checkExists != null)
                 {
                     result.Code = 24;
@@ -63,9 +65,11 @@ namespace Sevices.Core.CategoryService
         public ResultModel Update(UpdateMaterialCategoryModel model)
         {
             ResultModel result = new ResultModel();
+
             try
             {
-                var check = _dbContext.MaterialCategory.Where(x => x.id == model.id && x.isDeleted != true).SingleOrDefault();
+                var check = _dbContext.MaterialCategory.Where(x => x.id == model.id && x.isDeleted != true).FirstOrDefault();
+
                 if(check == null)
                 {
                     result.Code = 25;
@@ -75,6 +79,7 @@ namespace Sevices.Core.CategoryService
                 else
                 {
                     var checkExists = _dbContext.MaterialCategory.FirstOrDefault(x => x.name == model.name && x.name != check.name && !x.isDeleted);
+
                     if (checkExists != null)
                     {
                         result.Code = 24;
@@ -116,7 +121,6 @@ namespace Sevices.Core.CategoryService
                 var list = new List<MaterialCategoryModel>();
                 foreach (var item in listMaterialCategoryPaging)
                 {
-
                     var tmp = new MaterialCategoryModel
                     {
                         id = item.id,                       
@@ -144,6 +148,7 @@ namespace Sevices.Core.CategoryService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var check = _dbContext.MaterialCategory.Include(x => x.Materials)
@@ -157,18 +162,15 @@ namespace Sevices.Core.CategoryService
                 }
                 else
                 {
-
                     var materialCategoryModel = new MaterialCategoryModel
                     {
                         id = check.id,
                         name = check.name,
                         quantityMaterial = check.Materials.Count,
                     };
-
                     result.Data = materialCategoryModel;
                     result.Succeed = true;
                 }
-
             }
             catch (Exception ex)
             {
@@ -181,9 +183,11 @@ namespace Sevices.Core.CategoryService
         {
             ResultModel result = new ResultModel();
             result.Succeed = false;
+
             try
             {
                 var isExistedMaterial = _dbContext.Material.Any(x => x.materialCategoryId == id && x.isDeleted != true);
+
                 if (isExistedMaterial)
                 {
                     result.Code = 26;

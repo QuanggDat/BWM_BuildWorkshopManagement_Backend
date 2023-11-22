@@ -14,7 +14,6 @@ namespace Data.Entities
         public Guid id { get; set; }
 
         public string name { get; set; } = null!;
-        public int member { get; set; }
         public bool isDeleted { get; set; }
 
         //public virtual List<User> Users { get; set; } = new();
