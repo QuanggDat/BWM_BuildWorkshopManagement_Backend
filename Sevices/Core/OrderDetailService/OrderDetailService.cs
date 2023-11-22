@@ -72,6 +72,7 @@ namespace Sevices.Core.OrderDetailService
                     _dbContext.OrderDetail.Update(orderDetail);
 
                     var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderDetail.orderId);
+
                     if (order != null)
                     {
                         double total = 0;

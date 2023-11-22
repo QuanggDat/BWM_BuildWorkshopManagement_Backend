@@ -369,6 +369,7 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
+                        workerTaskDetailId = check.WorkerTaskDetails.Select(_ => _.id).ToList(),
                     };
                     result.Data = wokerTaskModel;
                     result.Succeed = true;
@@ -424,6 +425,7 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
+                        workerTaskDetailId = item.WorkerTaskDetails.Select(_ => _.id).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -486,6 +488,7 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
+                        workerTaskDetailId = item.WorkerTaskDetails.Select(_ => _.id).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -612,9 +615,7 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         workerTaskDetailId = check.id,
                         workerTaskId = check.workerTaskId,
-                        workerTaskName = check.WorkerTask.name,
                         userId = check.userId,
-                        userName = check.User.fullName,
                         status = check.status,
                         feedbackTitle = check.feedbackTitle,
                         feedbackContent = check.feedbackContent,

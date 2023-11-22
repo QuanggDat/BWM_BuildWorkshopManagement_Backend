@@ -381,7 +381,6 @@ namespace Sevices.Core.OrderService
                         result.Data = true;
                         result.Succeed = true;
                     }
-
                 }
             }
             catch (Exception ex)

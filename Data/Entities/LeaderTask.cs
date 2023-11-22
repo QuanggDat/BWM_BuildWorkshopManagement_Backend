@@ -45,5 +45,6 @@ namespace Data.Entities
         public bool isDeleted { get; set; }
 
         public virtual List<WorkerTask> WorkerTasks { get; set; } = new();
+        public virtual List<Report> Reports { get; set; } = new();
     }
 }

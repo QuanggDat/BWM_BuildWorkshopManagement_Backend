@@ -60,6 +60,7 @@ namespace Data.Models
         public EWorkerTaskStatus status { get; set; }
         public bool isDeleted { get; set; }
         public List<TaskMember> Members { get; set; } = null!;
+        public List<Guid> workerTaskDetailId { get; set; } = null!;
     }
 
     public class AssignWorkerTaskModel
@@ -81,9 +82,7 @@ namespace Data.Models
     {
         public Guid workerTaskDetailId { get; set; }
         public Guid? workerTaskId { get; set; }
-        public string workerTaskName { get; set; } = null!;
         public Guid? userId { get; set; }
-        public string userName { get; set; } = null!;
         public EWorkerTaskDetailsStatus status { get; set; }
         public string? feedbackTitle { get; set; }
         public string? feedbackContent { get; set; }
