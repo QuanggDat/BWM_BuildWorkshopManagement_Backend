@@ -35,7 +35,6 @@ namespace Data.Models
         public string importPlace { get; set; } = null!;
         public double price { get; set; }
     }
-
     public class UpdateMaterialModel
     {
         public Guid id { get; set; }
