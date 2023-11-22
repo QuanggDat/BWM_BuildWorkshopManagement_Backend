@@ -409,11 +409,14 @@ namespace Sevices.Core.GroupService
                     var leader = _dbContext.User.Include(x => x.Role)
                         .FirstOrDefault(x => x.groupId == item.id && x.Role != null && x.Role.Name == "Leader");
 
+                    var amountWorker = _dbContext.User.Include(x => x.Role)
+                        .Where(x => x.groupId == item.id && x.Role != null && x.Role.Name == "Worker").ToList().Count;
+
                     var tmp = new GroupModel
                     {
                         id = item.id,
                         name = item.name,
-                        //member = item,
+                        amountWorker = amountWorker,
                         leaderName = leader?.fullName ?? "",
                     };
                     list.Add(tmp);
@@ -453,11 +456,14 @@ namespace Sevices.Core.GroupService
                     var leader = _dbContext.User.Include(x => x.Role)
                         .FirstOrDefault(x => x.groupId == id && x.Role != null && x.Role.Name == "Leader");
 
+                    var amountWorker = _dbContext.User.Include(x => x.Role)
+                        .Where(x => x.groupId == id && x.Role != null && x.Role.Name == "Worker").ToList().Count;
+
                     var group = new GroupModel
                     {
                         id = check.id,
                         name = check.name,
-                        //member = check.member,
+                        amountWorker = amountWorker,
                         leaderName = leader?.fullName ?? "",
                     };
 

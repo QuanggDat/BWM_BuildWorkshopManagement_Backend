@@ -11,7 +11,7 @@ namespace Data.Models
         public Guid id {  get; set; }
         public string name { get; set; } = null!;
         public string leaderName { get; set; } = null!;
-        public int member { get; set; }
+        public int amountWorker { get; set; }
     }
 
     public class CreateGroupModel
