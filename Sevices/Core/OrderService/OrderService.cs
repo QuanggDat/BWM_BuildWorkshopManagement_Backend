@@ -287,7 +287,6 @@ namespace Sevices.Core.OrderService
                                 quantity = newItem.quantity,
                                 description = newItem.description ?? "",
                                 orderId = orderId,
-                                isDeleted = false,
                             });
                         }
 
@@ -303,8 +302,7 @@ namespace Sevices.Core.OrderService
                                 quantity = oldItem.quantity,
                                 totalPrice = detailPrice,
                                 description = oldItem.description ?? "",
-                                orderId = orderId,
-                                isDeleted = false,
+                                orderId = orderId
                             });
                         }
 

@@ -70,10 +70,23 @@ namespace Sevices.Core.StepService
                 }
                 else
                 {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    result.Data = check.id;
-                    result.Succeed = true;
+
+                    var checkStepExist = _dbContext.ProcedureStep
+                        .FirstOrDefault(x => x.stepId == check.id);
+
+                    if (checkStepExist != null)
+                    {
+                        result.Code = 76;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Bước này đang tồn tại trong quy trình, hãy xoá ra khỏi quy trình trước khi xoá bước!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
+                        result.Data = check.id;
+                        result.Succeed = true;
+                    }                     
                 }
             }
             catch (Exception ex)

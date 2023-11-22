@@ -353,32 +353,34 @@ namespace Sevices.Core.GroupService
 
             try
             {
-                var isExistedUser = _dbContext.User.Any(x => x.groupId == id && x.banStatus != true);
+                var group = _dbContext.Group.Where(s => s.id == id && s.isDeleted == false).FirstOrDefault();
 
-                if (isExistedUser)
+                if (group == null)
                 {
-                    result.Code = 94;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Hãy xoá hết người dùng trước khi xoá tổ ! ";
+                    result.Code = 20;
+                    result.ErrorMessage = "Không tìm thấy thông tin tổ!";
                 }
                 else
                 {
-                    var group = _dbContext.Group.Where(s => s.id == id && s.isDeleted == false).FirstOrDefault();
+                    var currentUsersInGroup = _dbContext.User.Include(x => x.Group).Where(x => x.groupId == id).ToList();
 
-                    if (group != null)
-                    {
-                        group.isDeleted = true;
-                        _dbContext.Group.Update(group);
-                        _dbContext.SaveChanges();
-                        result.Data = group.id;
-                        result.Succeed = true;
+                    if (currentUsersInGroup != null && currentUsersInGroup.Count > 0)
+                    {                      
+                        foreach(var user in currentUsersInGroup)
+                        {
+                            user.groupId = null;
+                            user.Group = null;
+                        }
+                        _dbContext.User.UpdateRange(currentUsersInGroup);
                     }
-                    else
-                    {
-                        result.Code = 20;
-                        result.ErrorMessage = "Không tìm thấy thông tin tổ!";
-                    }
+
+                    group.isDeleted = true;
+                    _dbContext.Group.Update(group);
+                    _dbContext.SaveChanges();
+                    result.Data = group.id;
+                    result.Succeed = true;
                 }
+
             }
             catch (Exception ex)
             {

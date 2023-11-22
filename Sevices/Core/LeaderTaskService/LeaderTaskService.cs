@@ -313,6 +313,30 @@ namespace Sevices.Core.LeaderTaskService
             {
                 try
                 {
+                    var currentWorkerTasks = _dbContext.WorkerTask.Where(x => x.leaderTaskId == id).ToList();
+
+                    if (currentWorkerTasks != null && currentWorkerTasks.Count > 0)
+                    {
+                        foreach (var workerTask in currentWorkerTasks)
+                        {
+                            workerTask.isDeleted = true;
+                        }
+                        _dbContext.WorkerTask.UpdateRange(currentWorkerTasks);
+                    }
+
+                    var currentReportTask = _dbContext.Report.Where(x => x.leaderTaskId == id).ToList();
+
+                    if (currentReportTask != null && currentReportTask.Count > 0)
+                    {
+                        foreach (var reportTask in currentReportTask)
+                        {
+                            reportTask.isDeleted = true;
+                        }
+
+                        _dbContext.Report.UpdateRange(currentReportTask);
+
+                    }
+
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
                     result.Succeed = true;

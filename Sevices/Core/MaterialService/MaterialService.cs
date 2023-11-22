@@ -174,10 +174,21 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    result.Data = check.id;
-                    result.Succeed = true;
+                    var checkMaterialExist = _dbContext.ItemMaterial.FirstOrDefault(x => x.materialId == check.id);
+
+                    if (checkMaterialExist != null)
+                    {
+                        result.Code = 77;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Vật liệu này đang tồn tại trong sản phẩm, hãy xoá ra khỏi sản phẩm trước khi xoá vật liệu!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
+                        result.Data = check.id;
+                        result.Succeed = true;
+                    }                  
                 }
             }
             catch (Exception ex)

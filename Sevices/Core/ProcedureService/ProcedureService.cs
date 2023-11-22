@@ -162,10 +162,22 @@ namespace Sevices.Core.ProcedureService
                 }
                 else
                 {
-                    check.isDeleted = true;
-                    _dbContext.SaveChanges();
-                    result.Data = check.id;
-                    result.Succeed = true;
+                    var checkProcedureExist = _dbContext.ProcedureItem
+                        .FirstOrDefault(x => x.procedureId == check.id);
+
+                    if (checkProcedureExist != null)
+                    {
+                        result.Code = 77;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Quy trình này đang tồn tại trong sản phẩm, hãy xoá ra khỏi sản phẩm trước khi xoá quy trình!";
+                    }
+                    else
+                    {
+                        check.isDeleted = true;
+                        _dbContext.SaveChanges();
+                        result.Data = check.id;
+                        result.Succeed = true;
+                    }                  
                 }
             }
             catch (Exception ex)

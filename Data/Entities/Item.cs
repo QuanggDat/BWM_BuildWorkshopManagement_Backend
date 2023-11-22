@@ -17,7 +17,6 @@ namespace Data.Entities
         [ForeignKey("itemCategoryId")]
         public Guid? itemCategoryId { get; set; }
         public ItemCategory ItemCategory { get; set; } = null!;
-
         public string name { get; set; } = null!;
         public string code { get; set; } = null!;
         public string? image { get; set; } 

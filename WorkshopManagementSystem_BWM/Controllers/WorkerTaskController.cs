@@ -32,6 +32,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpGet("[action]")]
+        public IActionResult GetAll(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _workerTaskService.GetAll(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpGet("[action]/{leaderTaskId}")]
         public IActionResult GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {

@@ -25,6 +25,8 @@ namespace Data.Entities
         public double price { get; set; } = 0;
         public double totalPrice { get; set; } = 0;
         public string? description { get; set; }
-        public bool isDeleted { get; set; }       
+
+        public virtual List<OrderDetailMaterial> OrderDetailMaterials { get; set; } = new();
+
     }
 }

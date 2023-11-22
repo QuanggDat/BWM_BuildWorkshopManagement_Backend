@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.AspNetCore.Identity;
@@ -988,22 +989,72 @@ namespace Sevices.Core.UserService
             ResultModel resultModel = new ResultModel();
             try
             {
-                var data = _dbContext.User.Where(s => s.Id == id).FirstOrDefault();
+                var data = _dbContext.User.Include(x => x.Role).Where(s => s.Id == id).FirstOrDefault();
 
-                if (data != null)
-                {
-                    data.banStatus = true;
-                    _dbContext.SaveChanges();
-                    var view = _mapper.Map<User, UserModel>(data);
-                    resultModel.Data = view;
-                    resultModel.Succeed = true;
-                }
-                else
+                if (data == null)
                 {
                     resultModel.Code = 10;
                     resultModel.ErrorMessage = "Không tìm thấy thông tin người dùng !";
                     resultModel.Succeed = false;
                 }
+                else
+                {
+                    var checkWorkerInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .FirstOrDefault(x => x.userId == id && x.status != Data.Enums.EWorkerTaskDetailsStatus.Completed && x.WorkerTask.isDeleted == false);
+
+                    if (data.Role != null && data.Role.Name == "Worker" && checkWorkerInTask != null)
+                    {
+                        resultModel.Code = 78;
+                        resultModel.ErrorMessage = "Công nhân đang thực hiện công việc, hiện tại không thể khoá tài khoản!";
+                        resultModel.Succeed = false;
+                    }
+                    else
+                    {
+                        var checkLeaderInTask = _dbContext.LeaderTask.FirstOrDefault(x => x.leaderId == id && x.status != Data.Enums.ETaskStatus.Completed && x.isDeleted == false);
+
+                        if (data.Role != null && data.Role.Name == "Leader" && checkLeaderInTask != null)
+                        {
+                            resultModel.Code = 79;
+                            resultModel.ErrorMessage = "Tổ trưởng đang thực hiện công việc, hiện tại không thể khoá tài khoản!";
+                            resultModel.Succeed = false;
+                        }
+                        else
+                        {
+                            var listStatus = new List<OrderStatus>() {
+                            OrderStatus.Pending,
+                            OrderStatus.Request,
+                            OrderStatus.Approve,
+                            OrderStatus.InProgress
+                            };
+
+                            var checkForemanInOrder = _dbContext.Order.FirstOrDefault(x => x.assignToId == id && listStatus.Contains(x.status));
+
+                            if (data.Role != null && data.Role.Name == "Foreman" && checkForemanInOrder != null)
+                            {
+                                resultModel.Code = 80;
+                                resultModel.ErrorMessage = "Quản đốc đang thực hiện đơn hàng, hiện tại không thể khoá tài khoản!";
+                                resultModel.Succeed = false;
+                            }
+                            else
+                            {
+                                var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.groupId == id);
+
+                                if (currentUserInGroup != null)
+                                {
+                                    currentUserInGroup.groupId = null;
+                                    currentUserInGroup.Group = null;
+                                    _dbContext.User.Update(currentUserInGroup);
+                                }
+
+                                data.banStatus = true;
+                                _dbContext.SaveChanges();
+                                var view = _mapper.Map<User, UserModel>(data);
+                                resultModel.Data = view;
+                                resultModel.Succeed = true;
+                            }
+                        }
+                    }                   
+                }               
             }
             catch (Exception ex)
             {

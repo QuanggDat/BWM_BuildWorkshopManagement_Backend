@@ -176,102 +176,106 @@ namespace Sevices.Core.ItemService
                         }
                         else
                         {
+                            
                             var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order).FirstOrDefault(x => x.itemId == check.id
                                     && x.Order.status == OrderStatus.InProgress || x.Order.status == OrderStatus.Cancel || x.Order.status == OrderStatus.Completed);
-
+                            /*
                             if (checkItemExist != null)
                             {
                                 result.Code = 105;
                                 result.Succeed = false;
                                 result.ErrorMessage = "Sản phẩm đã đi vào sản xuất, không thể chỉnh sửa sản phẩm!";
                             }
+                            
                             else
                             {
-                                if (string.IsNullOrEmpty(model.image))
+                                
+                            }
+                            */
+                            if (string.IsNullOrEmpty(model.image))
+                            {
+                                model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                            }
+
+                            check.name = model.name;
+                            check.image = model.image;
+                            check.length = model.length;
+                            check.depth = model.depth;
+                            check.height = model.height;
+                            check.unit = model.unit;
+                            check.mass = model.mass;
+                            check.drawingsTechnical = model.drawingsTechnical;
+                            check.drawings2D = model.drawings2D;
+                            check.drawings3D = model.drawings3D;
+                            check.description = model.description;
+
+                            // Remove all old Procedure Item
+                            var currentProcedureItems = _dbContext.ProcedureItem
+                                .Where(x => x.itemId == model.id).ToList();
+
+                            if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                            {
+                                _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
+                            }
+
+                            // Set new Procedure Item
+                            var procedureItems = new List<ProcedureItem>();
+
+                            foreach (var procedure in model.listProcedure)
+                            {
+                                procedureItems.Add(new ProcedureItem
                                 {
-                                    model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                                    itemId = model.id,
+                                    procedureId = procedure.procedureId,
+                                    priority = procedure.priority
+                                });
+                            }
+
+                            // Remove all old Material Item
+                            var currentMaterialItems = _dbContext.ItemMaterial
+                                .Where(x => x.itemId == model.id).ToList();
+
+                            if (currentMaterialItems != null && currentMaterialItems.Count > 0)
+                            {
+                                _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
+                            }
+
+                            // return price = 0
+                            check.price = 0;
+
+                            // Set new Material Item
+                            var materialItems = new List<ItemMaterial>();
+
+                            foreach (var material in model.listMaterial)
+                            {
+                                var _material = _dbContext.Material.Find(material.materialId);
+
+                                if (_material == null)
+                                {
+                                    result.Code = 62;
+                                    result.Succeed = false;
+                                    result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
+                                    return result;
                                 }
-
-                                check.name = model.name;
-                                check.image = model.image;
-                                check.length = model.length;
-                                check.depth = model.depth;
-                                check.height = model.height;
-                                check.unit = model.unit;
-                                check.mass = model.mass;
-                                check.drawingsTechnical = model.drawingsTechnical;
-                                check.drawings2D = model.drawings2D;
-                                check.drawings3D = model.drawings3D;
-                                check.description = model.description;
-
-                                // Remove all old Procedure Item
-                                var currentProcedureItems = _dbContext.ProcedureItem
-                                    .Where(x => x.itemId == model.id).ToList();
-
-                                if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                                else
                                 {
-                                    _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
-                                }
-
-                                // Set new Procedure Item
-                                var procedureItems = new List<ProcedureItem>();
-
-                                foreach (var procedure in model.listProcedure)
-                                {
-                                    procedureItems.Add(new ProcedureItem
+                                    materialItems.Add(new ItemMaterial
                                     {
                                         itemId = model.id,
-                                        procedureId = procedure.procedureId,
-                                        priority = procedure.priority
+                                        materialId = material.materialId,
+                                        quantity = material.quantity,
+                                        totalPrice = material.quantity * _material!.price
                                     });
+                                    check.price += material.quantity * _material.price;
                                 }
-
-                                // Remove all old Material Item
-                                var currentMaterialItems = _dbContext.ItemMaterial
-                                    .Where(x => x.itemId == model.id).ToList();
-
-                                if (currentMaterialItems != null && currentMaterialItems.Count > 0)
-                                {
-                                    _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
-                                }
-
-                                // return price = 0
-                                check.price = 0;
-
-                                // Set new Material Item
-                                var materialItems = new List<ItemMaterial>();
-
-                                foreach (var material in model.listMaterial)
-                                {
-                                    var _material = _dbContext.Material.Find(material.materialId);
-
-                                    if (_material == null)
-                                    {
-                                        result.Code = 62;
-                                        result.Succeed = false;
-                                        result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
-                                        return result;
-                                    }
-                                    else
-                                    {
-                                        materialItems.Add(new ItemMaterial
-                                        {
-                                            itemId = model.id,
-                                            materialId = material.materialId,
-                                            quantity = material.quantity,
-                                            totalPrice = material.quantity * _material!.price
-                                        });
-                                        check.price += material.quantity * _material.price;
-                                    }
-                                }
-
-                                _dbContext.ProcedureItem.AddRange(procedureItems);
-                                _dbContext.ItemMaterial.AddRange(materialItems);
-
-                                _dbContext.SaveChanges();
-                                result.Succeed = true;
-                                result.Data = check.id;
                             }
+
+                            _dbContext.ProcedureItem.AddRange(procedureItems);
+                            _dbContext.ItemMaterial.AddRange(materialItems);
+
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = check.id;
                         }
                     }                       
                 }                  
