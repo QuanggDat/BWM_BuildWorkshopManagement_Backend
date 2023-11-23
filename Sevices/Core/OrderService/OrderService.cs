@@ -147,46 +147,63 @@ namespace Sevices.Core.OrderService
                     var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
                     var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material).Where(x => listItemId.Contains(x.itemId)).ToList();
 
-                    var dict = new Dictionary<Guid, QuoteMaterialDetailModel>();
-                    foreach (var itemMate in listItemMaterial)
+                    var dictOrder = new Dictionary<Guid, QuoteMaterialDetailModel>();
+                    foreach (var detail in order.OrderDetails)
                     {
-                        if (dict.ContainsKey(itemMate.materialId))
+                        foreach (var odMate in detail.OrderDetailMaterials)
                         {
-                            dict[itemMate.materialId].quantity += itemMate.quantity;
-                            dict[itemMate.materialId].totalPrice = dict[itemMate.materialId].quantity * dict[itemMate.materialId].price;
-                        }
-                        else
-                        {
-                            var quoteMaterialModel = new QuoteMaterialDetailModel()
+                            if (dictOrder.ContainsKey(odMate.materialId))
                             {
-                                materialId = itemMate.materialId,
-                                name = itemMate.Material.name,
-                                sku = itemMate.Material.sku,
-                                quantity = itemMate.quantity,
-                                price = itemMate.price,
-                                totalPrice = itemMate.totalPrice,
-                            };
-                            dict.Add(itemMate.materialId, quoteMaterialModel);
+                                dictOrder[odMate.materialId].quantity += odMate.quantity;
+                                dictOrder[odMate.materialId].totalPrice = dictOrder[odMate.materialId].quantity * dictOrder[odMate.materialId].price;
+                            }
+                            else
+                            {
+                                dictOrder.Add(odMate.materialId, new()
+                                {
+                                    materialId = odMate.materialId,
+                                    name = odMate.materialName,
+                                    sku = odMate.materialSku,
+                                    quantity = odMate.quantity,
+                                    price = odMate.price,
+                                    totalPrice = odMate.totalPrice,
+                                });
+                            }
                         }
                     }
 
                     // get from supply
+                    var dictSupply = new Dictionary<Guid, QuoteMaterialDetailModel>();
                     var listReportByOrder = _dbContext.Report.Where(x => x.orderId == order.id).ToList();
                     var listReportId = listReportByOrder.Select(x => x.id).ToList();
 
                     var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material)
                                                                     .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status))
-                                                                    .Select(x => new QuoteMaterialDetailModel()
-                                                                    {
-                                                                        materialId = x.materialId,
-                                                                        name = x.Material.name,
-                                                                        sku = x.Material.sku,
-                                                                        quantity = x.amount,
-                                                                        price = x.price,
-                                                                        totalPrice = x.totalPrice,
-                                                                    }).ToList();
+                                                                    .ToList();
 
-                    double totalPriceSupplyDamage = listSupplyDamageByReport.Sum(x => x.totalPrice);
+                    foreach (var supply in listSupplyDamageByReport)
+                    {
+                        if (dictSupply.ContainsKey(supply.materialId))
+                        {
+                            dictSupply[supply.materialId].quantity += supply.amount;
+                            dictSupply[supply.materialId].totalPrice += supply.totalPrice;
+                        }
+                        else
+                        {
+                            dictOrder.Add(supply.materialId, new()
+                            {
+                                materialId = supply.materialId,
+                                name = supply.Material.name,
+                                sku = supply.Material.sku,
+                                quantity = supply.amount,
+                                price = supply.price,
+                                totalPrice = supply.totalPrice,
+                            });
+                        }
+                    }
+
+                    var listFromSupplyDamage = dictSupply.Values.ToList();
+                    double totalPriceSupplyDamage = listFromSupplyDamage.Sum(x => x.totalPrice);
 
                     double percentDamage = 0;
                     if (order.totalPrice > 0)
@@ -199,10 +216,10 @@ namespace Sevices.Core.OrderService
                         orderId = order.id,
 
                         totalPriceOrder = order.totalPrice,
-                        listFromOrder = dict.Values.ToList(),
+                        listFromOrder = dictOrder.Values.ToList(),
 
                         totalPriceSupplyDamage = totalPriceSupplyDamage,
-                        listFromSupplyDamage = listSupplyDamageByReport,
+                        listFromSupplyDamage = listFromSupplyDamage,
 
                         percentDamage = percentDamage
                     };
