@@ -14,6 +14,7 @@ using Sevices.Core.ItemService;
 using Sevices.Core.LeaderTaskService;
 using Sevices.Core.MaterialService;
 using Sevices.Core.NotificationService;
+using Sevices.Core.OrderDetailMaterialService;
 using Sevices.Core.OrderDetailService;
 using Sevices.Core.OrderReportService;
 using Sevices.Core.OrderService;
@@ -70,6 +71,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<ILeaderTaskService, LeaderTaskService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderDetailService, OrderDetailService>();
+            services.AddScoped<IOrderDetailMaterialService, OrderDetailMaterialService>();
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IMaterialCategoryService, MaterialCategoryService>();
