@@ -255,6 +255,7 @@ namespace Sevices.Core.OrderService
                         var orderId = orderCreate.id;
 
                         var listOrderDetailCreate = new List<OrderDetail>();
+                        var listOrderDetailMaterialCreate = new List<OrderDetailMaterial>();
                         var listItemCodeCreated = new List<string>();
 
                         var listNewItem = converData.ListOrderItem.Where(x => string.IsNullOrWhiteSpace(x.code)).ToList();
@@ -304,9 +305,33 @@ namespace Sevices.Core.OrderService
                                 description = oldItem.description ?? "",
                                 orderId = orderId
                             });
+
+                            // Cứ mỗi orderdetail được tạo từ các item cũ, dựa vào id của item cũ lấy bảng itemMaterial ra để đồng bộ với bảng orderDetailMaterial mới 
+                            // được tạo theo tương ứng
+                            foreach (var orderDetail in listOrderDetailCreate)
+                            {
+                                var itemMaterial = _dbContext.ItemMaterial.Where(x => x.itemId == itemFounded.id).ToList();
+                                foreach (var orderDetailMaterial in itemMaterial)
+                                {
+                                    var material = _dbContext.Material.FirstOrDefault(x => x.id == orderDetailMaterial.id);
+                                    listOrderDetailMaterialCreate.Add(new()
+                                    {
+                                        orderDetailId = orderDetail.id,
+                                        materialName = material.name,
+                                        materiaSupplier = material.supplier,
+                                        materiaThickness = material.thickness,
+                                        materiaSku = material.sku,
+                                        materialId = orderDetailMaterial.materialId,
+                                        quantity = orderDetailMaterial.quantity,
+                                        price = material.price,
+                                        totalPrice = material.price * orderDetailMaterial.quantity,
+                                    });
+                                }
+                            }
                         }
 
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
+                        _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterialCreate);
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
 
                         _dbContext.SaveChanges();
