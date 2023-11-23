@@ -14,6 +14,7 @@ using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using SkiaSharp;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -255,11 +256,9 @@ namespace Sevices.Core.OrderService
                         var orderId = orderCreate.id;
 
                         var listOrderDetailCreate = new List<OrderDetail>();
-                        var listOrderDetailMaterialCreate = new List<OrderDetailMaterial>();
                         var listItemCodeCreated = new List<string>();
 
                         var listNewItem = converData.ListOrderItem.Where(x => string.IsNullOrWhiteSpace(x.code)).ToList();
-                        var listOldItem = converData.ListOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
                         // Kiểm tra và tạo item mới + thêm vào list order detail mới
                         foreach (var newItem in listNewItem)
                         {
@@ -282,21 +281,25 @@ namespace Sevices.Core.OrderService
                             };
                             _dbContext.Item.Add(itemNew);
 
-                            listOrderDetailCreate.Add(new()
+                            var newOrderDetail = new OrderDetail
                             {
                                 itemId = itemNew.id,
                                 quantity = newItem.quantity,
                                 description = newItem.description ?? "",
                                 orderId = orderId,
-                            });
+                            };
+
+                            listOrderDetailCreate.Add(newOrderDetail);
                         }
 
+                        var listOldItem = converData.ListOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
                         // Kiểm tra và item cũ + thêm vào list order detail mới
                         foreach (var oldItem in listOldItem)
                         {
                             var itemFounded = listItem.FirstOrDefault(x => x.code == oldItem.code);
                             double detailPrice = oldItem.quantity * itemFounded?.price ?? 0;
-                            listOrderDetailCreate.Add(new()
+
+                            var newOrderDetail = new OrderDetail
                             {
                                 itemId = itemFounded.id,
                                 price = itemFounded.price,
@@ -304,35 +307,54 @@ namespace Sevices.Core.OrderService
                                 totalPrice = detailPrice,
                                 description = oldItem.description ?? "",
                                 orderId = orderId
-                            });
+                            };
 
-                            // Cứ mỗi orderdetail được tạo từ các item cũ, dựa vào id của item cũ lấy bảng itemMaterial ra để đồng bộ với bảng orderDetailMaterial mới 
-                            // được tạo theo tương ứng
-                            foreach (var orderDetail in listOrderDetailCreate)
-                            {
-                                var itemMaterial = _dbContext.ItemMaterial.Where(x => x.itemId == itemFounded.id).ToList();
-                                foreach (var orderDetailMaterial in itemMaterial)
-                                {
-                                    var material = _dbContext.Material.FirstOrDefault(x => x.id == orderDetailMaterial.id);
-                                    listOrderDetailMaterialCreate.Add(new()
-                                    {
-                                        orderDetailId = orderDetail.id,
-                                        materialName = material.name,
-                                        materialSupplier = material.supplier,
-                                        materialThickness = material.thickness,
-                                        materialSku = material.sku,
-                                        materialId = orderDetailMaterial.materialId,
-                                        quantity = orderDetailMaterial.quantity,
-                                        price = material.price,
-                                        totalPrice = material.price * orderDetailMaterial.quantity,
-                                    });
-                                }
-                            }
+                            listOrderDetailCreate.Add(newOrderDetail);
                         }
 
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
-                        _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterialCreate);
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
+
+                        if (listOrderDetailCreate.Any())
+                        {
+                            // tạo order detail material
+                            var listOrderDetailMaterialCreate = new List<OrderDetailMaterial>();
+
+                            var listIdItemByOrderDetail = listOrderDetailCreate.Select(x => x.itemId).Distinct().ToList();
+                            var listItemMate = _dbContext.ItemMaterial.Where(x => listIdItemByOrderDetail.Contains(x.itemId)).ToList();
+                            var listMateId = listItemMate.Select(x => x.materialId).Distinct().ToList();
+                            var listMaterial = _dbContext.Material.Where(x => !x.isDeleted && listMateId.Contains(x.id)).ToList();
+
+                            foreach (var detail in listOrderDetailCreate)
+                            {
+                                // OD = Order Detail
+                                var listItemMateByOD = listItemMate.Where(x => x.itemId == detail.itemId).ToList();
+                                foreach (var itemMate in listItemMateByOD)
+                                {
+                                    var mate = listMaterial.FirstOrDefault(x => x.id == itemMate.materialId);
+                                    var newODMate = new OrderDetailMaterial
+                                    {
+                                        orderDetailId = detail.id,
+                                        // mate info
+                                        materialId = mate.id,
+                                        materialName = mate.name,
+                                        materialSupplier = mate.supplier,
+                                        materialThickness = mate.thickness,
+                                        materialSku = mate.sku,
+                                        // item mate info
+                                        quantity = itemMate.quantity,
+                                        price = itemMate.price,
+                                        totalPrice = itemMate.totalPrice,
+                                    };
+                                    listOrderDetailMaterialCreate.Add(newODMate);
+                                }
+                            }
+
+                            if (listOrderDetailMaterialCreate.Any())
+                            {
+                                _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterialCreate);
+                            }
+                        }
 
                         _dbContext.SaveChanges();
 
