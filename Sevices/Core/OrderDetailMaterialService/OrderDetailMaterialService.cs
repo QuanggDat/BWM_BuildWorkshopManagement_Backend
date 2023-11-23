@@ -15,7 +15,7 @@ namespace Sevices.Core.OrderReportService
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public OrderDetailMaterialService(AppDbContext dbContext,  IMapper mapper)
+        public OrderDetailMaterialService(AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -27,12 +27,29 @@ namespace Sevices.Core.OrderReportService
             try
             {
                 var listData = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
-                if(!string.IsNullOrWhiteSpace(search))
+
+                // gộp vật liệu giống nhau
+                var dict = new Dictionary<Guid, OrderDetailMaterial>();
+                foreach (var data in listData)
+                {
+                    if (dict.ContainsKey(data.materialId))
+                    {
+                        dict[data.materialId].quantity += data.quantity;
+                        dict[data.materialId].totalPrice += dict[data.materialId].totalPrice;
+                    }
+                    else
+                    {
+                        dict.Add(data.materialId, _mapper.Map<OrderDetailMaterial>(data));
+                    }
+                }
+                listData = dict.Values.ToList();
+
+                if (!string.IsNullOrWhiteSpace(search))
                 {
                     var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
                     listData = listData.Where(x =>
                                             (!string.IsNullOrWhiteSpace(x.materialName) && FnUtil.Remove_VN_Accents(x.materialName).ToUpper().Contains(searchValue)) ||
-                                            (!string.IsNullOrWhiteSpace(x.materialSku) && FnUtil.Remove_VN_Accents(x.materialSku).ToUpper().Contains(searchValue)) 
+                                            (!string.IsNullOrWhiteSpace(x.materialSku) && FnUtil.Remove_VN_Accents(x.materialSku).ToUpper().Contains(searchValue))
                                         ).ToList();
                 }
 
@@ -50,6 +67,6 @@ namespace Sevices.Core.OrderReportService
             }
             return result;
         }
-    
+
     }
 }
