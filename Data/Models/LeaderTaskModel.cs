@@ -56,11 +56,13 @@ namespace Data.Models
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
 
+        public List<TaskReportModel> listReportInTasks { get; set; } = null!;
+
         public ETaskStatus status { get; set; }
         public string? description { get; set; } 
         public bool isDeleted { get; set; }
     }
-
+   
     public class UpdateLeaderTaskModel
     {
         public Guid id { get; set; }

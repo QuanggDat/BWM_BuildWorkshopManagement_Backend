@@ -70,7 +70,6 @@ namespace Sevices.Core.ReportService
                             content = model.content,
                             reportType = ReportType.AcceptanceReport,
                             createdDate = DateTime.Now,
-                            isDeleted = false,
                         };
 
                         var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).FirstOrDefault();
@@ -173,7 +172,6 @@ namespace Sevices.Core.ReportService
                             itemFailed = model.itemFailed,
                             reportType = ReportType.ProgressReport,
                             createdDate = DateTime.Now,
-                            isDeleted = false,
                         };
 
                         try
@@ -264,7 +262,6 @@ namespace Sevices.Core.ReportService
                             content = model.content,
                             reportType = ReportType.ProblemReport,
                             createdDate = DateTime.Now,
-                            isDeleted = false,
                         };
 
                         try
@@ -603,7 +600,7 @@ namespace Sevices.Core.ReportService
             try
             {
                 var report = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Resources).Include(x => x.Supplies)
-                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).FirstOrDefault(x => x.id == id && x.isDeleted == false);
+                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).FirstOrDefault(x => x.id == id);
 
                 if (report == null)
                 {
@@ -695,7 +692,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources).Include(x => x.Supplies)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport && x.isDeleted == false).OrderByDescending(x => x.createdDate).ToList();
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProblemReport).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
@@ -750,7 +747,7 @@ namespace Sevices.Core.ReportService
             result.Succeed = false;
 
             var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport && x.isDeleted == false)
+                .Where(x => x.leaderTaskId == leaderTaskId && x.reportType == ReportType.ProgressReport)
                 .OrderByDescending(x => x.createdDate).ToList();
 
             try

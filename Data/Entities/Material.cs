@@ -28,7 +28,8 @@ namespace Data.Entities
         public string importPlace { get; set; } = null!;
         public double price { get; set; }
         public bool isDeleted { get; set; }
-
+       
         public virtual List<ItemMaterial> ItemMaterials { get; set; } = new();
+        public virtual List<OrderDetailMaterial> OrderDetailMaterial { get; set; } = new();
     }
 }

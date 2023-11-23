@@ -716,52 +716,103 @@ namespace Sevices.Core.UserService
             result.Succeed = false;
 
             try
-            {
-                var check = _dbContext.User.Find(model.userId);
+            {               
+                var checkRole = _dbContext.Role.Find(model.roleId);
 
-                if (check == null)
+                if (checkRole == null)
                 {
+                    result.Code = 11;
                     result.Succeed = false;
-                    result.Code = 10;
-                    result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
+                    result.ErrorMessage = "Không tìm thấy thông tin vai trò người dùng !";
                     return result;
                 }
+                
                 else
                 {
-                    var checkRole = _dbContext.Role.Find(model.roleId);
+                    var checkUser = _dbContext.User.Include(x => x.Role).FirstOrDefault(x => x.Id == model.userId);
 
-                    if (checkRole == null)
+                    if (checkUser == null)
                     {
-                        result.Code = 11;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin vai trò người dùng !";
+                        result.Code = 10;
+                        result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
                         return result;
                     }
-                    else
+                    else 
                     {
-                        check.roleId = model.roleId;
+                        var checkWorkerInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .FirstOrDefault(x => x.userId == model.userId && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.isDeleted == false);
 
-                        // Remove all old UserRole
-                        var currentUserRole = _dbContext.UserRole
-                            .Where(x => x.UserId == model.userId)
-                            .ToList();
-                        if (currentUserRole != null && currentUserRole.Count > 0)
+                        if (checkUser.Role != null && checkUser.Role.Name == "Worker" && checkWorkerInTask != null)
                         {
-                            _dbContext.UserRole.RemoveRange(currentUserRole);
+                            result.Code = 81;
+                            result.ErrorMessage = "Công nhân đang thực hiện công việc, hiện tại không thay đổi vai trò!";
+                            result.Succeed = false;
                         }
-
-                        // Set new role
-                        var userRole = new UserRole
+                        else
                         {
-                            UserId = model.userId,
-                            RoleId = model.roleId
-                        };
+                            var checkLeaderInTask = _dbContext.LeaderTask.FirstOrDefault(x => x.leaderId == model.userId && x.status != ETaskStatus.Completed && x.isDeleted == false);
 
-                        _dbContext.UserRoles.Add(userRole);
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = model.userId;
-                    }
+                            if (checkUser.Role != null && checkUser.Role.Name == "Leader" && checkLeaderInTask != null)
+                            {
+                                result.Code = 83;
+                                result.ErrorMessage = "Tổ trưởng đang thực hiện công việc, hiện tại không thay đổi vai trò!";
+                                result.Succeed = false;
+                            }
+                            else
+                            {
+                                var listStatus = new List<OrderStatus>() {
+                                OrderStatus.Pending,
+                                OrderStatus.Request,
+                                OrderStatus.Approve,
+                                OrderStatus.InProgress
+                                };
+
+                                var checkForemanInOrder = _dbContext.Order.FirstOrDefault(x => x.assignToId == model.userId && listStatus.Contains(x.status));
+
+                                if (checkUser.Role != null && checkUser.Role.Name == "Foreman" && checkForemanInOrder != null)
+                                {
+                                    result.Code = 84;
+                                    result.ErrorMessage = "Quản đốc đang thực hiện đơn hàng, hiện tại không thể thay đổi vai trò!";
+                                    result.Succeed = false;
+                                }
+                                else
+                                {
+                                    checkUser.roleId = model.roleId;
+
+                                    // Remove all old UserRole
+                                    var currentUserRole = _dbContext.UserRole
+                                        .Where(x => x.UserId == model.userId)
+                                        .ToList();
+                                    if (currentUserRole != null && currentUserRole.Count > 0)
+                                    {
+                                        _dbContext.UserRole.RemoveRange(currentUserRole);
+                                    }
+
+                                    // Set new role
+                                    var userRole = new UserRole
+                                    {
+                                        UserId = model.userId,
+                                        RoleId = model.roleId
+                                    };
+
+                                    var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.Id == model.userId && x.groupId != null);
+
+                                    if (currentUserInGroup != null)
+                                    {
+                                        currentUserInGroup.groupId = null;
+                                        currentUserInGroup.Group = null;
+                                        _dbContext.User.Update(currentUserInGroup);
+                                    }
+
+                                    _dbContext.UserRoles.Add(userRole);
+                                    _dbContext.SaveChanges();
+                                    result.Succeed = true;
+                                    result.Data = model.userId;
+                                }
+                            }                      
+                        }                      
+                    }                   
                 }              
             }
             catch (Exception e)
@@ -1000,7 +1051,7 @@ namespace Sevices.Core.UserService
                 else
                 {
                     var checkWorkerInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                        .FirstOrDefault(x => x.userId == id && x.status != Data.Enums.EWorkerTaskDetailsStatus.Completed && x.WorkerTask.isDeleted == false);
+                        .FirstOrDefault(x => x.userId == id && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.isDeleted == false);
 
                     if (data.Role != null && data.Role.Name == "Worker" && checkWorkerInTask != null)
                     {
@@ -1010,7 +1061,7 @@ namespace Sevices.Core.UserService
                     }
                     else
                     {
-                        var checkLeaderInTask = _dbContext.LeaderTask.FirstOrDefault(x => x.leaderId == id && x.status != Data.Enums.ETaskStatus.Completed && x.isDeleted == false);
+                        var checkLeaderInTask = _dbContext.LeaderTask.FirstOrDefault(x => x.leaderId == id && x.status != ETaskStatus.Completed && x.isDeleted == false);
 
                         if (data.Role != null && data.Role.Name == "Leader" && checkLeaderInTask != null)
                         {
@@ -1037,7 +1088,7 @@ namespace Sevices.Core.UserService
                             }
                             else
                             {
-                                var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.groupId == id);
+                                var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.Id == id && x.groupId != null);
 
                                 if (currentUserInGroup != null)
                                 {

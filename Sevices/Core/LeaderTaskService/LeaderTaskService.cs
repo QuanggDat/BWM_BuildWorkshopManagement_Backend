@@ -324,19 +324,6 @@ namespace Sevices.Core.LeaderTaskService
                         _dbContext.WorkerTask.UpdateRange(currentWorkerTasks);
                     }
 
-                    var currentReportTask = _dbContext.Report.Where(x => x.leaderTaskId == id).ToList();
-
-                    if (currentReportTask != null && currentReportTask.Count > 0)
-                    {
-                        foreach (var reportTask in currentReportTask)
-                        {
-                            reportTask.isDeleted = true;
-                        }
-
-                        _dbContext.Report.UpdateRange(currentReportTask);
-
-                    }
-
                     check.isDeleted = true;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
@@ -357,6 +344,7 @@ namespace Sevices.Core.LeaderTaskService
             try
             {
                 var check = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
+                    .Include(x => x.Reports).ThenInclude(x => x.Resources)
                     .FirstOrDefault(x => x.id == id && x.isDeleted != true);
 
                 if (check == null)
@@ -392,6 +380,16 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = check.completedTime,
                         status = check.status,
                         description = check.description,
+
+                        listReportInTasks = check.Reports.Select(x => new TaskReportModel
+                        {
+                            id = x.id,
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
                         isDeleted = check.isDeleted,
                     };
                     result.Data = leaderTaskModel;
@@ -411,6 +409,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
+                .Include(x => x.Reports).ThenInclude(x => x.Resources)
                 .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -450,6 +449,16 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = item.completedTime,
                         status = item.status,
                         description = item.description,
+
+                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                        {
+                            id = x.id,
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
                         isDeleted = item.isDeleted,
                     };
                     list.Add(tmp);
@@ -475,6 +484,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
+                .Include(x => x.Reports).ThenInclude(x => x.Resources)
                 .Where(a => a.orderId == orderId && a.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
 
@@ -515,6 +525,16 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = item.completedTime,
                         status = item.status,                      
                         description = item.description,
+
+                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                        {
+                            id = x.id,
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
                         isDeleted = item.isDeleted,
                     };
                     list.Add(tmp);
@@ -539,7 +559,8 @@ namespace Sevices.Core.LeaderTaskService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
 
@@ -580,6 +601,16 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = item.completedTime,
                         status = item.status,
                         description = item.description,
+
+                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                        {
+                            id = x.id,
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
                         isDeleted = item.isDeleted,
                     };
                     list.Add(tmp);

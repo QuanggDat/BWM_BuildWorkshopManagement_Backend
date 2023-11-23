@@ -60,7 +60,9 @@ namespace Data.Models
         public EWorkerTaskStatus status { get; set; }
         public bool isDeleted { get; set; }
         public List<TaskMember> Members { get; set; } = null!;
-        public List<Guid> workerTaskDetailId { get; set; } = null!;
+        public string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }
+        public List<string>? resource { get; set; }
     }
 
     public class AssignWorkerTaskModel
@@ -71,22 +73,10 @@ namespace Data.Models
 
     public class SendFeedbackModel
     {
-        public Guid workerTaskDetailId { get; set; }
-        public EWorkerTaskDetailsStatus status { get; set; }
+        public Guid workerTaskId { get; set; }
+        public EWorkerTaskStatus status { get; set; }
         public string? feedbackTitle { get; set; }
         public string? feedbackContent { get; set; }
         public List<string>? resource { get; set; }
     }
-
-    public class WorkerTaskDetailModel
-    {
-        public Guid workerTaskDetailId { get; set; }
-        public Guid? workerTaskId { get; set; }
-        public Guid? userId { get; set; }
-        public EWorkerTaskDetailsStatus status { get; set; }
-        public string? feedbackTitle { get; set; }
-        public string? feedbackContent { get; set; }
-        public List<string>? resource { get; set; }
-    }
-
 }

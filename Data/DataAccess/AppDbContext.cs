@@ -22,6 +22,7 @@ namespace Data.DataAccess
         public DbSet<Notification> Notification { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderDetail> OrderDetail { get; set; }
+        public DbSet<OrderDetailMaterial> OrderDetailMaterial { get; set; }
         public DbSet<Procedure> Procedure { get; set; }
         public DbSet<ProcedureItem> ProcedureItem { get; set; }
         public DbSet<ProcedureStep> ProcedureStep { get; set; }

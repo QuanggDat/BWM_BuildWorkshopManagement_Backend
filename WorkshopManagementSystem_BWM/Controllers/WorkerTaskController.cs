@@ -48,10 +48,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]/{userId}")]
-        public IActionResult GetByUserId(Guid userId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        [HttpGet("[action]/{userId}/{leaderTaskId}")]
+        public IActionResult GetByUserId(Guid leaderTaskId,Guid userId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _workerTaskService.GetByUserId(userId, search, pageIndex, pageSize);
+            var result = _workerTaskService.GetByUserId(leaderTaskId, userId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -60,14 +60,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult GetById(Guid id)
         {
             var result = _workerTaskService.GetById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpGet("[action]/{workerTaskDetailId}")]
-        public IActionResult GetWorkerTaskDetail(Guid workerTaskDetailId)
-        {
-            var result = _workerTaskService.GetWorkerTaskDetail(workerTaskDetailId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -85,14 +77,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult UpdateStatus(Guid id, EWorkerTaskStatus status)
         {
             var result = _workerTaskService.UpdateStatus(id, status);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
-        [HttpPut("[action]/{workerTaskDetailId}/{status}")]
-        public IActionResult UpdateStatusWorkerTaskDetail(Guid workerTaskDetailId, EWorkerTaskDetailsStatus status)
-        {
-            var result = _workerTaskService.UpdateStatusWorkerTaskDetail(workerTaskDetailId, status);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

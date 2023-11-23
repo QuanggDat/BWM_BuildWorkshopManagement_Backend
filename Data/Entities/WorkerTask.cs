@@ -28,11 +28,14 @@ namespace Data.Entities
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
-      
         public EWorkerTaskStatus status { get; set; }
-        public string? description { get; set; } = null!;
+        public string? description { get; set; } = null!; public 
+
+        string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }     
         public bool isDeleted { get; set; }
-   
+
+        public virtual List<Resource> Resources { get; set; } = new();
         public virtual List<WorkerTaskDetail> WorkerTaskDetails { get; set; } = new();
     }
 }

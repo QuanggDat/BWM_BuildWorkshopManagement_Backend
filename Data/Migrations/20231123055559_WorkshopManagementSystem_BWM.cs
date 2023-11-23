@@ -30,7 +30,6 @@ namespace Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    member = table.Column<int>(type: "int", nullable: false),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -426,10 +425,6 @@ namespace Data.Migrations
                     createById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     itemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    itemName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    drawingsTechnical = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    drawings2D = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    drawings3D = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     startTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     endTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -477,8 +472,7 @@ namespace Data.Migrations
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
                     totalPrice = table.Column<double>(type: "float", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -547,6 +541,8 @@ namespace Data.Migrations
                     completedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     status = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    feedbackTitle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    feedbackContent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -566,27 +562,31 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Resource",
+                name: "OrderDetailMaterial",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    link = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    orderDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    materialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    price = table.Column<double>(type: "float", nullable: false),
+                    totalPrice = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Resource", x => x.id);
+                    table.PrimaryKey("PK_OrderDetailMaterial", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Resource_Order_orderId",
-                        column: x => x.orderId,
-                        principalTable: "Order",
-                        principalColumn: "id");
+                        name: "FK_OrderDetailMaterial_Material_materialId",
+                        column: x => x.materialId,
+                        principalTable: "Material",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Resource_Report_reportId",
-                        column: x => x.reportId,
-                        principalTable: "Report",
-                        principalColumn: "id");
+                        name: "FK_OrderDetailMaterial_OrderDetail_orderDetailId",
+                        column: x => x.orderDetailId,
+                        principalTable: "OrderDetail",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -661,6 +661,36 @@ namespace Data.Migrations
                         principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_Notification_WorkerTask_workerTaskId",
+                        column: x => x.workerTaskId,
+                        principalTable: "WorkerTask",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Resource",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    reportId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    orderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    workerTaskId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    link = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Resource", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Resource_Order_orderId",
+                        column: x => x.orderId,
+                        principalTable: "Order",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_Resource_Report_reportId",
+                        column: x => x.reportId,
+                        principalTable: "Report",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_Resource_WorkerTask_workerTaskId",
                         column: x => x.workerTaskId,
                         principalTable: "WorkerTask",
                         principalColumn: "id");
@@ -825,6 +855,16 @@ namespace Data.Migrations
                 column: "orderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderDetailMaterial_materialId",
+                table: "OrderDetailMaterial",
+                column: "materialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetailMaterial_orderDetailId",
+                table: "OrderDetailMaterial",
+                column: "orderDetailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProcedureItem_itemId",
                 table: "ProcedureItem",
                 column: "itemId");
@@ -868,6 +908,11 @@ namespace Data.Migrations
                 name: "IX_Resource_reportId",
                 table: "Resource",
                 column: "reportId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Resource_workerTaskId",
+                table: "Resource",
+                column: "workerTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Supply_materialId",
@@ -924,7 +969,7 @@ namespace Data.Migrations
                 name: "Notification");
 
             migrationBuilder.DropTable(
-                name: "OrderDetail");
+                name: "OrderDetailMaterial");
 
             migrationBuilder.DropTable(
                 name: "ProcedureItem");
@@ -940,6 +985,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkerTaskDetail");
+
+            migrationBuilder.DropTable(
+                name: "OrderDetail");
 
             migrationBuilder.DropTable(
                 name: "Procedure");

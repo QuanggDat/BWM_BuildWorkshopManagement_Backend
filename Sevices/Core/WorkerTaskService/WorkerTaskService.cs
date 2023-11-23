@@ -336,7 +336,7 @@ namespace Sevices.Core.WorkerTaskService
 
             try
             {
-                var check = _dbContext.WorkerTask.Include(x => x.CreateBy)
+                var check = _dbContext.WorkerTask.Include(x => x.CreateBy).Include(x => x.Resources)
                     .Include(x => x.LeaderTask).ThenInclude(x => x.Item)
                     .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
                     .Where(x => x.id == id && x.isDeleted != true).FirstOrDefault();
@@ -369,7 +369,9 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
-                        workerTaskDetailId = check.WorkerTaskDetails.Select(_ => _.id).ToList(),
+                        feedbackTitle = check.feedbackTitle,
+                        feedbackContent = check.feedbackContent,
+                        resource = check.Resources.Select(_ => _.link).ToList(),
                     };
                     result.Data = wokerTaskModel;
                     result.Succeed = true;
@@ -425,7 +427,9 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
-                        workerTaskDetailId = item.WorkerTaskDetails.Select(_ => _.id).ToList(),
+                        feedbackTitle = item.feedbackTitle,
+                        feedbackContent = item.feedbackContent,
+                        resource = item.Resources.Select(_ => _.link).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -487,7 +491,9 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
-                        workerTaskDetailId = item.WorkerTaskDetails.Select(_ => _.id).ToList(),
+                        feedbackTitle = item.feedbackTitle,
+                        feedbackContent = item.feedbackContent,
+                        resource = item.Resources.Select(_ => _.link).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -505,7 +511,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             return result;         
         }
-        public ResultModel GetByUserId(Guid userId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByUserId(Guid leaderTaskId, Guid userId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -515,7 +521,7 @@ namespace Sevices.Core.WorkerTaskService
             var listWorkerTask = _dbContext.WorkerTask.Include(x => x.CreateBy)
                 .Include(x => x.LeaderTask).ThenInclude(x => x.Item)
                 .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false)
+                .Where(x => x.leaderTaskId == leaderTaskId && listWorkerTaskId.Contains(x.id) && x.isDeleted == false)
                 .OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -550,7 +556,9 @@ namespace Sevices.Core.WorkerTaskService
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
                         }).ToList(),
-                        workerTaskDetailId = item.WorkerTaskDetails.Select(_ => _.id).ToList(),
+                        feedbackTitle = item.feedbackTitle,
+                        feedbackContent = item.feedbackContent,
+                        resource = item.Resources.Select(_ => _.link).ToList(),
                     };
                     list.Add(tmp);
                 }
@@ -574,8 +582,8 @@ namespace Sevices.Core.WorkerTaskService
             ResultModel result = new ResultModel();
             result.Succeed = false;
 
-            var workTaskDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                .Where(x => x.id == model.workerTaskDetailId).FirstOrDefault();
+            var workTaskDetail = _dbContext.WorkerTask
+                .Where(x => x.id == model.workerTaskId).FirstOrDefault();
 
             if (workTaskDetail == null )
             {
@@ -585,7 +593,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             else
             {
-                if (workTaskDetail.status == EWorkerTaskDetailsStatus.Completed)
+                if (workTaskDetail.status == EWorkerTaskStatus.Completed)
                 {
                     result.Code = 108;
                     result.Succeed = false;
@@ -598,19 +606,19 @@ namespace Sevices.Core.WorkerTaskService
                         workTaskDetail.status = model.status;
                         workTaskDetail.feedbackTitle = model.feedbackTitle;
                         workTaskDetail.feedbackContent= model.feedbackContent;
-
+                        
                         if (model.resource != null)
                         {
                             foreach (var resource in model.resource)
                             {
                                 _dbContext.Resource.Add(new Resource
                                 {
-                                    workerTaskDetailId = model.workerTaskDetailId,
+                                    workerTaskId = model.workerTaskId,
                                     link = resource
                                 });
                             }
                         }
-
+                        
                         _dbContext.SaveChanges();                        
 
                         result.Succeed = true;
@@ -624,74 +632,6 @@ namespace Sevices.Core.WorkerTaskService
                 }
             }
             return result;
-        }
-
-        public ResultModel UpdateStatusWorkerTaskDetail (Guid workerTaskDetailId, EWorkerTaskDetailsStatus status)
-        {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
-
-            var workTaskDetail = _dbContext.WorkerTaskDetail.Find(workerTaskDetailId);
-
-            if (workTaskDetail == null)
-            {
-                result.Code = 107;
-                result.Succeed = false;
-                result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân chi tiết!";
-            }
-            else
-            {
-                try
-                {
-                    workTaskDetail.status = status;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = workTaskDetail.id;
-                }
-                catch (Exception ex)
-                {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }       
-            }
-            return result;
-        }
-
-        public ResultModel GetWorkerTaskDetail(Guid workerTaskDetailId)
-        {
-            ResultModel result = new ResultModel();
-
-            try
-            {
-                var check = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask).Include(x => x.User).Include(x => x.Resources)
-                    .Where(x => x.id == workerTaskDetailId).FirstOrDefault();
-
-                if (check == null)
-                {
-                    result.Code = 107;
-                    result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy thông tin công việc công nhân chi tiết!";
-                }
-                else
-                {
-                    var wokerTaskDetailModel = new WorkerTaskDetailModel
-                    {
-                        workerTaskDetailId = check.id,
-                        workerTaskId = check.workerTaskId,
-                        userId = check.userId,
-                        status = check.status,
-                        feedbackTitle = check.feedbackTitle,
-                        feedbackContent = check.feedbackContent,
-                        resource = check.Resources.Select(x => x.link).ToList()
-                    };
-                    result.Data = wokerTaskDetailModel;
-                    result.Succeed = true;
-                };
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
+        }       
     }
 }

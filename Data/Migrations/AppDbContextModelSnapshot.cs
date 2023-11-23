@@ -446,8 +446,23 @@ namespace Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("materiaSku")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("materiaSupplier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("materiaThickness")
+                        .HasColumnType("float");
+
                     b.Property<Guid>("materialId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("materialName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("orderDetailId")
                         .HasColumnType("uniqueidentifier");
@@ -548,9 +563,6 @@ namespace Data.Migrations
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("itemFailed")
                         .HasColumnType("int");
 
@@ -603,7 +615,7 @@ namespace Data.Migrations
                     b.Property<Guid?>("reportId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("workerTaskDetailId")
+                    b.Property<Guid?>("workerTaskId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("id");
@@ -612,7 +624,7 @@ namespace Data.Migrations
 
                     b.HasIndex("reportId");
 
-                    b.HasIndex("workerTaskDetailId");
+                    b.HasIndex("workerTaskId");
 
                     b.ToTable("Resource");
                 });
@@ -831,6 +843,12 @@ namespace Data.Migrations
                     b.Property<DateTime>("endTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("feedbackContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("feedbackTitle")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
@@ -864,15 +882,6 @@ namespace Data.Migrations
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("feedbackContent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("feedbackTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("status")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("userId")
                         .HasColumnType("uniqueidentifier");
@@ -1117,7 +1126,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.OrderDetailMaterial", b =>
                 {
                     b.HasOne("Data.Entities.Material", "Material")
-                        .WithMany()
+                        .WithMany("OrderDetailMaterial")
                         .HasForeignKey("materialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1204,15 +1213,15 @@ namespace Data.Migrations
                         .WithMany("Resources")
                         .HasForeignKey("reportId");
 
-                    b.HasOne("Data.Entities.WorkerTaskDetail", "WorkerTaskDetail")
+                    b.HasOne("Data.Entities.WorkerTask", "WorkerTask")
                         .WithMany("Resources")
-                        .HasForeignKey("workerTaskDetailId");
+                        .HasForeignKey("workerTaskId");
 
                     b.Navigation("Order");
 
                     b.Navigation("Report");
 
-                    b.Navigation("WorkerTaskDetail");
+                    b.Navigation("WorkerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.Supply", b =>
@@ -1358,6 +1367,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Navigation("ItemMaterials");
+
+                    b.Navigation("OrderDetailMaterial");
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
@@ -1407,12 +1418,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WorkerTask", b =>
                 {
-                    b.Navigation("WorkerTaskDetails");
-                });
-
-            modelBuilder.Entity("Data.Entities.WorkerTaskDetail", b =>
-                {
                     b.Navigation("Resources");
+
+                    b.Navigation("WorkerTaskDetails");
                 });
 #pragma warning restore 612, 618
         }

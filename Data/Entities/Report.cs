@@ -31,7 +31,6 @@ namespace Data.Entities
         public string? content { get; set; } = null!;
         public int? itemFailed { get; set; }
         public DateTime createdDate { get; set; }
-        public bool isDeleted { get; set; }
 
         public ReportStatus? status { get; set; }
         public string? responseContent { get; set; } = null!;

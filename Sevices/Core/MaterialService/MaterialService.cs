@@ -174,11 +174,11 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var checkMaterialExist = _dbContext.ItemMaterial.FirstOrDefault(x => x.materialId == check.id);
+                    var checkMaterialExistItem = _dbContext.ItemMaterial.FirstOrDefault(x => x.materialId == check.id);
 
-                    if (checkMaterialExist != null)
+                    if (checkMaterialExistItem != null)
                     {
-                        result.Code = 77;
+                        result.Code = 82;
                         result.Succeed = false;
                         result.ErrorMessage = "Vật liệu này đang tồn tại trong sản phẩm, hãy xoá ra khỏi sản phẩm trước khi xoá vật liệu!";
                     }
@@ -188,7 +188,8 @@ namespace Sevices.Core.MaterialService
                         _dbContext.SaveChanges();
                         result.Data = check.id;
                         result.Succeed = true;
-                    }                  
+                    }
+                                     
                 }
             }
             catch (Exception ex)
@@ -374,10 +375,10 @@ namespace Sevices.Core.MaterialService
                 }
                 else
                 {
-                    var listItemId = order.OrderDetails.Select(x => x.itemId).ToList();
+                    var listOrderDetailId = order.OrderDetails.Select(x => x.id).ToList();
 
-                    var listMaterialId = _dbContext.ItemMaterial.Include(x => x.Material)
-                        .Where(x => listItemId.Contains(x.itemId)).Select(x => x.materialId).Distinct().ToList();
+                    var listMaterialId = _dbContext.OrderDetailMaterial.Include(x => x.Material)
+                        .Where(x => listOrderDetailId.Contains(x.orderDetailId)).Select(x => x.materialId).Distinct().ToList();
 
                     var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory)
                         .Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false)

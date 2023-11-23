@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231121065732_WorkshopManagementSystem_BWM_V1")]
+    [Migration("20231123073109_WorkshopManagementSystem_BWM_V1")]
     partial class WorkshopManagementSystem_BWM_V1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,9 +32,6 @@ namespace Data.Migrations
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<int>("member")
-                        .HasColumnType("int");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -421,9 +418,6 @@ namespace Data.Migrations
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<Guid?>("itemId")
                         .HasColumnType("uniqueidentifier");
 
@@ -446,6 +440,51 @@ namespace Data.Migrations
                     b.HasIndex("orderId");
 
                     b.ToTable("OrderDetail");
+                });
+
+            modelBuilder.Entity("Data.Entities.OrderDetailMaterial", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("materiaSku")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("materiaSupplier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("materiaThickness")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("materialId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("materialName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("orderDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("totalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("materialId");
+
+                    b.HasIndex("orderDetailId");
+
+                    b.ToTable("OrderDetailMaterial");
                 });
 
             modelBuilder.Entity("Data.Entities.Procedure", b =>
@@ -578,11 +617,16 @@ namespace Data.Migrations
                     b.Property<Guid?>("reportId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("workerTaskId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("id");
 
                     b.HasIndex("orderId");
 
                     b.HasIndex("reportId");
+
+                    b.HasIndex("workerTaskId");
 
                     b.ToTable("Resource");
                 });
@@ -800,6 +844,12 @@ namespace Data.Migrations
 
                     b.Property<DateTime>("endTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("feedbackContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("feedbackTitle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
@@ -1075,6 +1125,25 @@ namespace Data.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("Data.Entities.OrderDetailMaterial", b =>
+                {
+                    b.HasOne("Data.Entities.Material", "Material")
+                        .WithMany("OrderDetailMaterial")
+                        .HasForeignKey("materialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.OrderDetail", "OrderDetail")
+                        .WithMany("OrderDetailMaterials")
+                        .HasForeignKey("orderDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Material");
+
+                    b.Navigation("OrderDetail");
+                });
+
             modelBuilder.Entity("Data.Entities.ProcedureItem", b =>
                 {
                     b.HasOne("Data.Entities.Item", "Item")
@@ -1116,7 +1185,7 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Report", b =>
                 {
                     b.HasOne("Data.Entities.LeaderTask", "LeaderTask")
-                        .WithMany()
+                        .WithMany("Reports")
                         .HasForeignKey("leaderTaskId");
 
                     b.HasOne("Data.Entities.Order", "Order")
@@ -1146,9 +1215,15 @@ namespace Data.Migrations
                         .WithMany("Resources")
                         .HasForeignKey("reportId");
 
+                    b.HasOne("Data.Entities.WorkerTask", "WorkerTask")
+                        .WithMany("Resources")
+                        .HasForeignKey("workerTaskId");
+
                     b.Navigation("Order");
 
                     b.Navigation("Report");
+
+                    b.Navigation("WorkerTask");
                 });
 
             modelBuilder.Entity("Data.Entities.Supply", b =>
@@ -1286,12 +1361,16 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.LeaderTask", b =>
                 {
+                    b.Navigation("Reports");
+
                     b.Navigation("WorkerTasks");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
                 {
                     b.Navigation("ItemMaterials");
+
+                    b.Navigation("OrderDetailMaterial");
                 });
 
             modelBuilder.Entity("Data.Entities.MaterialCategory", b =>
@@ -1306,6 +1385,11 @@ namespace Data.Migrations
                     b.Navigation("OrderDetails");
 
                     b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("Data.Entities.OrderDetail", b =>
+                {
+                    b.Navigation("OrderDetailMaterials");
                 });
 
             modelBuilder.Entity("Data.Entities.Procedure", b =>
@@ -1336,6 +1420,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.WorkerTask", b =>
                 {
+                    b.Navigation("Resources");
+
                     b.Navigation("WorkerTaskDetails");
                 });
 #pragma warning restore 612, 618
