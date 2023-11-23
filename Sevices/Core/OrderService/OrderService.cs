@@ -259,6 +259,7 @@ namespace Sevices.Core.OrderService
                         var listItemCodeCreated = new List<string>();
 
                         var listNewItem = converData.ListOrderItem.Where(x => string.IsNullOrWhiteSpace(x.code)).ToList();
+                        var listOldItem = converData.ListOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
                         // Kiểm tra và tạo item mới + thêm vào list order detail mới
                         foreach (var newItem in listNewItem)
                         {
@@ -292,7 +293,6 @@ namespace Sevices.Core.OrderService
                             listOrderDetailCreate.Add(newOrderDetail);
                         }
 
-                        var listOldItem = converData.ListOrderItem.Where(x => !string.IsNullOrWhiteSpace(x.code)).ToList();
                         // Kiểm tra và item cũ + thêm vào list order detail mới
                         foreach (var oldItem in listOldItem)
                         {
