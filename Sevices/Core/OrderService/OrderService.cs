@@ -318,9 +318,9 @@ namespace Sevices.Core.OrderService
                                     {
                                         orderDetailId = orderDetail.id,
                                         materialName = material.name,
-                                        materiaSupplier = material.supplier,
-                                        materiaThickness = material.thickness,
-                                        materiaSku = material.sku,
+                                        materialSupplier = material.supplier,
+                                        materialThickness = material.thickness,
+                                        materialSku = material.sku,
                                         materialId = orderDetailMaterial.materialId,
                                         quantity = orderDetailMaterial.quantity,
                                         price = material.price,
