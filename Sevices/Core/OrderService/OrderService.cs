@@ -135,7 +135,7 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
