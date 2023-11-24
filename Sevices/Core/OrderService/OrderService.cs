@@ -508,7 +508,7 @@ namespace Sevices.Core.OrderService
                     {
                         var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
                         var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
-                        var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId);
+                        var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
                         foreach(var item in listItemMaterialByOrderDetail)
                         {
                             var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
@@ -528,6 +528,8 @@ namespace Sevices.Core.OrderService
                                     materialSupplier=material.supplier,
                                     materialSku=material.sku,
                                     materialThickness=material.thickness,
+                                    materialColor=material.color,
+                                    materialUnit=material.unit,
                                     price=item.price,
                                     quantity=item.quantity,
                                     totalPrice=item.price*item.quantity,

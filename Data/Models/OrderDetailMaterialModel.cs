@@ -16,6 +16,8 @@ namespace Data.Models
         public string materiaSupplier { get; set; } = null!;
         public double materiaThickness { get; set; }
         public string materiaSku { get; set; } = null!;
+        public string materialColor { get; set; } = null!;
+        public string materialUnit { get; set; } = null!;
         public int quantity { get; set; }
         public double price { get; set; }
         public double totalPrice { get; set; }
