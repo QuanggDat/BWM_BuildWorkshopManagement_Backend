@@ -597,6 +597,11 @@ namespace Sevices.Core.OrderService
                                 result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
                             }
                         }
+                        else
+                        {
+                            result.Code = 92;
+                            result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
+                        }
                     }
                     order.totalPrice= total;
 
