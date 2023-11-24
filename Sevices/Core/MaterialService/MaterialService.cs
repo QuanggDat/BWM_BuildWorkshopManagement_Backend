@@ -243,8 +243,7 @@ namespace Sevices.Core.MaterialService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
-       
+        }     
 
         public ResultModel GetAll(string? search, int pageIndex, int pageSize)
         {
@@ -425,7 +424,6 @@ namespace Sevices.Core.MaterialService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-        
+        }     
     }
 }

@@ -108,7 +108,7 @@ namespace Sevices.Core.GroupService
                         {
                             result.Code = 18;
                             result.Succeed = false;
-                            result.ErrorMessage = $"Không tìm thấy thông tin người dùng {userId}!";
+                            result.ErrorMessage = $"Không tìm thấy thông tin mã người dùng {userId}!";
                             return result;
                         }
                         else
@@ -117,7 +117,7 @@ namespace Sevices.Core.GroupService
                             {
                                 result.Code = 22;
                                 result.Succeed = false;
-                                result.ErrorMessage = $"Người dùng {userId} không phải công nhân!";
+                                result.ErrorMessage = $"Người dùng {user.UserName} không phải công nhân!";
                                 return result;
                             }
                             else
@@ -126,7 +126,7 @@ namespace Sevices.Core.GroupService
                                 {
                                     result.Code = 95;
                                     result.Succeed = false;
-                                    result.ErrorMessage = $"Công nhân {userId} đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
+                                    result.ErrorMessage = $"Công nhân {user.UserName} đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
                                     return result;
                                 }
                                 else
@@ -569,6 +569,36 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }      
+        }
+
+        public ResultModel GetAllWorkerNoYetGroup(string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+
+            try
+            {
+                var listUser = _dbContext.User.Include(x => x.Role).Include(x => x.Group)
+                    .Where(x => x.Role != null && x.Role.Name == "Worker" && x.groupId == null && x.Group == null).OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUserPaging),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
     }
 }

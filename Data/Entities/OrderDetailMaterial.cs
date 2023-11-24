@@ -25,6 +25,8 @@ namespace Data.Entities
         public string materialSupplier { get; set; } = null!;
         public double materialThickness { get; set; }
         public string materialSku { get; set; } = null!;
+        public string materialColor { get; set; } = null!;
+        public string materialUnit { get; set; } = null!;
 
         public int quantity { get; set; }
         public double price { get; set; }

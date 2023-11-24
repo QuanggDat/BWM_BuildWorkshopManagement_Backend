@@ -19,12 +19,12 @@ namespace Data.Entities
         public MaterialCategory MaterialCategory { get; set; } = null!;
 
         public string name { get; set; } = null!;
-        public string? image { get; set; } 
         public string color { get; set; } = null!;
         public string supplier { get; set; } = null!;
         public double thickness { get; set; } 
         public string unit { get; set; } = null!;
         public string sku { get; set; } = null!;
+        public string? image { get; set; }
         public string importPlace { get; set; } = null!;
         public double price { get; set; }
         public bool isDeleted { get; set; }
