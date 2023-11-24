@@ -21,24 +21,23 @@ namespace Data.Entities
         public Guid? itemId { get; set; }
         public Item? Item { get; set; }
 
-        public string itemCategoryName { get; set; } = null!;
-        public string itemName { get; set; } = null!;
-        public string itemCode { get; set; } = null!;
+        public string? itemCategoryName { get; set; } 
+        public string? itemName { get; set; }
+        public string? itemCode { get; set; }
         public string? itemImage { get; set; }
         public double itemLength { get; set; }
         public double itemDepth { get; set; }
         public double itemHeight { get; set; }
-        public string itemUnit { get; set; } = null!;
+        public string? itemUnit { get; set; } 
         public double itemMass { get; set; }
-        public string itemDrawingsTechnical { get; set; } = null!;
-        public string itemDrawings2D { get; set; } = null!;
-        public string itemDrawings3D { get; set; } = null!;
+        public string? itemDrawingsTechnical { get; set; }
+        public string? itemDrawings2D { get; set; } 
+        public string? itemDrawings3D { get; set; } 
 
         public string? description { get; set; }
         public int quantity { get; set; }
         public double price { get; set; } = 0;
         public double totalPrice { get; set; } = 0;
-        
 
         public virtual List<OrderDetailMaterial> OrderDetailMaterials { get; set; } = new();
 
