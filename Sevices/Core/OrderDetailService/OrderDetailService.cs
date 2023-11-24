@@ -22,13 +22,13 @@ namespace Sevices.Core.OrderDetailService
             var result = new ResultModel();
             try
             {
-                var listOrderDetail = _dbContext.OrderDetail.Include(x => x.Item).Where(x => x.orderId == orderId).ToList();
+                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId).ToList();
 
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
                     listOrderDetail = listOrderDetail.Where(x =>
-                                                            (x.Item != null && !string.IsNullOrWhiteSpace(x.Item.name) && FnUtil.Remove_VN_Accents(x.Item.name).ToUpper().Contains(searchValue)) ||
+                                                            (!string.IsNullOrWhiteSpace(x.itemName) && FnUtil.Remove_VN_Accents(x.itemName).ToUpper().Contains(searchValue)) ||
                                                             x.quantity.ToString().Contains(searchValue) ||
                                                             x.price.ToString().Contains(searchValue) ||
                                                             x.totalPrice.ToString().Contains(searchValue) ||
