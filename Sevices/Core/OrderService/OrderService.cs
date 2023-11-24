@@ -164,6 +164,10 @@ namespace Sevices.Core.OrderService
                                     materialId = odMate.materialId,
                                     name = odMate.materialName,
                                     sku = odMate.materialSku,
+                                    supplier = odMate.materialSupplier,
+                                    thickness = odMate.materialThickness,
+                                    color = odMate.materialColor,
+                                    unit = odMate.materialUnit,
                                     quantity = odMate.quantity,
                                     price = odMate.price,
                                     totalPrice = odMate.totalPrice,
@@ -193,8 +197,12 @@ namespace Sevices.Core.OrderService
                             dictOrder.Add(supply.materialId, new()
                             {
                                 materialId = supply.materialId,
-                                name = supply.Material.name,
-                                sku = supply.Material.sku,
+                                name = supply.materialName,
+                                sku = supply.materialSku,
+                                supplier = supply.materialSupplier,
+                                thickness = supply.materialThickness,
+                                color = supply.materialColor,
+                                unit = supply.materialUnit,
                                 quantity = supply.amount,
                                 price = supply.price,
                                 totalPrice = supply.totalPrice,
@@ -358,6 +366,8 @@ namespace Sevices.Core.OrderService
                                         materialSupplier = mate.supplier,
                                         materialThickness = mate.thickness,
                                         materialSku = mate.sku,
+                                        materialUnit = mate.unit,
+                                        materialColor = mate.color,
                                         // item mate info
                                         quantity = itemMate.quantity,
                                         price = itemMate.price,
@@ -488,7 +498,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel syncOrderDetailMaterial(Guid id)
+        public ResultModel SyncOrderDetailMaterial(Guid id)
         {
             var result = new ResultModel();
             try
@@ -496,7 +506,7 @@ namespace Sevices.Core.OrderService
                 var listNewOrderDetailMaterial = new List<OrderDetailMaterial>();
                 var listOrderDetailMaterialExist = new List<OrderDetailMaterial>();
                 var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
-                var listOrderDetailIdByOrder = orderDetail.Select(x=>x.id).Distinct().ToList();
+                var listOrderDetailIdByOrder = orderDetail.Select(x => x.id).Distinct().ToList();
                 if (orderDetail == null)
                 {
                     result.Code = 35;
@@ -504,35 +514,36 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
-                    foreach(var orderDetailId in listOrderDetailIdByOrder)
+                    foreach (var orderDetailId in listOrderDetailIdByOrder)
                     {
                         var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
                         var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
                         var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
-                        foreach(var item in listItemMaterialByOrderDetail)
+                        foreach (var item in listItemMaterialByOrderDetail)
                         {
                             var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
-                            if(matchingMaterialId != null)
+                            if (matchingMaterialId != null)
                             {
                                 matchingMaterialId.price = item.price;
-                                matchingMaterialId.quantity= item.quantity;
-                                matchingMaterialId.totalPrice= item.price* item.quantity;
+                                matchingMaterialId.quantity = item.quantity;
+                                matchingMaterialId.totalPrice = item.price * item.quantity;
                             }
-                            if(matchingMaterialId==null || listOrderDetailMaterialThatExist ==null)
+                            if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
                             {
-                                var material = _dbContext.Material.FirstOrDefault(x=>x.id==item.materialId);
-                                var orderDetailMaterial = new OrderDetailMaterial {
+                                var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+                                var orderDetailMaterial = new OrderDetailMaterial
+                                {
                                     orderDetailId = orderDetailId,
                                     materialId = item.materialId,
-                                    materialName=material.name,
-                                    materialSupplier=material.supplier,
-                                    materialSku=material.sku,
-                                    materialThickness=material.thickness,
-                                    materialColor=material.color,
-                                    materialUnit=material.unit,
-                                    price=item.price,
-                                    quantity=item.quantity,
-                                    totalPrice=item.price*item.quantity,
+                                    materialName = material.name,
+                                    materialSupplier = material.supplier,
+                                    materialSku = material.sku,
+                                    materialThickness = material.thickness,
+                                    materialColor = material.color,
+                                    materialUnit = material.unit,
+                                    price = item.price,
+                                    quantity = item.quantity,
+                                    totalPrice = item.price * item.quantity,
                                 };
                                 listNewOrderDetailMaterial.Add(orderDetailMaterial);
                             }

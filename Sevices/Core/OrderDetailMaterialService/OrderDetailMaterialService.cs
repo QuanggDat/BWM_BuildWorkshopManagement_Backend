@@ -28,22 +28,6 @@ namespace Sevices.Core.OrderReportService
             {
                 var listData = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
 
-                // gộp vật liệu giống nhau
-                var dict = new Dictionary<Guid, OrderDetailMaterial>();
-                foreach (var data in listData)
-                {
-                    if (dict.ContainsKey(data.materialId))
-                    {
-                        dict[data.materialId].quantity += data.quantity;
-                        dict[data.materialId].totalPrice += dict[data.materialId].totalPrice;
-                    }
-                    else
-                    {
-                        dict.Add(data.materialId, _mapper.Map<OrderDetailMaterial>(data));
-                    }
-                }
-                listData = dict.Values.ToList();
-
                 if (!string.IsNullOrWhiteSpace(search))
                 {
                     var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
@@ -58,7 +42,7 @@ namespace Sevices.Core.OrderReportService
                 {
                     Data = _mapper.Map<List<OrderDetailMaterialModel>>(listDataPaging),
                     Total = listData.Count
-                }; ;
+                };
                 result.Succeed = true;
             }
             catch (Exception ex)
