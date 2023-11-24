@@ -519,7 +519,6 @@ namespace Sevices.Core.OrderService
                     double total = 0;
                     foreach (var orderDetailId in listOrderDetailIdByOrder)
                     {
-                        double orderDetailTotal = 0;
                         var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
                         var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
                         var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
@@ -527,6 +526,7 @@ namespace Sevices.Core.OrderService
                         {
                             var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
                             var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+                            //Update OrderDetailMaterial that already existed
                             if (matchingMaterialId != null)
                             {
                                 matchingMaterialId.materialName = material.name;
@@ -538,8 +538,8 @@ namespace Sevices.Core.OrderService
                                 matchingMaterialId.price = item.price;
                                 matchingMaterialId.quantity = item.quantity;
                                 matchingMaterialId.totalPrice = item.totalPrice;
-                                orderDetailTotal += item.totalPrice;
                             }
+                            // Add new OrderDetailMaterial that missing
                             if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
                             {
                                 var orderDetailMaterial = new OrderDetailMaterial
@@ -556,24 +556,47 @@ namespace Sevices.Core.OrderService
                                     quantity = item.quantity,
                                     totalPrice = item.totalPrice,
                                 };
-                                orderDetailTotal += item.totalPrice;
                                 listNewOrderDetailMaterial.Add(orderDetailMaterial);
                             }
                         }
                         listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
 
+                        //Remove excess orderDetailMaterial 
                         var listId = listItemMaterialByOrderDetail.Select(x=>x.materialId).Distinct().ToList();
-                        var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x=>!listId.Contains(x.materialId)).ToList();
-                        if (listRemoveOrderDetailMaterials != null)
+                        var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x => !listId.Contains(x.materialId)).ToList();
+                        listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
+
+                        //Sync orderDetail with Item
+                        var itemSync = _dbContext.Item.SingleOrDefault(x => x.id == od.itemId);
+                        if (itemSync != null)
                         {
-                            foreach(var item in listRemoveOrderDetailMaterials)
+                            var itemCate = _dbContext.ItemCategory.SingleOrDefault(x => x.id == itemSync.itemCategoryId);
+
+                            if (itemCate != null)
                             {
-                                orderDetailTotal-=item.totalPrice;
+                                od.itemCategoryName = itemCate.name;
+                                od.itemName = itemSync.name;
+                                od.itemCode = itemSync.code;
+                                od.itemImage = itemSync.image;
+                                od.itemLength = itemSync.length;
+                                od.itemDepth = itemSync.depth;
+                                od.itemHeight = itemSync.height;
+                                od.itemUnit = itemSync.unit;
+                                od.itemMass = itemSync.mass;
+                                od.itemDrawingsTechnical = itemSync.drawingsTechnical;
+                                od.itemDrawings2D = itemSync.drawings2D;
+                                od.itemDrawings3D = itemSync.drawings3D;
+                                od.description = itemSync.description;
+                                od.price = itemSync.price;
+                                od.totalPrice = itemSync.price * od.quantity;
+                                total += od.totalPrice;
+                            }
+                            else
+                            {
+                                result.Code = 90;
+                                result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
                             }
                         }
-                        listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
-                        od.totalPrice= orderDetailTotal;
-                        total += orderDetailTotal;
                     }
                     order.totalPrice= total;
 
