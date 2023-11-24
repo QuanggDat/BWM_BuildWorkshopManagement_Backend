@@ -165,6 +165,22 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        //[HttpPost("[action]")]
+        //public async Task<ActionResult> ForgotPasswordByPhone(string phoneNumber)
+        //{
+        //    var result = await _userService.ForgotPasswordByPhone(phoneNumber);
+        //    if (result.Succeed) return Ok(result.Data);
+        //    return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        //}
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            var result = await _userService.ResetPassword(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpPut("[action]/{id}")/*, Authorize(Roles = "Admin")*/]
         public IActionResult BanUser(Guid id)
         {

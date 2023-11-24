@@ -117,7 +117,7 @@ namespace Sevices.Core.GroupService
                             {
                                 result.Code = 22;
                                 result.Succeed = false;
-                                result.ErrorMessage = $"Người dùng {user.UserName} không phải công nhân!";
+                                result.ErrorMessage = $"Người dùng {user.fullName} không phải công nhân!";
                                 return result;
                             }
                             else
@@ -126,7 +126,7 @@ namespace Sevices.Core.GroupService
                                 {
                                     result.Code = 95;
                                     result.Succeed = false;
-                                    result.ErrorMessage = $"Công nhân {user.UserName} đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
+                                    result.ErrorMessage = $"Công nhân {user.fullName} đang ở tổ khác, hãy xoá ra khỏi trước khi thêm vào tổ mới!";
                                     return result;
                                 }
                                 else
@@ -578,7 +578,7 @@ namespace Sevices.Core.GroupService
             try
             {
                 var listUser = _dbContext.User.Include(x => x.Role).Include(x => x.Group)
-                    .Where(x => x.Role != null && x.Role.Name == "Worker" && x.groupId == null && x.Group == null).OrderBy(s => s.fullName).ToList();
+                    .Where(x => x.Role != null && x.Role.Name == "Worker" && x.groupId == null && x.Group == null && x.banStatus == false).OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {

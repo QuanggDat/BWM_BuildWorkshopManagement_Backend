@@ -640,8 +640,7 @@ namespace Sevices.Core.ReportService
                             status = report.status,
                             responseContent = report.responseContent,
                             itemQuantity = report.LeaderTask.itemQuantity,
-                            itemFailed = report.itemFailed,                          
-                          
+                            itemFailed = report.itemFailed,                                                    
                             resource = report.Resources.Select(x => x.link).ToList()
                         };
                         result.Data = taskReport;

@@ -387,6 +387,7 @@ namespace Sevices.Core.LeaderTaskService
                             reportType = x.reportType,
                             title = x.title,
                             content = x.content,
+                            createdDate = x.createdDate,
                             resource = x.Resources.Select(x => x.link).ToList()
                         }).ToList(),
 
@@ -456,6 +457,7 @@ namespace Sevices.Core.LeaderTaskService
                             reportType = x.reportType,
                             title = x.title,
                             content = x.content,
+                            createdDate = x.createdDate,
                             resource = x.Resources.Select(x => x.link).ToList()
                         }).ToList(),
 
@@ -532,6 +534,7 @@ namespace Sevices.Core.LeaderTaskService
                             reportType = x.reportType,
                             title = x.title,
                             content = x.content,
+                            createdDate = x.createdDate,
                             resource = x.Resources.Select(x => x.link).ToList()
                         }).ToList(),
 
@@ -608,6 +611,7 @@ namespace Sevices.Core.LeaderTaskService
                             reportType = x.reportType,
                             title = x.title,
                             content = x.content,
+                            createdDate = x.createdDate,
                             resource = x.Resources.Select(x => x.link).ToList()
                         }).ToList(),
 

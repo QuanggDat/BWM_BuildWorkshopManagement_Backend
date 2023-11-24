@@ -16,6 +16,7 @@ namespace Sevices.Core.UserService
         Task<ResultModel> Login(LoginModel model);
         ResultModel Update(UserUpdateModel model);
         Task<ResultModel> ChangePassword(UserUpdatePasswordModel model);
+        Task<ResultModel> ForgotPasswordByPhone(string phoneNumber);
         Task<ResultModel> ResetPassword(ResetPasswordModel model);
         ResultModel UpdatePhone(UserUpdatePhoneModel model);
         ResultModel UpdateRole(UserUpdateUserRoleModel model);
