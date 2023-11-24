@@ -505,17 +505,21 @@ namespace Sevices.Core.OrderService
             {
                 var listNewOrderDetailMaterial = new List<OrderDetailMaterial>();
                 var listOrderDetailMaterialExist = new List<OrderDetailMaterial>();
+                var listRemoveOrderDetailMaterial = new List<OrderDetailMaterial>();
+                var order=_dbContext.Order.FirstOrDefault(x=>x.id == id);
                 var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
                 var listOrderDetailIdByOrder = orderDetail.Select(x => x.id).Distinct().ToList();
-                if (orderDetail == null)
+                if (order == null)
                 {
                     result.Code = 35;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
+                    double total = 0;
                     foreach (var orderDetailId in listOrderDetailIdByOrder)
                     {
+                        double orderDetailTotal = 0;
                         var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
                         var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
                         var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
@@ -526,7 +530,8 @@ namespace Sevices.Core.OrderService
                             {
                                 matchingMaterialId.price = item.price;
                                 matchingMaterialId.quantity = item.quantity;
-                                matchingMaterialId.totalPrice = item.price * item.quantity;
+                                matchingMaterialId.totalPrice = item.totalPrice;
+                                orderDetailTotal += item.totalPrice;
                             }
                             if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
                             {
@@ -543,18 +548,36 @@ namespace Sevices.Core.OrderService
                                     materialUnit = material.unit,
                                     price = item.price,
                                     quantity = item.quantity,
-                                    totalPrice = item.price * item.quantity,
+                                    totalPrice = item.totalPrice,
                                 };
+                                orderDetailTotal += item.totalPrice;
                                 listNewOrderDetailMaterial.Add(orderDetailMaterial);
                             }
                         }
                         listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
+
+                        var listId = listItemMaterialByOrderDetail.Select(x=>x.materialId).Distinct().ToList();
+                        var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x=>!listId.Contains(x.materialId)).ToList();
+                        if (listRemoveOrderDetailMaterials != null)
+                        {
+                            foreach(var item in listRemoveOrderDetailMaterials)
+                            {
+                                orderDetailTotal-=item.totalPrice;
+                            }
+                        }
+                        listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
+                        od.totalPrice= orderDetailTotal;
+                        total += orderDetailTotal;
                     }
+                    order.totalPrice= total;
 
                     _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
                     _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
-                    _dbContext.SaveChanges();
+                    _dbContext.OrderDetailMaterial.RemoveRange(listRemoveOrderDetailMaterial);
+                    _dbContext.OrderDetail.UpdateRange(orderDetail);
+                    _dbContext.Order.Update(order);
 
+                    _dbContext.SaveChanges();
                     result.Data = true;
                     result.Succeed = true;
                 }
