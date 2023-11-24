@@ -14,5 +14,6 @@ namespace Sevices.Core.OrderService
         ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId);
         Task<FileResultModel> ExportQuoteToPDF(Guid id);
         ResultModel ReCalculatePrice(Guid id);
+        ResultModel syncOrderDetailMaterial(Guid id);
     }
 }

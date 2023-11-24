@@ -488,6 +488,71 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel syncOrderDetailMaterial(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listNewOrderDetailMaterial = new List<OrderDetailMaterial>();
+                var listOrderDetailMaterialExist = new List<OrderDetailMaterial>();
+                var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
+                var listOrderDetailIdByOrder = orderDetail.Select(x=>x.id).Distinct().ToList();
+                if (orderDetail == null)
+                {
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    foreach(var orderDetailId in listOrderDetailIdByOrder)
+                    {
+                        var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
+                        var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
+                        var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId);
+                        foreach(var item in listItemMaterialByOrderDetail)
+                        {
+                            var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
+                            if(matchingMaterialId != null)
+                            {
+                                matchingMaterialId.price = item.price;
+                                matchingMaterialId.quantity= item.quantity;
+                                matchingMaterialId.totalPrice= item.price* item.quantity;
+                            }
+                            if(matchingMaterialId==null || listOrderDetailMaterialThatExist ==null)
+                            {
+                                var material = _dbContext.Material.FirstOrDefault(x=>x.id==item.materialId);
+                                var orderDetailMaterial = new OrderDetailMaterial {
+                                    orderDetailId = orderDetailId,
+                                    materialId = item.materialId,
+                                    materialName=material.name,
+                                    materialSupplier=material.supplier,
+                                    materialSku=material.sku,
+                                    materialThickness=material.thickness,
+                                    price=item.price,
+                                    quantity=item.quantity,
+                                    totalPrice=item.price*item.quantity,
+                                };
+                                listNewOrderDetailMaterial.Add(orderDetailMaterial);
+                            }
+                        }
+                        listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
+                    }
+
+                    _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
+                    _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId)
         {
             var result = new ResultModel();
