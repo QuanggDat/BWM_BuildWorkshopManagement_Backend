@@ -676,6 +676,10 @@ namespace Sevices.Core.UserService
             }
             return result;
         }
+        public Task<ResultModel> ResetPassword(ResetPasswordModel model)
+        {
+            throw new NotImplementedException();
+        }
 
         public ResultModel UpdatePhone(UserUpdatePhoneModel model)
         {
@@ -778,38 +782,47 @@ namespace Sevices.Core.UserService
                                 }
                                 else
                                 {
-                                    checkUser.roleId = model.roleId;
-
-                                    // Remove all old UserRole
-                                    var currentUserRole = _dbContext.UserRole
-                                        .Where(x => x.UserId == model.userId)
-                                        .ToList();
-                                    if (currentUserRole != null && currentUserRole.Count > 0)
+                                    if (checkUser.Role != null && checkUser.Role.Name == "Admin" && checkForemanInOrder != null)
                                     {
-                                        _dbContext.UserRole.RemoveRange(currentUserRole);
+                                        result.Code = 85;
+                                        result.ErrorMessage = "Không thể thay đổi vai trò của quản trị viên!";
+                                        result.Succeed = false;
                                     }
-
-                                    // Set new role
-                                    var userRole = new UserRole
+                                    else
                                     {
-                                        UserId = model.userId,
-                                        RoleId = model.roleId
-                                    };
+                                        checkUser.roleId = model.roleId;
 
-                                    var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.Id == model.userId && x.groupId != null);
+                                        // Remove all old UserRole
+                                        var currentUserRole = _dbContext.UserRole
+                                            .Where(x => x.UserId == model.userId)
+                                            .ToList();
+                                        if (currentUserRole != null && currentUserRole.Count > 0)
+                                        {
+                                            _dbContext.UserRole.RemoveRange(currentUserRole);
+                                        }
 
-                                    if (currentUserInGroup != null)
-                                    {
-                                        currentUserInGroup.groupId = null;
-                                        currentUserInGroup.Group = null;
-                                        _dbContext.User.Update(currentUserInGroup);
+                                        // Set new role
+                                        var userRole = new UserRole
+                                        {
+                                            UserId = model.userId,
+                                            RoleId = model.roleId
+                                        };
+
+                                        var currentUserInGroup = _dbContext.User.Include(x => x.Group).FirstOrDefault(x => x.Id == model.userId && x.groupId != null);
+
+                                        if (currentUserInGroup != null)
+                                        {
+                                            currentUserInGroup.groupId = null;
+                                            currentUserInGroup.Group = null;
+                                            _dbContext.User.Update(currentUserInGroup);
+                                        }
+
+                                        _dbContext.UserRoles.Add(userRole);
+                                        _dbContext.SaveChanges();
+                                        result.Succeed = true;
+                                        result.Data = model.userId;
                                     }
-
-                                    _dbContext.UserRoles.Add(userRole);
-                                    _dbContext.SaveChanges();
-                                    result.Succeed = true;
-                                    result.Data = model.userId;
-                                }
+                                }                               
                             }                      
                         }                      
                     }                   
@@ -1142,6 +1155,8 @@ namespace Sevices.Core.UserService
                 resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return resultModel;
-        }      
+        }
+
+        
     }
 }

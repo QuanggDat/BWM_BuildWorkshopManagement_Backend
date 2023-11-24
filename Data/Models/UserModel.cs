@@ -60,6 +60,11 @@ namespace Data.Models
         public string oldPassword { get; set; } = null!;
         public string newPassword { get; set; } = null!;
     }
+    public class ResetPasswordModel
+    {
+        public string phoneNumber { get; set; } = null!;
+        public string newPassword { get; set; } = null!;
+    }
     public class UserUpdatePhoneModel
     {
         public Guid id { get; set; }

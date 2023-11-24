@@ -27,6 +27,7 @@ namespace Data.Entities
         public string customerName { get; set; } = null!;    
         
         public DateTime createTime { get; set; }
+        public DateTime updateTime { get; set; }
         public DateTime? startTime { get; set; }
         public DateTime? endTime { get; set; }
         public DateTime? inProgressTime { get; set; }
