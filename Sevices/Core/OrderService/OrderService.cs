@@ -526,8 +526,15 @@ namespace Sevices.Core.OrderService
                         foreach (var item in listItemMaterialByOrderDetail)
                         {
                             var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
+                            var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
                             if (matchingMaterialId != null)
                             {
+                                matchingMaterialId.materialName = material.name;
+                                matchingMaterialId.materialSupplier = material.name;
+                                matchingMaterialId.materialSku = material.sku;
+                                matchingMaterialId.materialThickness = material.thickness;
+                                matchingMaterialId.materialColor = material.color;
+                                matchingMaterialId.materialUnit = material.unit;
                                 matchingMaterialId.price = item.price;
                                 matchingMaterialId.quantity = item.quantity;
                                 matchingMaterialId.totalPrice = item.totalPrice;
@@ -535,7 +542,6 @@ namespace Sevices.Core.OrderService
                             }
                             if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
                             {
-                                var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
                                 var orderDetailMaterial = new OrderDetailMaterial
                                 {
                                     orderDetailId = orderDetailId,
