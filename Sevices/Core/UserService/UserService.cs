@@ -16,6 +16,8 @@ using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace Sevices.Core.UserService
 {
@@ -62,6 +64,7 @@ namespace Sevices.Core.UserService
                     fullName = model.fullName,
                     address = model.address,
                     UserName = model.phoneNumber,
+                    PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -177,6 +180,7 @@ namespace Sevices.Core.UserService
                     fullName = model.fullName,
                     address = model.address,
                     UserName = model.phoneNumber,
+                    PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -292,6 +296,7 @@ namespace Sevices.Core.UserService
                     fullName = model.fullName,
                     address = model.address,
                     UserName = model.phoneNumber,
+                    PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -406,6 +411,7 @@ namespace Sevices.Core.UserService
                     fullName = model.fullName,
                     address = model.address,
                     UserName = model.phoneNumber,
+                    PhoneNumber = model.phoneNumber,
                     NormalizedEmail = model.email,
                     dob = model.dob,
                     banStatus = false,
@@ -561,7 +567,6 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        
         private async Task<Token> GetAccessToken(User user, List<string> role)
         {
             List<Claim> claims = GetClaims(user, role);
@@ -676,10 +681,70 @@ namespace Sevices.Core.UserService
             }
             return result;
         }
-        public Task<ResultModel> ResetPassword(ResetPasswordModel model)
+
+        public async Task<ResultModel> ResetPassword(ResetPasswordModel model)
         {
-            throw new NotImplementedException();
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var data = _dbContext.User.Where(s => s.UserName == model.phoneNumber).FirstOrDefault();
+                
+                if(data == null)
+                {
+                    result.Code = 10;
+                    result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
+                    result.Succeed = false;
+                }
+                else
+                {
+                    var resetToken = await _userManager.GeneratePasswordResetTokenAsync(data);
+                    var change = await _userManager.ResetPasswordAsync(data, resetToken, model.newPassword);
+
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<User, UserModel>(data);
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
         }
+
+        public async Task<ResultModel> ForgotPasswordByPhone(string phoneNumber)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+            try
+            {
+                var data = await _dbContext.User.Where(s => s.UserName == phoneNumber).FirstOrDefaultAsync();
+
+                if (data == null)
+                {
+                    result.Code = 10;
+                    result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
+                    result.Succeed = false;
+                }
+                else
+                {
+                    var verificationCode = GenerateRandomNumber();
+
+                    SendVerificationCode(phoneNumber, verificationCode);
+
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = _mapper.Map<User, UserModel>(data);
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+     
 
         public ResultModel UpdatePhone(UserUpdatePhoneModel model)
         {
@@ -694,7 +759,7 @@ namespace Sevices.Core.UserService
                 if (data != null)
                 {
                     data.PhoneNumber = model.phoneNumber;
-
+                    data.UserName = model.phoneNumber;
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
@@ -1157,6 +1222,36 @@ namespace Sevices.Core.UserService
             return resultModel;
         }
 
-        
+        #region SendVerificationCode
+        private static Random random = new Random();
+        public static string GenerateRandomNumber()
+        {
+            // Tạo chuỗi ngẫu nhiên bằng cách kết hợp 6 số ngẫu nhiên.
+            string randomNumber = "";
+            for (int i = 0; i < 6; i++)
+            {
+                randomNumber += random.Next(0, 10).ToString();
+            }
+
+            return randomNumber;
+        }
+
+        private string accountSid = "YOUR_TWILIO_ACCOUNT_SID";
+        private string authToken = "YOUR_TWILIO_AUTH_TOKEN";
+        private string twilioPhoneNumber = "YOUR_TWILIO_PHONE_NUMBER";
+
+        private void SendVerificationCode(string phoneNumber, string verificationCode)
+        {
+            TwilioClient.Init(accountSid, authToken);
+
+            var message = MessageResource.Create(
+                body: $"Mã xác thực của bạn là: {verificationCode}",
+                from: new Twilio.Types.PhoneNumber(twilioPhoneNumber),
+                to: new Twilio.Types.PhoneNumber(phoneNumber)
+            );
+
+            // Bạn cũng có thể xử lý kết quả gửi tin nhắn ở đây nếu cần thiết.
+        }
+        #endregion
     }
 }
