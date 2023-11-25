@@ -93,7 +93,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("syncOrderDetailMaterial")]
-        public IActionResult SyncOrderDetailMaterial(Guid orderId)
+        public IActionResult SyncOrderDetailMaterialAndOrderDetail(Guid orderId)
         {
             var result = _orderService.SyncOrderDetailMaterial(orderId);
             if (result.Succeed) return Ok(result.Data);
