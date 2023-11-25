@@ -26,7 +26,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut]
+        [HttpPut("UpdateOrderDetail")]
         public IActionResult Update([FromBody] UpdateOrderDetailModel model)
         {
             var result = _orderDetailService.Update(model);
