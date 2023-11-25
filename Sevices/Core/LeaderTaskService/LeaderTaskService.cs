@@ -31,7 +31,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var leaderTmp = _dbContext.User.Include(x => x.Role)
-                .FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == true);
+                .FirstOrDefault(x => x.Id == model.leaderId && x.Role != null && x.Role.Name == "Leader" && x.banStatus == false);
 
             if (leaderTmp == null)
             {
