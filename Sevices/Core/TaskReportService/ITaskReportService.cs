@@ -19,7 +19,7 @@ namespace Sevices.Core.ReportService
         ResultModel SendProblemReportFeedback(SendProblemReportFeedbackModel model);
         ResultModel SendProgressReportFeedback(SendProgressReportFeedbackModel model);
         ResultModel GetById(Guid reportId);
-        ResultModel GetProblemReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
-        ResultModel GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
+        ResultModel GetProblemReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
+        ResultModel GetProgressReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
     }
 }

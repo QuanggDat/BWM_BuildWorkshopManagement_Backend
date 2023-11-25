@@ -847,7 +847,7 @@ namespace Sevices.Core.UserService
                                 }
                                 else
                                 {
-                                    if (checkUser.Role != null && checkUser.Role.Name == "Admin" && checkForemanInOrder != null)
+                                    if (checkUser.Role != null && checkUser.Role.Name == "Admin")
                                     {
                                         result.Code = 85;
                                         result.ErrorMessage = "Không thể thay đổi vai trò của quản trị viên!";

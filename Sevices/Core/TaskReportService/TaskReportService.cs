@@ -697,7 +697,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel GetProblemReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetProblemReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -752,7 +752,7 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetProgressReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;

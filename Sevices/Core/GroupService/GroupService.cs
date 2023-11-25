@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -480,7 +481,7 @@ namespace Sevices.Core.GroupService
             return result;           
         }
 
-        public ResultModel GetAllUserByGroupId(Guid id, string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllUsersByGroupId(Guid id, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
 
@@ -541,7 +542,45 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetAllUserNotInGroupId(Guid id, string? search, int pageIndex, int pageSize)
+        public ResultModel GetWorkersNotAtWorkByGroupId(Guid id, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+
+            try
+            {
+                var listWorkerIdInGroup = _dbContext.User.Include(x => x.Role)
+                    .Where(x => x.groupId == id && x.Role != null && x.Role.Name == "Worker" && !x.banStatus).Select(x => x.Id).ToList();
+
+                var checkWorkerNotInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .Where(x => listWorkerIdInGroup.Contains(x.userId) && x.WorkerTask.status != EWorkerTaskStatus.New && x.WorkerTask.status != EWorkerTaskStatus.Pending && x.WorkerTask.status != EWorkerTaskStatus.InProgress
+                        && x.WorkerTask.isDeleted == false).Select(x => x.userId).ToList();
+
+                var listUser = _dbContext.User.Include(x => x.Role)
+                    .Where(x => checkWorkerNotInTask.Contains(x.Id) && !x.banStatus)
+                    .OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAllUsersNotInGroupId(Guid id, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
 
@@ -571,7 +610,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetAllWorkerNoYetGroup(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllWorkerNotYetGroup(string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
 
@@ -629,6 +668,6 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
+        }        
     }
 }

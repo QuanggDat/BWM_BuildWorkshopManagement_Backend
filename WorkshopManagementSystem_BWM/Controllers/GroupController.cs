@@ -27,9 +27,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllUsersByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllUserByGroupId(id, search, pageIndex, pageSize);
+            var result = _groupService.GetAllUsersByGroupId(id, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -43,17 +43,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUserNotInGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllUsersNotInGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllUserNotInGroupId(id, search, pageIndex, pageSize);
+            var result = _groupService.GetAllUsersNotInGroupId(id, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetWorkersNotAtWorkByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetWorkersNotAtWorkByGroupId(id, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllWorkerNoYetGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllWorkerNotYetGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _groupService.GetAllWorkerNoYetGroup(search, pageIndex, pageSize);
+            var result = _groupService.GetAllWorkerNotYetGroup(search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
