@@ -74,6 +74,10 @@ namespace Data.Models
         public Guid materialId { get; set; }
         public string? name { get; set; }
         public string? sku { get; set; }
+        public string? supplier { get; set; }
+        public double thickness { get; set; } = 0;
+        public string? color { get; set; }
+        public string? unit { get; set; }
         public int quantity { get; set; } = 0;
         public double price { get; set; } = 0;
         public double totalPrice { get; set; } = 0;

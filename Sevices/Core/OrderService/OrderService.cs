@@ -14,6 +14,7 @@ using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using SkiaSharp;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -134,7 +135,7 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -143,49 +144,71 @@ namespace Sevices.Core.OrderService
                 else
                 {
                     // get from order
-                    var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
-                    var listItemMaterial = _dbContext.ItemMaterial.Include(x => x.Material).Where(x => listItemId.Contains(x.itemId)).ToList();
-
-                    var dict = new Dictionary<Guid, QuoteMaterialDetailModel>();
-                    foreach (var itemMate in listItemMaterial)
+                    var dictOrder = new Dictionary<Guid, QuoteMaterialDetailModel>();
+                    foreach (var detail in order.OrderDetails)
                     {
-                        if (dict.ContainsKey(itemMate.materialId))
+                        foreach (var odMate in detail.OrderDetailMaterials)
                         {
-                            dict[itemMate.materialId].quantity += itemMate.quantity;
-                            dict[itemMate.materialId].totalPrice = dict[itemMate.materialId].quantity * dict[itemMate.materialId].price;
-                        }
-                        else
-                        {
-                            var quoteMaterialModel = new QuoteMaterialDetailModel()
+                            if (dictOrder.ContainsKey(odMate.materialId))
                             {
-                                materialId = itemMate.materialId,
-                                name = itemMate.Material.name,
-                                sku = itemMate.Material.sku,
-                                quantity = itemMate.quantity,
-                                price = itemMate.price,
-                                totalPrice = itemMate.totalPrice,
-                            };
-                            dict.Add(itemMate.materialId, quoteMaterialModel);
+                                dictOrder[odMate.materialId].quantity += odMate.quantity;
+                                dictOrder[odMate.materialId].totalPrice = dictOrder[odMate.materialId].quantity * dictOrder[odMate.materialId].price;
+                            }
+                            else
+                            {
+                                dictOrder.Add(odMate.materialId, new()
+                                {
+                                    materialId = odMate.materialId,
+                                    name = odMate.materialName,
+                                    sku = odMate.materialSku,
+                                    supplier = odMate.materialSupplier,
+                                    thickness = odMate.materialThickness,
+                                    color = odMate.materialColor,
+                                    unit = odMate.materialUnit,
+                                    quantity = odMate.quantity,
+                                    price = odMate.price,
+                                    totalPrice = odMate.totalPrice,
+                                });
+                            }
                         }
                     }
 
                     // get from supply
+                    var dictSupply = new Dictionary<Guid, QuoteMaterialDetailModel>();
                     var listReportByOrder = _dbContext.Report.Where(x => x.orderId == order.id).ToList();
                     var listReportId = listReportByOrder.Select(x => x.id).ToList();
 
                     var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material)
                                                                     .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status))
-                                                                    .Select(x => new QuoteMaterialDetailModel()
-                                                                    {
-                                                                        materialId = x.materialId,
-                                                                        name = x.Material.name,
-                                                                        sku = x.Material.sku,
-                                                                        quantity = x.amount,
-                                                                        price = x.price,
-                                                                        totalPrice = x.totalPrice,
-                                                                    }).ToList();
+                                                                    .ToList();
 
-                    double totalPriceSupplyDamage = listSupplyDamageByReport.Sum(x => x.totalPrice);
+                    foreach (var supply in listSupplyDamageByReport)
+                    {
+                        if (dictSupply.ContainsKey(supply.materialId))
+                        {
+                            dictSupply[supply.materialId].quantity += supply.amount;
+                            dictSupply[supply.materialId].totalPrice += supply.totalPrice;
+                        }
+                        else
+                        {
+                            dictOrder.Add(supply.materialId, new()
+                            {
+                                materialId = supply.materialId,
+                                name = supply.materialName,
+                                sku = supply.materialSku,
+                                supplier = supply.materialSupplier,
+                                thickness = supply.materialThickness,
+                                color = supply.materialColor,
+                                unit = supply.materialUnit,
+                                quantity = supply.amount,
+                                price = supply.price,
+                                totalPrice = supply.totalPrice,
+                            });
+                        }
+                    }
+
+                    var listFromSupplyDamage = dictSupply.Values.ToList();
+                    double totalPriceSupplyDamage = listFromSupplyDamage.Sum(x => x.totalPrice);
 
                     double percentDamage = 0;
                     if (order.totalPrice > 0)
@@ -198,10 +221,10 @@ namespace Sevices.Core.OrderService
                         orderId = order.id,
 
                         totalPriceOrder = order.totalPrice,
-                        listFromOrder = dict.Values.ToList(),
+                        listFromOrder = dictOrder.Values.ToList(),
 
                         totalPriceSupplyDamage = totalPriceSupplyDamage,
-                        listFromSupplyDamage = listSupplyDamageByReport,
+                        listFromSupplyDamage = listFromSupplyDamage,
 
                         percentDamage = percentDamage
                     };
@@ -249,6 +272,7 @@ namespace Sevices.Core.OrderService
                         orderCreate.createdById = createdById;
                         orderCreate.createTime = DateTime.Now;
                         orderCreate.status = OrderStatus.Pending;
+                        orderCreate.updateTime = DateTime.Now;
 
                         _dbContext.Order.Add(orderCreate);
 
@@ -272,7 +296,7 @@ namespace Sevices.Core.OrderService
                                 length = newItem.length,
                                 depth = newItem.depth,
                                 height = newItem.height,
-                                unit = newItem.unit,
+                                unit = newItem.unit ?? "",
                                 mass = newItem.mass,
                                 description = "",
                                 drawingsTechnical = "",
@@ -281,13 +305,22 @@ namespace Sevices.Core.OrderService
                             };
                             _dbContext.Item.Add(itemNew);
 
-                            listOrderDetailCreate.Add(new()
+                            var newOrderDetail = new OrderDetail
                             {
                                 itemId = itemNew.id,
+                                itemCode = itemNew.code,
+                                itemName = itemNew.name,
+                                itemLength = itemNew.length,
+                                itemDepth = itemNew.depth,
+                                itemHeight = itemNew.height,
+                                itemUnit = itemNew.unit,
+                                itemMass = itemNew.mass,
                                 quantity = newItem.quantity,
                                 description = newItem.description ?? "",
                                 orderId = orderId,
-                            });
+                            };
+
+                            listOrderDetailCreate.Add(newOrderDetail);
                         }
 
                         // Kiểm tra và item cũ + thêm vào list order detail mới
@@ -295,19 +328,75 @@ namespace Sevices.Core.OrderService
                         {
                             var itemFounded = listItem.FirstOrDefault(x => x.code == oldItem.code);
                             double detailPrice = oldItem.quantity * itemFounded?.price ?? 0;
-                            listOrderDetailCreate.Add(new()
+
+                            var newOrderDetail = new OrderDetail
                             {
                                 itemId = itemFounded.id,
+                                itemCode = itemFounded.code,
+                                itemName = itemFounded.name,
+                                itemLength = itemFounded.length,
+                                itemDepth = itemFounded.depth,
+                                itemHeight = itemFounded.height,
+                                itemUnit = itemFounded.unit,
+                                itemMass = itemFounded.mass,
+                                itemDrawingsTechnical = itemFounded.drawingsTechnical,
+                                itemDrawings2D = itemFounded.drawings2D,
+                                itemDrawings3D = itemFounded.drawings3D,
                                 price = itemFounded.price,
                                 quantity = oldItem.quantity,
                                 totalPrice = detailPrice,
                                 description = oldItem.description ?? "",
-                                orderId = orderId
-                            });
+                                orderId = orderId,
+                            };
+
+                            listOrderDetailCreate.Add(newOrderDetail);
                         }
 
                         _dbContext.OrderDetail.AddRange(listOrderDetailCreate);
                         orderCreate.totalPrice = listOrderDetailCreate.Sum(x => x.totalPrice);
+
+                        if (listOrderDetailCreate.Any())
+                        {
+                            // tạo order detail material
+                            var listOrderDetailMaterialCreate = new List<OrderDetailMaterial>();
+
+                            var listIdItemByOrderDetail = listOrderDetailCreate.Select(x => x.itemId).Distinct().ToList();
+                            var listItemMate = _dbContext.ItemMaterial.Where(x => listIdItemByOrderDetail.Contains(x.itemId)).ToList();
+                            var listMateId = listItemMate.Select(x => x.materialId).Distinct().ToList();
+                            var listMaterial = _dbContext.Material.Where(x => !x.isDeleted && listMateId.Contains(x.id)).ToList();
+
+                            foreach (var detail in listOrderDetailCreate)
+                            {
+                                // OD = Order Detail
+                                var listItemMateByOD = listItemMate.Where(x => x.itemId == detail.itemId).ToList();
+                                foreach (var itemMate in listItemMateByOD)
+                                {
+                                    var mate = listMaterial.FirstOrDefault(x => x.id == itemMate.materialId);
+                                    var newODMate = new OrderDetailMaterial
+                                    {
+                                        orderDetailId = detail.id,
+                                        // mate info
+                                        materialId = mate.id,
+                                        materialName = mate.name,
+                                        materialSupplier = mate.supplier,
+                                        materialThickness = mate.thickness,
+                                        materialSku = mate.sku,
+                                        materialUnit = mate.unit,
+                                        materialColor = mate.color,
+                                        // item mate info
+                                        quantity = itemMate.quantity,
+                                        price = itemMate.price,
+                                        totalPrice = itemMate.totalPrice,
+                                    };
+                                    listOrderDetailMaterialCreate.Add(newODMate);
+                                }
+                            }
+
+                            if (listOrderDetailMaterialCreate.Any())
+                            {
+                                _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterialCreate);
+                            }
+                        }
 
                         _dbContext.SaveChanges();
 
@@ -372,6 +461,7 @@ namespace Sevices.Core.OrderService
                         order.description = model.description;
                         order.startTime = model.startTime;
                         order.endTime = model.endTime;
+                        order.updateTime = DateTime.Now;
 
                         _dbContext.Order.Update(order);
                         _dbContext.SaveChanges();
@@ -409,10 +499,137 @@ namespace Sevices.Core.OrderService
                         total += detail.totalPrice;
                     }
                     order.totalPrice = total;
+                    order.updateTime = DateTime.Now;
 
                     _dbContext.Update(order);
                     _dbContext.SaveChanges();
 
+                    result.Data = true;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel SyncOrderDetailMaterial(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listNewOrderDetailMaterial = new List<OrderDetailMaterial>();
+                var listOrderDetailMaterialExist = new List<OrderDetailMaterial>();
+                var listRemoveOrderDetailMaterial = new List<OrderDetailMaterial>();
+                var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
+                var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
+                var listOrderDetailIdByOrder = orderDetail.Select(x => x.id).Distinct().ToList();
+                if (order == null)
+                {
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    double total = 0;
+                    foreach (var orderDetailId in listOrderDetailIdByOrder)
+                    {
+                        var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
+                        var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
+                        var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
+                        foreach (var item in listItemMaterialByOrderDetail)
+                        {
+                            var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
+                            var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+                            //Update OrderDetailMaterial that already existed
+                            if (matchingMaterialId != null)
+                            {
+                                matchingMaterialId.materialName = material.name;
+                                matchingMaterialId.materialSupplier = material.name;
+                                matchingMaterialId.materialSku = material.sku;
+                                matchingMaterialId.materialThickness = material.thickness;
+                                matchingMaterialId.materialColor = material.color;
+                                matchingMaterialId.materialUnit = material.unit;
+                                matchingMaterialId.price = item.price;
+                                matchingMaterialId.quantity = item.quantity;
+                                matchingMaterialId.totalPrice = item.totalPrice;
+                            }
+                            // Add new OrderDetailMaterial that missing
+                            if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
+                            {
+                                var orderDetailMaterial = new OrderDetailMaterial
+                                {
+                                    orderDetailId = orderDetailId,
+                                    materialId = item.materialId,
+                                    materialName = material.name,
+                                    materialSupplier = material.supplier,
+                                    materialSku = material.sku,
+                                    materialThickness = material.thickness,
+                                    materialColor = material.color,
+                                    materialUnit = material.unit,
+                                    price = item.price,
+                                    quantity = item.quantity,
+                                    totalPrice = item.totalPrice,
+                                };
+                                listNewOrderDetailMaterial.Add(orderDetailMaterial);
+                            }
+                        }
+                        listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
+
+                        //Remove excess orderDetailMaterial 
+                        var listId = listItemMaterialByOrderDetail.Select(x => x.materialId).Distinct().ToList();
+                        var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x => !listId.Contains(x.materialId)).ToList();
+                        listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
+
+                        //Sync orderDetail with Item
+                        var itemSync = _dbContext.Item.SingleOrDefault(x => x.id == od.itemId);
+                        if (itemSync != null)
+                        {
+                            var itemCate = _dbContext.ItemCategory.SingleOrDefault(x => x.id == itemSync.itemCategoryId);
+
+                            if (itemCate != null)
+                            {
+                                od.itemCategoryName = itemCate.name;
+                                od.itemName = itemSync.name;
+                                od.itemCode = itemSync.code;
+                                od.itemImage = itemSync.image;
+                                od.itemLength = itemSync.length;
+                                od.itemDepth = itemSync.depth;
+                                od.itemHeight = itemSync.height;
+                                od.itemUnit = itemSync.unit;
+                                od.itemMass = itemSync.mass;
+                                od.itemDrawingsTechnical = itemSync.drawingsTechnical;
+                                od.itemDrawings2D = itemSync.drawings2D;
+                                od.itemDrawings3D = itemSync.drawings3D;
+                                od.description = itemSync.description;
+                                od.price = itemSync.price;
+                                od.totalPrice = itemSync.price * od.quantity;
+                                total += od.totalPrice;
+                            }
+                            else
+                            {
+                                result.Code = 90;
+                                result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
+                            }
+                        }
+                        else
+                        {
+                            result.Code = 92;
+                            result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
+                        }
+                    }
+                    order.totalPrice = total;
+                    order.updateTime = DateTime.Now;
+
+                    _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
+                    _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
+                    _dbContext.OrderDetailMaterial.RemoveRange(listRemoveOrderDetailMaterial);
+                    _dbContext.OrderDetail.UpdateRange(orderDetail);
+                    _dbContext.Order.Update(order);
+
+                    _dbContext.SaveChanges();
                     result.Data = true;
                     result.Succeed = true;
                 }
@@ -429,7 +646,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -444,33 +661,29 @@ namespace Sevices.Core.OrderService
                         foreach (var detail in order.OrderDetails)
                         {
                             var listError = new List<string>();
-                            if (detail.Item != null)
+                            if (string.IsNullOrWhiteSpace(detail.itemDrawingsTechnical))
                             {
-                                if (string.IsNullOrWhiteSpace(detail.Item.drawingsTechnical))
-                                {
-                                    listError.Add("Bản vẽ kỹ thuật");
-                                }
-
-                                if (string.IsNullOrWhiteSpace(detail.Item.drawings2D))
-                                {
-                                    listError.Add("Bản vẽ 2D");
-                                }
-
-                                if (string.IsNullOrWhiteSpace(detail.Item.drawings3D))
-                                {
-                                    listError.Add("Bản vẽ 3d");
-                                }
-
-                                if (listError.Any())
-                                {
-                                    result.Code = 106;
-                                    result.ErrorMessage = $"Sản phẩm \"{detail.Item.name}\" chưa được cập nhật: {string.Join(", ", listError)}";
-
-                                    hasError = true;
-                                    break;
-                                }
+                                listError.Add("Bản vẽ kỹ thuật");
                             }
 
+                            if (string.IsNullOrWhiteSpace(detail.itemDrawings2D))
+                            {
+                                listError.Add("Bản vẽ 2D");
+                            }
+
+                            if (string.IsNullOrWhiteSpace(detail.itemDrawings3D))
+                            {
+                                listError.Add("Bản vẽ 3d");
+                            }
+
+                            if (listError.Any())
+                            {
+                                result.Code = 106;
+                                result.ErrorMessage = $"Sản phẩm \"{detail.itemName}\" chưa được cập nhật: {string.Join(", ", listError)}";
+
+                                hasError = true;
+                                break;
+                            }
                         }
 
                         if (hasError)
@@ -501,8 +714,9 @@ namespace Sevices.Core.OrderService
                         order.acceptanceTime = DateTime.Now;
                     }
                     order.status = status;
+                    order.updateTime = DateTime.Now;
 
-                    _dbContext.Update(order);
+                    _dbContext.Order.Update(order);
                     _dbContext.SaveChanges();
 
                     result.Data = order.id;
@@ -521,7 +735,7 @@ namespace Sevices.Core.OrderService
             var result = new FileResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.Item).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -537,8 +751,7 @@ namespace Sevices.Core.OrderService
                     }
                     else
                     {
-                        var dictItemImage = order.OrderDetails.Select(x => x.Item).Where(x => !string.IsNullOrWhiteSpace(x?.image))
-                                                                .DistinctBy(x => x?.id).ToDictionary(x => x!.id, y => y?.image!);
+                        var dictItemImage = order.OrderDetails.Where(x => x.itemId != null && x.itemId != Guid.Empty && !string.IsNullOrWhiteSpace(x.itemImage)).ToDictionary(x => x.itemId.Value, y => y.itemImage);
 
                         var dictItemImgStream = await FetchListImageItem(dictItemImage);
 
@@ -582,7 +795,7 @@ namespace Sevices.Core.OrderService
                                 // Hình ảnh minh hoạ
                                 var cell = worksheet.Cells[rowData, 2];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                if (dictItemImgStream != null && dictItemImgStream.Count > 0 && detail.Item != null && !string.IsNullOrWhiteSpace(detail.Item.image) && dictItemImage.ContainsKey(detail.Item.id))
+                                if (dictItemImgStream != null && dictItemImgStream.Count > 0 && !string.IsNullOrWhiteSpace(detail.itemImage) && detail.itemId != null && detail.itemId != Guid.Empty && dictItemImage.ContainsKey(detail.itemId.Value))
                                 {
                                     var image = SKImage.FromEncodedData(dictItemImgStream[detail.Item.id]);
                                     image = FnUtil.ResizeImage(image);
@@ -592,9 +805,6 @@ namespace Sevices.Core.OrderService
                                     // Create a Stream from the SKStream
                                     var stream = new MemoryStream();
                                     skiaStream.CopyTo(stream);
-
-                                    //var streamImg = new MemoryStream();
-                                    //image.Save(streamImg, ImageFormat.Jpeg);
 
                                     worksheet.Pictures.Add(rowData, 2, skiaStream);
 
@@ -607,27 +817,27 @@ namespace Sevices.Core.OrderService
                                 // Hạng mục
                                 cell = worksheet.Cells[rowData, 1];
                                 cell.SetStyle(FnExcel.ApplyWrapTextStyle(cell.GetStyle(), true));
-                                cell.Value = detail.Item?.name;
+                                cell.Value = detail.itemName;
                                 // Dài
                                 cell = worksheet.Cells[rowData, 3];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                cell.Value = $"{detail.Item?.length:n0}";
+                                cell.Value = $"{detail.itemLength:n0}";
                                 // Sâu
                                 cell = worksheet.Cells[rowData, 4];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                cell.Value = $"{detail.Item?.depth:n0}";
+                                cell.Value = $"{detail.itemDepth:n0}";
                                 // Cao
                                 cell = worksheet.Cells[rowData, 5];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                cell.Value = $"{detail.Item?.height:n0}";
+                                cell.Value = $"{detail.itemHeight:n0}";
                                 // ĐVT
                                 cell = worksheet.Cells[rowData, 6];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                cell.Value = detail.Item?.unit;
+                                cell.Value = detail.itemUnit;
                                 // KL
                                 cell = worksheet.Cells[rowData, 7];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
-                                cell.Value = $"{detail.Item?.mass:n0}";
+                                cell.Value = $"{detail.itemMass:n0}";
                                 // SL
                                 cell = worksheet.Cells[rowData, 8];
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
