@@ -55,7 +55,7 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
                             .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed 
-                            && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                            && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime && x.WorkerTask.isDeleted == false).Any();
 
                         if (checkWorkerDetail == true)
                         {
@@ -147,7 +147,7 @@ namespace Sevices.Core.WorkerTaskService
                         {
                             bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
                             .Where(x => x.userId == assignee && x.WorkerTask.id != model.id && x.WorkerTask.status != EWorkerTaskStatus.Completed 
-                                     && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime).Any();
+                                     && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime && x.WorkerTask.isDeleted == false).Any();
 
                             if (checkWorkerDetail == true)
                             {
