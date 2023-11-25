@@ -98,7 +98,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpDelete("[action]")]
+        [HttpPut("[action]")]
         public IActionResult RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
             var result = _groupService.RemoveUserFromGroup(model);
