@@ -19,14 +19,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _orderService = orderService;
         }
-        [HttpPost]
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> Create(CreateOrderModel model)
         {
             var result = await _orderService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-        [HttpPut]
+        [HttpPut("UpdateOrder")]
         public IActionResult Update(UpdateOrderModel model)
         {
             var result =  _orderService.Update(model);
@@ -51,7 +51,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetOrderById")]
         public IActionResult GetById(Guid id)
         {
             var result = _orderService.GetById(id);
@@ -59,7 +59,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("GetQuoteMaterialById/{id}")]
+        [HttpGet("GetQuoteMaterialByOrderId/{id}")]
         public IActionResult GetQuoteMaterialById(Guid id)
         {
             var result = _orderService.GetQuoteMaterialById(id);
@@ -75,7 +75,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("UpdateStatus/{status}/{id}")]
+        [HttpPut("UpdateOrderStatus/{status}/{id}")]
         public IActionResult UpdateStatus(OrderStatus status, Guid id)
         {
             var userId = User.GetId();
@@ -84,7 +84,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("ReCalculatePrice/{id}")]
+        [HttpPut("ReCalculatePriceOfOrder/{id}")]
         public IActionResult ReCalculatePrice(Guid id)
         {
             var result = _orderService.ReCalculatePrice(id);
@@ -92,7 +92,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("syncOrderDetailMaterial")]
+        [HttpPut("syncOrderDetailMaterialAndOrderDetail")]
         public IActionResult SyncOrderDetailMaterialAndOrderDetail(Guid orderId)
         {
             var result = _orderService.SyncOrderDetailMaterial(orderId);
