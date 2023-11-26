@@ -65,6 +65,9 @@ namespace Sevices.Core.OrderDetailService
                 }
                 else
                 {
+                    orderDetail.itemDrawings2D = model.itemDrawings2D;
+                    orderDetail.itemDrawings3D =model.itemDrawings3D;
+                    orderDetail.itemDrawingsTechnical = model.itemDrawingsTechnical;
                     orderDetail.quantity = model.quantity;
                     orderDetail.price = model.price;
                     orderDetail.totalPrice = model.price * model.quantity;
