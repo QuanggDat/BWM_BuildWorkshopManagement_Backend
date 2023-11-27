@@ -85,7 +85,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.name),
                     $"{model.name} không được để trống !");
             }
-            if (model.length <= 0)
+            /*if (model.length <= 0)
             {
                 ModelState.AddModelError(nameof(model.length),
                     $"{model.length} nhỏ hơn hoặc bằng 0 !");
@@ -99,17 +99,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.height),
                     $"{model.height} nhỏ hơn hoặc bằng 0 !");
-            }
+            }*/
             if (string.IsNullOrWhiteSpace(model.unit))
             {
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
             }
-            if (model.mass <= 0)
+            /*if (model.mass <= 0)
             {
                 ModelState.AddModelError(nameof(model.mass),
                     $"{model.mass} nhỏ hơn hoặc bằng 0 !");
-            }
+            }*/
             if (string.IsNullOrWhiteSpace(model.drawingsTechnical))
             {
                 ModelState.AddModelError(nameof(model.drawingsTechnical),

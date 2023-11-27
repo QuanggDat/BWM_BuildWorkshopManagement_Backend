@@ -199,11 +199,11 @@ namespace Sevices.Core.ItemService
 
                             check.name = model.name;
                             check.image = model.image;
-                            check.length = model.length;
-                            check.depth = model.depth;
-                            check.height = model.height;
+                            //check.length = model.length;
+                            //check.depth = model.depth;
+                            //check.height = model.height;
                             check.unit = model.unit;
-                            check.mass = model.mass;
+                            //check.mass = model.mass;
                             check.drawingsTechnical = model.drawingsTechnical;
                             check.drawings2D = model.drawings2D;
                             check.drawings3D = model.drawings3D;

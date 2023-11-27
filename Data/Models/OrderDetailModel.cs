@@ -35,6 +35,9 @@ namespace Data.Models
     public class UpdateOrderDetailModel
     {
         public Guid id { get; set; }
+        public string? itemDrawingsTechnical { get; set; }
+        public string? itemDrawings2D { get; set; }
+        public string? itemDrawings3D { get; set; }
         public int quantity { get; set; }
         public double price { get; set; }
         public string description { get; set; }
