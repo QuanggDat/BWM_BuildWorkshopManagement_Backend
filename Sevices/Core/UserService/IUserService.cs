@@ -25,6 +25,7 @@ namespace Sevices.Core.UserService
         ResultModel GetByPhoneNumber(string phoneNumber);
         ResultModel GetById(Guid id);
         ResultModel GetByRoleId(Guid rolerId, string? search, int pageIndex, int pageSize);
+        ResultModel GetByLeaderRoleAndWorkerRole(string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderRole(string? search, int pageIndex, int pageSize);
         ResultModel GetByForemanRole(string? search, int pageIndex, int pageSize);
         ResultModel GetRole();

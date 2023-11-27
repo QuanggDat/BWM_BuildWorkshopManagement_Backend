@@ -70,6 +70,41 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel GetByForemanId(Guid foremanId, int pageIndex, int pageSize, string? search = null)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listOrder = _dbContext.Order.Where(x => x.assignToId == foremanId).OrderByDescending(x => x.createTime).ToList();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    var searchValue = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrder = listOrder.Where(x =>
+                                            (!string.IsNullOrWhiteSpace(x.name) && FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(searchValue)) ||
+                                            (!string.IsNullOrWhiteSpace(x.customerName) && FnUtil.Remove_VN_Accents(x.customerName).ToUpper().Contains(searchValue)) ||
+                                            x.totalPrice.ToString().Contains(searchValue) ||
+                                            x.createTime.ToString("dd/MM/yyyy").Contains(searchValue) ||
+                                            (x.acceptanceTime != null && x.acceptanceTime.Value.ToString("dd/MM/yyyy").Contains(searchValue))
+                                        ).ToList();
+                }
+
+                var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<OrderModel>>(listOrderPaging),
+                    Total = listOrder.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetQuotesByUserWithPaging(Guid userId, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
@@ -1104,7 +1139,7 @@ namespace Sevices.Core.OrderService
                     }
                 }
             }
-        }
+        }       
 
         #endregion
 

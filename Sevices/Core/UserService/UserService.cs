@@ -1109,6 +1109,35 @@ namespace Sevices.Core.UserService
             return result;
         }
 
+        public ResultModel GetByLeaderRoleAndWorkerRole(string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
+                    .Where(x => x.Role != null && x.Role.Name == "Leader" || x.Role.Name == "Worker" && !x.banStatus).OrderBy(x => x.Role.Name).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetRole()
         {
             ResultModel resultModel = new ResultModel();
@@ -1317,7 +1346,9 @@ namespace Sevices.Core.UserService
             // Bạn cũng có thể xử lý kết quả gửi tin nhắn ở đây nếu cần thiết.
         }
 
-        #endregion
         
+
+        #endregion
+
     }
 }

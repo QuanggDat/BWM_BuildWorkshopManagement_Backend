@@ -110,6 +110,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")]
+        public IActionResult GetByLeaderRoleAndWorkerRole(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _userService.GetByLeaderRoleAndWorkerRole(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]")]
         public IActionResult GetByForemanRole(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _userService.GetByForemanRole(search, pageIndex, pageSize);
