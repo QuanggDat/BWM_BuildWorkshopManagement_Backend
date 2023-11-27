@@ -908,7 +908,7 @@ namespace Sevices.Core.UserService
             try
             {
                 var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
-                   .OrderBy(x => x.fullName).ToList();
+                   .OrderBy(x => x.Role.Name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -946,7 +946,8 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group).OrderBy(x => x.fullName).ToList();
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
+                    .OrderBy(x => x.Role.Name).ToList();
 
                 result.Data = new PagingModel()
                 {
@@ -1317,23 +1318,6 @@ namespace Sevices.Core.UserService
         }
 
         #endregion
-        #region
-        static List<string> SortRoles(List<string> roles)
-        {
-            // Xác định thứ tự ưu tiên
-            Dictionary<string, int> priorityOrder = new Dictionary<string, int>
-            {
-                { "Admin", 0 },
-                { "Foreman", 1 },
-                { "Leader", 2 },
-                { "Worker", 3 }
-            };
-
-            // Sắp xếp theo thứ tự ưu tiên
-            List<string> sortedNames = roles.OrderBy(name => priorityOrder[name]).ToList();
-
-            return sortedNames;
-        }
-        #endregion
+        
     }
 }
