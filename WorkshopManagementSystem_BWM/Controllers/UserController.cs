@@ -109,6 +109,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult GetByForemanRole(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _userService.GetByForemanRole(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("{phoneNumber}")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult GetByEmail(string phoneNumber)
         {
@@ -125,10 +133,18 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
+        [HttpGet("[action]")/*, Authorize(Roles = "Admin")*/]
         public IActionResult GetRole()
         {
             var result = _userService.GetRole();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]")/*, Authorize(Roles = "Admin)*/]
+        public IActionResult GetRoleForCreateUser()
+        {
+            var result = _userService.GetRoleForCreateUser();
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

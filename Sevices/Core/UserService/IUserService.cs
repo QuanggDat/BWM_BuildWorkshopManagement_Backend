@@ -26,7 +26,9 @@ namespace Sevices.Core.UserService
         ResultModel GetById(Guid id);
         ResultModel GetByRoleId(Guid rolerId, string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderRole(string? search, int pageIndex, int pageSize);
+        ResultModel GetByForemanRole(string? search, int pageIndex, int pageSize);
         ResultModel GetRole();
+        ResultModel GetRoleForCreateUser();
         ResultModel BannedUser(Guid id);
         ResultModel UnBannedUser(Guid id);
 

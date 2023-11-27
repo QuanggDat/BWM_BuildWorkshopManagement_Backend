@@ -77,7 +77,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -193,7 +193,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -309,7 +309,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -424,7 +424,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10)
+                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -922,8 +922,8 @@ namespace Sevices.Core.UserService
                                                    (x.Role != null && !string.IsNullOrWhiteSpace(x.Role.Name) && FnUtil.Remove_VN_Accents(x.Role.Name).ToUpper().Contains(searchValue))).ToList();
                 }
 
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-               
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();              
+
                 result.Data = new PagingModel()
                 {
                     Data = _mapper.Map<List<UserModel>>(listUserPaging),
@@ -1079,6 +1079,35 @@ namespace Sevices.Core.UserService
             return result;
         }
 
+        public ResultModel GetByForemanRole (string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
+                    .Where(x => x.Role != null && x.Role.Name == "Foreman" && !x.banStatus).OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetRole()
         {
             ResultModel resultModel = new ResultModel();
@@ -1103,6 +1132,40 @@ namespace Sevices.Core.UserService
                     Data = list,
                     Total = list.Count
                 };                          
+                resultModel.Succeed = true;
+
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
+
+        public ResultModel GetRoleForCreateUser()
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var role = _dbContext.Role.Where(x => x.Name != "Admin");
+
+                var list = new List<RoleModel>();
+                foreach (var item in role)
+                {
+
+                    var tmp = new RoleModel
+                    {
+                        id = item.Id,
+                        name = item.Name,
+                    };
+                    list.Add(tmp);
+                }
+
+                resultModel.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = list.Count
+                };
                 resultModel.Succeed = true;
 
             }
@@ -1251,6 +1314,25 @@ namespace Sevices.Core.UserService
             );
 
             // Bạn cũng có thể xử lý kết quả gửi tin nhắn ở đây nếu cần thiết.
+        }
+
+        #endregion
+        #region
+        static List<string> SortRoles(List<string> roles)
+        {
+            // Xác định thứ tự ưu tiên
+            Dictionary<string, int> priorityOrder = new Dictionary<string, int>
+            {
+                { "Admin", 0 },
+                { "Foreman", 1 },
+                { "Leader", 2 },
+                { "Worker", 3 }
+            };
+
+            // Sắp xếp theo thứ tự ưu tiên
+            List<string> sortedNames = roles.OrderBy(name => priorityOrder[name]).ToList();
+
+            return sortedNames;
         }
         #endregion
     }
