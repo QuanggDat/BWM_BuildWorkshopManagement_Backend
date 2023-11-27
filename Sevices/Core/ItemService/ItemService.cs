@@ -141,6 +141,56 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
+        public ResultModel DuplicateItem(Guid id, int num)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listNewDupItem = new List<Item>();
+                var item = _dbContext.Item.FirstOrDefault(x => x.id == id);
+                if (item==null)
+                {
+                    result.Code = 34;
+                    result.Succeed= false;
+                    result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
+                }
+                else
+                {
+                    for (int i = 1; i <= num; i++)
+                    {
+                        var newItem = new Item
+                        {
+                            name = item.name,
+                            code = item.code,
+                            image = item.image,
+                            length = item.length,
+                            depth = item.depth,
+                            height = item.height,
+                            unit = item.unit,
+                            mass = item.mass,
+                            drawings2D = item.drawings2D,
+                            drawings3D = item.drawings3D,
+                            drawingsTechnical = item.drawingsTechnical,
+                            description = item.description,
+                            price = item.price,
+                            isDeleted = false,
+                        };
+                        listNewDupItem.Add(newItem);
+                    }
+
+                    _dbContext.Item.AddRange(listNewDupItem);
+                    _dbContext.SaveChanges();
+                    result.Data = listNewDupItem;
+                    result.Succeed = true;
+                }
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel Update(UpdateItemModel model)
         {
             ResultModel result = new ResultModel();

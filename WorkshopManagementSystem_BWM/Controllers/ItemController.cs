@@ -70,6 +70,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpPut("DuplicateItem")]
+        public IActionResult DuplicateItem(Guid id, int num)
+        {
+            var result =  _itemService.DuplicateItem(id,num);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result?.Code, ErrorMessage = result?.ErrorMessage });
+        }
+
         [HttpDelete("[action]/{id}")]
         public IActionResult Delete(Guid id)
         {
