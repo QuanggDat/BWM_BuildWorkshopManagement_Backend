@@ -101,7 +101,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 ModelState.AddModelError(nameof(model.name),
                     $"{model.name} không được để trống !");
             }
-            /*if (model.length <= 0)
+            if(model.length <= 0)
             {
                 ModelState.AddModelError(nameof(model.length),
                     $"{model.length} nhỏ hơn hoặc bằng 0 !");
@@ -115,17 +115,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.height),
                     $"{model.height} nhỏ hơn hoặc bằng 0 !");
-            }*/
+            }
             if (string.IsNullOrWhiteSpace(model.unit))
             {
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
             }
-            /*if (model.mass <= 0)
+            if (model.mass <= 0)
             {
                 ModelState.AddModelError(nameof(model.mass),
                     $"{model.mass} nhỏ hơn hoặc bằng 0 !");
-            }*/
+            }/*
             if (string.IsNullOrWhiteSpace(model.drawingsTechnical))
             {
                 ModelState.AddModelError(nameof(model.drawingsTechnical),
@@ -140,7 +140,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.drawings3D),
                     $"{model.drawings3D} không được để trống !");
-            }
+            }*/
             if (string.IsNullOrWhiteSpace(model.description))
             {
                 ModelState.AddModelError(nameof(model.description),
@@ -150,7 +150,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return false;
             }
-
             return true;
         }
 
@@ -185,7 +184,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.mass),
                     $"{model.mass} nhỏ hơn hoặc bằng 0 !");
-            }
+            }/*
             if(string.IsNullOrWhiteSpace(model.drawingsTechnical))
             {
                 ModelState.AddModelError(nameof(model.drawingsTechnical),
@@ -200,7 +199,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.drawings3D),
                     $"{model.drawings3D} không được để trống !");
-            }
+            }*/
             if (string.IsNullOrWhiteSpace(model.description))
             {
                 ModelState.AddModelError(nameof(model.description),
