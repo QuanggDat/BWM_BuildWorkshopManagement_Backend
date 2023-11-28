@@ -11,7 +11,8 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? itemCategoryId { get; set; }
-        public string? itemCategoryName { get; set; } 
+        public string? itemCategoryName { get; set; }
+        public string code { get; set; } = null!;
         public string name { get; set; } = null!;
         public string? image { get; set; }
         public double length { get; set; }

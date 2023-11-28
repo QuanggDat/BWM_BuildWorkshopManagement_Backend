@@ -556,11 +556,17 @@ namespace Sevices.Core.OrderService
             try
             {
                 var listNewOrderDetailMaterial = new List<OrderDetailMaterial>();
+
                 var listOrderDetailMaterialExist = new List<OrderDetailMaterial>();
+
                 var listRemoveOrderDetailMaterial = new List<OrderDetailMaterial>();
+
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
+
                 var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
+
                 var listOrderDetailIdByOrder = orderDetail.Select(x => x.id).Distinct().ToList();
+
                 if (order == null)
                 {
                     result.Code = 35;
@@ -572,12 +578,17 @@ namespace Sevices.Core.OrderService
                     foreach (var orderDetailId in listOrderDetailIdByOrder)
                     {
                         var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
+
                         var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
+
                         var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
+
                         foreach (var item in listItemMaterialByOrderDetail)
                         {
                             var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
+
                             var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+
                             //Update OrderDetailMaterial that already existed
                             if (matchingMaterialId != null)
                             {
@@ -591,6 +602,7 @@ namespace Sevices.Core.OrderService
                                 matchingMaterialId.quantity = item.quantity;
                                 matchingMaterialId.totalPrice = item.totalPrice;
                             }
+
                             // Add new OrderDetailMaterial that missing
                             if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
                             {
@@ -615,11 +627,13 @@ namespace Sevices.Core.OrderService
 
                         //Remove excess orderDetailMaterial 
                         var listId = listItemMaterialByOrderDetail.Select(x => x.materialId).Distinct().ToList();
+
                         var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x => !listId.Contains(x.materialId)).ToList();
                         listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
 
                         //Sync orderDetail with Item
                         var itemSync = _dbContext.Item.SingleOrDefault(x => x.id == od.itemId);
+
                         if (itemSync != null)
                         {
                             var itemCate = _dbContext.ItemCategory.SingleOrDefault(x => x.id == itemSync.itemCategoryId);
@@ -655,16 +669,22 @@ namespace Sevices.Core.OrderService
                             result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                         }
                     }
+
                     order.totalPrice = total;
                     order.updateTime = DateTime.Now;
 
                     _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
+
                     _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
+
                     _dbContext.OrderDetailMaterial.RemoveRange(listRemoveOrderDetailMaterial);
+
                     _dbContext.OrderDetail.UpdateRange(orderDetail);
+
                     _dbContext.Order.Update(order);
 
                     _dbContext.SaveChanges();
+
                     result.Data = true;
                     result.Succeed = true;
                 }

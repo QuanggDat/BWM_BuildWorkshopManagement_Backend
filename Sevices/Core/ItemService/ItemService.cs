@@ -147,8 +147,10 @@ namespace Sevices.Core.ItemService
             try
             {
                 var listNewDupItem = new List<Item>();
+
                 var item = _dbContext.Item.FirstOrDefault(x => x.id == id);
-                if (item==null)
+
+                if (item == null)
                 {
                     result.Code = 34;
                     result.Succeed= false;
@@ -379,7 +381,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel GetAll(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllWithSearchAndPaging(string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
 
@@ -404,6 +406,69 @@ namespace Sevices.Core.ItemService
                         id = item.id,
                         itemCategoryId = item.itemCategoryId,
                         itemCategoryName = item.ItemCategory?.name?? "",
+                        code = item.code,
+                        name = item.name,
+                        image = item.image,
+                        length = item.length,
+                        depth = item.depth,
+                        height = item.height,
+                        unit = item.unit,
+                        mass = item.mass,
+                        drawingsTechnical = item.drawingsTechnical,
+                        drawings2D = item.drawings2D,
+                        drawings3D = item.drawings3D,
+                        description = item.description,
+                        price = item.price,
+                        listMaterial = item.ItemMaterials.Select(x => new ItemMaterialModel
+                        {
+                            materialId = x.materialId,
+                            quantity = x.quantity,
+                        }).ToList(),
+
+                        listProcedure = item.ProcedureItems.Select(x => new ProcedureItemModel
+                        {
+                            procedureId = x.procedureId,
+                            priority = x.priority,
+                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listItem.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAll()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listItem = _dbContext.Item.Where(x => x.isDeleted != true)
+                    .Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure).ThenInclude(x => x.ProcedureSteps)
+                    .Include(x => x.ItemCategory).Include(x => x.ItemMaterials).OrderBy(x => x.name).ToList();
+
+                var list = new List<ItemModel>();
+                foreach (var item in listItem)
+                {
+                    var tmp = new ItemModel
+                    {
+                        id = item.id,
+                        itemCategoryId = item.itemCategoryId,
+                        itemCategoryName = item.ItemCategory?.name ?? "",
+                        code = item.code,
                         name = item.name,
                         image = item.image,
                         length = item.length,
@@ -471,6 +536,7 @@ namespace Sevices.Core.ItemService
                         id = check.id,
                         itemCategoryId = check.itemCategoryId,
                         itemCategoryName = check.ItemCategory?.name ?? "",
+                        code = check.code,
                         name = check.name,
                         image = check.image,
                         length = check.length,

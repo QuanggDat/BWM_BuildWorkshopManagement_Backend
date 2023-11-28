@@ -13,7 +13,8 @@ namespace Sevices.Core.ItemService
         ResultModel Update(UpdateItemModel model);
         ResultModel DuplicateItem(Guid id, int num);
         ResultModel Delete(Guid id);
-        ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetAllWithSearchAndPaging(string? search, int pageIndex, int pageSize);
+        ResultModel GetAll();
         ResultModel GetById(Guid id);
         ResultModel GetByItemCategoryId (Guid itemCategoryId, string? search, int pageIndex, int pageSize);
     }
