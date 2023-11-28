@@ -67,13 +67,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult GetProblemReportsByLeaderTaskId(Guid leaderTaskId,string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _reportService.GetProblemReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
-            if (result == null) return BadRequest("Không tìm thấy công việc trưởng nhóm!");
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{leaderTaskId}")]
-        public IActionResult GetProgressReportByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetProgressReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _reportService.GetProgressReportsByLeaderTaskId(leaderTaskId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
