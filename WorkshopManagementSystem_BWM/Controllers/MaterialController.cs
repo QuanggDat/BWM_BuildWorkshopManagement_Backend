@@ -117,14 +117,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.unit),
                     $"{model.unit} không được để trống !");
-            }
-            
+            }         
             if (string.IsNullOrWhiteSpace(model.importPlace))
             {
                 ModelState.AddModelError(nameof(model.importPlace),
                     $"{model.importPlace} không được để trống !");
-            }
-            
+            }            
             if (model.price <= 0)
             {
                 ModelState.AddModelError(nameof(model.price),
@@ -134,7 +132,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return false;
             }
-
             return true;
         }
 

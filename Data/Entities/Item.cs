@@ -16,7 +16,7 @@ namespace Data.Entities
 
         [ForeignKey("itemCategoryId")]
         public Guid? itemCategoryId { get; set; }
-        public ItemCategory ItemCategory { get; set; } = null!;
+        public ItemCategory? ItemCategory { get; set;} 
         public string name { get; set; } = null!;
         public string code { get; set; } = null!;
         public string? image { get; set; } 
@@ -25,10 +25,10 @@ namespace Data.Entities
         public double height { get; set; }
         public string unit { get; set; } = null!;
         public double mass { get; set; }
-        public string drawingsTechnical { get; set; } = null!;
-        public string drawings2D { get; set; } = null!;
-        public string drawings3D { get; set; } = null!;
-        public string description { get; set; } = null!;
+        public string? drawingsTechnical { get; set; } 
+        public string? drawings2D { get; set; } 
+        public string? drawings3D { get; set; }
+        public string? description { get; set; } 
         public double price { get; set; }
         public bool isDeleted { get; set; }
 

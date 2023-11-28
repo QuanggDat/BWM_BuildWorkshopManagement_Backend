@@ -20,10 +20,10 @@ namespace Data.Models
         public double height { get; set; }
         public string unit { get; set; } = null!;
         public double mass { get; set; }
-        public string drawingsTechnical { get; set; } = null!;
-        public string drawings2D { get; set; } = null!;
-        public string drawings3D { get; set; } = null!;
-        public string description { get; set; } = null!;
+        public string? drawingsTechnical { get; set; } 
+        public string? drawings2D { get; set; } 
+        public string? drawings3D { get; set; }
+        public string? description { get; set; } 
         public double price { get; set; }      
         public List<ItemMaterialModel> listMaterial { get; set; } = null!;
         public List<ProcedureItemModel> listProcedure { get; set; } = null!;

@@ -140,12 +140,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.drawings3D),
                     $"{model.drawings3D} không được để trống !");
-            }*/
+            }
             if (string.IsNullOrWhiteSpace(model.description))
             {
                 ModelState.AddModelError(nameof(model.description),
                     $"{model.description} không được để trống !");
-            }
+            }*/
             if (ModelState.ErrorCount > 0)
             {
                 return false;
@@ -199,12 +199,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 ModelState.AddModelError(nameof(model.drawings3D),
                     $"{model.drawings3D} không được để trống !");
-            }*/
+            }
             if (string.IsNullOrWhiteSpace(model.description))
             {
                 ModelState.AddModelError(nameof(model.description),
                     $"{model.description} không được để trống !");
-            }
+            }*/
             if (ModelState.ErrorCount > 0)
             {
                 return false;
