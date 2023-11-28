@@ -141,14 +141,15 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel DuplicateItem(Guid id, int num)
+        public ResultModel DuplicateItem(Guid id, int number)
         {
             var result = new ResultModel();
             try
             {
-                var listNewDupItem = new List<Item>();
+                var listNewDupItemId = new List<Guid>();
 
-                var item = _dbContext.Item.FirstOrDefault(x => x.id == id);
+                var item = _dbContext.Item.Include(x => x.ProcedureItems).ThenInclude(x => x.Procedure)
+                    .Include(x => x.ItemCategory).Include(x => x.ItemMaterials).FirstOrDefault(x => x.id == id);
 
                 if (item == null)
                 {
@@ -158,31 +159,63 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    for (int i = 1; i <= num; i++)
+                    var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
+
+                    var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+
+                    var listItemCodeCreated = new List<string>();
+
+                    for (int i = 1; i <= number; i++)
                     {
+                        var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeCreated);
+                        listItemCodeCreated.Add(randomCode);
+
                         var newItem = new Item
                         {
-                            name = item.name,
-                            code = item.code,
+                            itemCategoryId = item.itemCategoryId,
+                            code = randomCode,
+                            name = item.name,                            
                             image = item.image,
                             length = item.length,
                             depth = item.depth,
                             height = item.height,
                             unit = item.unit,
                             mass = item.mass,
-                            drawings2D = item.drawings2D,
-                            drawings3D = item.drawings3D,
                             drawingsTechnical = item.drawingsTechnical,
+                            drawings2D = item.drawings2D,
+                            drawings3D = item.drawings3D,                            
                             description = item.description,
                             price = item.price,
                             isDeleted = false,
                         };
-                        listNewDupItem.Add(newItem);
-                    }
 
-                    _dbContext.Item.AddRange(listNewDupItem);
+                        _dbContext.Item.Add(newItem);
+                        listNewDupItemId.Add(newItem.id);
+
+                        foreach (var procedure in item.ProcedureItems)
+                        {
+                            _dbContext.ProcedureItem.Add(new ProcedureItem
+                            {
+                                itemId = newItem.id,
+                                procedureId = procedure.procedureId,
+                                priority = procedure.priority
+                            });
+                        }
+
+                        foreach (var material in item.ItemMaterials)
+                        {
+                            _dbContext.ItemMaterial.Add(new ItemMaterial
+                            {
+                                itemId = newItem.id,
+                                materialId = material.materialId,
+                                quantity = material.quantity,
+                                totalPrice = material.totalPrice
+                            });
+                        }
+                    }
+                  
                     _dbContext.SaveChanges();
-                    result.Data = listNewDupItem;
+                    result.Data = listNewDupItemId;
                     result.Succeed = true;
                 }
             }
@@ -251,11 +284,11 @@ namespace Sevices.Core.ItemService
 
                             check.name = model.name;
                             check.image = model.image;
-                            //check.length = model.length;
-                            //check.depth = model.depth;
-                            //check.height = model.height;
+                            check.length = model.length;
+                            check.depth = model.depth;
+                            check.height = model.height;
                             check.unit = model.unit;
-                            //check.mass = model.mass;
+                            check.mass = model.mass;
                             check.drawingsTechnical = model.drawingsTechnical;
                             check.drawings2D = model.drawings2D;
                             check.drawings3D = model.drawings3D;

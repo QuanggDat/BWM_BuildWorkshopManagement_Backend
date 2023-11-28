@@ -72,11 +72,11 @@ namespace Data.Models
         public Guid itemCategoryId { get; set; }     
         public string name { get; set; } = null!;
         public string? image { get; set; }
-        //public double length { get; set; } 
-        //public double depth { get; set; }
-        //public double height { get; set; }
+        public double length { get; set; } 
+        public double depth { get; set; }
+        public double height { get; set; }
         public string unit { get; set; } = null!;
-        //public double mass { get; set; }
+        public double mass { get; set; }
         public string drawingsTechnical { get; set; } = null!;
         public string drawings2D { get; set; } = null!;
         public string drawings3D { get; set; } = null!;

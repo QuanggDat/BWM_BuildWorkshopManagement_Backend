@@ -32,7 +32,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _itemService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }       
+        }
+
+        [HttpPost("[action]/{id}/{number}")]
+        public IActionResult DuplicateItem(Guid id, int number)
+        {
+            var result = _itemService.DuplicateItem(id, number);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result?.Code, ErrorMessage = result?.ErrorMessage });
+        }
 
         [HttpGet("[action]/{id}")]
         public IActionResult GetById(Guid id)
@@ -77,15 +85,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
-        [HttpPut("DuplicateItem")]
-        public IActionResult DuplicateItem(Guid id, int num)
-        {
-            var result =  _itemService.DuplicateItem(id,num);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result?.Code, ErrorMessage = result?.ErrorMessage });
-        }
-
+        
         [HttpDelete("[action]/{id}")]
         public IActionResult Delete(Guid id)
         {

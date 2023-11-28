@@ -11,7 +11,7 @@ namespace Sevices.Core.ItemService
     {
         ResultModel Create(CreateItemModel model);
         ResultModel Update(UpdateItemModel model);
-        ResultModel DuplicateItem(Guid id, int num);
+        ResultModel DuplicateItem(Guid id, int number);
         ResultModel Delete(Guid id);
         ResultModel GetAllWithSearchAndPaging(string? search, int pageIndex, int pageSize);
         ResultModel GetAll();
