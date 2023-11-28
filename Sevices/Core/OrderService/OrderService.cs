@@ -40,7 +40,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var listOrder = _dbContext.Order.OrderByDescending(x => x.createTime).ToList();
+                var listOrder = _dbContext.Order.Include(x=>x.AssignTo).Include(x=>x.CreatedBy).OrderByDescending(x => x.createTime).ToList();
 
                 if (!string.IsNullOrWhiteSpace(search))
                 {
