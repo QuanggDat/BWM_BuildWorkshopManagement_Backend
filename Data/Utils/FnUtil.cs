@@ -195,6 +195,5 @@ namespace Data.Utils
             // Save the resized image to a file
             return SKImage.FromBitmap(resizedBitmap);
         }
-        
     }
 }

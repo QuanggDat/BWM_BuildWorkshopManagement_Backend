@@ -305,9 +305,9 @@ namespace Sevices.Core.OrderService
                         // Tạo order
                         var orderCreate = _mapper.Map<Order>(model);
                         orderCreate.createdById = createdById;
-                        orderCreate.createTime = DateTime.Now;
+                        orderCreate.createTime = DateTime.UtcNow.AddHours(7);
                         orderCreate.status = OrderStatus.Pending;
-                        orderCreate.updateTime = DateTime.Now;
+                        orderCreate.updateTime = DateTime.UtcNow.AddHours(7);
 
                         _dbContext.Order.Add(orderCreate);
 
