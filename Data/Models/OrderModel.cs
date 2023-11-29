@@ -24,7 +24,7 @@ namespace Data.Models
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;
         public string fileQuote { get; set; } = null!;
-        public DateTime quoteTime { get; set; }
+        public DateTime? quoteTime { get; set; }
         public double totalPrice { get; set; }
         public DateTime? acceptanceTime { get; set; }
         public DateTime? startTime { get; set; }
