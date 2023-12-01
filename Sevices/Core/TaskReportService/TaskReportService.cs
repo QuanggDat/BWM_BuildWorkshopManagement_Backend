@@ -69,7 +69,7 @@ namespace Sevices.Core.ReportService
                             title = model.title,
                             content = model.content,
                             reportType = ReportType.AcceptanceReport,
-                            createdDate = DateTime.Now,
+                            createdDate = DateTime.UtcNow.AddHours(7),
                         };
 
                         var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).FirstOrDefault();
@@ -171,7 +171,7 @@ namespace Sevices.Core.ReportService
                             content = model.content,
                             itemFailed = model.itemFailed,
                             reportType = ReportType.ProgressReport,
-                            createdDate = DateTime.Now,
+                            createdDate = DateTime.UtcNow.AddHours(7),
                         };
 
                         try
@@ -250,7 +250,7 @@ namespace Sevices.Core.ReportService
                     {
                         result.Code = 53;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không thể gửi báo cáo vào lúc này!";
+                        result.ErrorMessage = "Đã qua ngày kết thúc công việc, không thể gửi báo cáo vào lúc này!";
                     }
                     else
                     {
@@ -261,7 +261,7 @@ namespace Sevices.Core.ReportService
                             title = model.title,
                             content = model.content,
                             reportType = ReportType.ProblemReport,
-                            createdDate = DateTime.Now,
+                            createdDate = DateTime.UtcNow.AddHours(7),
                         };
 
                         try
@@ -721,6 +721,7 @@ namespace Sevices.Core.ReportService
                     {
                         id = item.id,
                         leaderTaskId = item.LeaderTask.id,
+                        leaderTaskName = item.LeaderTask.name,
                         reporterId = item.reporterId,
                         reporterName = item.Reporter.fullName,
                         responderId = item.LeaderTask.createById,
@@ -777,6 +778,7 @@ namespace Sevices.Core.ReportService
                     {
                         id = item.id,
                         leaderTaskId = item.LeaderTask.id,
+                        leaderTaskName = item.LeaderTask.name,
                         reporterId = item.reporterId,
                         reporterName = item.Reporter.fullName,
                         responderId = item.LeaderTask.createById,

@@ -57,6 +57,7 @@ namespace Data.Models
         public DateTime? completedTime { get; set; }
 
         public List<TaskReportModel> listReportInTasks { get; set; } = null!;
+        public List<WorkerTaskModel> listWorkerTasks { get; set; } = null!;
 
         public ETaskStatus status { get; set; }
         public string? description { get; set; } 

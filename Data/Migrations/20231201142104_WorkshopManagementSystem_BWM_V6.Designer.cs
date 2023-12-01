@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231201142104_WorkshopManagementSystem_BWM_V6")]
+    partial class WorkshopManagementSystem_BWM_V6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,39 +214,6 @@ namespace Data.Migrations
                     b.HasIndex("orderId");
 
                     b.ToTable("LeaderTask");
-                });
-
-            modelBuilder.Entity("Data.Entities.Log", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("modifiedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("orderDetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("orderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("userId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("orderDetailId");
-
-                    b.HasIndex("orderId");
-
-                    b.HasIndex("userId");
-
-                    b.ToTable("Log");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>
@@ -1138,29 +1107,6 @@ namespace Data.Migrations
                     b.Navigation("Leader");
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Data.Entities.Log", b =>
-                {
-                    b.HasOne("Data.Entities.OrderDetail", "OrderDetail")
-                        .WithMany()
-                        .HasForeignKey("orderDetailId");
-
-                    b.HasOne("Data.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("orderId");
-
-                    b.HasOne("Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("userId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("OrderDetail");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data.Entities.Material", b =>

@@ -179,9 +179,7 @@ namespace Sevices.Core.LeaderTaskService
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
-                {
-                    var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
-
+                {                  
                     if (orderTmp.status != OrderStatus.InProgress)
                     {
                         result.Code = 42;
@@ -198,41 +196,52 @@ namespace Sevices.Core.LeaderTaskService
                         }
                         else
                         {
-                            var leaderTask = new LeaderTask
-                            {
-                                createById = createById,
-                                leaderId = model.leaderId,
-                                orderId = model.orderId,
-                                name = "Công việc nghiệm thu",
-                                startTime = model.startTime,
-                                endTime = model.endTime,
-                                description = model.description,
-                                status = ETaskStatus.New,
-                                isDeleted = false
-                            };
+                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
 
-                            try
+                            if (check != null)
                             {
-                                _dbContext.LeaderTask.Add(leaderTask);
-                                _dbContext.SaveChanges();
-
-                                _notificationService.Create(new Notification
+                                result.Code = 43;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Công việc nghiệm thu cho đơn hàng này đã được tạo!";
+                            }
+                            else
+                            {
+                                var leaderTask = new LeaderTask
                                 {
-                                    userId = model.leaderId,
-                                    leaderTaskId = leaderTask.id,
-                                    title = "Công việc",
-                                    content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
-                                    type = NotificationType.TaskReport
-                                });
+                                    createById = createById,
+                                    leaderId = model.leaderId,
+                                    orderId = model.orderId,
+                                    name = "Công việc nghiệm thu",
+                                    startTime = model.startTime,
+                                    endTime = model.endTime,
+                                    description = model.description,
+                                    status = ETaskStatus.Acceptance,
+                                    isDeleted = false
+                                };
 
-                                result.Succeed = true;
-                                result.Data = leaderTask.id;
+                                try
+                                {
+                                    _dbContext.LeaderTask.Add(leaderTask);
+                                    _dbContext.SaveChanges();
+
+                                    _notificationService.Create(new Notification
+                                    {
+                                        userId = model.leaderId,
+                                        leaderTaskId = leaderTask.id,
+                                        title = "Công việc",
+                                        content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
+                                        type = NotificationType.TaskReport
+                                    });
+
+                                    result.Succeed = true;
+                                    result.Data = leaderTask.id;
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                            }
-                        }
+                        }                        
                     }
                 }                                                             
             }
@@ -613,6 +622,89 @@ namespace Sevices.Core.LeaderTaskService
                             content = x.content,
                             createdDate = x.createdDate,
                             resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
+                        isDeleted = item.isDeleted,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLeaderTask.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetByOrderIdAndItemId(Guid orderId, Guid itemId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x => x.WorkerTasks)
+                    .Where(a => a.orderId == orderId && a.itemId == itemId && a.isDeleted == false)
+                    .OrderByDescending(x => x.startTime).ToList();
+
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LeaderTaskModel>();
+                foreach (var item in listLeaderTaskPaging)
+                {
+                    var order = _dbContext.Order.Find(item.orderId);
+
+                    var createBy = _dbContext.User.Find(item.createById);
+
+                    var tmp = new LeaderTaskModel
+                    {
+                        id = item.id,
+                        createdById = item.createById,
+                        createdByName = createBy?.fullName ?? "",
+                        leaderId = item.leaderId,
+                        leaderName = item.Leader?.fullName ?? "",
+                        orderId = item.orderId,
+                        orderName = order!.name,
+                        itemId = item.itemId,
+                        Item = item.Item,
+                        itemQuantity = item.itemQuantity,
+                        itemCompleted = item.itemCompleted,
+                        itemFailed = item.itemFailed,
+                        name = item.name,
+                        priority = item.priority,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        completedTime = item.completedTime,
+                        status = item.status,
+                        description = item.description,
+
+                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                        {
+                            id = x.id,
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            createdDate = x.createdDate,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+
+                        listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                        {
+                            id = x.id,
+                            name = x.name
                         }).ToList(),
 
                         isDeleted = item.isDeleted,

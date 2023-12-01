@@ -157,6 +157,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpGet("[action]")/*, Authorize(Roles = "Admin)*/]
+        public IActionResult GetRoleLeaderAndWorker()
+        {
+            var result = _userService.GetRoleLeaderAndWorker();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpPut]
         public IActionResult Update(UserUpdateModel model)
         {

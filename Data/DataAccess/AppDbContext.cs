@@ -14,6 +14,7 @@ namespace Data.DataAccess
         //public DbSet<Floor> Floor { get; set; }
         //public DbSet<Team> Team { get; set; }
         public DbSet<Item> Item { get; set; }
+        public DbSet<Log> Log { get; set; }
         public DbSet<ItemCategory> ItemCategory { get; set; }
         public DbSet<ItemMaterial> ItemMaterial { get; set; }
         public DbSet<LeaderTask> LeaderTask { get; set; }

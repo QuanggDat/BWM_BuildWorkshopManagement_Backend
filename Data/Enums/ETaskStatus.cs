@@ -12,6 +12,8 @@ namespace Data.Enums
         InProgress = 1,
         Pending = 2,
         NotAchieved = 3,
-        Completed = 4
+        Completed = 4,
+        Acceptance = 5
+
     }
 }

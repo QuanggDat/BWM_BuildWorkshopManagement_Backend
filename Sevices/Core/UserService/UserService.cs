@@ -1206,6 +1206,39 @@ namespace Sevices.Core.UserService
             return resultModel;
         }
 
+        public ResultModel GetRoleLeaderAndWorker()
+        {
+            ResultModel resultModel = new ResultModel();
+            try
+            {
+                var role = _dbContext.Role.Where(x => x.Name == "Leader" || x.Name == "Worker");
+
+                var list = new List<RoleModel>();
+                foreach (var item in role)
+                {
+
+                    var tmp = new RoleModel
+                    {
+                        id = item.Id,
+                        name = item.Name,
+                    };
+                    list.Add(tmp);
+                }
+
+                resultModel.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = list.Count
+                };
+                resultModel.Succeed = true;
+
+            }
+            catch (Exception ex)
+            {
+                resultModel.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return resultModel;
+        }
         public ResultModel BannedUser(Guid id)
         {
             ResultModel resultModel = new ResultModel();
@@ -1345,8 +1378,6 @@ namespace Sevices.Core.UserService
 
             // Bạn cũng có thể xử lý kết quả gửi tin nhắn ở đây nếu cần thiết.
         }
-
-        
 
         #endregion
 

@@ -61,7 +61,7 @@ namespace Sevices.Core.OrderReportService
                             content = model.content,
                             reporterId = reporterId,
                             status = model.status,
-                            createdDate = DateTime.Now,
+                            createdDate = DateTime.UtcNow.AddHours(7),
                             reportType = ReportType.OrderReport
                         };
 

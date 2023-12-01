@@ -307,7 +307,7 @@ namespace Sevices.Core.OrderService
                         orderCreate.createdById = createdById;
                         orderCreate.createTime = DateTime.UtcNow.AddHours(7);
                         orderCreate.status = OrderStatus.Pending;
-                        orderCreate.updateTime = DateTime.UtcNow.AddHours(7);
+                        //orderCreate.updateTime = DateTime.UtcNow.AddHours(7);
 
                         _dbContext.Order.Add(orderCreate);
 
@@ -496,7 +496,7 @@ namespace Sevices.Core.OrderService
                         order.description = model.description;
                         order.startTime = model.startTime;
                         order.endTime = model.endTime;
-                        order.updateTime = DateTime.Now;
+                        //order.updateTime = DateTime.Now;
 
                         _dbContext.Order.Update(order);
                         _dbContext.SaveChanges();
@@ -534,7 +534,7 @@ namespace Sevices.Core.OrderService
                         total += detail.totalPrice;
                     }
                     order.totalPrice = total;
-                    order.updateTime = DateTime.Now;
+                    //order.updateTime = DateTime.Now;
 
                     _dbContext.Update(order);
                     _dbContext.SaveChanges();
@@ -550,7 +550,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel SyncOrderDetailMaterial(Guid id)
+        public ResultModel SyncItem(Guid id)
         {
             var result = new ResultModel();
             try
@@ -671,7 +671,7 @@ namespace Sevices.Core.OrderService
                     }
 
                     order.totalPrice = total;
-                    order.updateTime = DateTime.Now;
+                    //order.updateTime = DateTime.Now;
 
                     _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
 
@@ -769,7 +769,7 @@ namespace Sevices.Core.OrderService
                         order.acceptanceTime = DateTime.Now;
                     }
                     order.status = status;
-                    order.updateTime = DateTime.Now;
+                    //order.updateTime = DateTime.Now;
 
                     _dbContext.Order.Update(order);
                     _dbContext.SaveChanges();

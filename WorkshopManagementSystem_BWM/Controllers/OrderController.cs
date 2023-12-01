@@ -100,10 +100,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut("syncOrderDetailMaterialAndOrderDetail")]
-        public IActionResult SyncOrderDetailMaterialAndOrderDetail(Guid orderId)
+        [HttpPut("SyncItem/{id}")]
+        public IActionResult SyncItem(Guid orderId)
         {
-            var result = _orderService.SyncOrderDetailMaterial(orderId);
+            var result = _orderService.SyncItem(orderId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

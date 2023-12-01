@@ -38,7 +38,7 @@ namespace Data.Entities
         public int quantity { get; set; }
         public double price { get; set; } = 0;
         public double totalPrice { get; set; } = 0;
-
+        public bool isDeleted { get; set; }
         public virtual List<OrderDetailMaterial> OrderDetailMaterials { get; set; } = new();
 
     }
