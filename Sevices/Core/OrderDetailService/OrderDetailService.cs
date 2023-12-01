@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
+using Data.Entities;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
+using Twilio.Types;
 
 namespace Sevices.Core.OrderDetailService
 {
@@ -44,6 +46,98 @@ namespace Sevices.Core.OrderDetailService
                     Total = listOrderDetail.Count
                 };
                 result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel CreateOrderDetail (CreateOrderDetailModel model)
+        {
+            var result = new ResultModel();
+            var listNewOrderDetailMaterial = new List<OrderDetailMaterial>(); 
+            try
+            {
+                var order = _dbContext.Order.FirstOrDefault(x => x.id == model.orderId);
+                if (order == null)
+                {
+                    result.Code = 0;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đơn hàng không tồn tại !!!";
+                }
+                else
+                {
+                    var item = _dbContext.Item.FirstOrDefault(x => x.id == model.itemId && x.isDeleted != true);
+                    if (item == null)
+                    {
+                        result.Code = 0;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Sản phẩm không tồn tại !!!";
+                    }
+                    else
+                    {
+                        var itemMate = _dbContext.ItemMaterial.Where(x => x.itemId == model.itemId).ToList();
+
+                        var newOrderDetail = new OrderDetail
+                        {
+                            itemId = item.id,
+                            orderId = order.id,
+                            itemCategoryName = item.ItemCategory?.name ?? "",
+                            itemName = item.name,
+                            itemCode = item.code,
+                            itemLength = item.length,
+                            itemDepth = item.depth,
+                            itemHeight = item.height,
+                            itemUnit = item.unit,
+                            itemMass = item.mass,
+                            itemDrawings2D = model.itemDrawings2D,
+                            itemDrawings3D = model.itemDrawings3D,
+                            itemDrawingsTechnical = model.itemDrawingsTechnical,
+                            description = model.description,
+                            price = item.price,
+                            quantity = model.quantity,
+                            totalPrice = item.price * model.quantity,
+                        };
+                        _dbContext.OrderDetail.Add(newOrderDetail);
+
+                        foreach (var mate in itemMate)
+                        {
+                            var material = _dbContext.Material.FirstOrDefault(x => x.id == mate.materialId && x.isDeleted != true);
+                            if (material == null)
+                            {
+                                result.Code = 0;
+                                result.Succeed = false;
+                                result.ErrorMessage = "Vật liệu không tồn tại !!!";
+                            }
+                            else
+                            {
+                                var orderDetailMaterial = new OrderDetailMaterial
+                                {
+                                    materialId = mate.materialId,
+                                    orderDetailId = newOrderDetail.id,
+                                    materialName = material.name,
+                                    materialSupplier = material.supplier,
+                                    materialThickness = material.thickness,
+                                    materialUnit = material.unit,
+                                    materialColor = material.color,
+                                    materialSku = material.sku,
+                                    quantity = mate.quantity,
+                                    price = mate.price,
+                                    totalPrice = mate.totalPrice,
+                                };
+                                listNewOrderDetailMaterial.Add(orderDetailMaterial);
+                            }
+                        }
+
+                        _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
+                        _dbContext.SaveChanges();
+
+                        result.Data = newOrderDetail;
+                        result.Succeed = true;
+                    }
+                }
             }
             catch (Exception ex)
             {

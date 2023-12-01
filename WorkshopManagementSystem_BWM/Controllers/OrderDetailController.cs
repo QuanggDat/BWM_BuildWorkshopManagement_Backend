@@ -18,6 +18,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _orderDetailService = orderDetailService;
         }
 
+        [HttpPost("CreateOrderDetail")]
+        public IActionResult CreateOrderDetail(CreateOrderDetailModel model)
+        {
+            var result =_orderDetailService.CreateOrderDetail(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpGet("GetByOrderIdWithPaging")]
         public IActionResult GetByOrderIdWithPaging(Guid orderId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {
