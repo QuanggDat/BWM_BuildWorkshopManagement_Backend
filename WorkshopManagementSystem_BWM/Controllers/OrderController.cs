@@ -101,9 +101,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpPut("SyncItem/{id}")]
-        public IActionResult SyncItem(Guid orderId)
+        public IActionResult SyncItem(Guid id)
         {
-            var result = _orderService.SyncItem(orderId);
+            var result = _orderService.SyncItem(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

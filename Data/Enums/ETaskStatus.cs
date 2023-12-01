@@ -14,6 +14,5 @@ namespace Data.Enums
         NotAchieved = 3,
         Completed = 4,
         Acceptance = 5
-
     }
 }
