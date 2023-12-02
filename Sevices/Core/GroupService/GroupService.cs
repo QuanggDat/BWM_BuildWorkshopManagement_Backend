@@ -19,7 +19,7 @@ namespace Sevices.Core.GroupService
             _mapper = mapper;
         }
 
-        public ResultModel Create(CreateGroupModel model)
+        public ResultModel Create(CreateGroupModel model, Guid userId)
         {
             var result = new ResultModel();
 
@@ -67,6 +67,17 @@ namespace Sevices.Core.GroupService
 
                                 _dbContext.Group.Add(newGroup);
                                 newLeader.groupId = newGroup.id;
+                                _dbContext.User.Update(newLeader);
+
+                                var log = new Data.Entities.Log()
+                                {
+                                    groupId = newGroup.id,
+                                    userId = userId,
+                                    modifiedTime = DateTime.UtcNow.AddHours(7),
+                                    action = "Tạo nhóm mới " + newGroup.name+ " và Nhóm trưởng là "+newLeader.fullName,
+                                };
+                                _dbContext.Log.Add(log);
+
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
                                 result.Data = newGroup.id;
@@ -82,7 +93,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel AddWorkersToGroup(AddWorkersToGroupModel model)
+        public ResultModel AddWorkersToGroup(AddWorkersToGroupModel model, Guid userid)
         {
             var result = new ResultModel();
 
@@ -140,6 +151,16 @@ namespace Sevices.Core.GroupService
                     }
 
                     _dbContext.Group.Update(group);
+
+                    var log = new Data.Entities.Log()
+                    {
+                        groupId = group.id,
+                        userId = userid,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = "Thêm công nhân vào nhóm: " + group.name,
+                    };
+                    _dbContext.Log.Add(log);
+
                     _dbContext.SaveChanges();
                     result.Succeed = true;
                     result.Data = group.id;
@@ -152,7 +173,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel Update(UpdateGroupModel model)
+        public ResultModel Update(UpdateGroupModel model, Guid userId)
         {
             var result = new ResultModel();
 
@@ -184,6 +205,17 @@ namespace Sevices.Core.GroupService
                         if (currentLeader != null && currentLeader.Id == model.leaderId)
                         {
                             data.name = model.name;
+                            _dbContext.Group.Update(data);
+
+                            var log = new Data.Entities.Log()
+                            {
+                                groupId = data.id,
+                                userId = userId,
+                                modifiedTime = DateTime.UtcNow.AddHours(7),
+                                action = "Cập nhật thông tin nhóm: " + data.name,
+                            };
+                            _dbContext.Log.Add(log);
+
                             _dbContext.SaveChanges();
                             result.Succeed = true;
                             result.Data = _mapper.Map<Group, GroupModel>(data);
@@ -221,7 +253,20 @@ namespace Sevices.Core.GroupService
                                             currentLeader.Group = null;
                                         }
                                         data.name = model.name;
+                                        _dbContext.Group.Update(data);
+
                                         newLeader.groupId = model.id;
+                                        _dbContext.User.Update(newLeader);
+
+                                        var log = new Data.Entities.Log()
+                                        {
+                                            groupId = data.id,
+                                            userId = userId,
+                                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                                            action = "Cập nhật thông tin nhóm: " + data.name ,
+                                        };
+                                        _dbContext.Log.Add(log);
+
                                         _dbContext.SaveChanges();
                                         result.Succeed = true;
                                         result.Data = _mapper.Map<Group, GroupModel>(data);
@@ -239,7 +284,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel ChangeLeader(ChangeLeaderModel model)
+        public ResultModel ChangeLeader(ChangeLeaderModel model, Guid userId)
         {
             var result = new ResultModel();
 
@@ -288,8 +333,18 @@ namespace Sevices.Core.GroupService
                                     currentLeader.groupId = null;
                                     currentLeader.Group = null;
                                 }
-
                                 newLeader.groupId = model.groupId;
+                                _dbContext.User.Update(newLeader);
+
+                                var log = new Data.Entities.Log()
+                                {
+                                    groupId = data.id,
+                                    userId = userId,
+                                    modifiedTime = DateTime.UtcNow.AddHours(7),
+                                    action = "Cập nhật thông tin trưởng nhóm: " + data.name,
+                                };
+                                _dbContext.Log.Add(log);
+
                                 _dbContext.SaveChanges();
                                 result.Succeed = true;
                                 result.Data = _mapper.Map<Group, GroupModel>(data);
@@ -305,7 +360,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model)
+        public ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model, Guid userId)
         {
             var result = new ResultModel();
 
@@ -335,6 +390,15 @@ namespace Sevices.Core.GroupService
                         _dbContext.User.Update(user);
                         _dbContext.Group.Update(group);
 
+                        var log = new Data.Entities.Log()
+                        {
+                            groupId = group.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Xóa thành viên khỏi nhóm: " + group.name,
+                        };
+                        _dbContext.Log.Add(log);
+
                         _dbContext.SaveChanges();
                         result.Data = _mapper.Map<GroupModel>(group);
                         result.Succeed = true;
@@ -348,7 +412,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel Delete(Guid id)
+        public ResultModel Delete(Guid id, Guid userId)
         {
             var result = new ResultModel();
 
@@ -377,6 +441,16 @@ namespace Sevices.Core.GroupService
 
                     group.isDeleted = true;
                     _dbContext.Group.Update(group);
+
+                    var log = new Data.Entities.Log()
+                    {
+                        groupId = group.id,
+                        userId = userId,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = "Xóa nhóm: " + group.name,
+                    };
+                    _dbContext.Log.Add(log);
+
                     _dbContext.SaveChanges();
                     result.Data = group.id;
                     result.Succeed = true;
@@ -668,6 +742,49 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }        
+        }
+
+        public ResultModel GetAllLogOnGroup(string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listLog = _dbContext.Log.Include(x => x.Group).Where(x => x.groupId != null).OrderBy(x => x.modifiedTime).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                }
+
+                var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LogModel>();
+                foreach (var item in listLogPaging)
+                {
+                    var tmp = new LogModel
+                    {
+                        id = item.id,
+                        groupId = item.groupId,
+                        Group = item.Group,
+                        modifiedTime = item.modifiedTime,
+                        action = item.action,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLog.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
     }
 }

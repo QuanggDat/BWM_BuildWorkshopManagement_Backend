@@ -20,7 +20,7 @@ namespace Data.Models
         public Guid createdById { get; set; }
         public UserModel CreatedBy { get; set; } = null!;
         public DateTime createTime { get; set; }
-        public DateTime updateTime { get; set; }
+        //public DateTime updateTime { get; set; }
         public string? description { get; set; } = null!;
         public OrderStatus status { get; set; }
         public string fileContract { get; set; } = null!;

@@ -68,7 +68,7 @@ namespace Sevices.Core.OrderDetailService
                 {
                     result.Code = 0;
                     result.Succeed = false;
-                    result.ErrorMessage = "Đơn hàng không tồn tại !!!";
+                    result.ErrorMessage = "Không tìm thấy đơn hàng trong hệ thống !";
                 }
                 else
                 {
@@ -77,7 +77,7 @@ namespace Sevices.Core.OrderDetailService
                     {
                         result.Code = 0;
                         result.Succeed = false;
-                        result.ErrorMessage = "Sản phẩm không tồn tại !!!";
+                        result.ErrorMessage = "Không tìm thấy thông tin của sản phẩm !";
                     }
                     else
                     {
@@ -86,7 +86,7 @@ namespace Sevices.Core.OrderDetailService
                         {
                             result.Code = 0;
                             result.Succeed = false;
-                            result.ErrorMessage = "Sản phẩm đã tồn tại trong chi tiết đơn hàng khác !!!";
+                            result.ErrorMessage = "Sản phẩm đã tồn tại trong đơn hàng!";
                         }
                         else
                         {
@@ -285,6 +285,59 @@ namespace Sevices.Core.OrderDetailService
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetLogOnOrderDetailByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var order = _dbContext.Order.Where(x => x.id == orderId).FirstOrDefault();
+                if (order == null)
+                {
+                    result.Code = 97;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    var listLog = _dbContext.Log.Where(x => x.orderId==orderId && x.orderDetailId != null).ToList();
+
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                    }
+
+                    var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<LogModel>();
+                    foreach (var item in listLogPaging)
+                    {
+
+                        var tmp = new LogModel
+                        {
+                            id = item.id,
+                            orderId = item.orderId,
+                            orderDetailId = item.orderDetailId,
+                            modifiedTime = item.modifiedTime,
+                            action = item.action,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listLog.Count
+                    };
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }

@@ -28,7 +28,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result =  _materialService.Create(model);
+            var result =  _materialService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -72,7 +72,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = _materialService.Update(model);
+            var result = _materialService.Update(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -80,11 +80,18 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpDelete("[action]/{id}")]
         public IActionResult Delete(Guid id)
         {
-            var result = _materialService.Delete(id);
+            var result = _materialService.Delete(id, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }       
+        }
 
+        [HttpGet("GetAllLogOnMaterial")]
+        public IActionResult GetAllLogOnMaterial(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _materialService.GetAllLogOnMaterial(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
         #region Validate
         private bool ValidateCreateMaterial(CreateMaterialModel model)
         {

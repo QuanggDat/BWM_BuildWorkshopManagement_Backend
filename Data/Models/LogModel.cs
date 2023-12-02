@@ -11,13 +11,17 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public Guid? orderId { get; set; }
-        public Order Order { get; set; }
+        public Order? Order { get; set; }
         public Guid? orderDetailId { get; set; }
-        public OrderDetail orderDetail { get; set; }
+        public OrderDetail? orderDetail { get; set; }
         public Guid? itemId { get; set; }
         public Item? Item { get; set; }
-        public Guid userId { get; set; }
+        public Guid? userId { get; set; }
         public User? User { get; set; }
+        public Guid? groupId { get; set; }
+        public Group? Group { get; set; }
+        public Guid? materialId { get; set; }
+        public Material? Material { get; set; }
         public DateTime modifiedTime { get; set; }
         public string action { get; set; } = null!;
     }

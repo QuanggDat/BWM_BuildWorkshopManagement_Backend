@@ -11,6 +11,7 @@ namespace Sevices.Core.OrderService
         ResultModel GetById(Guid id);
         ResultModel GetQuoteMaterialById(Guid id);
         Task<ResultModel> Create(CreateOrderModel model, Guid createdById);
+        ResultModel GetAllLogOnOrder(string? search, int pageIndex, int pageSize);
         ResultModel Update(UpdateOrderModel model, Guid userId);
         ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId);
         Task<FileResultModel> ExportQuoteToPDF(Guid id);

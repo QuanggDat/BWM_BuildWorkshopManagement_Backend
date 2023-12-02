@@ -30,7 +30,7 @@ namespace Sevices.Core.MaterialService
             _configuration = configuration;
         }
         
-        public ResultModel Create(CreateMaterialModel model)
+        public ResultModel Create(CreateMaterialModel model, Guid userId)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -77,8 +77,17 @@ namespace Sevices.Core.MaterialService
                             price = model.price,
                             isDeleted = false
                         };
-           
                         _dbContext.Material.Add(material);
+
+                        var log = new Data.Entities.Log()
+                        {
+                            materialId = material.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Thêm vật liệu :" + material.name,
+                        };
+                        _dbContext.Log.Add(log);
+
                         _dbContext.SaveChanges();
                         result.Succeed = true;
                         result.Data = material.id;
@@ -92,7 +101,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel Update(UpdateMaterialModel model)
+        public ResultModel Update(UpdateMaterialModel model, Guid userId)
         {
             ResultModel result = new ResultModel();
 
@@ -143,6 +152,16 @@ namespace Sevices.Core.MaterialService
                             check.price = model.price;
                             check.sku = $"{model.name[0]}-{model.supplier}-{model.thickness}";
                             check.materialCategoryId = model.materialCategoryId;
+                            _dbContext.Material.Update(check);
+
+                            var log = new Data.Entities.Log()
+                            {
+                                materialId = check.id,
+                                userId = userId,
+                                modifiedTime = DateTime.UtcNow.AddHours(7),
+                                action = "Cập nhật vật liệu :" + check.name,
+                            };
+                            _dbContext.Log.Add(log);
 
                             _dbContext.SaveChanges();
                             result.Succeed = true;
@@ -158,7 +177,7 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
-        public ResultModel Delete(Guid id)
+        public ResultModel Delete(Guid id, Guid userId)
         {
             ResultModel result = new ResultModel();
 
@@ -185,6 +204,17 @@ namespace Sevices.Core.MaterialService
                     else
                     {
                         check.isDeleted = true;
+                        _dbContext.Material.Update(check);
+
+                        var log = new Data.Entities.Log()
+                        {
+                            materialId = check.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Xóa vật liệu :" + check.name,
+                        };
+                        _dbContext.Log.Add(log);
+
                         _dbContext.SaveChanges();
                         result.Data = check.id;
                         result.Succeed = true;
@@ -424,6 +454,49 @@ namespace Sevices.Core.MaterialService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }     
+        }
+
+        public ResultModel GetAllLogOnMaterial(string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listLog = _dbContext.Log.Include(x=>x.Material).Where(x => x.materialId!=null).OrderBy(x => x.modifiedTime).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                }
+
+                var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LogModel>();
+                foreach (var item in listLogPaging)
+                {
+                    var tmp = new LogModel
+                    {
+                        id = item.id,
+                        materialId=item.materialId,
+                        Material=item.Material,
+                        modifiedTime=item.modifiedTime,
+                        action = item.action,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLog.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
     }
 }
