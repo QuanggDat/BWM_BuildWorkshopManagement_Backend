@@ -35,7 +35,7 @@ namespace Data.Models
     public class CreateOrderDetailModel
     {
         public Guid? itemId { get; set; }
-        public Guid orderId { get; set; }
+        public Guid? orderId { get; set; }
 
         /*public string? itemDrawingsTechnical { get; set; }
         public string? itemDrawings2D { get; set; }

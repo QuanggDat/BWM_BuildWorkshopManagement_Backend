@@ -94,8 +94,8 @@ namespace Sevices.Core.OrderDetailService
 
                             var newOrderDetail = new OrderDetail
                             {
-                                itemId = item.id,
-                                orderId = order.id,
+                                itemId = model.itemId,
+                                orderId = model.orderId,
                                 itemCategoryName = item.ItemCategory?.name ?? "",
                                 itemName = item.name,
                                 itemCode = item.code,
@@ -166,7 +166,7 @@ namespace Sevices.Core.OrderDetailService
                             _dbContext.Log.Add(log);
                             _dbContext.SaveChanges();
 
-                            result.Data = newOrderDetail;
+                            result.Data = newOrderDetail.id;
                             result.Succeed = true;
                         }
                     }
@@ -226,7 +226,7 @@ namespace Sevices.Core.OrderDetailService
 
                     _dbContext.SaveChanges();
 
-                    result.Data = orderDetail;
+                    result.Data = orderDetail.id;
                     result.Succeed = true;
                 }
             }
