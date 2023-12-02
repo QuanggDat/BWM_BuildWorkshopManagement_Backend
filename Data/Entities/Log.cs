@@ -13,6 +13,10 @@ namespace Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
 
+        [ForeignKey("userId")]
+        public Guid userId { get; set; }
+        public virtual User? User { get; set; } = null!;
+
         [ForeignKey("orderId")]
         public Guid? orderId { get; set; }
         public Order? Order { get; set; }
@@ -20,10 +24,6 @@ namespace Data.Entities
         [ForeignKey("orderDetailId")]
         public Guid? orderDetailId { get; set; }
         public OrderDetail? OrderDetail { get; set; }
-
-        [ForeignKey("userId")]
-        public Guid userId { get; set; }
-        public virtual User? User { get; set; } = null!;
 
         [ForeignKey("itemId")]
         public Guid? itemId { get; set; }

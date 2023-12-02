@@ -9,8 +9,8 @@ namespace Data.Enums
     public enum NotificationType
     {
         Order = 0,
-        TaskManager = 1,
-        TaskWoker = 2,
+        LeaderTask = 1,
+        WorkerTask = 2,
         TaskReport = 3,
         OrderReport = 4,
     }
