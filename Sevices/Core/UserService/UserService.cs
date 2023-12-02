@@ -77,7 +77,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
+                if (user.UserName.Length <= 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -193,7 +193,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
+                if (user.UserName.Length <= 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -309,7 +309,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
+                if (user.UserName.Length <= 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -424,7 +424,7 @@ namespace Sevices.Core.UserService
 
                 var userByMail = _dbContext.User.Where(s => s.Email == user.Email).FirstOrDefault();
 
-                if (user.UserName.Length < 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
+                if (user.UserName.Length <= 9 || user.UserName.Length > 10 || !user.UserName.All(char.IsDigit))
                 {
                     result.Code = 1;
                     result.Succeed = false;
@@ -469,6 +469,7 @@ namespace Sevices.Core.UserService
                                 else
                                 {
                                     var check = await _userManager.CreateAsync(user, model.password);
+
                                     if (check != null)
                                     {
                                         var userRole = new UserRole
@@ -498,20 +499,7 @@ namespace Sevices.Core.UserService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
-
-        static bool IsValidEmail(string email)
-        {
-            try
-            {
-                var mailAddress = new MailAddress(email);
-                return true; // Nếu không có lỗi ngoại lệ, email là hợp lệ
-            }
-            catch
-            {
-                return false; // Nếu có lỗi ngoại lệ, email không hợp lệ
-            }
-        }
+        }  
 
         public async Task<ResultModel> Login(LoginModel model)
         {
@@ -618,7 +606,13 @@ namespace Sevices.Core.UserService
             {
                 var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
                 
-                if (data != null)
+                if (data == null)
+                {
+                    result.Code = 10;
+                    result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
+                    result.Succeed = false;                 
+                }
+                else
                 {
                     if (string.IsNullOrEmpty(model.image))
                     {
@@ -633,11 +627,58 @@ namespace Sevices.Core.UserService
                     result.Succeed = true;
                     result.Data = _mapper.Map<User, UserModel>(data);
                 }
-                else
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel UpdatePhone(UserUpdatePhoneModel model)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            try
+            {
+                var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
+
+                //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);               
+                if (data == null)
                 {
                     result.Code = 10;
                     result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
                     result.Succeed = false;
+                }
+                else
+                {
+                    if (model.phoneNumber.Length <= 9 || model.phoneNumber.Length > 10 || !model.phoneNumber.All(char.IsDigit))
+                    {
+                        result.Code = 1;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Số điện thoại không hợp lệ!";
+                    }
+                    else
+                    {
+                        var userByPhone = _dbContext.User.Where(s => s.UserName == model.phoneNumber && s.UserName != data.UserName).FirstOrDefault();
+
+                        if (userByPhone != null)
+                        {
+                            result.Code = 3;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Số điện thoại này đã được đăng ký!";
+                        }
+                        else
+                        {
+                            data.PhoneNumber = model.phoneNumber;
+                            data.UserName = model.phoneNumber;
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
+                            result.ErrorMessage = "Cập nhập số điênh thoại thành công!";
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -743,41 +784,7 @@ namespace Sevices.Core.UserService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
-     
-
-        public ResultModel UpdatePhone(UserUpdatePhoneModel model)
-        {
-            ResultModel result = new ResultModel();
-            result.Succeed = false;
-
-            try
-            {
-                var data = _dbContext.User.Where(s => s.Id == model.id).FirstOrDefault();
-                //DateOnly dob = new DateOnly(model.dob.Year, model.dob.Month, model.dob.Day);
-
-                if (data != null)
-                {
-                    data.PhoneNumber = model.phoneNumber;
-                    data.UserName = model.phoneNumber;
-                    _dbContext.SaveChanges();
-                    result.Succeed = true;
-                    result.Data = _mapper.Map<Data.Entities.User, UserModel>(data);
-                    result.ErrorMessage = "Cập nhập số điênh thoại thành công!";
-                }
-                else
-                {
-                    result.Code = 10;
-                    result.ErrorMessage = "Không tìm thấy thông tin người dùng !";
-                    result.Succeed = false;
-                }
-            }
-            catch (Exception e)
-            {
-                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
-            }
-            return result;
-        }
+        }        
 
         public ResultModel UpdateRole(UserUpdateUserRoleModel model)
         {
@@ -1239,6 +1246,7 @@ namespace Sevices.Core.UserService
             }
             return resultModel;
         }
+
         public ResultModel BannedUser(Guid id)
         {
             ResultModel resultModel = new ResultModel();
@@ -1380,6 +1388,17 @@ namespace Sevices.Core.UserService
         }
 
         #endregion
-
+        static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var mailAddress = new MailAddress(email);
+                return true; // Nếu không có lỗi ngoại lệ, email là hợp lệ
+            }
+            catch
+            {
+                return false; // Nếu có lỗi ngoại lệ, email không hợp lệ
+            }
+        }
     }
 }

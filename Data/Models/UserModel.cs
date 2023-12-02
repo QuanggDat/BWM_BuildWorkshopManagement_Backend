@@ -37,7 +37,6 @@ namespace Data.Models
         public DateTime dob { get; set; }
         public Gender gender { get; set; } 
     }
-    
     public class UserUpdateModel
     {
         public Guid id { get; set; }
@@ -46,7 +45,6 @@ namespace Data.Models
         public string? image { get; set; }
         public DateTime dob { get; set; }
         public Gender gender { get; set; }
-
     }
     public class BannedUserModel
     {

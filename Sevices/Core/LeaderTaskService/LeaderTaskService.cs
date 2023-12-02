@@ -200,7 +200,7 @@ namespace Sevices.Core.LeaderTaskService
 
                             if (check != null)
                             {
-                                result.Code = 43;
+                                result.Code = 87;
                                 result.Succeed = false;
                                 result.ErrorMessage = "Công việc nghiệm thu cho đơn hàng này đã được tạo!";
                             }
