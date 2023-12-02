@@ -91,7 +91,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
+        /*
         [HttpPut("ReCalculatePriceOfOrder/{id}")]
         public IActionResult ReCalculatePrice(Guid id)
         {
@@ -99,7 +99,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
+        */
         [HttpPut("SyncItem/{id}")]
         public IActionResult SyncItem(Guid id)
         {

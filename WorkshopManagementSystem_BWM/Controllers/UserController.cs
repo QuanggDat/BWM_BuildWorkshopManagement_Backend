@@ -17,8 +17,8 @@ namespace WorkshopManagementSystem_BWM.Controllers
         {
             _userService = userService;
         }
-
-        [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
+        /*
+        [HttpPost("[action]"), Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateAdmin([FromBody] UserCreateModel model)
         {
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage});         
         }       
-
+        */
         [HttpPost("[action]")/*, Authorize(Roles = "Admin")*/]
         public async Task<ActionResult> CreateForeman([FromBody] UserCreateModel model)
         {

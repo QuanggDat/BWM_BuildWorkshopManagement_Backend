@@ -696,6 +696,86 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel SyncItemV1(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {               
+                var checkOrder = _dbContext.Order.FirstOrDefault(x => x.id == id);
+              
+                if (checkOrder == null)
+                {
+                    result.Code = 35;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                    result.Succeed = false;
+                }
+                else
+                {
+                    var listOrderDetail = _dbContext.OrderDetail.Include(x => x.Item).ThenInclude(x => x.ItemCategory)
+                        .Include(x => x.Item).ThenInclude(x => x.ItemMaterials).ThenInclude(x => x.Material)
+                        .Where(x => x.orderId == id).ToList();
+
+                    foreach (var orderDetail in listOrderDetail)
+                    {
+                        orderDetail.itemCategoryName = orderDetail.Item!.ItemCategory?.name??"";
+                        orderDetail.itemName = orderDetail.Item.name;
+                        orderDetail.itemCode = orderDetail.Item.code;
+                        orderDetail.itemImage = orderDetail.Item.image;
+                        orderDetail.itemLength = orderDetail.Item.length;
+                        orderDetail.itemDepth = orderDetail.Item.depth;
+                        orderDetail.itemHeight = orderDetail.Item.height;
+                        orderDetail.itemUnit = orderDetail.Item.unit;
+                        orderDetail.itemMass = orderDetail.Item.mass;
+                        orderDetail.itemDrawingsTechnical = orderDetail.Item.drawingsTechnical;
+                        orderDetail.itemDrawings2D = orderDetail.Item.drawings2D;
+                        orderDetail.itemDrawings3D = orderDetail.Item.drawings3D;
+                        orderDetail.description = orderDetail.Item.description;
+                        orderDetail.price = orderDetail.Item.price;
+                        orderDetail.totalPrice = orderDetail.quantity * orderDetail.Item.price;
+
+                        var currentOrderDetailMaterial = _dbContext.OrderDetailMaterial
+                                .Where(x => x.orderDetailId == orderDetail.id).ToList();
+
+                        // Remove all old OrderDetail Material
+                        if (currentOrderDetailMaterial != null && currentOrderDetailMaterial.Count > 0)
+                        {
+                            _dbContext.OrderDetailMaterial.RemoveRange(currentOrderDetailMaterial);
+                        }
+
+                        // Set new OrderDetail Material
+                        var listOrderDetailMaterial = new List<OrderDetailMaterial>();
+
+                        foreach (var orderDetailMaterial in orderDetail.Item.ItemMaterials)
+                        {
+                            listOrderDetailMaterial.Add(new OrderDetailMaterial
+                            {
+                                orderDetailId = orderDetail.id,
+                                materialId = orderDetailMaterial.materialId,
+                                materialName = orderDetailMaterial.Material.name,
+                                materialSupplier = orderDetailMaterial.Material.supplier,
+                                materialThickness = orderDetailMaterial.Material.thickness,
+                                materialSku = orderDetailMaterial.Material.sku,
+                                materialColor = orderDetailMaterial.Material.color,
+                                materialUnit = orderDetailMaterial.Material.unit,
+                                price = orderDetailMaterial.Material.price,
+                                quantity = orderDetailMaterial.quantity,
+                                totalPrice = orderDetailMaterial.Material.price * orderDetailMaterial.quantity
+                            });
+                        }
+                        _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterial);
+                    }
+                    _dbContext.SaveChanges();
+                    result.Data = id;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel UpdateStatus(Guid id, OrderStatus status, Guid userId)
         {
             var result = new ResultModel();
