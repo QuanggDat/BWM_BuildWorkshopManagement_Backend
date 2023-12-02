@@ -51,6 +51,5 @@ namespace Sevices.Core.OrderReportService
             }
             return result;
         }
-
     }
 }

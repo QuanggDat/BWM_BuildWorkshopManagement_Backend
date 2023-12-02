@@ -17,10 +17,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _orderDetailMaterialService = orderDetailMaterialService;
         }
 
-        [HttpGet("GetByOrderDetailIdWidthPaging")]
-        public IActionResult GetByOrderDetailIdWidthPaging(Guid orderId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
+        [HttpGet("GetByOrderDetailIdWidthPaging/{orderDetailId}")]
+        public IActionResult GetByOrderDetailIdWidthPaging(Guid orderDetailId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {
-            var result = _orderDetailMaterialService.GetByOrderDetailIdWidthPaging(orderId, search, pageIndex, pageSize);
+            var result = _orderDetailMaterialService.GetByOrderDetailIdWidthPaging(orderDetailId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
