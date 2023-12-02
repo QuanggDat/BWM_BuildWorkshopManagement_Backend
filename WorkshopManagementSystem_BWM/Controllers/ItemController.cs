@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
                 return BadRequest(ModelState);
             }
             
-            var result = _itemService.Create(model);
+            var result = _itemService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -81,7 +81,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = _itemService.Update(model);
+            var result = _itemService.Update(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -89,7 +89,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpDelete("[action]/{id}")]
         public IActionResult Delete(Guid id)
         {
-            var result = _itemService.Delete(id);
+            var result = _itemService.Delete(id, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

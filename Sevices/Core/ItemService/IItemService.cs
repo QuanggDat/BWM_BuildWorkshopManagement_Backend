@@ -9,10 +9,10 @@ namespace Sevices.Core.ItemService
 {
     public interface IItemService
     {
-        ResultModel Create(CreateItemModel model);
-        ResultModel Update(UpdateItemModel model);
+        ResultModel Create(CreateItemModel model, Guid userId);
+        ResultModel Update(UpdateItemModel model, Guid userId);
         ResultModel DuplicateItem(Guid id, int number);
-        ResultModel Delete(Guid id);
+        ResultModel Delete(Guid id, Guid userId);
         ResultModel GetAllWithSearchAndPaging(string? search, int pageIndex, int pageSize);
         ResultModel GetAll();
         ResultModel GetById(Guid id);

@@ -3,6 +3,7 @@ using Data.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.OrderDetailService;
+using WorkshopManagementSystem_BWM.Extensions;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -21,7 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("CreateOrderDetail")]
         public IActionResult CreateOrderDetail(CreateOrderDetailModel model)
         {
-            var result =_orderDetailService.CreateOrderDetail(model);
+            var result =_orderDetailService.CreateOrderDetail(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -37,7 +38,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("UpdateOrderDetail")]
         public IActionResult Update([FromBody] UpdateOrderDetailModel model)
         {
-            var result = _orderDetailService.Update(model);
+            var result = _orderDetailService.Update(model, User.GetId());
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpDelete("DeleteOrderDetail")]
+        public IActionResult Delete(Guid id)
+        {
+            var result = _orderDetailService.Delete(id, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

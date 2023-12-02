@@ -432,6 +432,14 @@ namespace Sevices.Core.OrderService
                                 _dbContext.OrderDetailMaterial.AddRange(listOrderDetailMaterialCreate);
                             }
                         }
+                        var log = new Data.Entities.Log()
+                        {
+                            orderId = orderId,
+                            userId = createdById,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Tạo mới đơn hàng :"+orderCreate.name,
+                        };
+                        _dbContext.Log.Add(log);
 
                         _dbContext.SaveChanges();
 
@@ -459,7 +467,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel Update(UpdateOrderModel model)
+        public ResultModel Update(UpdateOrderModel model, Guid userId)
         {
             var result = new ResultModel();
             try
@@ -496,9 +504,18 @@ namespace Sevices.Core.OrderService
                         order.description = model.description;
                         order.startTime = model.startTime;
                         order.endTime = model.endTime;
-                        //order.updateTime = DateTime.Now;
+                        //order.updateTime = DateTime.UtcNow.AddHours(7);
 
                         _dbContext.Order.Update(order);
+
+                        var log = new Data.Entities.Log()
+                        {
+                            orderId = order.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Cập nhật đơn hàng :" + order.name,
+                        };
+                        _dbContext.Log.Add(log);
                         _dbContext.SaveChanges();
 
                         result.Data = true;
@@ -550,7 +567,7 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
-        public ResultModel SyncItem(Guid id)
+        public ResultModel SyncItem(Guid id, Guid userId)
         {
             var result = new ResultModel();
             try
@@ -565,7 +582,7 @@ namespace Sevices.Core.OrderService
 
                 var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
 
-                var listOrderDetailIdByOrder = orderDetail.Select(x => x.id).Distinct().ToList();
+                var listOrderDetailIdByOrder = orderDetail.Where(x=>x.isDeleted!=true).Select(x => x.id).Distinct().ToList();
 
                 if (order == null)
                 {
@@ -669,6 +686,15 @@ namespace Sevices.Core.OrderService
                             result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                         }
                     }
+
+                    var log = new Data.Entities.Log()
+                    {
+                        orderId = id,
+                        userId = userId,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = "Cập nhật thông tin chi tiết sản phẩm lên chi tiết đơn hàng :" + order.name,
+                    };
+                    _dbContext.Log.Add(log);
 
                     order.totalPrice = total;
                     //order.updateTime = DateTime.Now;
@@ -789,9 +815,11 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
+                    string line = "";
                     if (status == OrderStatus.Request)
                     {
                         var hasError = false;
+                        line = "Chờ duyệt";
 
                         foreach (var detail in order.OrderDetails)
                         {
@@ -838,6 +866,7 @@ namespace Sevices.Core.OrderService
                     }
                     else if (status == OrderStatus.InProgress)
                     {
+                        line = "Bắt đầu tiến hành";
                         // order
                         order.inProgressTime = DateTime.Now;
 
@@ -846,12 +875,34 @@ namespace Sevices.Core.OrderService
                     }
                     else if (status == OrderStatus.Completed)
                     {
+                        line = "Hoàn Thành";
                         order.acceptanceTime = DateTime.Now;
+                    }
+                    else if(status ==OrderStatus.Cancel)
+                    {
+                        line = "Hủy";
+                    }
+                    else if (status == OrderStatus.Approve)
+                    {
+                        line = "Duyệt";
+                    }
+                    else if (status == OrderStatus.Reject)
+                    {
+                        line = "Từ chối";
                     }
                     order.status = status;
                     //order.updateTime = DateTime.Now;
 
                     _dbContext.Order.Update(order);
+
+                    var log = new Data.Entities.Log()
+                    {
+                        orderId = order.id,
+                        userId = userId,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = line+ " đơn hàng :" + order.name,
+                    };
+                    _dbContext.Log.Add(log);
                     _dbContext.SaveChanges();
 
                     result.Data = order.id;
@@ -870,7 +921,7 @@ namespace Sevices.Core.OrderService
             var result = new FileResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o=>o.isDeleted!=true)).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -1185,7 +1236,7 @@ namespace Sevices.Core.OrderService
         private void GenerateTaskByOrder(Order order, Guid userId)
         {
             // Chuan bi tao task
-            var listItemId = order.OrderDetails.Select(x => x.itemId).Distinct().ToList();
+            var listItemId = order.OrderDetails.Where(x=>x.isDeleted!=true).Select(x => x.itemId).Distinct().ToList();
 
             var listProcedureItem = _dbContext.ProcedureItem.Include(x => x.Item).Where(x => listItemId.Contains(x.itemId)).ToList();
 

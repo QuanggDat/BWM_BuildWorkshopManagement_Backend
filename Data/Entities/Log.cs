@@ -23,7 +23,11 @@ namespace Data.Entities
 
         [ForeignKey("userId")]
         public Guid userId { get; set; }
-        public virtual User User { get; set; } = null!;
+        public virtual User? User { get; set; } = null!;
+
+        [ForeignKey("itemId")]
+        public Guid? itemId { get; set; }
+        public virtual Item? Item { get; set; }
 
         public DateTime modifiedTime { get; set; }
         public string action { get; set; } = null!;

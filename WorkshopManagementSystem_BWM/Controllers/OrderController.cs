@@ -29,7 +29,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("UpdateOrder")]
         public IActionResult Update(UpdateOrderModel model)
         {
-            var result =  _orderService.Update(model);
+            var result =  _orderService.Update(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -103,7 +103,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("SyncItem/{id}")]
         public IActionResult SyncItem(Guid id)
         {
-            var result = _orderService.SyncItem(id);
+            var result = _orderService.SyncItem(id, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

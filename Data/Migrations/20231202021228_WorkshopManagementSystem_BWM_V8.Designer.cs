@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231202021228_WorkshopManagementSystem_BWM_V8")]
+    partial class WorkshopManagementSystem_BWM_V8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -492,7 +494,7 @@ namespace Data.Migrations
                     b.Property<string>("itemUnit")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("orderId")
+                    b.Property<Guid>("orderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("price")
@@ -1247,7 +1249,9 @@ namespace Data.Migrations
 
                     b.HasOne("Data.Entities.Order", "Order")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("orderId");
+                        .HasForeignKey("orderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Item");
 

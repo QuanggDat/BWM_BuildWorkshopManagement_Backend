@@ -16,6 +16,7 @@ using System.Drawing.Printing;
 using Sevices.Core.UtilsService;
 using Microsoft.EntityFrameworkCore;
 using Data.Enums;
+using Aspose.Cells;
 
 namespace Sevices.Core.ItemService
 {
@@ -34,7 +35,7 @@ namespace Sevices.Core.ItemService
             _configuration = configuration;
         }
 
-        public ResultModel Create(CreateItemModel model)
+        public ResultModel Create(CreateItemModel model, Guid userId)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -126,6 +127,15 @@ namespace Sevices.Core.ItemService
                                 item.price += material.quantity * _material.price;
                             }
                         }
+
+                        var log = new Data.Entities.Log()
+                        {
+                            itemId = item.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Tạo sản phẩm mới :" + item.name,
+                        };
+                        _dbContext.Log.Add(log);
 
                         _dbContext.SaveChanges();
                         result.Succeed = true;
@@ -226,7 +236,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel Update(UpdateItemModel model)
+        public ResultModel Update(UpdateItemModel model, Guid userId)
         {
             ResultModel result = new ResultModel();
 
@@ -355,6 +365,15 @@ namespace Sevices.Core.ItemService
                                 }
                             }
 
+                            var log = new Data.Entities.Log()
+                            {
+                                itemId = check.id,
+                                userId = userId,
+                                modifiedTime = DateTime.UtcNow.AddHours(7),
+                                action = "Cập nhật sản phẩm :" + check.name,
+                            };
+                            _dbContext.Log.Add(log);
+
                             _dbContext.ProcedureItem.AddRange(procedureItems);
                             _dbContext.ItemMaterial.AddRange(materialItems);
 
@@ -372,7 +391,7 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
-        public ResultModel Delete(Guid id)
+        public ResultModel Delete(Guid id, Guid userId)
         {
             ResultModel result = new ResultModel();
 
@@ -400,6 +419,16 @@ namespace Sevices.Core.ItemService
                     else
                     {
                         check.isDeleted = true;
+                        _dbContext.Item.Update(check);
+
+                        var log = new Data.Entities.Log()
+                        {
+                            itemId = check.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Xóa sản phẩm :" + check.name,
+                        };
+                        _dbContext.Log.Add(log);
                         _dbContext.SaveChanges();
 
                         result.Data = check.id;
