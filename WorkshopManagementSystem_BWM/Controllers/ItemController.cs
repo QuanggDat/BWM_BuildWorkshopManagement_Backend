@@ -93,6 +93,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
+        [HttpGet("GetAllLogOnItem")]
+        public IActionResult GetAllLogOnItem(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _itemService.GetAllLogOnItem(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
         #region Validate
         private bool ValidateUpdateItem(UpdateItemModel model)
         {

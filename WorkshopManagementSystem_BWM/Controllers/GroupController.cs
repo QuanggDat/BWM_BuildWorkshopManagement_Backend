@@ -3,6 +3,7 @@ using Data.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.GroupService;
+using WorkshopManagementSystem_BWM.Extensions;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -21,7 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public IActionResult Create(CreateGroupModel model)
         {
-            var result = _groupService.Create(model);
+            var result = _groupService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -93,7 +94,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult Update(UpdateGroupModel model)
         {
-            var result = _groupService.Update(model);
+            var result = _groupService.Update(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -101,7 +102,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult ChangeLeader(ChangeLeaderModel model)
         {
-            var result = _groupService.ChangeLeader(model);
+            var result = _groupService.ChangeLeader(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -109,7 +110,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult AddWorkersToGroup(AddWorkersToGroupModel model)
         {
-            var result = _groupService.AddWorkersToGroup(model);
+            var result = _groupService.AddWorkersToGroup(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -117,7 +118,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult RemoveWorkerFromGroup(RemoveWorkerFromGroupModel model)
         {
-            var result = _groupService.RemoveUserFromGroup(model);
+            var result = _groupService.RemoveUserFromGroup(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
@@ -125,9 +126,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpDelete("[action]/{id}")]
         public IActionResult Delete(Guid id)
         {
-            var result = _groupService.Delete(id);
+            var result = _groupService.Delete(id, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }        
+        }
+
+        [HttpGet("GetAllLogOnGroup")]
+        public IActionResult GetAllLogOnGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetAllLogOnGroup(search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }

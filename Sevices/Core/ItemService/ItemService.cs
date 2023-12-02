@@ -711,5 +711,48 @@ namespace Sevices.Core.ItemService
             }   
             return result;
         }
+
+        public ResultModel GetAllLogOnItem(string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listLog = _dbContext.Log.Include(x => x.Item).Where(x => x.itemId != null).OrderBy(x => x.modifiedTime).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                }
+
+                var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LogModel>();
+                foreach (var item in listLogPaging)
+                {
+                    var tmp = new LogModel
+                    {
+                        id = item.id,
+                        itemId = item.materialId,
+                        Item = item.Item,
+                        modifiedTime = item.modifiedTime,
+                        action = item.action,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLog.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
     }
 }

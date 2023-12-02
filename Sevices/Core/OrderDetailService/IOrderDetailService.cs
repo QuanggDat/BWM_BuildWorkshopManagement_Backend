@@ -8,5 +8,6 @@ namespace Sevices.Core.OrderDetailService
         ResultModel CreateOrderDetail (CreateOrderDetailModel model, Guid userId);
         ResultModel Update(UpdateOrderDetailModel model, Guid userId);
         ResultModel Delete(Guid id, Guid userId);
+        ResultModel GetLogOnOrderDetailByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
     }
 }

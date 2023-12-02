@@ -29,6 +29,14 @@ namespace Data.Entities
         public Guid? itemId { get; set; }
         public virtual Item? Item { get; set; }
 
+        [ForeignKey("materialId")]
+        public Guid? materialId { get; set; }
+        public virtual Material? Material { get; set; }
+
+        [ForeignKey("groupId")]
+        public Guid? groupId { get; set; }
+        public virtual Group? Group { get; set; }
+
         public DateTime modifiedTime { get; set; }
         public string action { get; set; } = null!;
 

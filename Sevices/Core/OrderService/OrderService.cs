@@ -1290,7 +1290,50 @@ namespace Sevices.Core.OrderService
                     }
                 }
             }
-        }       
+        }
+
+        public ResultModel GetAllLogOnOrder(string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listLog = _dbContext.Log.Include(x => x.Order).Where(x => x.orderId != null && x.orderDetailId==null).OrderBy(x => x.modifiedTime).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                }
+
+                var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<LogModel>();
+                foreach (var item in listLogPaging)
+                {
+                    var tmp = new LogModel
+                    {
+                        id = item.id,
+                        orderId = item.orderId,
+                        Order = item.Order,
+                        modifiedTime = item.modifiedTime,
+                        action = item.action,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listLog.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
 
         #endregion
 

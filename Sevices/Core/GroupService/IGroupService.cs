@@ -4,8 +4,9 @@ namespace Sevices.Core.GroupService
 {
     public interface IGroupService
     {
-        ResultModel Create(CreateGroupModel model);
+        ResultModel Create(CreateGroupModel model, Guid userId);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetAllLogOnGroup(string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel GetAllUsersByGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetWorkersByGroupId(Guid id, string? search, int pageIndex, int pageSize);
@@ -13,10 +14,10 @@ namespace Sevices.Core.GroupService
         ResultModel GetAllUsersNotInGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetAllWorkerNotYetGroup(string? search, int pageIndex, int pageSize);
         ResultModel GetAllLeaderHaveGroup(string? search, int pageIndex, int pageSize);
-        ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model);
-        ResultModel ChangeLeader(ChangeLeaderModel model);
-        ResultModel AddWorkersToGroup(AddWorkersToGroupModel model);
-        ResultModel Update(UpdateGroupModel model);
-        ResultModel Delete(Guid id);
+        ResultModel RemoveUserFromGroup(RemoveWorkerFromGroupModel model, Guid userId);
+        ResultModel ChangeLeader(ChangeLeaderModel model, Guid userId);
+        ResultModel AddWorkersToGroup(AddWorkersToGroupModel model, Guid userId);
+        ResultModel Update(UpdateGroupModel model, Guid userId);
+        ResultModel Delete(Guid id, Guid userId);
     }
 }
