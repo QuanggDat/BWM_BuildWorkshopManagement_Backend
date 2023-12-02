@@ -26,7 +26,7 @@ namespace Sevices.Core.OrderDetailService
             var result = new ResultModel();
             try
             {
-                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId).ToList();
+                var listOrderDetail = _dbContext.OrderDetail.Where(x => x.orderId == orderId && x.isDeleted!=true).ToList();
 
                 if (!string.IsNullOrWhiteSpace(search))
                 {
