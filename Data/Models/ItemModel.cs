@@ -56,9 +56,14 @@ namespace Data.Models
     {
         public Guid procedureId { get; set; }
         public int priority { get; set; }
-        public List<Guid>? stepId { get; set; }
+        public List<StepProcedureModel>? listStep { get; set; }
     }
 
+    public class StepProcedureModel
+    {
+        public Guid stepId { get; set; }
+        public int priority { get; set; }
+    }
 
     public class ItemMaterialModel
     {

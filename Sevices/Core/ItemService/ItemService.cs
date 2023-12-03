@@ -491,7 +491,11 @@ namespace Sevices.Core.ItemService
                         {
                             procedureId = x.procedureId,
                             priority = x.priority,
-                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                            listStep = x.Procedure.ProcedureSteps.Select(x => new StepProcedureModel
+                            {
+                                stepId = x.stepId,
+                                priority = x.priority,
+                            }).ToList(),
                         }).ToList(),
                     };
                     list.Add(tmp);
@@ -553,7 +557,11 @@ namespace Sevices.Core.ItemService
                         {
                             procedureId = x.procedureId,
                             priority = x.priority,
-                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                            listStep = x.Procedure.ProcedureSteps.Select(x => new StepProcedureModel
+                            {
+                                stepId = x.stepId,
+                                priority=x.priority,
+                            }).ToList(),
                         }).ToList(),
                     };
                     list.Add(tmp);
@@ -622,7 +630,11 @@ namespace Sevices.Core.ItemService
                         {
                             procedureId = x.procedureId,
                             priority = x.priority,
-                            stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                            listStep = x.Procedure.ProcedureSteps.Select(x => new StepProcedureModel
+                            {
+                                stepId = x.stepId,
+                                priority = x.priority,
+                            }).ToList(),
                         }).ToList(),
                     };
                     result.Data = item;
@@ -691,7 +703,11 @@ namespace Sevices.Core.ItemService
                             {
                                 procedureId = x.procedureId,
                                 priority = x.priority,
-                                stepId = x.Procedure.ProcedureSteps.Select(x => x.stepId).ToList()
+                                listStep = x.Procedure.ProcedureSteps.Select(x => new StepProcedureModel
+                                {
+                                    stepId = x.stepId,
+                                    priority = x.priority,
+                                }).ToList(),
                             }).ToList(),
                         };
                         list.Add(tmp);
@@ -735,6 +751,7 @@ namespace Sevices.Core.ItemService
                         id = item.id,
                         itemId = item.materialId,
                         Item = item.Item,
+                        userId = item.userId,
                         modifiedTime = item.modifiedTime,
                         action = item.action,
                     };

@@ -34,6 +34,42 @@ namespace Data.Models
         public List<string> resources { get; set; } = new();
     }
 
+    public class ViewOrderModel
+    {
+        public Guid id { get; set; }
+        public string name { get; set; } = null!;
+        public string customerName { get; set; } = null!;
+        public Guid assignToId { get; set; }
+        public UserModel? AssignTo { get; set; } = null!;
+        public Guid createdById { get; set; }
+        public UserModel? CreatedBy { get; set; } = null!;
+        public DateTime createTime { get; set; }
+        public string? description { get; set; } = null!;
+        public OrderStatus status { get; set; }
+        public string fileContract { get; set; } = null!;
+        public string fileQuote { get; set; } = null!;
+        public DateTime? quoteTime { get; set; }
+        public double totalPrice { get; set; }
+        public DateTime? acceptanceTime { get; set; }
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
+        public DateTime? inProgressTime { get; set; }
+        public List<LeaderTaskViewModel>? leaderTask { get; set; }
+        public List<OrderDetailView>? orderDetail { get; set; }
+    }
+
+    public class LeaderTaskViewModel
+    {
+        public Guid leaderTaskId { get; set; }
+        public List<Guid>? workerTaskId { get; set; }
+    }
+
+    public class OrderDetailView
+    {
+        public Guid orderDetailId { get; set; }
+        public List<Guid>? orderDetailMaterialId { get; set; }
+    }
+
     public class CreateOrderModel
     {
         public string name { get; set; }
