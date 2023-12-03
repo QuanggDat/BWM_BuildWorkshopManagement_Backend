@@ -12,5 +12,9 @@ namespace Sevices.Core.NotificationService
     {
         ResultModel Create(Notification model);
         ResultModel CreateForManyUser(Notification model, List<Guid> listUserId);
+        ResultModel GetByUserLogin(Guid userId);
+        ResultModel MarkAllSeen();
+        ResultModel MarkSeenById(Guid id);
+        ResultModel Delete(Guid id);
     }
 }

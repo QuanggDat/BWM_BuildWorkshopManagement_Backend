@@ -18,7 +18,7 @@ namespace Data.Models
         public bool seen { get; set; } 
         public NotificationType? type { get; set; }
         public bool isDeleted { get; set; }
-        public DateTime dateCreated { get; set; }
+        public DateTime createdDate { get; set; }
 
         public Guid userId { get; set; }
         public UserModel User { get; set; } = null!;
