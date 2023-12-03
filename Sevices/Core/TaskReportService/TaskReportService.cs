@@ -810,13 +810,69 @@ namespace Sevices.Core.ReportService
             return result;
         }
         #region Validate
+        public ResultModel GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources)
+                .Where(x => x.leaderTaskId == leaderTaskId).OrderByDescending(x => x.reportType).ToList();
+
+
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                }
+
+                var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<TaskReportModel>();
+                foreach (var item in listLeaderTaskPaging)
+                {
+                    var tmp = new TaskReportModel
+                    {
+                        id = item.id,
+                        leaderTaskId = item.LeaderTask.id,
+                        leaderTaskName = item.LeaderTask.name,
+                        reporterId = item.reporterId,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.createById,
+                        responderName = item.LeaderTask.CreateBy?.fullName ?? "",
+                        reportType = item.reportType,
+                        title = item.title,
+                        content = item.content,
+                        itemFailed = item.itemFailed,
+                        createdDate = item.createdDate,
+                        status = item.status,
+                        responseContent = item.responseContent,
+                        resource = item.Resources.Select(x => x.link).ToList(),
+                        listSupply = _mapper.Map<List<SupplyModel>>(item.Supplies)
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listTaskReport.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+
+            return result;
+        }
 
         private bool CanSendProblemTaskReport(LeaderTask leaderTask)
         {
             var now = DateTime.Now;
             return now >= leaderTask.startTime && now <= leaderTask.endTime;
         }
-       
         #endregion
     }
 }
