@@ -579,75 +579,75 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
-        public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByOrderDetailId(Guid orderDetailId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
-            result.Succeed = false;
-
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                .Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Where(a => a.orderId == orderId && a.isDeleted == false)
-                .OrderByDescending(x => x.startTime).ToList();
-
             try
             {
-                if (!string.IsNullOrEmpty(search))
+                var orderDetail= _dbContext.OrderDetail.FirstOrDefault(x=>x.id == orderDetailId && x.isDeleted!=true);
+                if(orderDetail == null)
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    result.Code = 37;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
                 }
-
-                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                var list = new List<LeaderTaskModel>();
-                foreach (var item in listLeaderTaskPaging)
+                else
                 {
-                    var order = _dbContext.Order.Find(item.orderId);
-
-                    var createBy = _dbContext.User.Find(item.createById);
-
-                    var tmp = new LeaderTaskModel
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x=>x.CreateBy).Include(x => x.Item).Include(x => x.Reports)
+                        .ThenInclude(x => x.Resources).Include(x=>x.Order).Where(x=>x.itemId==orderDetail.itemId && x.orderId==orderDetail.orderId).OrderByDescending(x => x.startTime).ToList();
+                    if (!string.IsNullOrEmpty(search))
                     {
-                        id = item.id,
-                        createdById = item.createById,
-                        createdByName = createBy?.fullName ?? "",
-                        leaderId = item.leaderId,
-                        leaderName = item.Leader?.fullName ?? "",
-                        orderId = item.orderId,
-                        orderName = order!.name,
-                        itemId = item.itemId,
-                        Item = item.Item,
-                        itemQuantity = item.itemQuantity,
-                        itemCompleted = item.itemCompleted,
-                        itemFailed = item.itemFailed,
-                        name = item.name,
-                        priority = item.priority,                       
-                        startTime = item.startTime,
-                        endTime = item.endTime,
-                        completedTime = item.completedTime,
-                        status = item.status,                      
-                        description = item.description,
+                        listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    }
 
-                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                    var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<LeaderTaskModel>();
+                    foreach (var item in listLeaderTaskPaging)
+                    {
+                        var tmp = new LeaderTaskModel
                         {
-                            id = x.id,
-                            reportType = x.reportType,
-                            title = x.title,
-                            content = x.content,
-                            createdDate = x.createdDate,
-                            resource = x.Resources.Select(x => x.link).ToList()
-                        }).ToList(),
+                            id = item.id,
+                            createdById = item.createById,
+                            createdByName = item.CreateBy?.fullName ?? "",
+                            leaderId = item.leaderId,
+                            leaderName = item.Leader?.fullName ?? "",
+                            orderId = item.orderId,
+                            orderName = item.Order.name,
+                            itemId = item.itemId,
+                            Item = item.Item,
+                            itemQuantity = item.itemQuantity,
+                            itemCompleted = item.itemCompleted,
+                            itemFailed = item.itemFailed,
+                            name = item.name,
+                            priority = item.priority,
+                            startTime = item.startTime,
+                            endTime = item.endTime,
+                            completedTime = item.completedTime,
+                            status = item.status,
+                            description = item.description,
 
-                        isDeleted = item.isDeleted,
+                            listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                            {
+                                id = x.id,
+                                reportType = x.reportType,
+                                title = x.title,
+                                content = x.content,
+                                createdDate = x.createdDate,
+                                resource = x.Resources.Select(x => x.link).ToList()
+                            }).ToList(),
+
+                            isDeleted = item.isDeleted,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listLeaderTask.Count
                     };
-                    list.Add(tmp);
+                    result.Succeed = true;
                 }
-                result.Data = new PagingModel()
-                {
-                    Data = list,
-                    Total = listLeaderTask.Count
-                };
-                result.Succeed = true;
-
             }
             catch (Exception e)
             {

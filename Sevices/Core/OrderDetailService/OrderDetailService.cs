@@ -42,9 +42,66 @@ namespace Sevices.Core.OrderDetailService
 
                 var listOrderDetailPaging = listOrderDetail.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
+                var list = new List<OrderDetailViewlModel>();
+                foreach(var item in listOrderDetailPaging)
+                {
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks).Where(x => x.itemId == item.itemId && x.orderId == orderId).ToList();
+                    var tmp = new OrderDetailViewlModel
+                    {
+                        id = item.id,
+                        itemCategoryName = item.Item?.ItemCategory?.name ?? "",
+                        itemName = item.itemName,
+                        itemCode = item.itemCode,
+                        itemLength = item.itemLength,
+                        itemDepth = item.itemDepth,
+                        itemHeight = item.itemHeight,
+                        itemUnit = item.itemUnit,
+                        itemMass = item.itemMass,
+                        itemDrawings2D = item.itemDrawings2D,
+                        itemDrawings3D = item.itemDrawings3D,
+                        itemDrawingsTechnical = item.itemDrawingsTechnical,
+                        description = item.description,
+                        price = item.price,
+                        quantity = item.quantity,
+                        totalPrice = item.totalPrice,
+                        leaderTasks = listLeaderTask.Select(x => new ViewLeaderTask
+                        {
+                            id = x.id,
+                            leaderId = x.leaderId,
+                            createdById = x.createById,
+                            name = x.name,
+                            priority = x.priority,
+                            itemQuantity = x.itemQuantity,
+                            itemCompleted = x.itemCompleted,
+                            itemFailed = x.itemFailed,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completedTime = x.completedTime,
+                            status = x.status,
+                            description = x.description,
+                            isDeleted = x.isDeleted,
+                            workerTask = x.WorkerTasks.Select(x => new WorkerTaskViewModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description = x.description,
+                                status = x.status,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                                isDeleted = x.isDeleted,
+                            }).ToList(),
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<OrderDetailModel>>(listOrderDetailPaging),
+                    Data = list,
                     Total = listOrderDetail.Count
                 };
                 result.Succeed = true;
@@ -299,7 +356,7 @@ namespace Sevices.Core.OrderDetailService
 
             try
             {
-                var orderDetail = _dbContext.OrderDetail.Include(x => x.Item).ThenInclude(x=>x.ItemCategory).FirstOrDefault(x => x.id == id);
+                var orderDetail = _dbContext.OrderDetail.Include(x => x.Item).ThenInclude(x=>x.ItemCategory).FirstOrDefault(x => x.id == id && x.isDeleted!=true);
                 if (orderDetail == null)
                 {
                     result.Code = 37;
@@ -308,7 +365,7 @@ namespace Sevices.Core.OrderDetailService
                 }
                 else
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks).Where(x=>x.itemId == orderDetail.itemId).ToList();
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks).Where(x=>x.itemId == orderDetail.itemId && x.orderId==orderDetail.orderId).ToList();
                     var item = new OrderDetailViewlModel
                     {
                         id = orderDetail.id,
