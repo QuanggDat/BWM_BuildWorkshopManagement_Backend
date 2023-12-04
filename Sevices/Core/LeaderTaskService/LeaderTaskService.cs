@@ -489,6 +489,69 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
+        public ResultModel GetMaterialByLeaderTaskId(Guid id, string? search, int pageIndex, int pageSize)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var leaderTask = _dbContext.LeaderTask.Include(x => x.Item).ThenInclude(x=>x.ItemMaterials).Where(x => x.id == id).FirstOrDefault();
+
+                if (leaderTask == null)
+                {
+                    result.Code = 97;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                    var listMaterialId = leaderTask.Item.ItemMaterials.Select(x=>x.materialId).ToList();
+
+                    var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory).Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false).OrderBy(x => x.name).ToList();
+
+                    if (!string.IsNullOrEmpty(search))
+                    {
+                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                    }
+
+                    var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<MaterialModel>();
+                    foreach (var item in listMaterialPaging)
+                    {
+
+                        var tmp = new MaterialModel
+                        {
+                            id = item.id,
+                            materialCategoryId = item.materialCategoryId,
+                            materialCategoryName = item.MaterialCategory.name,
+                            name = item.name,
+                            image = item.image,
+                            color = item.color,
+                            supplier = item.supplier,
+                            thickness = item.thickness,
+                            unit = item.unit,
+                            sku = item.sku,
+                            importPlace = item.importPlace,
+                            price = item.price,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listMaterial.Count
+                    };
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();

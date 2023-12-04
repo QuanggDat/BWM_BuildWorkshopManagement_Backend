@@ -109,7 +109,11 @@ namespace Sevices.Core.OrderService
                         orderDetail = item.OrderDetails.Select(x => new OrderDetailView
                         {
                             orderDetailId = x.id,
-                            orderDetailMaterialId = x.OrderDetailMaterials.Select(x => x.id).ToList(),
+                            orderMaterial = x.OrderDetailMaterials.Select(x => new OrderMaterialView
+                            {
+                                materialId = x.id,
+                                materialName =x.materialName,
+                            }).ToList(),
                         }).ToList(),
 
                         leaderTask = item.LeaderTasks.Select(x => new LeaderTaskViewModel
