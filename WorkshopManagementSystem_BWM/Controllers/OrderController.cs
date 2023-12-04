@@ -50,6 +50,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("GetAllOrderWithTaskAndOrderDetailByOrderId")]
+        public IActionResult GetAllByOrderId(Guid orderId)
+        {
+            var result = _orderService.GetAllByOrderId(orderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("[action]/{foremanId}")]
         public IActionResult GetByForemanId(Guid foremanId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {

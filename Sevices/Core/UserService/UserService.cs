@@ -914,8 +914,7 @@ namespace Sevices.Core.UserService
 
             try
             {
-                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group)
-                   .OrderBy(x => x.Role.Name).ToList();
+                var listUser = _dbContext.User.Include(r => r.Role).Include(r => r.Group).OrderBy(x => x.Role.Name).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {

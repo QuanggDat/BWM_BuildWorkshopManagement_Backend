@@ -67,7 +67,13 @@ namespace Data.Models
     public class OrderDetailView
     {
         public Guid orderDetailId { get; set; }
-        public List<Guid>? orderDetailMaterialId { get; set; }
+        public List<OrderMaterialView> orderMaterial { get; set; }
+    }
+
+    public class OrderMaterialView
+    {
+        public Guid materialId { get; set; }
+        public string materialName { get; set; }
     }
 
     public class CreateOrderModel

@@ -7,6 +7,7 @@ namespace Sevices.Core.OrderService
     {
         ResultModel GetAllWithPaging(int pageIndex, int pageSize, string? search = null);
         ResultModel GetAllWithSearchAndPaging(int pageIndex, int pageSize, string? search = null);
+        ResultModel GetAllByOrderId(Guid id);
         ResultModel GetByForemanId(Guid foremanId, int pageIndex, int pageSize, string? search = null);
         ResultModel GetQuotesByUserWithPaging(Guid userId, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);

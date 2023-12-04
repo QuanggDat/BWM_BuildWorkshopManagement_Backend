@@ -81,7 +81,15 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-     
+
+        [HttpGet("GetMaterialByLeaderId")]
+        public IActionResult GetMaterialByLeaderId(Guid leaderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _leaderTaskService.GetMaterialByLeaderTaskId(leaderId, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpPut("[action]")]
         public IActionResult Update(UpdateLeaderTaskModel model)
         {            
