@@ -293,6 +293,85 @@ namespace Sevices.Core.OrderDetailService
             return result;
         }
 
+        public ResultModel GetAllByOrderDetailId(Guid id)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var orderDetail = _dbContext.OrderDetail.Include(x => x.Item).ThenInclude(x=>x.ItemCategory).FirstOrDefault(x => x.id == id);
+                if (orderDetail == null)
+                {
+                    result.Code = 37;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
+                }
+                else
+                {
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks).Where(x=>x.itemId == orderDetail.itemId).ToList();
+                    var item = new OrderDetailViewlModel
+                    {
+                        id = orderDetail.id,
+                        itemCategoryName = orderDetail.Item?.ItemCategory?.name ?? "",
+                        itemName = orderDetail.itemName,
+                        itemCode = orderDetail.itemCode,
+                        itemLength = orderDetail.itemLength,
+                        itemDepth = orderDetail.itemDepth,
+                        itemHeight = orderDetail.itemHeight,
+                        itemUnit = orderDetail.itemUnit,
+                        itemMass = orderDetail.itemMass,
+                        itemDrawings2D = orderDetail.itemDrawings2D,
+                        itemDrawings3D = orderDetail.itemDrawings3D,
+                        itemDrawingsTechnical = orderDetail.itemDrawingsTechnical,
+                        description = orderDetail.description,
+                        price = orderDetail.price,
+                        quantity = orderDetail.quantity,
+                        totalPrice = orderDetail.totalPrice,
+                        leaderTasks = listLeaderTask.Select(x => new ViewLeaderTask
+                        {
+                            id =x.id,
+                            leaderId = x.leaderId,
+                            createdById = x.createById,
+                            name = x.name,
+                            priority = x.priority,
+                            itemQuantity = x.itemQuantity,
+                            itemCompleted = x.itemCompleted,
+                            itemFailed  = x.itemFailed,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completedTime = x.completedTime,
+                            status = x.status,
+                            description = x.description,
+                            isDeleted = x.isDeleted,
+                            workerTask = x.WorkerTasks.Select(x => new WorkerTaskViewModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description =x.description,
+                                status = x.status,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                                isDeleted = x.isDeleted,
+                            }).ToList(),
+                        }).ToList(),
+                    };
+                    result.Data = item;
+                    result.Succeed = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetLogOnOrderDetailByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();

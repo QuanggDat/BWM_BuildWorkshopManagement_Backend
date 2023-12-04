@@ -51,6 +51,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
+        [HttpGet("GetAllTaskByOrderDetailId")]
+        public IActionResult GetAllByOrderDetailId(Guid orderDetailId)
+        {
+            var result = _orderDetailService.GetAllByOrderDetailId(orderDetailId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("GetLogOnOrderDetailByOrderId")]
         public IActionResult GetLogOnOrderDetailByOrderId(Guid orderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {

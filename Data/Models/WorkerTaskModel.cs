@@ -8,6 +8,22 @@ using System.Threading.Tasks;
 
 namespace Data.Models
 {
+    public class WorkerTaskViewModel
+    {
+        public Guid id { get; set; }
+        public Guid? createById { get; set; }
+        public string name { get; set; } = null!;
+        public int priority { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+        public DateTime? completeTime { get; set; }
+        public string? description { get; set; }
+        public EWorkerTaskStatus status { get; set; }
+        public bool isDeleted { get; set; }
+        public string? feedbackTitle { get; set; }
+        public string? feedbackContent { get; set; }
+    }
+
     public class CreateWorkerTaskModel
     {
         public Guid leaderTaskId { get; set; }
