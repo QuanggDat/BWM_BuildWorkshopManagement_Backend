@@ -262,46 +262,73 @@ namespace Sevices.Core.LeaderTaskService
                 result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
             }
             else
-            {            
-                if (model.startTime >= model.endTime)
+            {
+                var leaderTmp = _dbContext.User.Find(model.leaderId);
+
+                if (leaderTmp == null)
                 {
-                    result.Code = 43;
+                    result.Code = 38;
                     result.Succeed = false;
-                    result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
-                }               
+                    result.ErrorMessage = "Không tìm thấy thông tin tổ trưởng!";
+                }
                 else
                 {
-                    var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.priority != leaderTask.priority && x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false); 
-                    
-                    if (checkPriority != null)
+                    if (model.startTime >= model.endTime)
                     {
-                        result.Code = 91;
+                        result.Code = 43;
                         result.Succeed = false;
-                        result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
+                        result.ErrorMessage = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
                     }
                     else
                     {
-                        leaderTask.name = model.name;
-                        leaderTask.leaderId = model.leaderId;
-                        leaderTask.priority = model.priority;
-                        leaderTask.startTime = model.startTime;
-                        leaderTask.endTime = model.endTime;
-                        leaderTask.status = model.status;
-                        leaderTask.description = model.description;
+                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.priority != leaderTask.priority && x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false);
 
-                        try
+                        if (checkPriority != null)
                         {
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = leaderTask.id;
+                            result.Code = 91;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            bool check = leaderTask.status != ETaskStatus.InProgress && model.status == ETaskStatus.InProgress;
+
+                            leaderTask.name = model.name;
+                            leaderTask.leaderId = model.leaderId;
+                            leaderTask.priority = model.priority;
+                            leaderTask.startTime = model.startTime;
+                            leaderTask.endTime = model.endTime;
+                            leaderTask.status = model.status;
+                            leaderTask.description = model.description;
+
+                            try
+                            {
+                                _dbContext.SaveChanges();
+
+                                if (check == true)
+                                {
+                                    _notificationService.Create(new Notification
+                                    {
+                                        userId = model.leaderId,
+                                        leaderTaskId = leaderTask.id,
+                                        title = "Công việc",
+                                        content = "Bạn vừa nhận được 1 công việc mới!",
+                                        type = NotificationType.LeaderTask
+                                    });
+                                }
+
+                                result.Succeed = true;
+                                result.Data = leaderTask.id;
+                            }
+                            catch (Exception ex)
+                            {
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                            }
                         }
                     }
-                }             
+                }
             }
+            
             return result;
         }
 

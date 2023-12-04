@@ -414,7 +414,7 @@ namespace Sevices.Core.ItemService
                     {
                         result.Code = 104;
                         result.Succeed = false;
-                        result.ErrorMessage = $"Không thể xoá sản phẩm, sản phẩm đang trong đơn hàng {checkItemExist.Order.name}!";
+                        result.ErrorMessage = $"Không thể xoá sản phẩm, sản phẩm đang trong đơn hàng !";
                     }
                     else
                     {
@@ -428,6 +428,7 @@ namespace Sevices.Core.ItemService
                             modifiedTime = DateTime.UtcNow.AddHours(7),
                             action = "Xóa sản phẩm :" + check.name,
                         };
+
                         _dbContext.Log.Add(log);
                         _dbContext.SaveChanges();
 

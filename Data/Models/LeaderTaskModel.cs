@@ -68,7 +68,7 @@ namespace Data.Models
     {
         public Guid id { get; set; }
         public string name { get; set; } = null!;
-        public Guid? leaderId { get; set; }
+        public Guid leaderId { get; set; }
         public int priority { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }

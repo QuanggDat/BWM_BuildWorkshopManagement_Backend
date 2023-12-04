@@ -56,35 +56,96 @@ namespace Sevices.Core.OrderDetailService
             return result;
         }
 
+        public ResultModel Update(UpdateOrderDetailModel model, Guid userId)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var orderDetail = _dbContext.OrderDetail.FirstOrDefault(x => x.id == model.id);
+                if (orderDetail == null)
+                {
+                    result.Code = 37;
+                    result.ErrorMessage = "Không tìm thấy thông tin chi tiết đơn hàng!";
+                }
+                else
+                {
+                    orderDetail.itemDrawings2D = model.itemDrawings2D;
+                    orderDetail.itemDrawings3D = model.itemDrawings3D;
+                    orderDetail.itemDrawingsTechnical = model.itemDrawingsTechnical;
+                    orderDetail.quantity = model.quantity;
+                    orderDetail.price = model.price;
+                    orderDetail.totalPrice = model.price * model.quantity;
+                    orderDetail.description = model.description;
+                    _dbContext.OrderDetail.Update(orderDetail);
+
+                    var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderDetail.orderId);
+
+                    if (order != null)
+                    {
+                        double total = 0;
+                        foreach (var detail in order.OrderDetails)
+                        {
+                            total += detail.totalPrice;
+                        }
+                        order.totalPrice = total;
+                        _dbContext.Order.Update(order);
+                    }
+
+                    var log = new Data.Entities.Log()
+                    {
+                        orderId = orderDetail.orderId,
+                        orderDetailId = orderDetail.id,
+                        userId = userId,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = "Cập nhật sản phẩm trong đơn hàng",
+                    };
+                    _dbContext.Log.Add(log);
+
+                    _dbContext.SaveChanges();
+
+                    result.Data = orderDetail.id;
+                    result.Succeed = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel CreateOrderDetail (CreateOrderDetailModel model, Guid userId)
         {
             var result = new ResultModel();
             var listNewOrderDetailMaterial = new List<OrderDetailMaterial>(); 
+
             try
             {
                 var order = _dbContext.Order.Include(x=>x.OrderDetails).FirstOrDefault(x => x.id == model.orderId);
-                var existItemCode = order.OrderDetails.Select(x=>x.itemCode).ToList();
+               
                 if (order == null)
                 {
-                    result.Code = 0;
+                    result.Code = 107;
                     result.Succeed = false;
-                    result.ErrorMessage = "Không tìm thấy đơn hàng trong hệ thống !";
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
                     var item = _dbContext.Item.FirstOrDefault(x => x.id == model.itemId && x.isDeleted != true);
                     if (item == null)
                     {
-                        result.Code = 0;
+                        result.Code = 108;
                         result.Succeed = false;
-                        result.ErrorMessage = "Không tìm thấy thông tin của sản phẩm !";
+                        result.ErrorMessage = "Không tìm thấy thông tin của sản phẩm!";
                     }
                     else
                     {
-                        var code=existItemCode.Contains(item.code);
+                        var existItemCode = order.OrderDetails.Select(x => x.itemCode).ToList();
+
+                        var code = existItemCode.Contains(item.code);
                         if(code)
                         {
-                            result.Code = 0;
+                            result.Code = 109;
                             result.Succeed = false;
                             result.ErrorMessage = "Sản phẩm đã tồn tại trong đơn hàng!";
                         }
@@ -117,11 +178,12 @@ namespace Sevices.Core.OrderDetailService
                             foreach (var mate in itemMate)
                             {
                                 var material = _dbContext.Material.FirstOrDefault(x => x.id == mate.materialId && x.isDeleted != true);
+
                                 if (material == null)
                                 {
-                                    result.Code = 0;
+                                    result.Code = 110;
                                     result.Succeed = false;
-                                    result.ErrorMessage = "Vật liệu không tồn tại !!!";
+                                    result.ErrorMessage = "Không tìm thấy thông tin vật liệu!";
                                 }
                                 else
                                 {
@@ -161,7 +223,7 @@ namespace Sevices.Core.OrderDetailService
                                 orderDetailId = newOrderDetail.id,
                                 userId = userId,
                                 modifiedTime = DateTime.UtcNow.AddHours(7),
-                                action = "Thêm chi tiết đơn hàng trong đơn hàng" + order.name,
+                                action = "Thêm sản phẩm vào đơn hàng",
                             };
                             _dbContext.Log.Add(log);
                             _dbContext.SaveChanges();
@@ -177,65 +239,7 @@ namespace Sevices.Core.OrderDetailService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
-
-        public ResultModel Update(UpdateOrderDetailModel model, Guid userId)
-        {
-            var result = new ResultModel();
-            try
-            {
-                var orderDetail = _dbContext.OrderDetail.FirstOrDefault(x => x.id == model.id);
-                if (orderDetail == null)
-                {
-                    result.Code = 37;
-                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
-                }
-                else
-                {
-                    orderDetail.itemDrawings2D = model.itemDrawings2D;
-                    orderDetail.itemDrawings3D =model.itemDrawings3D;
-                    orderDetail.itemDrawingsTechnical = model.itemDrawingsTechnical;
-                    orderDetail.quantity = model.quantity;
-                    orderDetail.price = model.price;
-                    orderDetail.totalPrice = model.price * model.quantity;
-                    orderDetail.description = model.description;
-                    _dbContext.OrderDetail.Update(orderDetail);
-
-                    var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == orderDetail.orderId);
-
-                    if (order != null)
-                    {
-                        double total = 0;
-                        foreach (var detail in order.OrderDetails)
-                        {
-                            total += detail.totalPrice;
-                        }
-                        order.totalPrice = total;
-                        _dbContext.Order.Update(order);
-                    }
-
-                    var log = new Data.Entities.Log()
-                    {
-                        orderId = orderDetail.orderId,
-                        orderDetailId = orderDetail.id,
-                        userId = userId,
-                        modifiedTime = DateTime.UtcNow.AddHours(7),
-                        action = "Cập nhật chi tiết đơn hàng trong đơn hàng" + order.name,
-                    };
-                    _dbContext.Log.Add(log);
-
-                    _dbContext.SaveChanges();
-
-                    result.Data = orderDetail.id;
-                    result.Succeed = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
+        }   
 
         public ResultModel Delete (Guid id, Guid userId)
         {
@@ -246,7 +250,7 @@ namespace Sevices.Core.OrderDetailService
                 if (orderDetail == null)
                 {
                     result.Code = 37;
-                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
+                    result.ErrorMessage = "Không tìm thấy thông tin chi tiết đơn hàng!";
                 }
                 else
                 {
@@ -272,13 +276,13 @@ namespace Sevices.Core.OrderDetailService
                         orderDetailId = orderDetail.id,
                         userId = userId,
                         modifiedTime = DateTime.UtcNow.AddHours(7),
-                        action = "Xóa chi tiết đơn hàng trong đơn hàng" + order.name,
+                        action = "Xóa sản phẩm trong đơn hàng",
                     };
                     _dbContext.Log.Add(log);
 
                     _dbContext.SaveChanges();
 
-                    result.Data = true;
+                    result.Data = orderDetail.id;
                     result.Succeed = true;
                 }
             }

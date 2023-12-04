@@ -129,18 +129,22 @@ namespace Sevices.Core.WorkerTaskService
                         check.description = model.description;
                         check.startTime = model.startTime;
                         check.endTime = model.endTime;
-                        check.status = model.status;
+                        check.status = model.status;                        
 
-                        // Remove all old woker tasks detail
+                        // Remove all old worker tasks detail
                         var currentWokerTaskDetails = _dbContext.WorkerTaskDetail
                             .Where(x => x.workerTaskId == model.id).ToList();
+
+                        var currentListUserId = currentWokerTaskDetails.Select(x => x.userId);
+
+                        List<Guid> workerGetNoti = model.assignees.Except(currentListUserId).ToList();
 
                         if (currentWokerTaskDetails != null && currentWokerTaskDetails.Count > 0)
                         {
                             _dbContext.WorkerTaskDetail.RemoveRange(currentWokerTaskDetails);
                         }
 
-                        // Set new woker tasks detail
+                        // Set new worker tasks detail
                         var workerTaskDetails = new List<WorkerTaskDetail>();
                         foreach (var assignee in model.assignees)
                         {
@@ -167,14 +171,16 @@ namespace Sevices.Core.WorkerTaskService
 
                         _dbContext.WorkerTaskDetail.AddRange(workerTaskDetails);
                         _dbContext.SaveChanges();
+
                         _notificationService.CreateForManyUser(new Notification
                         {
                             workerTaskId = model.id,
                             title = "Công việc",
                             content = "Bạn vừa nhận được 1 công việc mới!",
-                            type = NotificationType.TaskReport
+                            type = NotificationType.WorkerTask
                         },
-                        model.assignees);
+                        workerGetNoti);
+
                         result.Succeed = true;
                         result.Data = model.id;
                     }
@@ -255,6 +261,16 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         _dbContext.WorkerTaskDetail.Add(workerTaskDetail);
                         _dbContext.SaveChanges();
+
+                        _notificationService.Create(new Notification
+                        {
+                            userId = model.memberId,
+                            workerTaskId = model.workerTaskId,
+                            title = "Công việc",
+                            content = "Bạn vừa nhận được 1 công việc mới!",
+                            type = NotificationType.WorkerTask
+                        });
+
                         result.Succeed = true;
                         result.Data = workerTaskDetail.id;
                     }

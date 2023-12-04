@@ -30,7 +30,7 @@ namespace Sevices.Core.NotificationService
             var result = new ResultModel();
             try
             {
-                model.createdDate = DateTime.Now;
+                model.createdDate = DateTime.UtcNow.AddHours(7); ;
                 _dbContext.Notification.Add(model);
                 _dbContext.SaveChanges();
 
@@ -61,7 +61,7 @@ namespace Sevices.Core.NotificationService
                 foreach (var userId in listUserId)
                 {
                     model.userId = userId;
-                    model.createdDate = DateTime.Now;
+                    model.createdDate = DateTime.UtcNow.AddHours(7); 
 
                     _dbContext.Notification.Add(model);
                     listNotiCreated.Add(model);
