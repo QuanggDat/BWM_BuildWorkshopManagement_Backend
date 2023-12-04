@@ -322,6 +322,7 @@ namespace Sevices.Core.OrderDetailService
                             id = item.id,
                             orderId = item.orderId,
                             orderDetailId = item.orderDetailId,
+                            userId = item.userId,
                             modifiedTime = item.modifiedTime,
                             action = item.action,
                         };

@@ -23,6 +23,22 @@ namespace Data.Models
         public double price { get; set; }       
     }
 
+    public class ViewMaterialInLeaderTask
+    {
+        public Guid id { get; set; }
+        public string name { get; set; } = null!;
+        public string? image { get; set; } = null!;
+        public string color { get; set; } = null!;
+        public string supplier { get; set; } = null!;
+        public double thickness { get; set; }
+        public string unit { get; set; } = null!;
+        public string sku { get; set; } = null!;
+        public string importPlace { get; set; } = null!;
+        public double price { get; set; }
+        public int quantity { get; set; }
+        public double totalPrice { get; set; }
+    }
+
     public class CreateMaterialModel
     {
         public Guid materialCategoryId { get; set; }

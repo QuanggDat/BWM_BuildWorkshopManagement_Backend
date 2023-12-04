@@ -32,7 +32,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
                     userId = Guid.NewGuid(),
                     title = FnUtil.GenerateCode(),
                     content  = FnUtil.GenerateCode(),
-                    dateCreated = DateTime.Now,
+                    createdDate = DateTime.Now,
                 }
             };
             _notiHub.NewNotification(User.GetId().ToString(), demoNoti);
@@ -51,7 +51,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
                     userId = Guid.NewGuid(),
                     title = FnUtil.GenerateCode(),
                     content  = FnUtil.GenerateCode(),
-                    dateCreated = DateTime.Now,
+                    createdDate = DateTime.Now,
                 }
             };
             _notiHub.NewNotification(userId.ToString(), demoNoti);

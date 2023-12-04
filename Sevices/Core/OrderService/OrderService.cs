@@ -70,6 +70,72 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel GetAllWithSearchAndPaging(int pageIndex, int pageSize, string? search)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listOrder = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x=>x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listOrder = listOrder.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<ViewOrderModel>();
+                foreach (var item in listOrderPaging)
+                {
+                    var tmp = new ViewOrderModel
+                    {
+                        id = item.id,
+                        name = item.name,
+                        customerName = item.customerName,
+                        assignToId = item.assignToId,
+                        createdById = item.createdById,
+                        createTime = item.createTime,
+                        description = item.description,
+                        status  = item.status,
+                        fileContract = item.fileContract,
+                        fileQuote = item.fileQuote,
+                        quoteTime = item.quoteTime,
+                        totalPrice = item.totalPrice,
+                        acceptanceTime = item.acceptanceTime,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        inProgressTime = item.inProgressTime,
+                        orderDetail = item.OrderDetails.Select(x => new OrderDetailView
+                        {
+                            orderDetailId = x.id,
+                            orderDetailMaterialId = x.OrderDetailMaterials.Select(x => x.id).ToList(),
+                        }).ToList(),
+
+                        leaderTask = item.LeaderTasks.Select(x => new LeaderTaskViewModel
+                        {
+                            leaderTaskId =x.id,
+                            workerTaskId = x.WorkerTasks.Select(x => x.id).ToList(),
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listOrder.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByForemanId(Guid foremanId, int pageIndex, int pageSize, string? search = null)
         {
             var result = new ResultModel();
@@ -170,7 +236,7 @@ namespace Sevices.Core.OrderService
             };
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o=>o.isDeleted!=true)).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -419,9 +485,9 @@ namespace Sevices.Core.OrderService
                                         materialUnit = mate.unit,
                                         materialColor = mate.color,
                                         // item mate info
-                                        quantity = itemMate.quantity,
+                                        quantity = itemMate.quantity * detail.quantity,
                                         price = itemMate.price,
-                                        totalPrice = itemMate.totalPrice,
+                                        totalPrice = itemMate.price*itemMate.quantity * detail.quantity,
                                     };
                                     listOrderDetailMaterialCreate.Add(newODMate);
                                 }
@@ -616,8 +682,8 @@ namespace Sevices.Core.OrderService
                                 matchingMaterialId.materialColor = material.color;
                                 matchingMaterialId.materialUnit = material.unit;
                                 matchingMaterialId.price = item.price;
-                                matchingMaterialId.quantity = item.quantity;
-                                matchingMaterialId.totalPrice = item.totalPrice;
+                                matchingMaterialId.quantity = item.quantity * od.quantity;
+                                matchingMaterialId.totalPrice = item.price*item.quantity * od.quantity;
                             }
 
                             // Add new OrderDetailMaterial that missing
@@ -634,8 +700,8 @@ namespace Sevices.Core.OrderService
                                     materialColor = material.color,
                                     materialUnit = material.unit,
                                     price = item.price,
-                                    quantity = item.quantity,
-                                    totalPrice = item.totalPrice,
+                                    quantity = item.quantity * od.quantity,
+                                    totalPrice = item.price * (item.quantity * od.quantity),
                                 };
                                 listNewOrderDetailMaterial.Add(orderDetailMaterial);
                             }
@@ -1315,6 +1381,7 @@ namespace Sevices.Core.OrderService
                         id = item.id,
                         orderId = item.orderId,
                         Order = item.Order,
+                        userId = item.userId,
                         modifiedTime = item.modifiedTime,
                         action = item.action,
                     };

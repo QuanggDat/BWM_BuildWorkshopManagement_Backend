@@ -30,6 +30,7 @@ namespace Sevices.Core.NotificationService
             var result = new ResultModel();
             try
             {
+                model.createdDate = DateTime.Now;
                 _dbContext.Notification.Add(model);
                 _dbContext.SaveChanges();
 
@@ -60,6 +61,7 @@ namespace Sevices.Core.NotificationService
                 foreach (var userId in listUserId)
                 {
                     model.userId = userId;
+                    model.createdDate = DateTime.Now;
 
                     _dbContext.Notification.Add(model);
                     listNotiCreated.Add(model);
@@ -79,6 +81,108 @@ namespace Sevices.Core.NotificationService
 
                 result.Data = true;
                 result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetByUserLogin(Guid userId)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listNoti = _dbContext.Notification.Where(x => !x.isDeleted && x.userId == userId).OrderByDescending(x => x.createdDate).ToList();
+
+                result.Data = new
+                {
+                    listSeen = _mapper.Map<List<NotificationModel>>(listNoti.Where(x => x.seen).ToList()),
+                    listUnseen = _mapper.Map<List<NotificationModel>>(listNoti.Where(x => !x.seen).ToList()),
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel MarkAllSeen()
+        {
+            var result = new ResultModel();
+            try
+            {
+                var listNoti = _dbContext.Notification.Where(x => !x.isDeleted && !x.seen).ToList();
+                foreach (var noti in listNoti)
+                {
+                    noti.seen = true;
+                }
+                _dbContext.Notification.UpdateRange(listNoti);
+                _dbContext.SaveChanges();
+
+                result.Data = true;
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel MarkSeenById(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var noti = _dbContext.Notification.FirstOrDefault(x => x.id == id);
+                if (noti != null)
+                {
+                    noti.seen = true;
+                    _dbContext.Notification.Update(noti);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
+                }
+                else
+                {
+                    result.Code = 88;
+                    result.ErrorMessage = "Không tìm thấy thông báo!";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel Delete(Guid id)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var noti = _dbContext.Notification.FirstOrDefault(x => x.id == id);
+                if (noti != null)
+                {
+                    noti.isDeleted = true;
+                    _dbContext.Notification.Update(noti);
+                    _dbContext.SaveChanges();
+
+                    result.Data = true;
+                    result.Succeed = true;
+                }
+                else
+                {
+                    result.Code = 88;
+                    result.ErrorMessage = "Không tìm thấy thông báo!";
+                }
+
             }
             catch (Exception ex)
             {

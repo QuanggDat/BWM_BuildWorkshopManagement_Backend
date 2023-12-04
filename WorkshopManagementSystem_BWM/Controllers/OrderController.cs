@@ -42,6 +42,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("GetAllOrderWithTaskAndOrderDetail")]
+        public IActionResult GetAllWithSearchAndPaging(int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
+        {
+            var result = _orderService.GetAllWithSearchAndPaging(pageIndex, pageSize, search);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("[action]/{foremanId}")]
         public IActionResult GetByForemanId(Guid foremanId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size, string? search = null)
         {

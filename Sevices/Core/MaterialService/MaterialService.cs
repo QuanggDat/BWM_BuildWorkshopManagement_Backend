@@ -479,6 +479,7 @@ namespace Sevices.Core.MaterialService
                         id = item.id,
                         materialId=item.materialId,
                         Material=item.Material,
+                        userId=item.userId,
                         modifiedTime=item.modifiedTime,
                         action = item.action,
                     };
