@@ -522,17 +522,17 @@ namespace Sevices.Core.LeaderTaskService
 
             try
             {
-                var leaderTask = _dbContext.LeaderTask.Include(x => x.Item).ThenInclude(x=>x.ItemMaterials).Where(x => x.id == id).FirstOrDefault();
+                var leaderTask = _dbContext.LeaderTask.Include(x => x.Item).ThenInclude(x => x.ItemMaterials).Where(x => x.id == id).FirstOrDefault();
 
                 if (leaderTask == null)
                 {
-                    result.Code = 97;
+                    result.Code = 39;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
                 {
-                    var listMaterialId = leaderTask.Item.ItemMaterials.Select(x=>x.materialId).ToList();
+                    var listMaterialId = leaderTask.Item.ItemMaterials.Select(x => x.materialId).ToList();
 
                     var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory).Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false).OrderBy(x => x.name).ToList();
 
@@ -544,9 +544,9 @@ namespace Sevices.Core.LeaderTaskService
                     var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                     var list = new List<MaterialModel>();
+
                     foreach (var item in listMaterialPaging)
                     {
-
                         var tmp = new MaterialModel
                         {
                             id = item.id,

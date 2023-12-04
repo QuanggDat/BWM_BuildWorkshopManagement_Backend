@@ -121,7 +121,7 @@ namespace Sevices.Core.OrderDetailService
 
             try
             {
-                var order = _dbContext.Order.Include(x=>x.OrderDetails).FirstOrDefault(x => x.id == model.orderId);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).FirstOrDefault(x => x.id == model.orderId);
                
                 if (order == null)
                 {
