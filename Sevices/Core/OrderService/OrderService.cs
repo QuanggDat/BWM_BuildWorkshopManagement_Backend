@@ -140,6 +140,68 @@ namespace Sevices.Core.OrderService
             return result;
         }
 
+        public ResultModel GetAllByOrderId(Guid id)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).FirstOrDefault(x=>x.id==id);
+
+                if (order == null)
+                {
+                    result.Code = 35;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                }
+                else
+                {
+                        var item = new ViewOrderModel
+                        {
+                            id = order.id,
+                            name = order.name,
+                            customerName = order.customerName,
+                            assignToId = order.assignToId,
+                            createdById = order.createdById,
+                            createTime = order.createTime,
+                            description = order.description,
+                            status = order.status,
+                            fileContract = order.fileContract,
+                            fileQuote = order.fileQuote,
+                            quoteTime = order.quoteTime,
+                            totalPrice = order.totalPrice,
+                            acceptanceTime = order.acceptanceTime,
+                            startTime = order.startTime,
+                            endTime = order.endTime,
+                            inProgressTime = order.inProgressTime,
+                            orderDetail = order.OrderDetails.Select(x => new OrderDetailView
+                            {
+                                orderDetailId = x.id,
+                                orderMaterial = x.OrderDetailMaterials.Select(x => new OrderMaterialView
+                                {
+                                    materialId = x.id,
+                                    materialName = x.materialName,
+                                }).ToList(),
+                            }).ToList(),
+
+                            leaderTask = order.LeaderTasks.Select(x => new LeaderTaskViewModel
+                            {
+                                leaderTaskId = x.id,
+                                workerTaskId = x.WorkerTasks.Select(x => x.id).ToList(),
+                            }).ToList(),
+                        };
+                    result.Data = item;
+                    result.Succeed = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByForemanId(Guid foremanId, int pageIndex, int pageSize, string? search = null)
         {
             var result = new ResultModel();
