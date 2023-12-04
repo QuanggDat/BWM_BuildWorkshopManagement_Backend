@@ -30,8 +30,7 @@ namespace Sevices.Core.WorkerTaskService
                 result.Code = 92;
                 result.Succeed = false;
                 result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
-            }
-            
+            }           
             else
             {
                 var workerTask = new WorkerTask
@@ -81,7 +80,7 @@ namespace Sevices.Core.WorkerTaskService
                         workerTaskId = workerTask.id,
                         title = "Công việc",
                         content = "Bạn vừa nhận được 1 công việc mới!",
-                        type = NotificationType.TaskReport
+                        type = NotificationType.WorkerTask
                     },
                     model.assignees);
 
@@ -296,6 +295,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             return result;
         }
+
         public ResultModel UpdateStatus(Guid id, EWorkerTaskStatus status)
         {
             ResultModel result = new ResultModel();
@@ -511,6 +511,7 @@ namespace Sevices.Core.WorkerTaskService
             }
             return result;         
         }
+
         public ResultModel GetByUserId(Guid leaderTaskId, Guid userId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();

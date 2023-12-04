@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sevices.Core.CategoryService;
+using Sevices.Core.CommentService;
 using Sevices.Core.DashboardService;
 using Sevices.Core.GroupService;
 using Sevices.Core.ItemCategoryService;
@@ -63,6 +64,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
         //AddScoped
         public static void AddBussinessService(this IServiceCollection services)
         {
+            services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IItemService, ItemService>();

@@ -25,6 +25,10 @@ namespace Data.Entities
         public Guid? workerTaskId { get; set; }
         public WorkerTask? WorkerTask { get; set; }
 
+        [ForeignKey("commentId")]
+        public Guid? commentId { get; set; }
+        public Comment? Comment { get; set; }
+
         public string link { get; set; } = null!;        
     }
 }

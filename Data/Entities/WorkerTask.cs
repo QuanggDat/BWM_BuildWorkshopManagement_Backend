@@ -29,9 +29,8 @@ namespace Data.Entities
         public DateTime endTime { get; set; }
         public DateTime? completedTime { get; set; }
         public EWorkerTaskStatus status { get; set; }
-        public string? description { get; set; } = null!; public 
-
-        string? feedbackTitle { get; set; }
+        public string? description { get; set; } = null!;
+        public string? feedbackTitle { get; set; }
         public string? feedbackContent { get; set; }     
         public bool isDeleted { get; set; }
 
