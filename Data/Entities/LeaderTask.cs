@@ -31,8 +31,8 @@ namespace Data.Entities
         public virtual Item Item { get; set; } = null!;
 
         public string name { get; set; } = null!;
-        public DateTime startTime { get; set; } 
-        public DateTime endTime { get; set; }
+        public DateTime? startTime { get; set; } 
+        public DateTime? endTime { get; set; }
         public DateTime? completedTime { get; set; }
 
         public int itemQuantity { get; set; }

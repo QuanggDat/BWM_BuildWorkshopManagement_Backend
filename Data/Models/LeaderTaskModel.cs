@@ -52,8 +52,8 @@ namespace Data.Models
         public int? itemCompleted { get; set; }
         public int? itemFailed { get; set; }
 
-        public DateTime startTime { get; set; }
-        public DateTime endTime { get; set; }
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
         public DateTime? completedTime { get; set; }
 
         public List<TaskReportModel> listReportInTasks { get; set; } = null!;

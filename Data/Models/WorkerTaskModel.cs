@@ -15,8 +15,8 @@ namespace Data.Models
         public string? createByName { get; set; }
         public string name { get; set; } = null!;
         public int priority { get; set; }
-        public DateTime startTime { get; set; }
-        public DateTime endTime { get; set; }
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
         public DateTime? completeTime { get; set; }
         public string? description { get; set; }
         public EWorkerTaskStatus status { get; set; }
@@ -70,8 +70,8 @@ namespace Data.Models
         public Item? Item { get; set; }
         public string name { get; set; } = null!;
         public int priority { get; set; }
-        public DateTime startTime { get; set; }
-        public DateTime endTime { get; set; }
+        public DateTime? startTime { get; set; }
+        public DateTime? endTime { get; set; }
         public DateTime? completeTime { get; set; }
         public string? description { get; set; }
         public EWorkerTaskStatus status { get; set; }
