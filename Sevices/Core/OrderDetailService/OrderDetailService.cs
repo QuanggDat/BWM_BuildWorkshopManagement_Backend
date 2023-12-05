@@ -50,6 +50,7 @@ namespace Sevices.Core.OrderDetailService
                     var tmp = new OrderDetailViewlModel
                     {
                         id = item.id,
+                        itemId = item.itemId,
                         itemCategoryName = item.Item?.ItemCategory?.name ?? "",
                         itemName = item.itemName,
                         itemCode = item.itemCode,
@@ -376,6 +377,7 @@ namespace Sevices.Core.OrderDetailService
                     {
                         id = orderDetail.id,
                         itemCategoryName = orderDetail.Item?.ItemCategory?.name ?? "",
+                        itemId = orderDetail.itemId,
                         itemName = orderDetail.itemName,
                         itemCode = orderDetail.itemCode,
                         itemLength = orderDetail.itemLength,
@@ -397,6 +399,7 @@ namespace Sevices.Core.OrderDetailService
                             createdById = x.createById,
                             name = x.name,
                             priority = x.priority,
+                            itemId = x.itemId,
                             itemQuantity = x.itemQuantity,
                             itemCompleted = x.itemCompleted,
                             itemFailed  = x.itemFailed,
