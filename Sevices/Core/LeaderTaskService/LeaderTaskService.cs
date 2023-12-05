@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Aspose.Cells;
+using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
@@ -446,7 +447,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                .Include(x => x.Reports).ThenInclude(x => x.Resources)
+                .Include(x => x.Reports).ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
                 .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -486,6 +487,23 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = item.completedTime,
                         status = item.status,
                         description = item.description,
+
+                        listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                        {
+                            id = x.id,
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority =x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime =x.completedTime,
+                            description = x.description,
+                            status =x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
+                        }).ToList(),
 
                         listReportInTasks = item.Reports.Select(x => new TaskReportModel
                         {
@@ -593,8 +611,11 @@ namespace Sevices.Core.LeaderTaskService
                 }
                 else
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x=>x.CreateBy).Include(x => x.Item).Include(x => x.Reports)
-                        .ThenInclude(x => x.Resources).Include(x=>x.Order).Where(x=>x.itemId==orderDetail.itemId && x.orderId==orderDetail.orderId).OrderByDescending(x => x.startTime).ToList();
+                    var id = orderDetail.itemId;
+                    var orderId = orderDetail.orderId;
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x=>x.CreateBy).Include(x => x.Reports)
+                        .ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
+                        .Where(x=>x.itemId==id && x.orderId==orderId).OrderByDescending(x => x.startTime).ToList();
                     if (!string.IsNullOrEmpty(search))
                     {
                         listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
@@ -609,13 +630,13 @@ namespace Sevices.Core.LeaderTaskService
                         {
                             id = item.id,
                             createdById = item.createById,
-                            createdByName = item.CreateBy?.fullName ?? "",
+                            createdByName = item.CreateBy?.fullName,
                             leaderId = item.leaderId,
-                            leaderName = item.Leader?.fullName ?? "",
+                            leaderName = item.Leader?.fullName,
                             orderId = item.orderId,
-                            orderName = item.Order.name,
+                            ///orderName = item.Order?.name,
                             itemId = item.itemId,
-                            Item = item.Item,
+                            //Item = item.Item,
                             itemQuantity = item.itemQuantity,
                             itemCompleted = item.itemCompleted,
                             itemFailed = item.itemFailed,
@@ -626,6 +647,23 @@ namespace Sevices.Core.LeaderTaskService
                             completedTime = item.completedTime,
                             status = item.status,
                             description = item.description,
+
+                            listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                createByName = x.CreateBy?.fullName,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description = x.description,
+                                status = x.status,
+                                isDeleted = x.isDeleted,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                            }).ToList(),
 
                             listReportInTasks = item.Reports.Select(x => new TaskReportModel
                             {
@@ -662,7 +700,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x=>x.WorkerTasks).Include(x=>x.CreateBy)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
 
@@ -704,6 +742,23 @@ namespace Sevices.Core.LeaderTaskService
                         status = item.status,
                         description = item.description,
 
+                        listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                        {
+                            id = x.id,
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority = x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime = x.completedTime,
+                            description = x.description,
+                            status = x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
+                        }).ToList(),
+
                         listReportInTasks = item.Reports.Select(x => new TaskReportModel
                         {
                             id = x.id,
@@ -739,7 +794,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x => x.WorkerTasks)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x => x.WorkerTasks).Include(x=>x.CreateBy)
                     .Where(a => a.orderId == orderId && a.itemId == itemId && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
 
@@ -794,7 +849,18 @@ namespace Sevices.Core.LeaderTaskService
                         listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
                         {
                             id = x.id,
-                            name = x.name
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority = x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime = x.completedTime,
+                            description = x.description,
+                            status = x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
                         }).ToList(),
 
                         isDeleted = item.isDeleted,

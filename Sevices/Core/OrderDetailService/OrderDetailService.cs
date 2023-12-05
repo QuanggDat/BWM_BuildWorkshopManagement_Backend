@@ -45,7 +45,8 @@ namespace Sevices.Core.OrderDetailService
                 var list = new List<OrderDetailViewlModel>();
                 foreach(var item in listOrderDetailPaging)
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks).Where(x => x.itemId == item.itemId && x.orderId == orderId).ToList();
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks).ThenInclude(x=>x.CreateBy).Include(x=>x.Leader)
+                        .Include(x=>x.CreateBy).Include(x=>x.Item).Where(x => x.itemId == item.itemId && x.orderId == orderId).ToList();
                     var tmp = new OrderDetailViewlModel
                     {
                         id = item.id,
@@ -68,9 +69,13 @@ namespace Sevices.Core.OrderDetailService
                         {
                             id = x.id,
                             leaderId = x.leaderId,
+                            leaderName = x.Leader?.fullName,
                             createdById = x.createById,
+                            createdByName = x.CreateBy?.fullName,
                             name = x.name,
                             priority = x.priority,
+                            itemId = x.itemId,
+                            itemName = x.Item?.name,
                             itemQuantity = x.itemQuantity,
                             itemCompleted = x.itemCompleted,
                             itemFailed = x.itemFailed,
@@ -84,6 +89,7 @@ namespace Sevices.Core.OrderDetailService
                             {
                                 id = x.id,
                                 createById = x.createById,
+                                createByName = x.CreateBy?.fullName,
                                 name = x.name,
                                 priority = x.priority,
                                 startTime = x.startTime,

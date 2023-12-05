@@ -37,10 +37,10 @@ namespace Data.Models
         public string? leaderName { get; set; } 
 
         public Guid? createdById { get; set; } = null!;
-        public string createdByName { get; set; } = null!;
+        public string? createdByName { get; set; } = null!;
 
         public Guid? orderId { get; set; }
-        public string orderName { get; set; } = null!;
+        public string? orderName { get; set; } = null!;
 
         public Guid? itemId { get; set; }
         public Item? Item { get; set; }
