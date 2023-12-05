@@ -97,17 +97,7 @@ namespace Sevices.Core.LeaderTaskService
                                     }
                                     else
                                     {
-                                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
-
-                                        if (checkPriority != null)
-                                        {
-                                            result.Code = 91;
-                                            result.Succeed = false;
-                                            result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
-                                        }
-                                        else
-                                        {
-                                            var leaderTask = new LeaderTask
+                                        var leaderTask = new LeaderTask
                                             {
                                                 createById = createById,
                                                 leaderId = model.leaderId,
@@ -144,8 +134,6 @@ namespace Sevices.Core.LeaderTaskService
                                             {
                                                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                                             }
-
-                                        }
                                     }
                                 }
                             }

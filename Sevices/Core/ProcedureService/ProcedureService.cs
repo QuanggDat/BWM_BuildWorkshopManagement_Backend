@@ -42,29 +42,18 @@ namespace Sevices.Core.ProcedureService
                     };
                     _dbContext.Procedure.Add(newProcedure);
 
-                    bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
-
-                    if (hasDuplicates)
+                    foreach (var step in model.listStep)
                     {
-                        result.Code = 101;
-                        result.Succeed = false;
-                        result.ErrorMessage = "Mức độ ưu tiên của các bước không được trùng nhau !";
-                    }
-                    else
-                    {
-                        foreach (var step in model.listStep)
+                        _dbContext.ProcedureStep.Add(new ProcedureStep
                         {
-                            _dbContext.ProcedureStep.Add(new ProcedureStep
-                            {
-                                procedureId = newProcedure.id,
-                                stepId = step.stepId,
-                                priority = step.priority
-                            });
-                        }
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = newProcedure.id;
+                            procedureId = newProcedure.id,
+                            stepId = step.stepId,
+                            priority = step.priority
+                        });
                     }
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = newProcedure.id;
                 }
             }
             catch (Exception ex)
@@ -100,41 +89,30 @@ namespace Sevices.Core.ProcedureService
                     }
                     else
                     {
-                        bool hasDuplicates = model.listStep.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+                        // Remove all old Procedure Step
+                        var currentProcedureStep = _dbContext.ProcedureStep
+                            .Where(x => x.procedureId == model.id).ToList();
 
-                        if (hasDuplicates)
+                        if (currentProcedureStep != null && currentProcedureStep.Count > 0)
                         {
-                            result.Code = 101;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Mức độ ưu tiên của các bước không được trùng nhau !";
+                            _dbContext.ProcedureStep.RemoveRange(currentProcedureStep);
                         }
-                        else
+
+                        // Set new Procedure Step
+                        foreach (var step in model.listStep)
                         {
-                            // Remove all old Procedure Step
-                            var currentProcedureStep = _dbContext.ProcedureStep
-                                .Where(x => x.procedureId == model.id).ToList();
-
-                            if (currentProcedureStep != null && currentProcedureStep.Count > 0)
+                            _dbContext.ProcedureStep.Add(new ProcedureStep
                             {
-                                _dbContext.ProcedureStep.RemoveRange(currentProcedureStep);
-                            }
-
-                            // Set new Procedure Step
-                            foreach (var step in model.listStep)
-                            {
-                                _dbContext.ProcedureStep.Add(new ProcedureStep
-                                {
-                                    procedureId = model.id,
-                                    stepId = step.stepId,
-                                    priority = step.priority
-                                });
-                            }
-
-                            check.name = model.name;
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = check.id;
+                                procedureId = model.id,
+                                stepId = step.stepId,
+                                priority = step.priority
+                            });
                         }
+
+                        check.name = model.name;
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = check.id;
                     }                                      
                 }
             }
