@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Aspose.Cells;
+using AutoMapper;
 using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
@@ -96,17 +97,7 @@ namespace Sevices.Core.LeaderTaskService
                                     }
                                     else
                                     {
-                                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.orderId == model.orderId && x.itemId == model.itemId && x.priority == model.priority && x.isDeleted == false);
-
-                                        if (checkPriority != null)
-                                        {
-                                            result.Code = 91;
-                                            result.Succeed = false;
-                                            result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
-                                        }
-                                        else
-                                        {
-                                            var leaderTask = new LeaderTask
+                                        var leaderTask = new LeaderTask
                                             {
                                                 createById = createById,
                                                 leaderId = model.leaderId,
@@ -143,8 +134,6 @@ namespace Sevices.Core.LeaderTaskService
                                             {
                                                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                                             }
-
-                                        }
                                     }
                                 }
                             }
@@ -446,7 +435,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                .Include(x => x.Reports).ThenInclude(x => x.Resources)
+                .Include(x => x.Reports).ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
                 .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
 
             try
@@ -486,6 +475,23 @@ namespace Sevices.Core.LeaderTaskService
                         completedTime = item.completedTime,
                         status = item.status,
                         description = item.description,
+
+                        listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                        {
+                            id = x.id,
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority =x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime =x.completedTime,
+                            description = x.description,
+                            status =x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
+                        }).ToList(),
 
                         listReportInTasks = item.Reports.Select(x => new TaskReportModel
                         {
@@ -579,75 +585,95 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
-        public ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByOrderDetailId(Guid orderDetailId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
-            result.Succeed = false;
-
-            var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
-                .Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Where(a => a.orderId == orderId && a.isDeleted == false)
-                .OrderByDescending(x => x.startTime).ToList();
-
             try
             {
-                if (!string.IsNullOrEmpty(search))
+                var orderDetail= _dbContext.OrderDetail.FirstOrDefault(x=>x.id == orderDetailId && x.isDeleted!=true);
+                if(orderDetail == null)
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    result.Code = 37;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
                 }
-
-                var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                var list = new List<LeaderTaskModel>();
-                foreach (var item in listLeaderTaskPaging)
+                else
                 {
-                    var order = _dbContext.Order.Find(item.orderId);
-
-                    var createBy = _dbContext.User.Find(item.createById);
-
-                    var tmp = new LeaderTaskModel
+                    var id = orderDetail.itemId;
+                    var orderId = orderDetail.orderId;
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x=>x.CreateBy).Include(x => x.Reports)
+                        .ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
+                        .Where(x=>x.itemId==id && x.orderId==orderId).OrderByDescending(x => x.startTime).ToList();
+                    if (!string.IsNullOrEmpty(search))
                     {
-                        id = item.id,
-                        createdById = item.createById,
-                        createdByName = createBy?.fullName ?? "",
-                        leaderId = item.leaderId,
-                        leaderName = item.Leader?.fullName ?? "",
-                        orderId = item.orderId,
-                        orderName = order!.name,
-                        itemId = item.itemId,
-                        Item = item.Item,
-                        itemQuantity = item.itemQuantity,
-                        itemCompleted = item.itemCompleted,
-                        itemFailed = item.itemFailed,
-                        name = item.name,
-                        priority = item.priority,                       
-                        startTime = item.startTime,
-                        endTime = item.endTime,
-                        completedTime = item.completedTime,
-                        status = item.status,                      
-                        description = item.description,
+                        listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    }
 
-                        listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                    var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                    var list = new List<LeaderTaskModel>();
+                    foreach (var item in listLeaderTaskPaging)
+                    {
+                        var tmp = new LeaderTaskModel
                         {
-                            id = x.id,
-                            reportType = x.reportType,
-                            title = x.title,
-                            content = x.content,
-                            createdDate = x.createdDate,
-                            resource = x.Resources.Select(x => x.link).ToList()
-                        }).ToList(),
+                            id = item.id,
+                            createdById = item.createById,
+                            createdByName = item.CreateBy?.fullName,
+                            leaderId = item.leaderId,
+                            leaderName = item.Leader?.fullName,
+                            orderId = item.orderId,
+                            ///orderName = item.Order?.name,
+                            itemId = item.itemId,
+                            //Item = item.Item,
+                            itemQuantity = item.itemQuantity,
+                            itemCompleted = item.itemCompleted,
+                            itemFailed = item.itemFailed,
+                            name = item.name,
+                            priority = item.priority,
+                            startTime = item.startTime,
+                            endTime = item.endTime,
+                            completedTime = item.completedTime,
+                            status = item.status,
+                            description = item.description,
 
-                        isDeleted = item.isDeleted,
+                            listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                createByName = x.CreateBy?.fullName,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description = x.description,
+                                status = x.status,
+                                isDeleted = x.isDeleted,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                            }).ToList(),
+
+                            listReportInTasks = item.Reports.Select(x => new TaskReportModel
+                            {
+                                id = x.id,
+                                reportType = x.reportType,
+                                title = x.title,
+                                content = x.content,
+                                createdDate = x.createdDate,
+                                resource = x.Resources.Select(x => x.link).ToList()
+                            }).ToList(),
+
+                            isDeleted = item.isDeleted,
+                        };
+                        list.Add(tmp);
+                    }
+                    result.Data = new PagingModel()
+                    {
+                        Data = list,
+                        Total = listLeaderTask.Count
                     };
-                    list.Add(tmp);
+                    result.Succeed = true;
                 }
-                result.Data = new PagingModel()
-                {
-                    Data = list,
-                    Total = listLeaderTask.Count
-                };
-                result.Succeed = true;
-
             }
             catch (Exception e)
             {
@@ -662,7 +688,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x=>x.WorkerTasks).Include(x=>x.CreateBy)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
 
@@ -704,6 +730,23 @@ namespace Sevices.Core.LeaderTaskService
                         status = item.status,
                         description = item.description,
 
+                        listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
+                        {
+                            id = x.id,
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority = x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime = x.completedTime,
+                            description = x.description,
+                            status = x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
+                        }).ToList(),
+
                         listReportInTasks = item.Reports.Select(x => new TaskReportModel
                         {
                             id = x.id,
@@ -739,7 +782,7 @@ namespace Sevices.Core.LeaderTaskService
             result.Succeed = false;
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
-                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x => x.WorkerTasks)
+                .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x => x.WorkerTasks).Include(x=>x.CreateBy)
                     .Where(a => a.orderId == orderId && a.itemId == itemId && a.isDeleted == false)
                     .OrderByDescending(x => x.startTime).ToList();
 
@@ -794,7 +837,18 @@ namespace Sevices.Core.LeaderTaskService
                         listWorkerTasks = item.WorkerTasks.Select(x => new WorkerTaskModel
                         {
                             id = x.id,
-                            name = x.name
+                            createById = x.createById,
+                            createByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority = x.priority,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completeTime = x.completedTime,
+                            description = x.description,
+                            status = x.status,
+                            isDeleted = x.isDeleted,
+                            feedbackTitle = x.feedbackTitle,
+                            feedbackContent = x.feedbackContent,
                         }).ToList(),
 
                         isDeleted = item.isDeleted,

@@ -42,9 +42,73 @@ namespace Sevices.Core.OrderDetailService
 
                 var listOrderDetailPaging = listOrderDetail.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
+                var list = new List<OrderDetailViewlModel>();
+                foreach(var item in listOrderDetailPaging)
+                {
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks).ThenInclude(x=>x.CreateBy).Include(x=>x.Leader)
+                        .Include(x=>x.CreateBy).Include(x=>x.Item).Where(x => x.itemId == item.itemId && x.orderId == orderId).ToList();
+                    var tmp = new OrderDetailViewlModel
+                    {
+                        id = item.id,
+                        itemId = item.itemId,
+                        itemCategoryName = item.Item?.ItemCategory?.name ?? "",
+                        itemName = item.itemName,
+                        itemCode = item.itemCode,
+                        itemLength = item.itemLength,
+                        itemDepth = item.itemDepth,
+                        itemHeight = item.itemHeight,
+                        itemUnit = item.itemUnit,
+                        itemMass = item.itemMass,
+                        itemDrawings2D = item.itemDrawings2D,
+                        itemDrawings3D = item.itemDrawings3D,
+                        itemDrawingsTechnical = item.itemDrawingsTechnical,
+                        description = item.description,
+                        price = item.price,
+                        quantity = item.quantity,
+                        totalPrice = item.totalPrice,
+                        leaderTasks = listLeaderTask.Select(x => new ViewLeaderTask
+                        {
+                            id = x.id,
+                            leaderId = x.leaderId,
+                            leaderName = x.Leader?.fullName,
+                            createdById = x.createById,
+                            createdByName = x.CreateBy?.fullName,
+                            name = x.name,
+                            priority = x.priority,
+                            itemId = x.itemId,
+                            itemName = x.Item?.name,
+                            itemQuantity = x.itemQuantity,
+                            itemCompleted = x.itemCompleted,
+                            itemFailed = x.itemFailed,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completedTime = x.completedTime,
+                            status = x.status,
+                            description = x.description,
+                            isDeleted = x.isDeleted,
+                            workerTask = x.WorkerTasks.Select(x => new WorkerTaskViewModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                createByName = x.CreateBy?.fullName,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description = x.description,
+                                status = x.status,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                                isDeleted = x.isDeleted,
+                            }).ToList(),
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<OrderDetailModel>>(listOrderDetailPaging),
+                    Data = list,
                     Total = listOrderDetail.Count
                 };
                 result.Succeed = true;
@@ -286,6 +350,87 @@ namespace Sevices.Core.OrderDetailService
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAllByOrderDetailId(Guid id)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var orderDetail = _dbContext.OrderDetail.Include(x => x.Item).ThenInclude(x=>x.ItemCategory).FirstOrDefault(x => x.id == id && x.isDeleted!=true);
+                if (orderDetail == null)
+                {
+                    result.Code = 37;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Không tìm thấy thông tin hợp lệ!";
+                }
+                else
+                {
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks).Where(x=>x.itemId == orderDetail.itemId && x.orderId==orderDetail.orderId).ToList();
+                    var item = new OrderDetailViewlModel
+                    {
+                        id = orderDetail.id,
+                        itemCategoryName = orderDetail.Item?.ItemCategory?.name ?? "",
+                        itemId = orderDetail.itemId,
+                        itemName = orderDetail.itemName,
+                        itemCode = orderDetail.itemCode,
+                        itemLength = orderDetail.itemLength,
+                        itemDepth = orderDetail.itemDepth,
+                        itemHeight = orderDetail.itemHeight,
+                        itemUnit = orderDetail.itemUnit,
+                        itemMass = orderDetail.itemMass,
+                        itemDrawings2D = orderDetail.itemDrawings2D,
+                        itemDrawings3D = orderDetail.itemDrawings3D,
+                        itemDrawingsTechnical = orderDetail.itemDrawingsTechnical,
+                        description = orderDetail.description,
+                        price = orderDetail.price,
+                        quantity = orderDetail.quantity,
+                        totalPrice = orderDetail.totalPrice,
+                        leaderTasks = listLeaderTask.Select(x => new ViewLeaderTask
+                        {
+                            id =x.id,
+                            leaderId = x.leaderId,
+                            createdById = x.createById,
+                            name = x.name,
+                            priority = x.priority,
+                            itemId = x.itemId,
+                            itemQuantity = x.itemQuantity,
+                            itemCompleted = x.itemCompleted,
+                            itemFailed  = x.itemFailed,
+                            startTime = x.startTime,
+                            endTime = x.endTime,
+                            completedTime = x.completedTime,
+                            status = x.status,
+                            description = x.description,
+                            isDeleted = x.isDeleted,
+                            workerTask = x.WorkerTasks.Select(x => new WorkerTaskViewModel
+                            {
+                                id = x.id,
+                                createById = x.createById,
+                                name = x.name,
+                                priority = x.priority,
+                                startTime = x.startTime,
+                                endTime = x.endTime,
+                                completeTime = x.completedTime,
+                                description =x.description,
+                                status = x.status,
+                                feedbackTitle = x.feedbackTitle,
+                                feedbackContent = x.feedbackContent,
+                                isDeleted = x.isDeleted,
+                            }).ToList(),
+                        }).ToList(),
+                    };
+                    result.Data = item;
+                    result.Succeed = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
         }

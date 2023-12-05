@@ -52,95 +52,84 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    bool hasDuplicates = model.listProcedure.GroupBy(x => x.priority).Any(g => g.Count() > 1);
+                    var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
 
-                    if (hasDuplicates)
+                    var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+
+                    var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
+
+                    if (string.IsNullOrEmpty(model.image))
                     {
-                        result.Code = 15;
-                        result.Succeed = false;
-                        result.ErrorMessage = "Mức độ ưu tiên của các quy trình không được trùng nhau !";
+                        model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
                     }
-                    else
+
+                    //Create Item
+                    var item = new Item
                     {
-                        var listItem = _dbContext.Item.Where(x => !x.isDeleted).ToList();
+                        itemCategoryId = model.itemCategoryId,
+                        name = model.name,
+                        code = randomCode,
+                        image = model.image,
+                        length = model.length,
+                        depth = model.depth,
+                        height = model.height,
+                        unit = model.unit,
+                        mass = model.mass,
+                        drawingsTechnical = model.drawingsTechnical,
+                        drawings2D = model.drawings2D,
+                        drawings3D = model.drawings3D,
+                        description = model.description,
+                        isDeleted = false
+                    };
 
-                        var listItemCodeDB = listItem.Select(x => x.code).Distinct().ToList();
+                    _dbContext.Item.Add(item);
 
-                        var randomCode = _utilsService.GenerateItemCode(listItemCodeDB, listItemCodeDB);
-
-                        if (string.IsNullOrEmpty(model.image))
-                        {
-                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                        }
-
-                        //Create Item
-                        var item = new Item
-                        {
-                            itemCategoryId = model.itemCategoryId,
-                            name = model.name,
-                            code = randomCode,
-                            image = model.image,
-                            length = model.length,
-                            depth = model.depth,
-                            height = model.height,
-                            unit = model.unit,
-                            mass = model.mass,
-                            drawingsTechnical = model.drawingsTechnical,
-                            drawings2D = model.drawings2D,
-                            drawings3D = model.drawings3D,
-                            description = model.description,
-                            isDeleted = false
-                        };
-
-                        _dbContext.Item.Add(item);
-
-                        foreach (var procedure in model.listProcedure)
-                        {
-                            _dbContext.ProcedureItem.Add(new ProcedureItem
-                            {
-                                itemId = item.id,
-                                procedureId = procedure.procedureId,
-                                priority = procedure.priority
-                            });
-                        }
-
-                        foreach (var material in model.listMaterial)
-                        {
-                            var _material = _dbContext.Material.Find(material.materialId);
-
-                            if (_material == null)
-                            {
-                                result.Code = 62;
-                                result.Succeed = false;
-                                result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
-                                return result;
-                            }
-                            else
-                            {
-                                _dbContext.ItemMaterial.Add(new ItemMaterial
-                                {
-                                    itemId = item.id,
-                                    materialId = material.materialId,
-                                    quantity = material.quantity,
-                                    totalPrice = material.quantity * _material.price
-                                });
-                                item.price += material.quantity * _material.price;
-                            }
-                        }
-
-                        var log = new Data.Entities.Log()
+                    foreach (var procedure in model.listProcedure)
+                    {
+                        _dbContext.ProcedureItem.Add(new ProcedureItem
                         {
                             itemId = item.id,
-                            userId = userId,
-                            modifiedTime = DateTime.UtcNow.AddHours(7),
-                            action = "Tạo sản phẩm mới :" + item.name,
-                        };
-                        _dbContext.Log.Add(log);
-
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = item.id;
+                            procedureId = procedure.procedureId,
+                            priority = procedure.priority
+                        });
                     }
+
+                    foreach (var material in model.listMaterial)
+                    {
+                        var _material = _dbContext.Material.Find(material.materialId);
+
+                        if (_material == null)
+                        {
+                            result.Code = 62;
+                            result.Succeed = false;
+                            result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
+                            return result;
+                        }
+                        else
+                        {
+                            _dbContext.ItemMaterial.Add(new ItemMaterial
+                            {
+                                itemId = item.id,
+                                materialId = material.materialId,
+                                quantity = material.quantity,
+                                totalPrice = material.quantity * _material.price
+                            });
+                            item.price += material.quantity * _material.price;
+                        }
+                    }
+
+                    var log = new Data.Entities.Log()
+                    {
+                        itemId = item.id,
+                        userId = userId,
+                        modifiedTime = DateTime.UtcNow.AddHours(7),
+                        action = "Tạo sản phẩm mới :" + item.name,
+                    };
+                    _dbContext.Log.Add(log);
+
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = item.id;
                 }             
             }
             
@@ -252,136 +241,126 @@ namespace Sevices.Core.ItemService
                 }
                 else
                 {
-                    bool hasDuplicates = model.listProcedure.GroupBy(x => x.priority).Any(g => g.Count() > 1);
-                    if (hasDuplicates)
+                    var checkCategory = _dbContext.ItemCategory.FirstOrDefault(x => x.id == model.itemCategoryId && x.isDeleted != true);
+
+                    if (checkCategory == null)
                     {
-                        result.Code = 15;
+                        result.Code = 33;
                         result.Succeed = false;
-                        result.ErrorMessage = "Mức độ ưu tiên của các quy trình không được trùng nhau !";
+                        result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm !";
                     }
                     else
                     {
-                        var checkCategory = _dbContext.ItemCategory.FirstOrDefault(x => x.id == model.itemCategoryId && x.isDeleted != true);
 
-                        if (checkCategory == null)
+                        var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order).FirstOrDefault(x => x.itemId == check.id
+                                && x.Order.status == OrderStatus.InProgress || x.Order.status == OrderStatus.Cancel || x.Order.status == OrderStatus.Completed);
+                        /*
+                        if (checkItemExist != null)
                         {
-                            result.Code = 33;
+                            result.Code = 105;
                             result.Succeed = false;
-                            result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm !";
+                            result.ErrorMessage = "Sản phẩm đã đi vào sản xuất, không thể chỉnh sửa sản phẩm!";
                         }
+
                         else
                         {
-                            
-                            var checkItemExist = _dbContext.OrderDetail.Include(x => x.Order).FirstOrDefault(x => x.itemId == check.id
-                                    && x.Order.status == OrderStatus.InProgress || x.Order.status == OrderStatus.Cancel || x.Order.status == OrderStatus.Completed);
-                            /*
-                            if (checkItemExist != null)
+
+                        }
+                        */
+                        if (string.IsNullOrEmpty(model.image))
+                        {
+                            model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
+                        }
+
+                        check.name = model.name;
+                        check.image = model.image;
+                        check.length = model.length;
+                        check.depth = model.depth;
+                        check.height = model.height;
+                        check.unit = model.unit;
+                        check.mass = model.mass;
+                        check.drawingsTechnical = model.drawingsTechnical;
+                        check.drawings2D = model.drawings2D;
+                        check.drawings3D = model.drawings3D;
+                        check.description = model.description;
+
+                        // Remove all old Procedure Item
+                        var currentProcedureItems = _dbContext.ProcedureItem
+                            .Where(x => x.itemId == model.id).ToList();
+
+                        if (currentProcedureItems != null && currentProcedureItems.Count > 0)
+                        {
+                            _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
+                        }
+
+                        // Set new Procedure Item
+                        var procedureItems = new List<ProcedureItem>();
+
+                        foreach (var procedure in model.listProcedure)
+                        {
+                            procedureItems.Add(new ProcedureItem
                             {
-                                result.Code = 105;
+                                itemId = model.id,
+                                procedureId = procedure.procedureId,
+                                priority = procedure.priority
+                            });
+                        }
+
+                        // Remove all old Material Item
+                        var currentMaterialItems = _dbContext.ItemMaterial
+                            .Where(x => x.itemId == model.id).ToList();
+
+                        if (currentMaterialItems != null && currentMaterialItems.Count > 0)
+                        {
+                            _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
+                        }
+
+                        // return price = 0
+                        check.price = 0;
+
+                        // Set new Material Item
+                        var materialItems = new List<ItemMaterial>();
+
+                        foreach (var material in model.listMaterial)
+                        {
+                            var _material = _dbContext.Material.Find(material.materialId);
+
+                            if (_material == null)
+                            {
+                                result.Code = 62;
                                 result.Succeed = false;
-                                result.ErrorMessage = "Sản phẩm đã đi vào sản xuất, không thể chỉnh sửa sản phẩm!";
+                                result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
+                                return result;
                             }
-                            
                             else
                             {
-                                
-                            }
-                            */
-                            if (string.IsNullOrEmpty(model.image))
-                            {
-                                model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
-                            }
-
-                            check.name = model.name;
-                            check.image = model.image;
-                            check.length = model.length;
-                            check.depth = model.depth;
-                            check.height = model.height;
-                            check.unit = model.unit;
-                            check.mass = model.mass;
-                            check.drawingsTechnical = model.drawingsTechnical;
-                            check.drawings2D = model.drawings2D;
-                            check.drawings3D = model.drawings3D;
-                            check.description = model.description;
-
-                            // Remove all old Procedure Item
-                            var currentProcedureItems = _dbContext.ProcedureItem
-                                .Where(x => x.itemId == model.id).ToList();
-
-                            if (currentProcedureItems != null && currentProcedureItems.Count > 0)
-                            {
-                                _dbContext.ProcedureItem.RemoveRange(currentProcedureItems);
-                            }
-
-                            // Set new Procedure Item
-                            var procedureItems = new List<ProcedureItem>();
-
-                            foreach (var procedure in model.listProcedure)
-                            {
-                                procedureItems.Add(new ProcedureItem
+                                materialItems.Add(new ItemMaterial
                                 {
                                     itemId = model.id,
-                                    procedureId = procedure.procedureId,
-                                    priority = procedure.priority
+                                    materialId = material.materialId,
+                                    quantity = material.quantity,
+                                    totalPrice = material.quantity * _material!.price
                                 });
+                                check.price += material.quantity * _material.price;
                             }
-
-                            // Remove all old Material Item
-                            var currentMaterialItems = _dbContext.ItemMaterial
-                                .Where(x => x.itemId == model.id).ToList();
-
-                            if (currentMaterialItems != null && currentMaterialItems.Count > 0)
-                            {
-                                _dbContext.ItemMaterial.RemoveRange(currentMaterialItems);
-                            }
-
-                            // return price = 0
-                            check.price = 0;
-
-                            // Set new Material Item
-                            var materialItems = new List<ItemMaterial>();
-
-                            foreach (var material in model.listMaterial)
-                            {
-                                var _material = _dbContext.Material.Find(material.materialId);
-
-                                if (_material == null)
-                                {
-                                    result.Code = 62;
-                                    result.Succeed = false;
-                                    result.ErrorMessage = $"Không tìm thấy thông tin mã vật liệu {material.materialId} !";
-                                    return result;
-                                }
-                                else
-                                {
-                                    materialItems.Add(new ItemMaterial
-                                    {
-                                        itemId = model.id,
-                                        materialId = material.materialId,
-                                        quantity = material.quantity,
-                                        totalPrice = material.quantity * _material!.price
-                                    });
-                                    check.price += material.quantity * _material.price;
-                                }
-                            }
-
-                            var log = new Data.Entities.Log()
-                            {
-                                itemId = check.id,
-                                userId = userId,
-                                modifiedTime = DateTime.UtcNow.AddHours(7),
-                                action = "Cập nhật sản phẩm :" + check.name,
-                            };
-                            _dbContext.Log.Add(log);
-
-                            _dbContext.ProcedureItem.AddRange(procedureItems);
-                            _dbContext.ItemMaterial.AddRange(materialItems);
-
-                            _dbContext.SaveChanges();
-                            result.Succeed = true;
-                            result.Data = check.id;
                         }
-                    }                       
+
+                        var log = new Data.Entities.Log()
+                        {
+                            itemId = check.id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Cập nhật sản phẩm :" + check.name,
+                        };
+                        _dbContext.Log.Add(log);
+
+                        _dbContext.ProcedureItem.AddRange(procedureItems);
+                        _dbContext.ItemMaterial.AddRange(materialItems);
+
+                        _dbContext.SaveChanges();
+                        result.Succeed = true;
+                        result.Data = check.id;
+                    }
                 }                  
             }
             catch (Exception e)
