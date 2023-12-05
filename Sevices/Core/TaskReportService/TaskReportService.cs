@@ -171,6 +171,7 @@ namespace Sevices.Core.ReportService
                             content = model.content,
                             itemFailed = model.itemFailed,
                             reportType = ReportType.ProgressReport,
+                            status = ReportStatus.Pending,  
                             createdDate = DateTime.UtcNow.AddHours(7),
                         };
 
@@ -241,7 +242,6 @@ namespace Sevices.Core.ReportService
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin công việc tổ trưởng!";
                 }
-
                 else
                 {
                     var canSendReport = CanSendProblemTaskReport(leaderTask);
@@ -261,6 +261,7 @@ namespace Sevices.Core.ReportService
                             title = model.title,
                             content = model.content,
                             reportType = ReportType.ProblemReport,
+                            status = ReportStatus.Pending,
                             createdDate = DateTime.UtcNow.AddHours(7),
                         };
 
@@ -287,6 +288,7 @@ namespace Sevices.Core.ReportService
                                 var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
 
                                 var listSupply = new List<Supply>();
+
                                 foreach (var supply in model.listSupply)
                                 {
                                     var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
@@ -363,39 +365,48 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-                    check.title = model.title;
-                    check.content = model.content;
-
-                    // Remove all old resource
-                    var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
-
-                    if (currentResources != null && currentResources.Count > 0)
+                    if (check.reportType == ReportType.ProgressReport && check.status != ReportStatus.Pending)
                     {
-                        _dbContext.Resource.RemoveRange(currentResources);
+                        result.Code = 111;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Báo cáo đã nhận phản hồi, không thể chỉnh sửa!";
                     }
-
-                    if (model.resource != null)
+                    else
                     {
-                        foreach (var resource in model.resource)
+                        check.title = model.title;
+                        check.content = model.content;
+
+                        // Remove all old resource
+                        var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
+
+                        if (currentResources != null && currentResources.Count > 0)
                         {
-                            _dbContext.Resource.Add(new Resource
+                            _dbContext.Resource.RemoveRange(currentResources);
+                        }
+
+                        if (model.resource != null)
+                        {
+                            foreach (var resource in model.resource)
                             {
-                                reportId = check.id,
-                                link = resource
-                            });
+                                _dbContext.Resource.Add(new Resource
+                                {
+                                    reportId = check.id,
+                                    link = resource
+                                });
+                            }
+                        }
+                        try
+                        {
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = check.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
-                    try
-                    {
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = check.id;
-                    }
-                    catch (Exception ex)
-                    {
-                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    }
-                }
+                }               
             }
             return result;
         }
@@ -423,78 +434,87 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-                    check.title = model.title;
-                    check.content = model.content;
-
-                    // Remove all old resource
-                    var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
-
-                    if (currentResources != null && currentResources.Count > 0)
+                    if (check.status != ReportStatus.Pending)
                     {
-                        _dbContext.Resource.RemoveRange(currentResources);
+                        result.Code = 111;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Báo cáo đã nhận phản hồi, không thể chỉnh sửa!";
                     }
-
-                    if (model.resource != null)
+                    else
                     {
-                        foreach (var resource in model.resource)
+                        check.title = model.title;
+                        check.content = model.content;
+
+                        // Remove all old resource
+                        var currentResources = _dbContext.Resource.Where(x => x.reportId == check.id).ToList();
+
+                        if (currentResources != null && currentResources.Count > 0)
                         {
-                            _dbContext.Resource.Add(new Resource
+                            _dbContext.Resource.RemoveRange(currentResources);
+                        }
+
+                        if (model.resource != null)
+                        {
+                            foreach (var resource in model.resource)
                             {
-                                reportId = check.id,
-                                link = resource
-                            });
+                                _dbContext.Resource.Add(new Resource
+                                {
+                                    reportId = check.id,
+                                    link = resource
+                                });
+                            }
+                        }
+
+                        // Remove all old supply
+                        var currentSupply = _dbContext.Supply.Where(x => x.reportId == check.id).ToList();
+
+                        if (currentSupply != null && currentSupply.Count > 0)
+                        {
+                            _dbContext.Supply.RemoveRange(currentSupply);
+                        }
+
+                        if (model.listSupply.Any())
+                        {
+                            var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+
+                            var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
+
+                            var listSupply = new List<Supply>();
+                            foreach (var supply in model.listSupply)
+                            {
+                                var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
+                                var matePrice = mate != null ? mate.price : 0;
+                                var newSupply = new Supply()
+                                {
+                                    reportId = check.id,
+                                    materialId = supply.materialId,
+                                    materialName = mate.name,
+                                    materialSupplier = mate.supplier,
+                                    materialThickness = mate.thickness,
+                                    materialSku = mate.sku,
+                                    materialColor = mate.color,
+                                    materialUnit = mate.unit,
+                                    amount = supply.amount,
+                                    price = matePrice,
+                                    totalPrice = matePrice * supply.amount,
+                                    status = model.supplyStatus,
+                                };
+                                listSupply.Add(newSupply);
+                            }
+                            _dbContext.Supply.AddRange(listSupply);
+                        }
+                        try
+                        {
+                            _dbContext.SaveChanges();
+                            result.Succeed = true;
+                            result.Data = check.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
-
-                    // Remove all old supply
-                    var currentSupply = _dbContext.Supply.Where(x => x.reportId == check.id).ToList();
-
-                    if (currentSupply != null && currentSupply.Count > 0)
-                    {
-                        _dbContext.Supply.RemoveRange(currentSupply);
-                    }
-
-                    if (model.listSupply.Any())
-                    {
-                        var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
-
-                        var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
-
-                        var listSupply = new List<Supply>();
-                        foreach (var supply in model.listSupply)
-                        {
-                            var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
-                            var matePrice = mate != null ? mate.price : 0;
-                            var newSupply = new Supply()
-                            {
-                                reportId = check.id,
-                                materialId = supply.materialId,
-                                materialName = mate.name,
-                                materialSupplier = mate.supplier,
-                                materialThickness = mate.thickness,
-                                materialSku = mate.sku,
-                                materialColor = mate.color,
-                                materialUnit = mate.unit,
-                                amount = supply.amount,
-                                price = matePrice,
-                                totalPrice = matePrice * supply.amount,
-                                status = model.supplyStatus,
-                            };
-                            listSupply.Add(newSupply);
-                        }
-                        _dbContext.Supply.AddRange(listSupply);
-                    }
-                    try
-                    {
-                        _dbContext.SaveChanges();
-                        result.Succeed = true;
-                        result.Data = check.id;
-                    }
-                    catch (Exception ex)
-                    {
-                        result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    }
-                }
+                }               
             }
             return result;
         }
@@ -583,6 +603,7 @@ namespace Sevices.Core.ReportService
                 try
                 {
                     report.responseContent = model.responseContent;
+                    report.status = model.status;
                     _dbContext.SaveChanges();
 
                     _notificationService.Create(new Notification
@@ -659,6 +680,7 @@ namespace Sevices.Core.ReportService
                             responderId = report.LeaderTask.createById,
                             responderName = report.LeaderTask.CreateBy?.fullName ?? "",
                             reportType = report.reportType,
+                            status = report.status,
                             title = report.title,
                             content = report.content,
                             createdDate = report.createdDate,
@@ -727,6 +749,7 @@ namespace Sevices.Core.ReportService
                         responderId = item.LeaderTask.createById,
                         responderName = item.LeaderTask.CreateBy?.fullName??"",
                         reportType = item.reportType,
+                        status = item.status,
                         title = item.title,
                         content = item.content,
                         createdDate = item.createdDate,
@@ -809,13 +832,13 @@ namespace Sevices.Core.ReportService
 
             return result;
         }
-        #region Validate
+        
         public ResultModel GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources)
+            var listTaskReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.LeaderTask).Include(x => x.Resources).Include(x => x.Supplies)
                 .Where(x => x.leaderTaskId == leaderTaskId).OrderByDescending(x => x.reportType).ToList();
 
 
@@ -867,7 +890,7 @@ namespace Sevices.Core.ReportService
 
             return result;
         }
-
+        #region Validate
         private bool CanSendProblemTaskReport(LeaderTask leaderTask)
         {
             var now = DateTime.Now;

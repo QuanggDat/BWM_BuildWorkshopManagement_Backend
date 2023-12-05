@@ -298,11 +298,11 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             var listStatusDamage = new List<ESupplyStatus>() {
                 ESupplyStatus.Fail,
-                ESupplyStatus.RejectByCustomer,
+                //ESupplyStatus.RejectByCustomer,
             };
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o=>o.isDeleted!=true)).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o => o.isDeleted!=true)).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -345,8 +345,8 @@ namespace Sevices.Core.OrderService
                     var listReportByOrder = _dbContext.Report.Where(x => x.orderId == order.id).ToList();
                     var listReportId = listReportByOrder.Select(x => x.id).ToList();
 
-                    var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material)
-                                                                    .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status))
+                    var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material).Include(x => x.Report)
+                                                                    .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status) && x.Report.status == ReportStatus.Provided)
                                                                     .ToList();
 
                     foreach (var supply in listSupplyDamageByReport)

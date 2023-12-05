@@ -456,7 +456,7 @@ namespace Sevices.Core.ItemService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listItem = listItem.Where(x => x.name.Contains(search)).ToList();
+                    listItem = listItem.Where(x => x.name.Contains(search) || x.code.Contains(search)).ToList();
                 }
 
                 var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -671,7 +671,7 @@ namespace Sevices.Core.ItemService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listItem = listItem.Where(x => x.name.Contains(search)).ToList();
+                        listItem = listItem.Where(x => x.name.Contains(search) || x.code.Contains(search)).ToList();
                     }
                     var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 

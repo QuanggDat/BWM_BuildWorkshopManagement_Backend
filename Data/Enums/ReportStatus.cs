@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 namespace Data.Enums
 {
     public enum ReportStatus
-    {        
-        Uncomplete = 0,
-        Complete = 1,
-        NotAchieved = 2,
+    {          
+        Uncomplete = 1,
+        Complete = 2,
+        NotAchieved = 3,
+        Achieved = 4,
+        Pending = 5,
+        Reject = 6,
+        Approve = 7,
+        Provided = 8,
     }
 }

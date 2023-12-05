@@ -206,16 +206,13 @@ namespace Sevices.Core.OrderDetailService
                             }
                             _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
 
-                            if (order != null)
+                            double total = 0;
+                            foreach (var detail in order.OrderDetails)
                             {
-                                double total = 0;
-                                foreach (var detail in order.OrderDetails)
-                                {
-                                    total += detail.totalPrice;
-                                }
-                                order.totalPrice = total + newOrderDetail.totalPrice;
-                                _dbContext.Order.Update(order);
+                                total += detail.totalPrice;
                             }
+                            order.totalPrice = total + newOrderDetail.totalPrice;
+                            _dbContext.Order.Update(order);
 
                             var log = new Data.Entities.Log()
                             {

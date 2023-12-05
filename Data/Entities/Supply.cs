@@ -18,7 +18,6 @@ namespace Data.Entities
         public Guid reportId { get; set; }
         public Report Report { get; set; } = null!;
 
-
         [ForeignKey("materialId")]
         public Guid materialId { get; set; }
         public Material Material { get; set; } = null!;

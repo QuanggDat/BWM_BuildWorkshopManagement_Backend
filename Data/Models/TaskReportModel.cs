@@ -77,12 +77,13 @@ namespace Data.Models
     public class SendProblemReportFeedbackModel
     {
         public Guid reportId { get; set; }
+        public ReportStatus status { get; set; }
         public string responseContent { get; set; } = null!;
     }
     public class SendProgressReportFeedbackModel
     {
         public Guid reportId { get; set; }
-        public ReportStatus? status { get; set; }
+        public ReportStatus status { get; set; }
         public string responseContent { get; set; } = null!;
     }
 

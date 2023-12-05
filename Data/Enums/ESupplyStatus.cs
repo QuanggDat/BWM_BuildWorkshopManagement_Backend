@@ -10,7 +10,7 @@ namespace Data.Enums
     {
         Fail = 0,
         Missing = 1,
-        AcceptByCustomer = 2,
-        RejectByCustomer = 3,
+        //AcceptByCustomer = 2,
+        //RejectByCustomer = 3,
     }
 }
