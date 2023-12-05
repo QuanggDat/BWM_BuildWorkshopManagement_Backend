@@ -36,5 +36,6 @@ namespace Data.Entities
 
         public virtual List<Resource> Resources { get; set; } = new();
         public virtual List<WorkerTaskDetail> WorkerTaskDetails { get; set; } = new();
+        public virtual List<Comment> Comments { get; set; } = new();
     }
 }

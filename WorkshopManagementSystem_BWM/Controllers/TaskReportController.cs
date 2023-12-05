@@ -6,6 +6,7 @@ using Sevices.Core.ReportService;
 using static Data.Models.TaskReportModel;
 using Data.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Data.Enums;
 
 namespace WorkshopManagementSystem_BWM.Controllers
 {
@@ -115,6 +116,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult UpdateProblemTaskReport(UpdateProblemTaskReportModel model)
         {
             var result = _reportService.UpdateProblemTaskReport(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpPut("[action]/{id}/{status}")]
+        public IActionResult UpdateStatusReport(Guid id, ReportStatus status)
+        {
+            var result = _reportService.UpdateStatusReport(id, status);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

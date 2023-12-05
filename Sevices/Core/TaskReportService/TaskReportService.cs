@@ -411,6 +411,36 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
+        public ResultModel UpdateStatusReport(Guid id, ReportStatus status)
+        {
+            ResultModel result = new ResultModel();
+            result.Succeed = false;
+
+            var check = _dbContext.Report.Find(id);
+
+            if (check == null)
+            {
+                result.Code = 60;
+                result.Succeed = false;
+                result.ErrorMessage = "Không tìm thấy thông tin báo cáo!";
+            }
+            else
+            {
+                check.status = status;
+                try
+                {
+                    _dbContext.SaveChanges();
+                    result.Succeed = true;
+                    result.Data = check.id;
+                }
+                catch (Exception ex)
+                {
+                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                }
+            }
+            return result;
+        }
+
         public ResultModel UpdateProblemTaskReport(UpdateProblemTaskReportModel model)
         {
             ResultModel result = new ResultModel();
@@ -896,6 +926,7 @@ namespace Sevices.Core.ReportService
             var now = DateTime.Now;
             return now >= leaderTask.startTime && now <= leaderTask.endTime;
         }
+       
         #endregion
     }
 }
