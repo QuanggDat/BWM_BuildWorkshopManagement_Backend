@@ -75,6 +75,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("GetQuoteMaterialByOrderId/{id}")]
+        public IActionResult GetQuoteMaterialByOrderId(Guid id)
+        {
+            var result = _orderService.GetQuoteMaterialByOrderId(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("GetOrderById")]
         public IActionResult GetById(Guid id)
         {
