@@ -292,119 +292,7 @@ namespace Sevices.Core.OrderService
             }
             return result;
         }
-
-        public ResultModel GetQuoteMaterialById(Guid id)
-        {
-            var result = new ResultModel();
-            var listStatusDamage = new List<ESupplyStatus>() {
-                ESupplyStatus.Fail,
-                //ESupplyStatus.RejectByCustomer,
-            };
-            try
-            {
-                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o => o.isDeleted!=true)).ThenInclude(x => x.OrderDetailMaterials).FirstOrDefault(x => x.id == id);
-                if (order == null)
-                {
-                    result.Code = 35;
-                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
-                }
-                else
-                {
-                    // get from order
-                    var dictOrder = new Dictionary<Guid, QuoteMaterialDetailModel>();
-                    foreach (var detail in order.OrderDetails)
-                    {
-                        foreach (var odMate in detail.OrderDetailMaterials)
-                        {
-                            if (dictOrder.ContainsKey(odMate.materialId))
-                            {
-                                dictOrder[odMate.materialId].quantity += odMate.quantity;
-                                dictOrder[odMate.materialId].totalPrice = dictOrder[odMate.materialId].quantity * dictOrder[odMate.materialId].price;
-                            }
-                            else
-                            {
-                                dictOrder.Add(odMate.materialId, new()
-                                {
-                                    materialId = odMate.materialId,
-                                    name = odMate.materialName,
-                                    sku = odMate.materialSku,
-                                    supplier = odMate.materialSupplier,
-                                    thickness = odMate.materialThickness,
-                                    color = odMate.materialColor,
-                                    unit = odMate.materialUnit,
-                                    quantity = odMate.quantity,
-                                    price = odMate.price,
-                                    totalPrice = odMate.totalPrice,
-                                });
-                            }
-                        }
-                    }
-
-                    // get from supply
-                    var dictSupply = new Dictionary<Guid, QuoteMaterialDetailModel>();
-                    var listReportByOrder = _dbContext.Report.Where(x => x.orderId == order.id).ToList();
-                    var listReportId = listReportByOrder.Select(x => x.id).ToList();
-
-                    var listSupplyDamageByReport = _dbContext.Supply.Include(x => x.Material).Include(x => x.Report)
-                                                                    .Where(x => listReportId.Contains(x.reportId) && listStatusDamage.Contains(x.status) && x.Report.status == ReportStatus.Provided)
-                                                                    .ToList();
-
-                    foreach (var supply in listSupplyDamageByReport)
-                    {
-                        if (dictSupply.ContainsKey(supply.materialId))
-                        {
-                            dictSupply[supply.materialId].quantity += supply.amount;
-                            dictSupply[supply.materialId].totalPrice += supply.totalPrice;
-                        }
-                        else
-                        {
-                            dictOrder.Add(supply.materialId, new()
-                            {
-                                materialId = supply.materialId,
-                                name = supply.materialName,
-                                sku = supply.materialSku,
-                                supplier = supply.materialSupplier,
-                                thickness = supply.materialThickness,
-                                color = supply.materialColor,
-                                unit = supply.materialUnit,
-                                quantity = supply.amount,
-                                price = supply.price,
-                                totalPrice = supply.totalPrice,
-                            });
-                        }
-                    }
-
-                    var listFromSupplyDamage = dictSupply.Values.ToList();
-                    double totalPriceSupplyDamage = listFromSupplyDamage.Sum(x => x.totalPrice);
-
-                    double percentDamage = 0;
-                    if (order.totalPrice > 0)
-                    {
-                        percentDamage = totalPriceSupplyDamage / order.totalPrice * 100;
-                    }
-
-                    result.Data = new QuoteMaterialOrderModel()
-                    {
-                        orderId = order.id,
-
-                        totalPriceOrder = order.totalPrice,
-                        listFromOrder = dictOrder.Values.ToList(),
-
-                        totalPriceSupplyDamage = totalPriceSupplyDamage,
-                        listFromSupplyDamage = listFromSupplyDamage,
-
-                        percentDamage = percentDamage
-                    };
-                    result.Succeed = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
-
+     
         public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
             var result = new ResultModel();
@@ -1053,7 +941,7 @@ namespace Sevices.Core.OrderService
             var result = new FileResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o=>o.isDeleted!=true)).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o => o.isDeleted!=true)).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -1284,7 +1172,7 @@ namespace Sevices.Core.OrderService
                                 {
                                     if (string.IsNullOrWhiteSpace(cellName))
                                     {
-                                        result.ErrCode = 65;
+                                        result.ErrCode = 6;
                                         result.Error = "Tên sản phẩm không được trống!";
                                         break;
                                     }

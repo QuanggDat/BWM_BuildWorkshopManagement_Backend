@@ -11,7 +11,6 @@ namespace Sevices.Core.OrderService
         ResultModel GetByForemanId(Guid foremanId, int pageIndex, int pageSize, string? search = null);
         ResultModel GetQuotesByUserWithPaging(Guid userId, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
-        ResultModel GetQuoteMaterialById(Guid id);
         Task<ResultModel> Create(CreateOrderModel model, Guid createdById);
         ResultModel GetAllLogOnOrder(string? search, int pageIndex, int pageSize);
         ResultModel Update(UpdateOrderModel model, Guid userId);

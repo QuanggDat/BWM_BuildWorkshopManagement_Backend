@@ -82,15 +82,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
-
-        [HttpGet("GetQuoteMaterialByOrderId/{id}")]
-        public IActionResult GetQuoteMaterialById(Guid id)
-        {
-            var result = _orderService.GetQuoteMaterialById(id);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
-        }
-
+     
         [HttpGet("ExportQuoteAsPDF/{id}")]
         public async Task<IActionResult> ExportQuoteAsPDF(Guid id)
         {

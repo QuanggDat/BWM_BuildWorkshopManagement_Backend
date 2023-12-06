@@ -23,6 +23,6 @@ namespace WorkshopManagementSystem_BWM.Controllers
             var result = _orderDetailMaterialService.GetByOrderDetailIdWidthPaging(orderDetailId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
-        }
+        }        
     }
 }

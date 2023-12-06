@@ -22,6 +22,7 @@ using Sevices.Core.OrderService;
 using Sevices.Core.ProcedureService;
 using Sevices.Core.ReportService;
 using Sevices.Core.StepService;
+using Sevices.Core.SupplyService;
 using Sevices.Core.TeamService;
 using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
@@ -64,6 +65,8 @@ namespace WorkshopManagementSystem_BWM.Extensions
         //AddScoped
         public static void AddBussinessService(this IServiceCollection services)
         {
+            
+            services.AddScoped<ISupplyService, SupplyService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();

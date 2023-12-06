@@ -590,8 +590,10 @@ namespace Sevices.Core.LeaderTaskService
             var result = new ResultModel();
             try
             {
-                var orderDetail= _dbContext.OrderDetail.FirstOrDefault(x=>x.id == orderDetailId && x.isDeleted!=true);
-                if(orderDetail == null)
+                var orderDetail= _dbContext.OrderDetail.FirstOrDefault(x => x.id == orderDetailId && x.isDeleted != true);
+
+
+                if (orderDetail == null)
                 {
                     result.Code = 37;
                     result.Succeed = false;
@@ -599,11 +601,11 @@ namespace Sevices.Core.LeaderTaskService
                 }
                 else
                 {
-                    var id = orderDetail.itemId;
-                    var orderId = orderDetail.orderId;
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x=>x.CreateBy).Include(x => x.Reports)
-                        .ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
-                        .Where(x=>x.itemId==id && x.orderId==orderId).OrderByDescending(x => x.startTime).ToList();
+
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.CreateBy).Include(x => x.Reports)
+                        .ThenInclude(x => x.Resources).Include(x => x.WorkerTasks).ThenInclude(x => x.CreateBy)
+                        .Where(x => x.itemId == orderDetail.itemId && x.orderId == orderDetail.orderId).OrderByDescending(x => x.startTime).ToList();
+
                     if (!string.IsNullOrEmpty(search))
                     {
                         listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
@@ -622,9 +624,9 @@ namespace Sevices.Core.LeaderTaskService
                             leaderId = item.leaderId,
                             leaderName = item.Leader?.fullName,
                             orderId = item.orderId,
-                            ///orderName = item.Order?.name,
+                            orderName = item.Order?.name,
                             itemId = item.itemId,
-                            //Item = item.Item,
+                            Item = item.Item,
                             itemQuantity = item.itemQuantity,
                             itemCompleted = item.itemCompleted,
                             itemFailed = item.itemFailed,

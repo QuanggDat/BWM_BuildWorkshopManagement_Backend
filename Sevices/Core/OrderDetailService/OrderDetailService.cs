@@ -189,7 +189,7 @@ namespace Sevices.Core.OrderDetailService
                
                 if (order == null)
                 {
-                    result.Code = 107;
+                    result.Code = 112;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
@@ -198,7 +198,7 @@ namespace Sevices.Core.OrderDetailService
                     var item = _dbContext.Item.FirstOrDefault(x => x.id == model.itemId && x.isDeleted != true);
                     if (item == null)
                     {
-                        result.Code = 108;
+                        result.Code = 113;
                         result.Succeed = false;
                         result.ErrorMessage = "Không tìm thấy thông tin của sản phẩm!";
                     }

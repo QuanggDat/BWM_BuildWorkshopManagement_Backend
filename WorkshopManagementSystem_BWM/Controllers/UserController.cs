@@ -24,7 +24,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
-            if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");        
+            if (model.password.Length < 6) return BadRequest("Mật khẩu phải từ 6 ký tự trở lên!");        
             var result = await _userService.CreateAdmin(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage});         
@@ -36,7 +36,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
-            if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
+            if (model.password.Length < 6) return BadRequest("Mật khẩu phải từ 6 ký tự trở lên!");
             var result = await _userService.CreateForeman(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -48,7 +48,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
-            if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
+            if (model.password.Length < 6) return BadRequest("Mật khẩu phải từ 6 ký tự trở lên!");
             var result = await _userService.CreateLeader(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -60,7 +60,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (string.IsNullOrEmpty(model.email)) return BadRequest("Không nhận được Email!");
             if (string.IsNullOrEmpty(model.phoneNumber)) return BadRequest("Không nhận được số điện thoại!");
             if (string.IsNullOrEmpty(model.fullName)) return BadRequest("Không nhận được họ tên!");
-            if (model.password.Length < 6) return BadRequest("Mật khẩu phải nhiều hơn 6 ký tự !");
+            if (model.password.Length < 6) return BadRequest("Mật khẩu phải từ 6 ký tự trở lên!");
             var result = await _userService.CreateWorker(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
