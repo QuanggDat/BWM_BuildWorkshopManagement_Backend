@@ -33,7 +33,7 @@ namespace Sevices.Core.WorkerTaskService
                 name = model.name,
                 startTime = model.startTime,
                 endTime = model.endTime,
-                status = EWorkerTaskStatus.New,
+                status = model.status,
                 description = model.description,
                 isDeleted = false,
             };
@@ -601,7 +601,6 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         id = item.id,
                         createById = item.createById,
-                        leaderTaskId = item.leaderTaskId,
                         createByName = item.CreateBy.fullName,
                         leaderTaskName = item.LeaderTask.name,
                         Item = item.LeaderTask.Item,
@@ -616,7 +615,7 @@ namespace Sevices.Core.WorkerTaskService
                         {
                             memberId = _.User.Id,
                             memberFullName = _.User.fullName,
-                        }).ToList(),
+                        }).ToList(),                      
                         feedbackTitle = item.feedbackTitle,
                         feedbackContent = item.feedbackContent,
                         resource = item.Resources.Select(_ => _.link).ToList(),

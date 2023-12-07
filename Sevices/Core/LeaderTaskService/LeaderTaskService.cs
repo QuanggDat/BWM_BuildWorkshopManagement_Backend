@@ -109,7 +109,7 @@ namespace Sevices.Core.LeaderTaskService
                                                 startTime = model.startTime,
                                                 endTime = model.endTime,
                                                 description = model.description,
-                                                status = ETaskStatus.New,
+                                                status = model.status,
                                                 isDeleted = false
                                             };
 

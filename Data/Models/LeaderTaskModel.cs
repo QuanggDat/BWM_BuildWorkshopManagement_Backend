@@ -18,6 +18,7 @@ namespace Data.Models
         public int itemQuantity { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
+        public ETaskStatus status { get; set; }
         public string name { get; set; } = null!;
         public string? description { get; set; } 
     }
