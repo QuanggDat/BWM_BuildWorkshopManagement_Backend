@@ -616,7 +616,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetWorkersNotAtWorkByGroupId(Guid id, string? search, int pageIndex, int pageSize)
+        public ResultModel GetWorkersNotAtWorkByGroupId(Guid id, string? search)
         {
             var result = new ResultModel();
 
@@ -638,7 +638,33 @@ namespace Sevices.Core.GroupService
                     listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
                 }
 
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAllUsersNotInGroupId(Guid id, string? search)
+        {
+            var result = new ResultModel();
+
+            try
+            {
+                var listUser = _dbContext.User.Include(x => x.Role)
+                    .Where(x => x.groupId != id && !x.banStatus).OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
 
                 result.Data = new PagingModel()
                 {
@@ -654,37 +680,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetAllUsersNotInGroupId(Guid id, string? search, int pageIndex, int pageSize)
-        {
-            var result = new ResultModel();
-
-            try
-            {
-                var listUser = _dbContext.User.Include(x => x.Role)
-                    .Where(x => x.groupId != id && !x.banStatus).OrderBy(s => s.fullName).ToList();
-
-                if (!string.IsNullOrEmpty(search))
-                {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
-                }
-
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<UserModel>>(listUserPaging),
-                    Total = listUser.Count
-                };
-                result.Succeed = true;
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            }
-            return result;
-        }
-
-        public ResultModel GetAllWorkerNotYetGroup(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllWorkerNotYetGroup(string? search)
         {
             var result = new ResultModel();
 
@@ -698,11 +694,9 @@ namespace Sevices.Core.GroupService
                     listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
                 }
 
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<UserModel>>(listUserPaging),
+                    Data = _mapper.Map<List<UserModel>>(listUser),
                     Total = listUser.Count
                 };
                 result.Succeed = true;
@@ -714,7 +708,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetAllLeaderHaveGroup(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllLeaderHaveGroup(string? search)
         {
             var result = new ResultModel();
 
@@ -728,11 +722,9 @@ namespace Sevices.Core.GroupService
                     listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
                 }
 
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
                 result.Data = new PagingModel()
                 {
-                    Data = _mapper.Map<List<UserModel>>(listUserPaging),
+                    Data = _mapper.Map<List<UserModel>>(listUser),
                     Total = listUser.Count
                 };
                 result.Succeed = true;
@@ -783,6 +775,34 @@ namespace Sevices.Core.GroupService
             catch (Exception e)
             {
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAllLeaderNoHaveGroup(string? search)
+        {
+            var result = new ResultModel();
+
+            try
+            {
+                var listUser = _dbContext.User.Include(x => x.Role).Include(x => x.Group)
+                    .Where(x => x.Role != null && x.Role.Name == "Leader" && x.groupId == null && x.banStatus == false).OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = _mapper.Map<List<UserModel>>(listUser),
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
         }

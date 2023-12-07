@@ -601,6 +601,7 @@ namespace Sevices.Core.WorkerTaskService
                     {
                         id = item.id,
                         createById = item.createById,
+                        leaderTaskId = item.leaderTaskId,
                         createByName = item.CreateBy.fullName,
                         leaderTaskName = item.LeaderTask.name,
                         Item = item.LeaderTask.Item,

@@ -44,33 +44,41 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetAllUsersNotInGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllUsersNotInGroupId(Guid id, string? search)
         {
-            var result = _groupService.GetAllUsersNotInGroupId(id, search, pageIndex, pageSize);
+            var result = _groupService.GetAllUsersNotInGroupId(id, search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult GetWorkersNotAtWorkByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetWorkersNotAtWorkByGroupId(Guid id, string? search)
         {
-            var result = _groupService.GetWorkersNotAtWorkByGroupId(id, search, pageIndex, pageSize);
+            var result = _groupService.GetWorkersNotAtWorkByGroupId(id, search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllWorkerNotYetGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllWorkerNotYetGroup(string? search)
         {
-            var result = _groupService.GetAllWorkerNotYetGroup(search, pageIndex, pageSize);
+            var result = _groupService.GetAllWorkerNotYetGroup(search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllLeaderHaveGroup(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetAllLeaderHaveGroup(string? search)
         {
-            var result = _groupService.GetAllLeaderHaveGroup(search, pageIndex, pageSize);
+            var result = _groupService.GetAllLeaderHaveGroup(search);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetAllLeaderNoHaveGroup(string? search)
+        {
+            var result = _groupService.GetAllLeaderNoHaveGroup(search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
