@@ -25,72 +25,63 @@ namespace Sevices.Core.WorkerTaskService
 
             var checkPriority = _dbContext.WorkerTask.FirstOrDefault(x => x.leaderTaskId == model.leaderTaskId && x.priority == model.priority && x.isDeleted == false);
 
-            if (checkPriority != null)
+            var workerTask = new WorkerTask
             {
-                result.Code = 92;
-                result.Succeed = false;
-                result.ErrorMessage = "Mức độ ưu tiên này đã tồn tại !";
-            }           
-            else
+                createById = userId,
+                leaderTaskId = model.leaderTaskId,
+                priority = model.priority,
+                name = model.name,
+                startTime = model.startTime,
+                endTime = model.endTime,
+                status = EWorkerTaskStatus.New,
+                description = model.description,
+                isDeleted = false,
+            };
+
+            try
             {
-                var workerTask = new WorkerTask
-                {
-                    createById = userId,
-                    leaderTaskId = model.leaderTaskId,                   
-                    priority = model.priority,
-                    name = model.name,
-                    startTime = model.startTime,
-                    endTime = model.endTime,
-                    status = EWorkerTaskStatus.New,
-                    description = model.description,
-                    isDeleted = false,
-                };
+                _dbContext.WorkerTask.Add(workerTask);
 
-                try
+                foreach (var assignee in model.assignees)
                 {
-                    _dbContext.WorkerTask.Add(workerTask);
+                    bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed
+                        && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime && x.WorkerTask.isDeleted == false).Any();
 
-                    foreach (var assignee in model.assignees)
+                    if (checkWorkerDetail == true)
                     {
-                        bool checkWorkerDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                            .Where(x => x.userId == assignee && x.WorkerTask.status != EWorkerTaskStatus.Completed 
-                            && x.WorkerTask.endTime > model.startTime && x.WorkerTask.startTime < model.startTime && x.WorkerTask.isDeleted == false).Any();
-
-                        if (checkWorkerDetail == true)
-                        {
-                            result.Code = 93;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
-                            return result;
-                        }
-                        else
-                        {
-                            _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
-                            {
-                                workerTaskId = workerTask.id,
-                                userId = assignee
-                            });
-                        }
+                        result.Code = 93;
+                        result.Succeed = false;
+                        result.ErrorMessage = "Công nhân hiện đang làm công việc khác, không thể thêm vào công việc hiện tại !";
+                        return result;
                     }
-
-                    _dbContext.SaveChanges();
-
-                    _notificationService.CreateForManyUser(new Notification
+                    else
                     {
-                        workerTaskId = workerTask.id,
-                        title = "Công việc",
-                        content = "Bạn vừa nhận được 1 công việc mới!",
-                        type = NotificationType.WorkerTask
-                    },
-                    model.assignees);
+                        _dbContext.WorkerTaskDetail.Add(new WorkerTaskDetail
+                        {
+                            workerTaskId = workerTask.id,
+                            userId = assignee
+                        });
+                    }
+                }
 
-                    result.Succeed = true;
-                    result.Data = workerTask.id;
-                }
-                catch (Exception ex)
+                _dbContext.SaveChanges();
+
+                _notificationService.CreateForManyUser(new Notification
                 {
-                    result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                }
+                    workerTaskId = workerTask.id,
+                    title = "Công việc",
+                    content = "Bạn vừa nhận được 1 công việc mới!",
+                    type = NotificationType.WorkerTask
+                },
+                model.assignees);
+
+                result.Succeed = true;
+                result.Data = workerTask.id;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
         }
@@ -516,7 +507,7 @@ namespace Sevices.Core.WorkerTaskService
             return result;         
         }
 
-        public ResultModel GetByUserId(Guid leaderTaskId, Guid userId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetByLeaderTaskIdAndUserId(Guid leaderTaskId, Guid userId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
@@ -573,7 +564,6 @@ namespace Sevices.Core.WorkerTaskService
                     Total = listWorkerTask.Count
                 };
                 result.Succeed = true;
-
             }
             catch (Exception e)
             {
@@ -582,6 +572,70 @@ namespace Sevices.Core.WorkerTaskService
             return result;
         }
 
+        public ResultModel GetByUserId(Guid userId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listWorkerTaskId = _dbContext.WorkerTaskDetail.Where(x => x.userId == userId).Select(x => x.workerTaskId).ToList();
+
+            var listWorkerTask = _dbContext.WorkerTask.Include(x => x.CreateBy)
+                .Include(x => x.LeaderTask).ThenInclude(x => x.Item)
+                .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
+                .Where(x => listWorkerTaskId.Contains(x.id) && x.isDeleted == false)
+                .OrderBy(x => x.status).ToList();
+
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<WorkerTaskModel>();
+                foreach (var item in listWorkerTaskPaging)
+                {
+                    var tmp = new WorkerTaskModel
+                    {
+                        id = item.id,
+                        createById = item.createById,
+                        leaderTaskId = item.leaderTaskId,
+                        createByName = item.CreateBy.fullName,
+                        leaderTaskName = item.LeaderTask.name,
+                        Item = item.LeaderTask.Item,
+                        name = item.name,
+                        priority = item.priority,
+                        startTime = item.startTime,
+                        endTime = item.endTime,
+                        completeTime = item.completedTime,
+                        description = item.description,
+                        status = item.status,
+                        Members = item.WorkerTaskDetails.Select(_ => new TaskMember
+                        {
+                            memberId = _.User.Id,
+                            memberFullName = _.User.fullName,
+                        }).ToList(),
+                        feedbackTitle = item.feedbackTitle,
+                        feedbackContent = item.feedbackContent,
+                        resource = item.Resources.Select(_ => _.link).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listWorkerTask.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
         public ResultModel SendFeedback(SendFeedbackModel model)
         {
             ResultModel result = new ResultModel();
@@ -637,6 +691,6 @@ namespace Sevices.Core.WorkerTaskService
                 }
             }
             return result;
-        }       
+        }        
     }
 }

@@ -15,8 +15,10 @@ namespace Sevices.Core.ItemService
         ResultModel Delete(Guid id, Guid userId);
         ResultModel GetAllWithSearchAndPaging(string? search, int pageIndex, int pageSize);
         ResultModel GetAll();
-        ResultModel GetAllLogOnItem(string? search, int pageIndex, int pageSize);
+        ResultModel GetItemNotExistsInOrder(Guid orderId);
         ResultModel GetById(Guid id);
-        ResultModel GetByItemCategoryId (Guid itemCategoryId, string? search, int pageIndex, int pageSize);
+        ResultModel GetByItemCategoryId(Guid itemCategoryId, string? search, int pageIndex, int pageSize);
+        ResultModel GetAllLogOnItem(string? search, int pageIndex, int pageSize);
+        
     }
 }

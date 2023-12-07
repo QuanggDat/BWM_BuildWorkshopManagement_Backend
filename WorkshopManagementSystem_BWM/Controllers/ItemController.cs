@@ -66,6 +66,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]/{orderId}")]
+        public IActionResult GetItemNotExistsInOrder(Guid orderId)
+        {
+            var result = _itemService.GetItemNotExistsInOrder(orderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
         [HttpGet("[action]/{itemCategoryId}")]
         public IActionResult GetByItemCategoryId(Guid itemCategoryId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {

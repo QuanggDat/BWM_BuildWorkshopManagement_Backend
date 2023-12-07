@@ -496,6 +496,42 @@ namespace Sevices.Core.ItemService
             return result;
         }
 
+        public ResultModel GetItemNotExistsInOrder(Guid orderId)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listItemIdInOrder = _dbContext.OrderDetail.Where(x => x.orderId == orderId).Select(x => x.itemId).ToList();
+
+                var listItem = _dbContext.Item.Where(x => x.isDeleted != true && !listItemIdInOrder.Contains(x.id)).OrderBy(x => x.name).ToList();
+
+                var list = new List<ItemModel>();
+                foreach (var item in listItem)
+                {
+                    var tmp = new ItemModel
+                    {
+                        id = item.id,
+                        code = item.code,
+                        name = item.name,                      
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listItem.Count
+                };
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetAll()
         {
             ResultModel result = new ResultModel();
@@ -750,6 +786,6 @@ namespace Sevices.Core.ItemService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
+        }       
     }
 }

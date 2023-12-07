@@ -49,9 +49,17 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]/{userId}/{leaderTaskId}")]
-        public IActionResult GetByUserId(Guid leaderTaskId,Guid userId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetByLeaderTaskIdAndUserId(Guid leaderTaskId,Guid userId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _workerTaskService.GetByUserId(leaderTaskId, userId, search, pageIndex, pageSize);
+            var result = _workerTaskService.GetByLeaderTaskIdAndUserId(leaderTaskId, userId, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+
+        [HttpGet("[action]/{userId}")]
+        public IActionResult GetByUserId(Guid userId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _workerTaskService.GetByUserId(userId, search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

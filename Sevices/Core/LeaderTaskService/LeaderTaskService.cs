@@ -270,49 +270,38 @@ namespace Sevices.Core.LeaderTaskService
                     }
                     else
                     {
-                        var checkPriority = _dbContext.LeaderTask.FirstOrDefault(x => x.priority != leaderTask.priority && x.orderId == leaderTask!.orderId && x.itemId == leaderTask.itemId && x.priority == model.priority && x.isDeleted == false);
+                        bool check = leaderTask.status != ETaskStatus.InProgress && model.status == ETaskStatus.InProgress;
 
-                        if (checkPriority != null)
+                        leaderTask.name = model.name;
+                        leaderTask.leaderId = model.leaderId;
+                        leaderTask.priority = model.priority;
+                        leaderTask.startTime = model.startTime;
+                        leaderTask.endTime = model.endTime;
+                        leaderTask.status = model.status;
+                        leaderTask.description = model.description;
+
+                        try
                         {
-                            result.Code = 91;
-                            result.Succeed = false;
-                            result.ErrorMessage = "Mức độ ưu tiên đã tồn tại !";
-                        }
-                        else
-                        {
-                            bool check = leaderTask.status != ETaskStatus.InProgress && model.status == ETaskStatus.InProgress;
+                            _dbContext.SaveChanges();
 
-                            leaderTask.name = model.name;
-                            leaderTask.leaderId = model.leaderId;
-                            leaderTask.priority = model.priority;
-                            leaderTask.startTime = model.startTime;
-                            leaderTask.endTime = model.endTime;
-                            leaderTask.status = model.status;
-                            leaderTask.description = model.description;
-
-                            try
+                            if (check == true)
                             {
-                                _dbContext.SaveChanges();
-
-                                if (check == true)
+                                _notificationService.Create(new Notification
                                 {
-                                    _notificationService.Create(new Notification
-                                    {
-                                        userId = model.leaderId,
-                                        leaderTaskId = leaderTask.id,
-                                        title = "Công việc",
-                                        content = "Bạn vừa nhận được 1 công việc mới!",
-                                        type = NotificationType.LeaderTask
-                                    });
-                                }
+                                    userId = model.leaderId,
+                                    leaderTaskId = leaderTask.id,
+                                    title = "Công việc",
+                                    content = "Bạn vừa nhận được 1 công việc mới!",
+                                    type = NotificationType.LeaderTask
+                                });
+                            }
 
-                                result.Succeed = true;
-                                result.Data = leaderTask.id;
-                            }
-                            catch (Exception ex)
-                            {
-                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                            }
+                            result.Succeed = true;
+                            result.Data = leaderTask.id;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
                 }
