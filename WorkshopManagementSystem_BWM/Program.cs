@@ -23,7 +23,7 @@ builder.Services.ConfigIdentityService();
 builder.Services.AddBussinessService();
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 builder.Services.AddSwaggerWithAuthentication();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddAzureSignalR("Endpoint=https://workshopmanagementsystembwm.service.signalr.net;AccessKey=KxJdWvt/OftGZgb2XOOCDl1py1Esix6yx60YOjwlyW4=;Version=1.0;");
 
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
