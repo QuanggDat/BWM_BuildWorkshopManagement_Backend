@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sevices.Core.UtilsService;
 using SignalRHubs.Extensions;
+using SignalRHubs.Hubs.CommentHub;
 using SignalRHubs.Hubs.NotificationHub;
 
 namespace WorkshopManagementSystem_BWM.Controllers
@@ -14,10 +15,12 @@ namespace WorkshopManagementSystem_BWM.Controllers
     public class TestController : ControllerBase
     {
         private readonly INotificationHub _notiHub;
+        private readonly ICommentHub _cmtHub;
 
-        public TestController(INotificationHub notiHub)
+        public TestController(INotificationHub notiHub, ICommentHub cmtHub)
         {
             _notiHub = notiHub;
+            _cmtHub = cmtHub;
         }
 
         [HttpGet("SignalR")]
@@ -57,6 +60,32 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _notiHub.NewNotification(userId.ToString(), demoNoti);
             return Ok(demoNoti);
 
+        }
+
+        [HttpGet("SignalR_Comment")]
+        public IActionResult SignalR_Comment()
+        {
+            var model = new CommentModel()
+            {
+                id = Guid.NewGuid(),
+                userId = Guid.NewGuid(),
+                commentContent = FnUtil.GenerateCode(),
+            };
+            _cmtHub.ChangeComment(new() { Guid.Parse(User.GetId()) }, model); 
+            return Ok(model);
+
+        }
+        [HttpGet("SignalRByUserId_Comment")]
+        public IActionResult SignalRByUserId_Comment(Guid userId)
+        {
+            var model = new CommentModel()
+            {
+                id = Guid.NewGuid(),
+                userId = Guid.NewGuid(),
+                commentContent = FnUtil.GenerateCode(),
+            };
+            _cmtHub.ChangeComment(new() { userId }, model);
+            return Ok(model);
         }
     }
 }

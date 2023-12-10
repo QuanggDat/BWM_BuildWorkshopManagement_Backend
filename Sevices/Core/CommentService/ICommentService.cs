@@ -9,6 +9,7 @@ namespace Sevices.Core.CommentService
 {
     public interface ICommentService
     {
+        ResultModel GetByWorkerTaskId(Guid workerTaskId);
         ResultModel Create(Guid userId, CreateCommentModel model);
         ResultModel Update(UpdateCommentModel model);
         ResultModel Delete(Guid id);

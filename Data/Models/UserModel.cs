@@ -119,4 +119,13 @@ namespace Data.Models
         public Guid userId { get; set; }
         public Guid groupId { get; set; }
     }
+
+    public class UserCommentModel
+    {
+        public Guid id { get; set; }
+        public string fullName { get; set; } = null!;
+        public string? image { get; set; }
+        public Guid? roleId { get; set; }
+        public Role? Role { get; set; }
+    }
 }

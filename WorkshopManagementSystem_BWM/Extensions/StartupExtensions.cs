@@ -28,6 +28,7 @@ using Sevices.Core.UserService;
 using Sevices.Core.UtilsService;
 using Sevices.Core.WorkerTaskService;
 using Sevices.Mapping;
+using SignalRHubs.Hubs.CommentHub;
 using SignalRHubs.Hubs.NotificationHub;
 using System.Text;
 using System.Text.Json;
@@ -88,6 +89,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
             services.AddScoped<IWorkerTaskService, WorkerTaskService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddSingleton<INotificationHub, NotificationHub>();
+            services.AddSingleton<ICommentHub, CommentHub>();
         }
         public static void AddAutoMapper(this IServiceCollection services)
         {
@@ -164,7 +166,7 @@ namespace WorkshopManagementSystem_BWM.Extensions
 
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
-                            if (path.StartsWithSegments("/notificationHub"))
+                            if (path.StartsWithSegments("/notificationHub") || path.StartsWithSegments("/commentHub"))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;

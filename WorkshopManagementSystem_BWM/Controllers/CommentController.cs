@@ -17,6 +17,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             _commentService = commentService;
         }
 
+        [HttpGet("[action]/{workerTaskId}")]
+        public IActionResult GetByWorkerTaskId(Guid workerTaskId)
+        {
+            var result = _commentService.GetByWorkerTaskId(workerTaskId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
+        }
+        
         [HttpPost("[action]")]
         public IActionResult Create(CreateCommentModel model)
         {

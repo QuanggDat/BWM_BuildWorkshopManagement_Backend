@@ -1,5 +1,6 @@
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using SignalRHubs.Hubs.CommentHub;
 using SignalRHubs.Hubs.NotificationHub;
 using WorkshopManagementSystem_BWM.Extensions;
 
@@ -54,5 +55,6 @@ app.UseStaticFiles();
 app.MapControllers();
 
 app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<CommentHub>("/commentHub");
 
 app.Run();
