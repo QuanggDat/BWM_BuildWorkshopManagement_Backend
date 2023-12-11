@@ -22,6 +22,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("CreateOrder")]
         public async Task<IActionResult> Create(CreateOrderModel model)
         {
+            if (!ValidateCreateOrder(model))
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _orderService.Create(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -29,6 +33,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("UpdateOrder")]
         public IActionResult Update(UpdateOrderModel model)
         {
+            if (!ValidateUpdateOrder(model))
+            {
+                return BadRequest(ModelState);
+            }
             var result =  _orderService.Update(model, User.GetId());
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -131,5 +139,39 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        #region Validate
+        private bool ValidateCreateOrder(CreateOrderModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"{model.name} không được để trống !");
+            }
+            if (string.IsNullOrWhiteSpace(model.customerName))
+            {
+                ModelState.AddModelError(nameof(model.customerName),
+                    $"{model.customerName} không được để trống !");
+            }
+            if(ModelState.ErrorCount > 0) return false;
+            return true;
+        }
+
+        private bool ValidateUpdateOrder(UpdateOrderModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"{model.name} không được để trống !");
+            }
+            if (string.IsNullOrWhiteSpace(model.customerName))
+            {
+                ModelState.AddModelError(nameof(model.customerName),
+                    $"{model.customerName} không được để trống !");
+            }
+            if (ModelState.ErrorCount > 0) return false;
+            return true;
+        }
+        #endregion
     }
 }
