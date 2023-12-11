@@ -92,4 +92,15 @@ namespace Data.Models
         public Guid materialId { get; set; }
         public int amount { get; set; }
     }
+
+    public class ViewReportBasedLeaderTask
+    {
+        public Guid taskId { get; set;}
+        public string? taskName { get; set; }
+        public Guid? orderId { get; set; }
+        public string? orderName { get; set; }
+        public Guid? itemId { get; set; }
+        public string? itemName { get; set; }
+        public List<TaskReportModel>? reports { get; set; }
+    }
 }
