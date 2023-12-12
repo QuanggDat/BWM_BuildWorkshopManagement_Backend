@@ -29,5 +29,16 @@ pipeline {
                 sh 'docker-compose ps'
             }
         }
+        stage('Remove old images') {
+            steps {
+                script {
+                    try {
+						sh 'docker rmi $(docker images -f "dangling=true" -q)'
+                    } catch (Exception e) {
+                        echo "Warning: Cannot del old image"
+                    }
+                }
+            }
+        }
     }
 }
