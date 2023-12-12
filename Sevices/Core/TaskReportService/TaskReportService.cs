@@ -46,7 +46,7 @@ namespace Sevices.Core.ReportService
 
                 if (leaderTask == null)
                 {
-                    result.Code = 51;
+                    result.Code = 23;
                     result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin công việc nghiệm thu!";
                 }
