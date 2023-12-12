@@ -22,7 +22,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPost("[action]")]
         public IActionResult Create (CreateItemCategoryModel model)
         {
-            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!"); 
+            if (string.IsNullOrWhiteSpace(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!"); 
             var result = _itemCategoryService.Create(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -47,7 +47,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult Update(UpdateItemCategoryModel model)
         {
-            if (string.IsNullOrEmpty(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!");
+            if (string.IsNullOrWhiteSpace(model.name)) return BadRequest("Không nhận được tên loại mặt hàng!");
             var result = _itemCategoryService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });

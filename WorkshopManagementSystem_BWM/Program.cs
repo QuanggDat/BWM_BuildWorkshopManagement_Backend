@@ -1,5 +1,6 @@
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using SignalRHubs.Hubs.CommentHub;
 using SignalRHubs.Hubs.NotificationHub;
 using WorkshopManagementSystem_BWM.Extensions;
 
@@ -22,7 +23,11 @@ builder.Services.ConfigIdentityService();
 builder.Services.AddBussinessService();
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 builder.Services.AddSwaggerWithAuthentication();
-builder.Services.AddSignalR();
+/*#if DEBUG*/
+    builder.Services.AddSignalR();
+/*#else
+    builder.Services.AddSignalR().AddAzureSignalR("Endpoint=https://workshopmanagementsystembwm.service.signalr.net;AccessKey=KxJdWvt/OftGZgb2XOOCDl1py1Esix6yx60YOjwlyW4=;Hubs=/notificationHub,/commentHub;Version=1.0;");
+#endif*/
 
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 {
@@ -54,5 +59,6 @@ app.UseStaticFiles();
 app.MapControllers();
 
 app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<CommentHub>("/commentHub");
 
 app.Run();

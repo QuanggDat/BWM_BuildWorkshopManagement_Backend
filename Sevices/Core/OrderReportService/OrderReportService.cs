@@ -213,13 +213,13 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
 
             var listOrderReport = _dbContext.Report.Where(x => x.reporterId == foremanId)
-                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).ToList();
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).OrderByDescending(x=>x.createdDate).ToList();
 
             try
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -257,13 +257,13 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
 
             var listOrderReport = _dbContext.Report.Where(x => x.orderId == orderId)
-                .Include(x => x.Reporter).Include(x => x.Resources).ToList();
+                .Include(x => x.Reporter).Include(x => x.Resources).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -300,13 +300,13 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
 
             var listOrderReport = _dbContext.Report.Where(x => x.reportType == ReportType.OrderReport)
-                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).ToList();
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).ToList();
+                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

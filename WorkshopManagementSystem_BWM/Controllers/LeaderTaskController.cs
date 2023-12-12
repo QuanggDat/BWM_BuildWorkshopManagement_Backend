@@ -26,6 +26,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
         public IActionResult Create(CreateLeaderTaskModel model)
         {
             if (model.orderId == Guid.Empty) return BadRequest("Không nhận được id đơn hàng!");
+            if (!ValidateCreateTask(model))
+            {
+                return BadRequest(ModelState);
+            }
             var userId = User.GetId();
             var result = _leaderTaskService.Create(userId, model);
             if (result.Succeed) return Ok(result.Data);
@@ -92,7 +96,11 @@ namespace WorkshopManagementSystem_BWM.Controllers
 
         [HttpPut("[action]")]
         public IActionResult Update(UpdateLeaderTaskModel model)
-        {            
+        {
+            if (!ValidateUpdateTask(model))
+            {
+                return BadRequest(ModelState);
+            }
             var result = _leaderTaskService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
@@ -113,5 +121,29 @@ namespace WorkshopManagementSystem_BWM.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
+
+        #region Validate
+        private bool ValidateCreateTask(CreateLeaderTaskModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"{model.name} không được để trống !");
+            }
+            if (ModelState.ErrorCount > 0) return false;
+            return true;
+        }
+
+        private bool ValidateUpdateTask(UpdateLeaderTaskModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.name))
+            {
+                ModelState.AddModelError(nameof(model.name),
+                    $"{model.name} không được để trống !");
+            }
+            if (ModelState.ErrorCount > 0) return false;
+            return true;
+        }
+        #endregion
     }
 }

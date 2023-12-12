@@ -226,11 +226,11 @@ namespace Sevices.Core.ReportService
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
 
-            if (user!.Role != null && user.Role.Name != "Leader")
+            if (user!.Role != null && user.Role.Name != "Leader" && user.Role.Name != "Foreman")
             {
                 result.Code = 50;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải tổ trưởng!";
+                result.ErrorMessage = "Người dùng không phải tổ trưởng hoặc là Quản đốc !!!";
             }
             else
             {
@@ -246,7 +246,7 @@ namespace Sevices.Core.ReportService
                 {
                     var canSendReport = CanSendProblemTaskReport(leaderTask);
 
-                    if (!canSendReport)
+                    if (canSendReport == false)
                     {
                         result.Code = 53;
                         result.Succeed = false;
@@ -862,7 +862,70 @@ namespace Sevices.Core.ReportService
 
             return result;
         }
-        
+
+        public ResultModel GetReportByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listReport = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x=>x.Reporter).Include(x=>x.Reports).ThenInclude(x=>x.Resources).Include(x => x.Order).Include(x=>x.Item).Include(x=>x.CreateBy)
+                    .Where(a => a.leaderId == leaderId && a.isDeleted!=true).OrderByDescending(x => x.startTime).ToList();
+            try
+            {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listReport = listReport.Where(x => x.name.Contains(search)).ToList();
+                }
+
+                var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<ViewReportBasedLeaderTask>();
+                foreach (var item in listReportPaging)
+                {
+                    var tmp = new ViewReportBasedLeaderTask
+                    {
+                        taskId = item.id,
+                        taskName = item.name,
+                        orderId = item.orderId,
+                        orderName = item.Order.name,
+                        itemId = item.itemId,
+                        itemName = item.Item.name,
+                        reports = item.Reports.Select(x=> new TaskReportModel
+                        {
+                            id = x.id,
+                            leaderTaskId = item.id,
+                            leaderTaskName = item.name,
+                            reporterId = x.Reporter.Id,
+                            reporterName = x.Reporter.fullName,
+                            responderId = item.createById,
+                            responderName = item.CreateBy?.fullName ?? "",
+                            reportType = x.reportType,
+                            title = x.title,
+                            content = x.content,
+                            itemFailed = x.itemFailed,
+                            createdDate = x.createdDate,
+                            status = x.status,
+                            responseContent = x.responseContent,
+                            resource = x.Resources.Select(x => x.link).ToList()
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listReport.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
@@ -923,8 +986,15 @@ namespace Sevices.Core.ReportService
         #region Validate
         private bool CanSendProblemTaskReport(LeaderTask leaderTask)
         {
-            var now = DateTime.Now;
-            return now >= leaderTask.startTime && now <= leaderTask.endTime;
+            var now = DateTime.UtcNow.AddHours(7);
+            if (leaderTask.endTime>now && leaderTask.startTime <= now)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
        
         #endregion

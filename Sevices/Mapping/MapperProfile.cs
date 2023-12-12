@@ -16,6 +16,7 @@ namespace Sevices.Mapping
             //User
             CreateMap<UserCreateModel, User>().ReverseMap();
             CreateMap<User, UserModel>().ReverseMap();
+            CreateMap<User, UserCommentModel>().ReverseMap();
 
             // Order
             CreateMap<Order, OrderModel>().ReverseMap();
@@ -38,6 +39,12 @@ namespace Sevices.Mapping
 
             // Resource
             CreateMap<Resource, ResourceModel>().ReverseMap();
+
+            // Comment
+            CreateMap<Comment, CommentModel>().ReverseMap();
+
+            // WorkerTask
+            CreateMap<WorkerTask, WorkerTaskViewModel>().ReverseMap();
         }
     }
 }

@@ -441,7 +441,7 @@ namespace Sevices.Core.OrderService
                                         // item mate info
                                         quantity = itemMate.quantity * detail.quantity,
                                         price = itemMate.price,
-                                        totalPrice = itemMate.price*itemMate.quantity * detail.quantity,
+                                        totalPrice = itemMate.price * itemMate.quantity * detail.quantity,
                                     };
                                     listOrderDetailMaterialCreate.Add(newODMate);
                                 }
@@ -457,7 +457,7 @@ namespace Sevices.Core.OrderService
                             orderId = orderId,
                             userId = createdById,
                             modifiedTime = DateTime.UtcNow.AddHours(7),
-                            action = "Tạo mới đơn hàng :"+orderCreate.name,
+                            action = "Tạo mới đơn hàng :" + orderCreate.name,
                         };
                         _dbContext.Log.Add(log);
 
