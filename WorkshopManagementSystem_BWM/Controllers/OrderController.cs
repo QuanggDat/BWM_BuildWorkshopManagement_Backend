@@ -132,7 +132,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpGet("GetAllLogOnItem")]
+        [HttpGet("GetAllLogOnOrder")]
         public IActionResult GetAllLogOnOrder(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
             var result = _orderService.GetAllLogOnOrder(search, pageIndex, pageSize);

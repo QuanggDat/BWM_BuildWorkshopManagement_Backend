@@ -450,7 +450,7 @@ namespace Sevices.Core.OrderDetailService
                 }
                 else
                 {
-                    var listLog = _dbContext.Log.Where(x => x.orderId==orderId && x.orderDetailId != null).ToList();
+                    var listLog = _dbContext.Log.Include(x => x.User).Include(x=>x.OrderDetail).Include(x=>x.Order).Where(x => x.orderId==orderId && x.orderDetailId != null).OrderByDescending(x=>x.modifiedTime).ToList();
 
                     if (!string.IsNullOrEmpty(search))
                     {
@@ -467,8 +467,11 @@ namespace Sevices.Core.OrderDetailService
                         {
                             id = item.id,
                             orderId = item.orderId,
+                            orderName = item.Order?.name,
                             orderDetailId = item.orderDetailId,
+                            orderDetailName = item.OrderDetail?.itemName,
                             userId = item.userId,
+                            userName = item.User?.fullName,
                             modifiedTime = item.modifiedTime,
                             action = item.action,
                         };

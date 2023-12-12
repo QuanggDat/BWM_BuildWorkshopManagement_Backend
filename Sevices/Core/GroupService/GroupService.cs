@@ -742,7 +742,7 @@ namespace Sevices.Core.GroupService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x => x.Group).Where(x => x.groupId != null).OrderBy(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x => x.Group).Include(x => x.User).Where(x => x.groupId != null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -758,7 +758,9 @@ namespace Sevices.Core.GroupService
                     {
                         id = item.id,
                         groupId = item.groupId,
-                        Group = item.Group,
+                        groupName = item.Group?.name,
+                        userId = item.userId,
+                        userName = item.User?.fullName,
                         modifiedTime = item.modifiedTime,
                         action = item.action,
                     };

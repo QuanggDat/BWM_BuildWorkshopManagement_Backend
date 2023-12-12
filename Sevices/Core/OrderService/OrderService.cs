@@ -910,6 +910,10 @@ namespace Sevices.Core.OrderService
                     {
                         line = "Từ chối";
                     }
+                    else if (status == OrderStatus.Pending)
+                    {
+                        line = "Chờ báo giá";
+                    }
                     order.status = status;
                     //order.updateTime = DateTime.Now;
 
@@ -1435,7 +1439,7 @@ namespace Sevices.Core.OrderService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x => x.Order).Where(x => x.orderId != null && x.orderDetailId==null).OrderBy(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x => x.Order).Include(x=>x.User).Where(x => x.orderId != null && x.orderDetailId==null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -1451,8 +1455,9 @@ namespace Sevices.Core.OrderService
                     {
                         id = item.id,
                         orderId = item.orderId,
-                        Order = item.Order,
+                        orderName = item.Order?.name,
                         userId = item.userId,
+                        userName = item.User?.fullName,
                         modifiedTime = item.modifiedTime,
                         action = item.action,
                     };

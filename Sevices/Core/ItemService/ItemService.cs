@@ -750,7 +750,7 @@ namespace Sevices.Core.ItemService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x => x.Item).Where(x => x.itemId != null).OrderBy(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x => x.Item).Include(x=>x.User).Where(x => x.itemId != null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -766,8 +766,9 @@ namespace Sevices.Core.ItemService
                     {
                         id = item.id,
                         itemId = item.materialId,
-                        Item = item.Item,
+                        itemName = item.Item?.name,
                         userId = item.userId,
+                        userName = item.User?.fullName,
                         modifiedTime = item.modifiedTime,
                         action = item.action,
                     };

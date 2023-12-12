@@ -462,7 +462,7 @@ namespace Sevices.Core.MaterialService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x=>x.Material).Where(x => x.materialId!=null).OrderBy(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x=>x.Material).Include(x => x.User).Where(x => x.materialId!=null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -478,8 +478,9 @@ namespace Sevices.Core.MaterialService
                     {
                         id = item.id,
                         materialId=item.materialId,
-                        Material=item.Material,
+                        materialName=item.Material?.name,
                         userId=item.userId,
+                        userName=item.User?.fullName,
                         modifiedTime=item.modifiedTime,
                         action = item.action,
                     };

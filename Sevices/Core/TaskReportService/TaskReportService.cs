@@ -868,7 +868,8 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x=>x.Reporter).Include(x=>x.Reports).ThenInclude(x=>x.Resources).Include(x => x.Order).Include(x=>x.Item).Include(x=>x.CreateBy)
+            var listReport = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x=>x.Reporter).Include(x=>x.Reports).ThenInclude(x=>x.Resources)
+                .Include(x => x.Order).Include(x=>x.Item).Include(x=>x.CreateBy)
                     .Where(a => a.leaderId == leaderId && a.isDeleted!=true).OrderByDescending(x => x.startTime).ToList();
             try
             {
