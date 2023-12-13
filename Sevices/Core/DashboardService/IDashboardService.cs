@@ -13,6 +13,8 @@ namespace Sevices.Core.DashboardService
         ResultModel OrderDashboard();
         ResultModel OrderByMonthDashboard(int year);
         ResultModel LeaderTaskDashboard();
-        ResultModel WorkerTaskDashboard(Guid leaderId);
+        ResultModel WorkerTaskDashboard();
+        ResultModel OrderAssignDashboardByForemanId(Guid foremanId); 
+        ResultModel WorkerTaskDashboardByLeaderId(Guid leaderId);
     }
 }

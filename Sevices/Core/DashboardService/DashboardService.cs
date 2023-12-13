@@ -30,7 +30,7 @@ namespace Sevices.Core.DashboardService
                 var list = new List<TaskDashboardModel>();
                 foreach (var item in listStatusLeaderTask)
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Where(x => x.status == item).ToList();
+                    var listLeaderTask = _dbContext.LeaderTask.Where(x => x.status == item && x.isDeleted == false).ToList();
 
                     var tmp = new TaskDashboardModel
                     {
@@ -48,26 +48,26 @@ namespace Sevices.Core.DashboardService
             }
             return result;
         }
-
-        public ResultModel WorkerTaskDashboard(Guid leaderId)
+        
+        public ResultModel WorkerTaskDashboardByLeaderId(Guid leaderId)
         {
             ResultModel result = new ResultModel();
 
             try
             {
-                var listStatusLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
+                var listStatusWorkerTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
                     .Where(x => x.LeaderTask.leaderId == leaderId).Select(x => x.status).Distinct().ToList();
 
                 var list = new List<WorkerTaskDashboardModel>();
-                foreach (var item in listStatusLeaderTask)
+                foreach (var item in listStatusWorkerTask)
                 {
-                    var listLeaderTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
-                        .Where(x => x.LeaderTask.leaderId == leaderId && x.status == item).ToList();
+                    var listWorkerTask = _dbContext.WorkerTask.Include(x => x.LeaderTask)
+                        .Where(x => x.LeaderTask.leaderId == leaderId && x.status == item && x.isDeleted == false).ToList();
 
                     var tmp = new WorkerTaskDashboardModel
                     {
                         taskStatus = item,
-                        total = listLeaderTask.Count,
+                        total = listWorkerTask.Count,
                     };
                     list.Add(tmp);
                 }
@@ -80,7 +80,7 @@ namespace Sevices.Core.DashboardService
             }
             return result;
         }
-
+        
         public ResultModel OrderByMonthDashboard(int year)
         {
             ResultModel result = new ResultModel();
@@ -165,6 +165,69 @@ namespace Sevices.Core.DashboardService
                     list.Add(tmp);
                 }
                 result.Data = list;
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel WorkerTaskDashboard()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listStatusWorkerTask = _dbContext.WorkerTask
+                    .Select(x => x.status).Distinct().ToList();
+
+                var list = new List<WorkerTaskDashboardModel>();
+
+                foreach (var item in listStatusWorkerTask)
+                {
+                    var listWorkerTask = _dbContext.WorkerTask
+                        .Where(x => x.status == item && x.isDeleted == false).ToList();
+
+                    var tmp = new WorkerTaskDashboardModel
+                    {
+                        taskStatus = item,
+                        total = listWorkerTask.Count,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = result.Data = list;
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel OrderAssignDashboardByForemanId(Guid foremanId)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listStatusOrder = _dbContext.Order.Select(x => x.status).Distinct().ToList();
+
+                var list = new List<OrderDashboardModel>();
+                foreach (var item in listStatusOrder)
+                {
+                    var listOrder = _dbContext.Order.Where(x => x.status == item && x.assignToId == foremanId).ToList();
+
+                    var tmp = new OrderDashboardModel
+                    {
+                        orderStatus = item,
+                        total = listOrder.Count,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = result.Data = list;
                 result.Succeed = true;
             }
             catch (Exception e)

@@ -49,9 +49,25 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
-        public IActionResult WorkerTaskDashboard(Guid leaderId)
+        public IActionResult WorkerTaskDashboard()
         {
-            var result = _dashboardService.WorkerTaskDashboard(leaderId);
+            var result = _dashboardService.WorkerTaskDashboard();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }            
+
+        [HttpGet("[action]/{foremanId}")/*, Authorize(Roles = "Admin,Foreman")*/]
+        public IActionResult OrderAssignDashboardByForemanId(Guid foremanId)
+        {
+            var result = _dashboardService.OrderAssignDashboardByForemanId(foremanId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("[action]/{leaderId}")/*, Authorize(Roles = "Admin,Foreman")*/]
+        public IActionResult WorkerTaskDashboardByLeaderId(Guid leaderId)
+        {
+            var result = _dashboardService.WorkerTaskDashboardByLeaderId(leaderId);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

@@ -21,13 +21,12 @@ namespace Data.Entities
         [ForeignKey("createdById")]
         public Guid createdById { get; set; }
         public virtual User CreatedBy { get; set; } = null!;
+        public DateTime createTime { get; set; }
 
         [Column(TypeName = "nvarchar(500)")]
         public string name { get; set; } = null!;
         public string customerName { get; set; } = null!;    
         
-        public DateTime createTime { get; set; }
-        //public DateTime updateTime { get; set; }
         public DateTime? startTime { get; set; }
         public DateTime? endTime { get; set; }
         public DateTime? inProgressTime { get; set; }
