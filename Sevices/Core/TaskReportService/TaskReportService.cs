@@ -226,11 +226,11 @@ namespace Sevices.Core.ReportService
 
             var user = _dbContext.User.Include(r => r.Role).FirstOrDefault(i => i.Id == reporterId);
 
-            if (user!.Role != null && user.Role.Name != "Leader" && user.Role.Name != "Foreman")
+            if (user!.Role != null && user.Role.Name != "Leader")
             {
                 result.Code = 50;
                 result.Succeed = false;
-                result.ErrorMessage = "Người dùng không phải tổ trưởng hoặc là Quản đốc !!!";
+                result.ErrorMessage = "Người dùng không phải tổ trưởng !!!";
             }
             else
             {
@@ -863,51 +863,107 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel GetReportByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize)
+        public ResultModel GetReportByLeaderId(Guid leaderId, Guid leaderTaskId, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x=>x.Reporter).Include(x=>x.Reports).ThenInclude(x=>x.Resources)
-                .Include(x => x.Order).Include(x=>x.Item).Include(x=>x.CreateBy)
-                    .Where(a => a.leaderId == leaderId && a.isDeleted!=true).OrderByDescending(x => x.startTime).ToList();
+            var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.CreateBy)
+                    .Where(a => a.reporterId == leaderId && a.leaderTaskId == leaderTaskId).OrderByDescending(x => x.createdDate).ToList();
             try
             {
-                if (!string.IsNullOrEmpty(search))
-                {
-                    listReport = listReport.Where(x => x.name.Contains(search)).ToList();
-                }
-
                 var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                var list = new List<ViewReportBasedLeaderTask>();
+                var list = new List<TaskReportViewModel>();
                 foreach (var item in listReportPaging)
                 {
-                    var tmp = new ViewReportBasedLeaderTask
+                    var tmp = new TaskReportViewModel
                     {
-                        taskId = item.id,
-                        taskName = item.name,
-                        orderId = item.orderId,
-                        orderName = item.Order.name,
-                        itemId = item.itemId,
-                        itemName = item.Item.name,
-                        reports = item.Reports.Select(x=> new TaskReportModel
+                        id = item.id,
+                        leaderTaskId = item.LeaderTask.id,
+                        leaderTaskName = item.LeaderTask.name,
+                        reporterId = item.Reporter.Id,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.CreateBy?.Id,
+                        responderName = item.LeaderTask.CreateBy?.fullName,
+                        reportType = item.reportType,
+                        title = item.title,
+                        content = item.content,
+                        itemFailed = item.itemFailed,
+                        createdDate = item.createdDate,
+                        status = item.status,
+                        responseContent = item.responseContent,
+                        resource = item.Resources.Select(x => x.link).ToList(),
+                        supply = item.Supplies.Select(y => new SupplyModel
                         {
-                            id = x.id,
-                            leaderTaskId = item.id,
-                            leaderTaskName = item.name,
-                            reporterId = x.Reporter.Id,
-                            reporterName = x.Reporter.fullName,
-                            responderId = item.createById,
-                            responderName = item.CreateBy?.fullName ?? "",
-                            reportType = x.reportType,
-                            title = x.title,
-                            content = x.content,
-                            itemFailed = x.itemFailed,
-                            createdDate = x.createdDate,
-                            status = x.status,
-                            responseContent = x.responseContent,
-                            resource = x.Resources.Select(x => x.link).ToList()
+                            id = y.id,
+                            materialId = y.materialId,
+                            materialName = y.materialName,
+                            materialColor = y.materialColor,
+                            materialSku = y.materialSku,
+                            materialSupplier = y.materialSupplier,
+                            materialThickness = y.materialThickness,
+                            materialUnit = y.materialUnit,
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listReport.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetReportByForemanId(Guid foremanId, Guid leaderTaskId, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+            result.Succeed = false;
+
+            var listReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Supplies).Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).Include(x=>x.Order)
+                    .Where(a => a.LeaderTask.createById==foremanId && a.leaderTaskId == leaderTaskId).OrderByDescending(x => x.createdDate).ToList();
+            try
+            {
+                var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<TaskReportViewModel>();
+                foreach (var item in listReportPaging)
+                {
+                    var tmp = new TaskReportViewModel
+                    {
+                        id = item.id,
+                        leaderTaskId = item.LeaderTask.id,
+                        leaderTaskName = item.LeaderTask.name,
+                        reporterId = item.Reporter.Id,
+                        reporterName = item.Reporter.fullName,
+                        responderId = item.LeaderTask.CreateBy?.Id,
+                        responderName = item.LeaderTask.CreateBy?.fullName,
+                        reportType = item.reportType,
+                        title = item.title,
+                        content = item.content,
+                        itemFailed = item.itemFailed,
+                        createdDate = item.createdDate,
+                        status = item.status,
+                        responseContent = item.responseContent,
+                        resource = item.Resources.Select(x => x.link).ToList(),
+                        supply = item.Supplies.Select(y => new SupplyModel
+                        {
+                            id = y.id,
+                            materialId = y.materialId,
+                            materialName = y.materialName,
+                            materialColor = y.materialColor,
+                            materialSku = y.materialSku,
+                            materialSupplier = y.materialSupplier,
+                            materialThickness = y.materialThickness,
+                            materialUnit = y.materialUnit,
                         }).ToList(),
                     };
                     list.Add(tmp);

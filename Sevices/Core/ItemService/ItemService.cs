@@ -697,6 +697,7 @@ namespace Sevices.Core.ItemService
                         {
                             itemCategoryId = item.itemCategoryId,
                             id = item.id,
+                            code = item.code,
                             name = item.name,
                             image = item.image,
                             length = item.length,

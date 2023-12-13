@@ -55,23 +55,23 @@ namespace Data.Models
 
     public class TaskReportModel
     {
-        public Guid id { get; set; }
+        public Guid? id { get; set; }
         public Guid? leaderTaskId { get; set; }
-        public string leaderTaskName { get; set; } = null!;
-        public Guid reporterId { get; set; }
-        public string reporterName { get; set; } = null!;
+        public string? leaderTaskName { get; set; } = null!;
+        public Guid? reporterId { get; set; }
+        public string? reporterName { get; set; } = null!;
         public Guid? responderId { get; set; }
-        public string responderName { get; set; } = null!;
-        public ReportType reportType { get; set; }
-        public string title { get; set; } = null!;
+        public string? responderName { get; set; } = null!;
+        public ReportType? reportType { get; set; }
+        public string? title { get; set; } = null!;
         public string? content { get; set; } 
         public ReportStatus? status { get; set; }
         public int? itemQuantity { get; set; }
         public int? itemFailed { get; set; }    
         public List<string>? resource { get; set; }
-        public DateTime createdDate { get; set; }
+        public DateTime? createdDate { get; set; }
         public string? responseContent { get; set; }
-        public List<SupplyModel> listSupply { get; set; } = new();
+        public List<SupplyModel>? listSupply { get; set; } = new();
     }
 
     public class SendProblemReportFeedbackModel
@@ -93,14 +93,24 @@ namespace Data.Models
         public int amount { get; set; }
     }
 
-    public class ViewReportBasedLeaderTask
+    public class TaskReportViewModel
     {
-        public Guid taskId { get; set;}
-        public string? taskName { get; set; }
-        public Guid? orderId { get; set; }
-        public string? orderName { get; set; }
-        public Guid? itemId { get; set; }
-        public string? itemName { get; set; }
-        public List<TaskReportModel>? reports { get; set; }
+        public Guid? id { get; set; }
+        public Guid? leaderTaskId { get; set; }
+        public string? leaderTaskName { get; set; } = null!;
+        public Guid? reporterId { get; set; }
+        public string? reporterName { get; set; } = null!;
+        public Guid? responderId { get; set; }
+        public string? responderName { get; set; } = null!;
+        public ReportType? reportType { get; set; }
+        public string? title { get; set; } = null!;
+        public string? content { get; set; }
+        public ReportStatus? status { get; set; }
+        public int? itemQuantity { get; set; }
+        public int? itemFailed { get; set; }
+        public List<string>? resource { get; set; }
+        public DateTime? createdDate { get; set; }
+        public string? responseContent { get; set; }
+        public List<SupplyModel>? supply { get; set; }
     }
 }
