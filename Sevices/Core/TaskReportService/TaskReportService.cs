@@ -42,7 +42,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.acceptanceTaskId && x.name == "Công việc nghiệm thu");
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.acceptanceTaskId && x.name == "Công việc nghiệm thu" && x.isDeleted!=true);
 
                 if (leaderTask == null)
                 {
@@ -145,7 +145,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId);
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId && x.isDeleted!=true);
 
                 if (leaderTask == null)
                 {
@@ -234,7 +234,7 @@ namespace Sevices.Core.ReportService
             }
             else
             {
-                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId);
+                var leaderTask = _dbContext.LeaderTask.FirstOrDefault(x => x.id == model.leaderTaskId && x.isDeleted != true);
 
                 if (leaderTask == null)
                 {

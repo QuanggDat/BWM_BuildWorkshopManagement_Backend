@@ -26,6 +26,8 @@ namespace Data.Models
     public class ViewMaterialInLeaderTask
     {
         public Guid id { get; set; }
+        public Guid materialCategoryId { get; set; }
+        public string materialCategoryName { get; set; } = null!;
         public string name { get; set; } = null!;
         public string? image { get; set; } = null!;
         public string color { get; set; } = null!;

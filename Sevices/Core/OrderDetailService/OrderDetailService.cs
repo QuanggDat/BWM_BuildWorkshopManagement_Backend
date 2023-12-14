@@ -45,8 +45,8 @@ namespace Sevices.Core.OrderDetailService
                 var list = new List<OrderDetailViewlModel>();
                 foreach(var item in listOrderDetailPaging)
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks).ThenInclude(x=>x.CreateBy).Include(x=>x.Leader)
-                        .Include(x=>x.CreateBy).Include(x=>x.Item).Where(x => x.itemId == item.itemId && x.orderId == orderId).ToList();
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x => x.WorkerTasks.Where(x=>x.isDeleted!=true)).ThenInclude(x=>x.CreateBy).Include(x=>x.Leader)
+                        .Include(x=>x.CreateBy).Include(x=>x.Item).Where(x => x.itemId == item.itemId && x.orderId == orderId && x.isDeleted!=true).ToList();
                     var tmp = new OrderDetailViewlModel
                     {
                         id = item.id,
@@ -101,6 +101,11 @@ namespace Sevices.Core.OrderDetailService
                                 feedbackTitle = x.feedbackTitle,
                                 feedbackContent = x.feedbackContent,
                                 isDeleted = x.isDeleted,
+                                members = x.WorkerTaskDetails.Select(x => new TaskMember
+                                {
+                                    memberId = x.userId,
+                                    memberFullName = x.User.fullName,
+                                }).ToList(),
                             }).ToList(),
                         }).ToList(),
                     };
@@ -369,7 +374,7 @@ namespace Sevices.Core.OrderDetailService
                 }
                 else
                 {
-                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks).Where(x=>x.itemId == orderDetail.itemId && x.orderId==orderDetail.orderId).ToList();
+                    var listLeaderTask = _dbContext.LeaderTask.Include(x=>x.WorkerTasks.Where(x => x.isDeleted != true)).ThenInclude(x=>x.WorkerTaskDetails).ThenInclude(x=>x.User).Where(x=>x.itemId == orderDetail.itemId && x.orderId==orderDetail.orderId && x.isDeleted!=true).ToList();
                     var item = new OrderDetailViewlModel
                     {
                         id = orderDetail.id,
@@ -420,6 +425,11 @@ namespace Sevices.Core.OrderDetailService
                                 feedbackTitle = x.feedbackTitle,
                                 feedbackContent = x.feedbackContent,
                                 isDeleted = x.isDeleted,
+                                members = x.WorkerTaskDetails.Select(x => new TaskMember
+                                {
+                                    memberId = x.userId,
+                                    memberFullName = x.User.fullName,
+                                }).ToList(),
                             }).ToList(),
                         }).ToList(),
                     };
