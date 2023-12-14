@@ -600,139 +600,148 @@ namespace Sevices.Core.OrderService
 
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
 
-                var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
-
-                var listOrderDetailIdByOrder = orderDetail.Where(x=>x.isDeleted!=true).Select(x => x.id).Distinct().ToList();
-
-                if (order == null)
+                if(order?.status == OrderStatus.InProgress)
                 {
-                    result.Code = 35;
-                    result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                    result.Code = 0;
+                    result.Succeed = false;
+                    result.ErrorMessage = "Đơn hàng đang trong quá trình sản xuất, ko thể đồng bộ !!!";
                 }
                 else
                 {
-                    double total = 0;
-                    foreach (var orderDetailId in listOrderDetailIdByOrder)
+                    var orderDetail = _dbContext.OrderDetail.Where(x => x.orderId == id).ToList();
+
+                    var listOrderDetailIdByOrder = orderDetail.Where(x => x.isDeleted != true).Select(x => x.id).Distinct().ToList();
+
+                    if (order == null)
                     {
-                        var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
-
-                        var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
-
-                        var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
-
-                        foreach (var item in listItemMaterialByOrderDetail)
+                        result.Code = 35;
+                        result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
+                    }
+                    else
+                    {
+                        double total = 0;
+                        foreach (var orderDetailId in listOrderDetailIdByOrder)
                         {
-                            var matchingMaterialId = listOrderDetailMaterialThatExist.FirstOrDefault(x => x.materialId == item.materialId);
+                            var listOrderDetailMaterialThatExist = _dbContext.OrderDetailMaterial.Where(x => x.orderDetailId == orderDetailId).ToList();
 
-                            var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+                            var od = orderDetail.FirstOrDefault(x => x.id == orderDetailId);
 
-                            //Update OrderDetailMaterial that already existed
-                            if (matchingMaterialId != null)
+                            var listItemMaterialByOrderDetail = _dbContext.ItemMaterial.Where(x => x.itemId == od.itemId).ToList();
+
+                            foreach (var item in listItemMaterialByOrderDetail)
                             {
-                                matchingMaterialId.materialName = material.name;
-                                matchingMaterialId.materialSupplier = material.name;
-                                matchingMaterialId.materialSku = material.sku;
-                                matchingMaterialId.materialThickness = material.thickness;
-                                matchingMaterialId.materialColor = material.color;
-                                matchingMaterialId.materialUnit = material.unit;
-                                matchingMaterialId.price = item.price;
-                                matchingMaterialId.quantity = item.quantity * od.quantity;
-                                matchingMaterialId.totalPrice = item.price*item.quantity * od.quantity;
-                            }
+                                var matchingMaterialId = listOrderDetailMaterialThatExist?.FirstOrDefault(x => x.materialId == item.materialId);
 
-                            // Add new OrderDetailMaterial that missing
-                            if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
-                            {
-                                var orderDetailMaterial = new OrderDetailMaterial
+                                var material = _dbContext.Material.FirstOrDefault(x => x.id == item.materialId);
+
+                                //Update OrderDetailMaterial that already existed
+                                if (matchingMaterialId != null)
                                 {
-                                    orderDetailId = orderDetailId,
-                                    materialId = item.materialId,
-                                    materialName = material.name,
-                                    materialSupplier = material.supplier,
-                                    materialSku = material.sku,
-                                    materialThickness = material.thickness,
-                                    materialColor = material.color,
-                                    materialUnit = material.unit,
-                                    price = item.price,
-                                    quantity = item.quantity * od.quantity,
-                                    totalPrice = item.price * (item.quantity * od.quantity),
-                                };
-                                listNewOrderDetailMaterial.Add(orderDetailMaterial);
+                                    matchingMaterialId.materialName = material.name;
+                                    matchingMaterialId.materialSupplier = material.name;
+                                    matchingMaterialId.materialSku = material.sku;
+                                    matchingMaterialId.materialThickness = material.thickness;
+                                    matchingMaterialId.materialColor = material.color;
+                                    matchingMaterialId.materialUnit = material.unit;
+                                    matchingMaterialId.price = item.price;
+                                    matchingMaterialId.quantity = item.quantity * od.quantity;
+                                    matchingMaterialId.totalPrice = item.price * item.quantity * od.quantity;
+                                }
+
+                                // Add new OrderDetailMaterial that missing
+                                if (matchingMaterialId == null || listOrderDetailMaterialThatExist == null)
+                                {
+                                    var orderDetailMaterial = new OrderDetailMaterial
+                                    {
+                                        orderDetailId = orderDetailId,
+                                        materialId = item.materialId,
+                                        materialName = material.name,
+                                        materialSupplier = material.supplier,
+                                        materialSku = material.sku,
+                                        materialThickness = material.thickness,
+                                        materialColor = material.color,
+                                        materialUnit = material.unit,
+                                        price = item.price,
+                                        quantity = item.quantity * od.quantity,
+                                        totalPrice = item.price * (item.quantity * od.quantity),
+                                    };
+                                    listNewOrderDetailMaterial.Add(orderDetailMaterial);
+                                }
                             }
-                        }
-                        listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
+                            listOrderDetailMaterialExist.AddRange(listOrderDetailMaterialThatExist);
 
-                        //Remove excess orderDetailMaterial 
-                        var listId = listItemMaterialByOrderDetail.Select(x => x.materialId).Distinct().ToList();
+                            //Remove excess orderDetailMaterial 
+                            var listId = listItemMaterialByOrderDetail.Select(x => x.materialId).Distinct().ToList();
 
-                        var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x => !listId.Contains(x.materialId)).ToList();
-                        listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
+                            var listRemoveOrderDetailMaterials = listOrderDetailMaterialThatExist.Where(x => !listId.Contains(x.materialId)).ToList();
+                            listRemoveOrderDetailMaterial.AddRange(listRemoveOrderDetailMaterials);
 
-                        //Sync orderDetail with Item
-                        var itemSync = _dbContext.Item.SingleOrDefault(x => x.id == od.itemId);
+                            //Sync orderDetail with Item
+                            var itemSync = _dbContext.Item.SingleOrDefault(x => x.id == od.itemId);
 
-                        if (itemSync != null)
-                        {
-                            var itemCate = _dbContext.ItemCategory.SingleOrDefault(x => x.id == itemSync.itemCategoryId);
-
-                            if (itemCate != null)
+                            if (itemSync != null)
                             {
-                                od.itemCategoryName = itemCate.name;
-                                od.itemName = itemSync.name;
-                                od.itemCode = itemSync.code;
-                                od.itemImage = itemSync.image;
-                                od.itemLength = itemSync.length;
-                                od.itemDepth = itemSync.depth;
-                                od.itemHeight = itemSync.height;
-                                od.itemUnit = itemSync.unit;
-                                od.itemMass = itemSync.mass;
-                                od.itemDrawingsTechnical = itemSync.drawingsTechnical;
-                                od.itemDrawings2D = itemSync.drawings2D;
-                                od.itemDrawings3D = itemSync.drawings3D;
-                                od.description = itemSync.description;
-                                od.price = itemSync.price;
-                                od.totalPrice = itemSync.price * od.quantity;
-                                total += od.totalPrice;
+                                var itemCate = _dbContext.ItemCategory.SingleOrDefault(x => x.id == itemSync.itemCategoryId);
+
+                                if (itemCate != null)
+                                {
+                                    od.itemCategoryName = itemCate.name;
+                                    od.itemName = itemSync.name;
+                                    od.itemCode = itemSync.code;
+                                    od.itemImage = itemSync.image;
+                                    od.itemLength = itemSync.length;
+                                    od.itemDepth = itemSync.depth;
+                                    od.itemHeight = itemSync.height;
+                                    od.itemUnit = itemSync.unit;
+                                    od.itemMass = itemSync.mass;
+                                    od.itemDrawingsTechnical = itemSync.drawingsTechnical;
+                                    od.itemDrawings2D = itemSync.drawings2D;
+                                    od.itemDrawings3D = itemSync.drawings3D;
+                                    od.description = itemSync.description;
+                                    od.price = itemSync.price;
+                                    od.totalPrice = itemSync.price * od.quantity;
+                                    total += od.totalPrice;
+                                }
+                                else
+                                {
+                                    result.Code = 90;
+                                    result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
+                                }
                             }
                             else
                             {
-                                result.Code = 90;
-                                result.ErrorMessage = "Không tìm thấy thông tin loại sản phẩm!";
+                                result.Code = 92;
+                                result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
                             }
                         }
-                        else
+
+                        var log = new Data.Entities.Log()
                         {
-                            result.Code = 92;
-                            result.ErrorMessage = "Không tìm thấy thông tin sản phẩm!";
-                        }
+                            orderId = id,
+                            userId = userId,
+                            modifiedTime = DateTime.UtcNow.AddHours(7),
+                            action = "Cập nhật thông tin chi tiết sản phẩm lên chi tiết đơn hàng :" + order.name,
+                        };
+                        _dbContext.Log.Add(log);
+
+                        order.totalPrice = total;
+                        //order.updateTime = DateTime.Now;
+
+                        _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
+
+                        _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
+
+                        _dbContext.OrderDetailMaterial.RemoveRange(listRemoveOrderDetailMaterial);
+
+                        _dbContext.OrderDetail.UpdateRange(orderDetail);
+
+                        _dbContext.Order.Update(order);
+
+                        _dbContext.SaveChanges();
+
+                        result.Data = true;
+                        result.Succeed = true;
                     }
-
-                    var log = new Data.Entities.Log()
-                    {
-                        orderId = id,
-                        userId = userId,
-                        modifiedTime = DateTime.UtcNow.AddHours(7),
-                        action = "Cập nhật thông tin chi tiết sản phẩm lên chi tiết đơn hàng :" + order.name,
-                    };
-                    _dbContext.Log.Add(log);
-
-                    order.totalPrice = total;
-                    //order.updateTime = DateTime.Now;
-
-                    _dbContext.OrderDetailMaterial.UpdateRange(listOrderDetailMaterialExist);
-
-                    _dbContext.OrderDetailMaterial.AddRange(listNewOrderDetailMaterial);
-
-                    _dbContext.OrderDetailMaterial.RemoveRange(listRemoveOrderDetailMaterial);
-
-                    _dbContext.OrderDetail.UpdateRange(orderDetail);
-
-                    _dbContext.Order.Update(order);
-
-                    _dbContext.SaveChanges();
-
-                    result.Data = true;
-                    result.Succeed = true;
                 }
             }
             catch (Exception ex)
@@ -1066,6 +1075,7 @@ namespace Sevices.Core.OrderService
                 if (order == null)
                 {
                     result.Code = 35;
+                    result.Succeed = false;
                     result.ErrorMessage = "Không tìm thấy thông tin đơn hàng!";
                 }
                 else
@@ -1074,6 +1084,7 @@ namespace Sevices.Core.OrderService
                     {
 
                         result.Code = 67;
+                        result.Succeed = false;
                         result.ErrorMessage = "Đơn hàng không có sản phẩm không thể tạo file báo giá!";
                     }
                     else
@@ -1210,6 +1221,7 @@ namespace Sevices.Core.OrderService
                         else
                         {
                             result.Code = 36;
+                            result.Succeed = false;
                             result.ErrorMessage = "Template lỗi!";
                         }
                     }
@@ -1220,7 +1232,6 @@ namespace Sevices.Core.OrderService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-
         }
 
         #region PRIVATE 

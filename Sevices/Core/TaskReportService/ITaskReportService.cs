@@ -23,7 +23,7 @@ namespace Sevices.Core.ReportService
         ResultModel GetProgressReportsByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderTaskId(Guid leaderTaskId, string? search, int pageIndex, int pageSize);
         ResultModel GetReportByLeaderId(Guid leaderId, Guid leaderTaskId, int pageIndex, int pageSize);
-        ResultModel GetReportByForemanId(Guid foremanId, Guid leaderTaskId, int pageIndex, int pageSize);
+        ResultModel GetReportByForemanId(Guid foremanId, string? search, int pageIndex, int pageSize);
         ResultModel UpdateStatusReport (Guid id, ReportStatus status);
     }
 }

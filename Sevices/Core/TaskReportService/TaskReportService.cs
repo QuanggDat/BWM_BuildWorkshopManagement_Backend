@@ -868,7 +868,7 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.CreateBy)
+            var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo)
                     .Where(a => a.reporterId == leaderId && a.leaderTaskId == leaderTaskId).OrderByDescending(x => x.createdDate).ToList();
             try
             {
@@ -884,8 +884,8 @@ namespace Sevices.Core.ReportService
                         leaderTaskName = item.LeaderTask.name,
                         reporterId = item.Reporter.Id,
                         reporterName = item.Reporter.fullName,
-                        responderId = item.LeaderTask.CreateBy?.Id,
-                        responderName = item.LeaderTask.CreateBy?.fullName,
+                        responderId = item.LeaderTask.Order.AssignTo?.Id,
+                        responderName = item.LeaderTask.Order.AssignTo?.fullName,
                         reportType = item.reportType,
                         title = item.title,
                         content = item.content,
@@ -923,15 +923,19 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel GetReportByForemanId(Guid foremanId, Guid leaderTaskId, int pageIndex, int pageSize)
+        public ResultModel GetReportByForemanId(Guid foremanId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Supplies).Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).Include(x=>x.Order)
-                    .Where(a => a.LeaderTask.createById==foremanId && a.leaderTaskId == leaderTaskId).OrderByDescending(x => x.createdDate).ToList();
+            var listReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Supplies).Include(x => x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo)
+                    .Where(a => a.LeaderTask.Order.assignToId==foremanId).OrderByDescending(x => x.createdDate).ToList();
             try
             {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listReport = listReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                }
                 var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 var list = new List<TaskReportViewModel>();
@@ -944,8 +948,8 @@ namespace Sevices.Core.ReportService
                         leaderTaskName = item.LeaderTask.name,
                         reporterId = item.Reporter.Id,
                         reporterName = item.Reporter.fullName,
-                        responderId = item.LeaderTask.CreateBy?.Id,
-                        responderName = item.LeaderTask.CreateBy?.fullName,
+                        responderId = item.LeaderTask.Order.AssignTo?.Id,
+                        responderName = item.LeaderTask.Order.AssignTo?.fullName,
                         reportType = item.reportType,
                         title = item.title,
                         content = item.content,
