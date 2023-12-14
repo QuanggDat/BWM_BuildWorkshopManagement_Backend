@@ -625,12 +625,16 @@ namespace Sevices.Core.GroupService
                 var listWorkerIdInGroup = _dbContext.User.Include(x => x.Role)
                     .Where(x => x.groupId == id && x.Role != null && x.Role.Name == "Worker" && !x.banStatus).Select(x => x.Id).ToList();
 
-                var checkWorkerNotInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
-                        .Where(x => listWorkerIdInGroup.Contains(x.userId) && x.WorkerTask.status != EWorkerTaskStatus.New && x.WorkerTask.status != EWorkerTaskStatus.Pending && x.WorkerTask.status != EWorkerTaskStatus.InProgress
-                        && x.WorkerTask.isDeleted == false).Select(x => x.userId).ToList();
+                var checkWorkerIdInTask = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .Where(x => listWorkerIdInGroup.Contains(x.userId) && x.WorkerTask.isDeleted == false && x.WorkerTask.status == EWorkerTaskStatus.New
+                                 || listWorkerIdInGroup.Contains(x.userId) && x.WorkerTask.isDeleted == false && x.WorkerTask.status == EWorkerTaskStatus.Pending
+                                 || listWorkerIdInGroup.Contains(x.userId) && x.WorkerTask.isDeleted == false && x.WorkerTask.status == EWorkerTaskStatus.InProgress )
+                                 .Select(x => x.userId).ToList();
+
+                var listUserId = listWorkerIdInGroup.Except(checkWorkerIdInTask).ToList();
 
                 var listUser = _dbContext.User.Include(x => x.Role)
-                    .Where(x => checkWorkerNotInTask.Contains(x.Id) && !x.banStatus)
+                    .Where(x => listUserId.Contains(x.Id) && !x.banStatus)
                     .OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))

@@ -11,7 +11,7 @@ namespace Sevices.Core.GroupService
         ResultModel GetAllUsersByGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetWorkersByGroupId(Guid id, string? search, int pageIndex, int pageSize);
         ResultModel GetWorkersNotAtWorkByGroupId (Guid id, string? search);
-        ResultModel GetAllUsersNotInGroupId(Guid id, string? searche);
+        ResultModel GetAllUsersNotInGroupId(Guid id, string? search);
         ResultModel GetAllWorkerNotYetGroup(string? search);
         ResultModel GetAllLeaderHaveGroup(string? search);
         ResultModel GetAllLeaderNoHaveGroup(string? search);
