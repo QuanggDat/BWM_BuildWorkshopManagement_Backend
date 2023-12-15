@@ -24,7 +24,7 @@ builder.Services.AddBussinessService();
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 builder.Services.AddSwaggerWithAuthentication();
 /*#if DEBUG*/
-    builder.Services.AddSignalR();
+    builder.Services.AddSignalR().AddAzureSignalR("Endpoint=https://jamaworkshopmanagementsystem.service.signalr.net;AccessKey=bzlw/AU+jJdOo+pQXylhYbKrKMjRJVY03V9eNIVBMYs=;Version=1.0;");
 /*#else
     builder.Services.AddSignalR().AddAzureSignalR("Endpoint=https://workshopmanagementsystembwm.service.signalr.net;AccessKey=KxJdWvt/OftGZgb2XOOCDl1py1Esix6yx60YOjwlyW4=;Hubs=/notificationHub,/commentHub;Version=1.0;");
 #endif*/
