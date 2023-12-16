@@ -25,6 +25,9 @@ namespace Data.Models
 
         public Guid? orderId { get; set; }
         public OrderModel? Order { get; set; }
+
+        public Guid? reportId { get; set; }
+        public ReportModel? Report { get; set; }
     }
 
     public class NotificationCreateModel

@@ -556,7 +556,7 @@ namespace Sevices.Core.LeaderTaskService
                             unit = item.unit,
                             sku = item.sku,
                             importPlace = item.importPlace,
-                            quantity = item.ItemMaterials.FirstOrDefault(x => x.itemId == itemId && x.materialId==item.id).quantity,
+                            quantity = item.ItemMaterials.FirstOrDefault(x => x.itemId == itemId && x.materialId==item.id).quantity * leaderTask.itemQuantity,
                             price = item.price,
                         };
                         list.Add(tmp);
