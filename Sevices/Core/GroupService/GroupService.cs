@@ -616,6 +616,58 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
+        public ResultModel GetWorkerAndTaskOfWorkerByGroupId(Guid id, string? search, int pageIndex, int pageSize)
+        {
+            var result = new ResultModel();
+
+            try
+            {
+                var listUser = _dbContext.User.Include(x => x.Role)
+                    .Where(x => x.groupId == id && x.Role != null && x.Role.Name == "Worker" && !x.banStatus)
+                    .OrderBy(s => s.fullName).ToList();
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                }
+
+                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = new List<WorkerAndTaskOfWorkerModel>();
+
+                foreach (var item in listUserPaging)
+                {
+                    var workerTaskDetail = _dbContext.WorkerTaskDetail.Include(x => x.WorkerTask)
+                        .FirstOrDefault(x => x.userId == item.Id && x.WorkerTask.status != EWorkerTaskStatus.Completed && x.WorkerTask.isDeleted == false);
+
+                    var tmp = new WorkerAndTaskOfWorkerModel
+                    {
+                        userId = item.Id,
+                        fullName = item.fullName,
+                        workerTaskId = workerTaskDetail?.workerTaskId,
+                        workerTaskName = workerTaskDetail?.WorkerTask.name,
+                        statusTask = workerTaskDetail?.WorkerTask.status,
+                        startTimeTask = workerTaskDetail?.WorkerTask.startTime,
+                        endTimeTask = workerTaskDetail?.WorkerTask.endTime,
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = new PagingModel()
+                {
+                    Data = list,
+                    Total = listUser.Count
+                };
+                result.Succeed = true;
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetWorkersNotAtWorkByGroupId(Guid id, string? search)
         {
             var result = new ResultModel();
@@ -811,6 +863,6 @@ namespace Sevices.Core.GroupService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             }
             return result;
-        }
+        }        
     }
 }
