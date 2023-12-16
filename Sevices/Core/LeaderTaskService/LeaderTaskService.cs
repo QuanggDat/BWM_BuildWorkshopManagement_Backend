@@ -185,7 +185,7 @@ namespace Sevices.Core.LeaderTaskService
                         }
                         else
                         {
-                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Công việc nghiệm thu" && a.isDeleted == false);
+                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Nghiệm Thu" && a.isDeleted == false);
 
                             if (check != null)
                             {
@@ -200,7 +200,7 @@ namespace Sevices.Core.LeaderTaskService
                                     createById = createById,
                                     leaderId = model.leaderId,
                                     orderId = model.orderId,
-                                    name = "Công việc nghiệm thu",
+                                    name = "Nghiệm Thu",
                                     startTime = model.startTime,
                                     endTime = model.endTime,
                                     description = model.description,

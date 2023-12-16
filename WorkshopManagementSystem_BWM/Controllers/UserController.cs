@@ -165,7 +165,7 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }
 
-        [HttpPut]
+        [HttpPut("[action]")]
         public IActionResult Update(UserUpdateModel model)
         {
             var result = _userService.Update(model);
