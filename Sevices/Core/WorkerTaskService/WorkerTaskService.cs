@@ -70,6 +70,7 @@ namespace Sevices.Core.WorkerTaskService
                 _notificationService.CreateForManyUser(new Notification
                 {
                     workerTaskId = workerTask.id,
+                    leaderTaskId = workerTask.leaderTaskId,
                     title = "Công việc",
                     content = "Bạn vừa nhận được 1 công việc mới!",
                     type = NotificationType.WorkerTask
@@ -155,6 +156,7 @@ namespace Sevices.Core.WorkerTaskService
                     _notificationService.CreateForManyUser(new Notification
                     {
                         workerTaskId = model.id,
+                        leaderTaskId = check.leaderTaskId,
                         title = "Công việc",
                         content = "Bạn vừa nhận được 1 công việc mới!",
                         type = NotificationType.WorkerTask

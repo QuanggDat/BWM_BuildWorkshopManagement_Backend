@@ -124,7 +124,7 @@ namespace Sevices.Core.LeaderTaskService
                                                     leaderTaskId = leaderTask.id,
                                                     title = "Công việc",
                                                     content = "Bạn vừa nhận được 1 công việc mới!",
-                                                    type = NotificationType.LeaderTask
+                                                    type = NotificationType.LeaderTask,
                                                 });
 
                                                 result.Succeed = true;
@@ -220,7 +220,8 @@ namespace Sevices.Core.LeaderTaskService
                                         leaderTaskId = leaderTask.id,
                                         title = "Công việc nghiệm thu",
                                         content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
-                                        type = NotificationType.LeaderTask
+                                        type = NotificationType.LeaderTask,
+                                        
                                     });
 
                                     result.Succeed = true;
