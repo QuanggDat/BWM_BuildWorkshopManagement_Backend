@@ -99,6 +99,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]/{id}")]
+        public IActionResult GetWorkerAndTaskOfWorkerByGroupId(Guid id, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        {
+            var result = _groupService.GetWorkerAndTaskOfWorkerByGroupId(id, search, pageIndex, pageSize);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut("[action]")]
         public IActionResult Update(UpdateGroupModel model)
         {
