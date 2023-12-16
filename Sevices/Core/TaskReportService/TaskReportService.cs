@@ -244,9 +244,9 @@ namespace Sevices.Core.ReportService
                 }
                 else
                 {
-                    var canSendReport = CanSendProblemTaskReport(leaderTask);
+                    var canSendReport1 = CanSendProblemTaskReportEnd(leaderTask);
 
-                    if (canSendReport == false)
+                    if (canSendReport1 == false)
                     {
                         result.Code = 53;
                         result.Succeed = false;
@@ -254,86 +254,96 @@ namespace Sevices.Core.ReportService
                     }
                     else
                     {
-                        var report = new Report
+                        var canSendReport2 = CanSendProblemTaskReportStart(leaderTask);
+                        if (canSendReport1 == false)
                         {
-                            leaderTaskId = model.leaderTaskId,
-                            reporterId = reporterId,
-                            title = model.title,
-                            content = model.content,
-                            reportType = ReportType.ProblemReport,
-                            status = ReportStatus.Pending,
-                            createdDate = DateTime.UtcNow.AddHours(7),
-                        };
-
-                        try
+                            result.Code = 86;
+                            result.Succeed = false;
+                            result.ErrorMessage = "Chưa tới ngày bắt đầu công việc, không thể gửi báo cáo vào lúc này!";
+                        }
+                        else
                         {
-                            _dbContext.Report.Add(report);
-
-                            if (model.resource != null)
+                            var report = new Report
                             {
-                                foreach (var resource in model.resource)
+                                leaderTaskId = model.leaderTaskId,
+                                reporterId = reporterId,
+                                title = model.title,
+                                content = model.content,
+                                reportType = ReportType.ProblemReport,
+                                status = ReportStatus.Pending,
+                                createdDate = DateTime.UtcNow.AddHours(7),
+                            };
+
+                            try
+                            {
+                                _dbContext.Report.Add(report);
+
+                                if (model.resource != null)
                                 {
-                                    _dbContext.Resource.Add(new Resource
+                                    foreach (var resource in model.resource)
                                     {
+                                        _dbContext.Resource.Add(new Resource
+                                        {
+                                            reportId = report.id,
+                                            link = resource
+                                        });
+                                    }
+                                }
+
+                                if (model.listSupply.Any())
+                                {
+                                    var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
+
+                                    var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
+
+                                    var listSupply = new List<Supply>();
+
+                                    foreach (var supply in model.listSupply)
+                                    {
+                                        var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
+                                        var matePrice = mate != null ? mate.price : 0;
+                                        var newSupply = new Supply()
+                                        {
+                                            reportId = report.id,
+                                            materialId = supply.materialId,
+                                            materialName = mate.name,
+                                            materialSupplier = mate.supplier,
+                                            materialThickness = mate.thickness,
+                                            materialSku = mate.sku,
+                                            materialColor = mate.color,
+                                            materialUnit = mate.unit,
+                                            amount = supply.amount,
+                                            price = matePrice,
+                                            totalPrice = matePrice * supply.amount,
+                                            status = model.supplyStatus,
+                                        };
+                                        listSupply.Add(newSupply);
+                                    }
+                                    _dbContext.Supply.AddRange(listSupply);
+                                }
+
+                                _dbContext.SaveChanges();
+
+                                if (leaderTask.createById != null)
+                                {
+                                    _notificationService.Create(new Notification
+                                    {
+                                        userId = leaderTask.createById.Value,
                                         reportId = report.id,
-                                        link = resource
+                                        title = "Báo cáo vấn đề",
+                                        content = "Bạn vừa nhận được 1 báo cáo vấn đề mới!",
+                                        type = NotificationType.TaskReport
                                     });
                                 }
+
+                                result.Succeed = true;
+                                result.Data = report.id;
                             }
 
-                            if (model.listSupply.Any())
+                            catch (Exception ex)
                             {
-                                var listMaterialId = model.listSupply.Select(x => x.materialId).Distinct().ToList();
-
-                                var listMaterial = _dbContext.Material.Where(x => listMaterialId.Contains(x.id) && !x.isDeleted).ToList();
-
-                                var listSupply = new List<Supply>();
-
-                                foreach (var supply in model.listSupply)
-                                {
-                                    var mate = listMaterial.FirstOrDefault(x => x.id == supply.materialId);
-                                    var matePrice = mate != null ? mate.price : 0;
-                                    var newSupply = new Supply()
-                                    {
-                                        reportId = report.id,
-                                        materialId = supply.materialId,
-                                        materialName = mate.name,
-                                        materialSupplier = mate.supplier,
-                                        materialThickness = mate.thickness,
-                                        materialSku = mate.sku,
-                                        materialColor = mate.color,
-                                        materialUnit = mate.unit,
-                                        amount = supply.amount,
-                                        price = matePrice,
-                                        totalPrice = matePrice * supply.amount,
-                                        status = model.supplyStatus,
-                                    };
-                                    listSupply.Add(newSupply);
-                                }
-                                _dbContext.Supply.AddRange(listSupply);
+                                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                             }
-
-                            _dbContext.SaveChanges();
-
-                            if (leaderTask.createById != null)
-                            {
-                                _notificationService.Create(new Notification
-                                {
-                                    userId = leaderTask.createById.Value,
-                                    reportId = report.id,
-                                    title = "Báo cáo vấn đề",
-                                    content = "Bạn vừa nhận được 1 báo cáo vấn đề mới!",
-                                    type = NotificationType.TaskReport
-                                });
-                            }
-
-                            result.Succeed = true;
-                            result.Data = report.id;
-                        }
-
-                        catch (Exception ex)
-                        {
-                            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                         }
                     }
                 }
@@ -1045,19 +1055,32 @@ namespace Sevices.Core.ReportService
             return result;
         }
         #region Validate
-        private bool CanSendProblemTaskReport(LeaderTask leaderTask)
+        private bool CanSendProblemTaskReportStart(LeaderTask leaderTask)
         {
             var now = DateTime.UtcNow.AddHours(7);
-            if (leaderTask.endTime>now && leaderTask.startTime <= now)
-            {
-                return true;
-            }
-            else
+            if (leaderTask.startTime>now)
             {
                 return false;
             }
+            else
+            {
+                return true;
+            }
         }
-       
+
+        private bool CanSendProblemTaskReportEnd(LeaderTask leaderTask)
+        {
+            var now = DateTime.UtcNow.AddHours(7);
+            if (leaderTask.endTime<=now)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         #endregion
     }
 }
