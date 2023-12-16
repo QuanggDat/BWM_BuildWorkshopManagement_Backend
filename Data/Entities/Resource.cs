@@ -29,6 +29,6 @@ namespace Data.Entities
         public Guid? commentId { get; set; }
         public Comment? Comment { get; set; }
 
-        public string link { get; set; } = null!;        
+        public string? link { get; set; } = null!;        
     }
 }

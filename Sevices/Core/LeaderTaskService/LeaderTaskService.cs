@@ -528,7 +528,7 @@ namespace Sevices.Core.LeaderTaskService
                 else
                 {
                     var listMaterialId = leaderTask.Item.ItemMaterials.Select(x => x.materialId).ToList();
-
+                    Guid? itemId = leaderTask.itemId;
                     var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory).Where(x => listMaterialId.Contains(x.id) && x.isDeleted == false).OrderBy(x => x.name).ToList();
 
                     if (!string.IsNullOrEmpty(search))
@@ -538,11 +538,11 @@ namespace Sevices.Core.LeaderTaskService
 
                     var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
-                    var list = new List<MaterialModel>();
+                    var list = new List<ViewMaterialInLeaderTask>();
 
                     foreach (var item in listMaterialPaging)
                     {
-                        var tmp = new MaterialModel
+                        var tmp = new ViewMaterialInLeaderTask
                         {
                             id = item.id,
                             materialCategoryId = item.materialCategoryId,
@@ -555,6 +555,7 @@ namespace Sevices.Core.LeaderTaskService
                             unit = item.unit,
                             sku = item.sku,
                             importPlace = item.importPlace,
+                            quantity = item.ItemMaterials.FirstOrDefault(x => x.itemId == itemId && x.materialId==item.id).quantity,
                             price = item.price,
                         };
                         list.Add(tmp);
@@ -593,7 +594,7 @@ namespace Sevices.Core.LeaderTaskService
 
                     var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.CreateBy).Include(x => x.Reports)
                         .ThenInclude(x => x.Resources).Include(x => x.WorkerTasks).ThenInclude(x => x.CreateBy)
-                        .Where(x => x.itemId == orderDetail.itemId && x.orderId == orderDetail.orderId).OrderByDescending(x => x.startTime).ToList();
+                        .Where(x => x.itemId == orderDetail.itemId && x.orderId == orderDetail.orderId && x.isDeleted != true).OrderByDescending(x => x.startTime).ToList();
 
                     if (!string.IsNullOrEmpty(search))
                     {

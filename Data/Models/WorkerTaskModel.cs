@@ -23,6 +23,7 @@ namespace Data.Models
         public bool isDeleted { get; set; }
         public string? feedbackTitle { get; set; }
         public string? feedbackContent { get; set; }
+        public List<TaskMember>? members {get;set;}
     }
 
     public class CreateWorkerTaskModel
