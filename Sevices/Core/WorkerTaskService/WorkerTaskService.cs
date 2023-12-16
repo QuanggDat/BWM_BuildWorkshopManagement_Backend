@@ -247,6 +247,7 @@ namespace Sevices.Core.WorkerTaskService
                         {
                             userId = model.memberId,
                             workerTaskId = model.workerTaskId,
+                            leaderTaskId = workerTask?.leaderTaskId,
                             title = "Công việc",
                             content = "Bạn vừa nhận được 1 công việc mới!",
                             type = NotificationType.WorkerTask
