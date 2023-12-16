@@ -74,11 +74,6 @@ namespace Sevices.Core.ReportService
 
                         var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).FirstOrDefault();
 
-                        if (order != null)
-                        {
-                            order.acceptanceTime = DateTime.Now;
-                        }
-
                         try
                         {
                             _dbContext.Report.Add(report);

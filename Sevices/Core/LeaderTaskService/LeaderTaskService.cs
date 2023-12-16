@@ -185,7 +185,7 @@ namespace Sevices.Core.LeaderTaskService
                         }
                         else
                         {
-                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.name == "Nghiệm Thu" && a.isDeleted == false);
+                            var check = _dbContext.LeaderTask.FirstOrDefault(a => a.orderId == model.orderId && a.itemId == model.itemId && a.name == "Nghiệm Thu" && a.isDeleted == false);
 
                             if (check != null)
                             {
@@ -199,7 +199,8 @@ namespace Sevices.Core.LeaderTaskService
                                 {
                                     createById = createById,
                                     leaderId = model.leaderId,
-                                    orderId = model.orderId,
+                                    orderId = model.orderId,    
+                                    itemId = model.itemId,
                                     name = "Nghiệm Thu",
                                     startTime = model.startTime,
                                     endTime = model.endTime,
@@ -217,7 +218,7 @@ namespace Sevices.Core.LeaderTaskService
                                     {
                                         userId = model.leaderId,
                                         leaderTaskId = leaderTask.id,
-                                        title = "Công việc",
+                                        title = "Công việc nghiệm thu",
                                         content = "Bạn vừa nhận được 1 công việc nghiệm thu mới!",
                                         type = NotificationType.LeaderTask
                                     });

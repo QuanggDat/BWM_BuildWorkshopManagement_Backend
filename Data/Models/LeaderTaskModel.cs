@@ -25,6 +25,7 @@ namespace Data.Models
     public class CreateAcceptanceTaskModel
     {
         public Guid leaderId { get; set; }
+        public Guid itemId { get; set; }
         public Guid orderId { get; set; }
         public DateTime startTime { get; set; }
         public DateTime endTime { get; set; }
