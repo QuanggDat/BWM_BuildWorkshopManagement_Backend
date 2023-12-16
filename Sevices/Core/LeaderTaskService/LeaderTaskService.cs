@@ -270,7 +270,7 @@ namespace Sevices.Core.LeaderTaskService
                     }
                     else
                     {
-                        bool check = leaderTask.status != ETaskStatus.InProgress && model.status == ETaskStatus.InProgress;
+                        bool check = leaderTask.leaderId != model.leaderId;
 
                         leaderTask.name = model.name;
                         leaderTask.leaderId = model.leaderId;
