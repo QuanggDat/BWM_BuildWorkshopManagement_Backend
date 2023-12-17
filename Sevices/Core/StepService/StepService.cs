@@ -138,6 +138,37 @@ namespace Sevices.Core.StepService
             return result;
         }
 
+        public ResultModel GetAllWithoutPaging()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listStep = _dbContext.Step.Where(x => x.isDeleted != true)
+                   .OrderBy(x => x.name).ToList();
+
+                var list = new List<StepModel>();
+                foreach (var item in listStep)
+                {
+
+                    var tmp = new StepModel
+                    {
+                        id = item.id,
+                        name = item.name,
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Succeed = true;
+                result.Data = list;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();

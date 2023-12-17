@@ -41,6 +41,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult GetAllWithoutPaging()
+        {
+            var result = _materialService.GetAllWithoutPaging();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("[action]/{materialCategoryId}")]
         public IActionResult GetByMaterialCategoryId(Guid materialCategoryId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {

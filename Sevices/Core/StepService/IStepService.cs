@@ -11,6 +11,7 @@ namespace Sevices.Core.StepService
     {
         ResultModel Create(CreateStepModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
+        ResultModel GetAllWithoutPaging();
         ResultModel GetById(Guid id);
         ResultModel Update(UpdateStepModel model);
         ResultModel Delete(Guid id);

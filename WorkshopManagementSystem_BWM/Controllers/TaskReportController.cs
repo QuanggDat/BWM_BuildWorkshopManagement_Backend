@@ -81,9 +81,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetReportByLeaderIdAndLeaderTaskId")]
-        public IActionResult GetReportByLeaderId(Guid leaderTaskId, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetReportByLeaderId(string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
         {
-            var result = _reportService.GetReportByLeaderId(User.GetId(), leaderTaskId, pageIndex, pageSize);
+            var result = _reportService.GetReportByLeaderId(User.GetId(), search, pageIndex, pageSize);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

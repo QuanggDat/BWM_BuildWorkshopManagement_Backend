@@ -58,6 +58,8 @@ namespace Data.Models
         public Guid? id { get; set; }
         public Guid? leaderTaskId { get; set; }
         public string? leaderTaskName { get; set; } = null!;
+        public Guid? orderId { get; set; }
+        public string? orderName { get;set; }
         public Guid? reporterId { get; set; }
         public string? reporterName { get; set; } = null!;
         public Guid? responderId { get; set; }
