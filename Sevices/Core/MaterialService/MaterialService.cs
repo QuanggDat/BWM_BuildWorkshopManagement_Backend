@@ -326,6 +326,46 @@ namespace Sevices.Core.MaterialService
             return result;
         }
 
+        public ResultModel GetAllWithoutPaging()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listMaterial = _dbContext.Material.Include(x => x.MaterialCategory)
+                    .Where(x => x.isDeleted == false).OrderBy(x => x.name).ToList();
+
+                var list = new List<MaterialModel>();
+                foreach (var item in listMaterial)
+                {
+                    var tmp = new MaterialModel
+                    {
+                        id = item.id,
+                        materialCategoryId = item.materialCategoryId,
+                        materialCategoryName = item.MaterialCategory.name,
+                        name = item.name,
+                        image = item.image,
+                        color = item.color,
+                        supplier = item.supplier,
+                        thickness = item.thickness,
+                        unit = item.unit,
+                        sku = item.sku,
+                        importPlace = item.importPlace,
+                        price = item.price,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data= list;
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetByMaterialCategoryId(Guid materialCategoryId, string? search, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();

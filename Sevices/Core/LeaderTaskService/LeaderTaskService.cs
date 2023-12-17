@@ -690,7 +690,7 @@ namespace Sevices.Core.LeaderTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).OrderByDescending(x=>x.startTime).ToList();
                 }
 
                 var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

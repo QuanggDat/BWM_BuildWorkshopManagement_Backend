@@ -14,6 +14,7 @@ namespace Sevices.Core.MaterialService
         ResultModel Delete(Guid id, Guid userId);
         ResultModel GetById(Guid id);
         ResultModel GetAll(string? search,int pageIndex, int pageSize);
+        ResultModel GetAllWithoutPaging();
         ResultModel GetByMaterialCategoryId(Guid materialCategoryId, string? search, int pageIndex, int pageSize);
         ResultModel GetByOrderId(Guid orderId, string? search, int pageIndex, int pageSize);
         ResultModel GetAllLogOnMaterial(string? search, int pageIndex, int pageSize);

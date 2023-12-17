@@ -469,7 +469,7 @@ namespace Sevices.Core.OrderService
                         {
                             userId = order.assignToId,
                             title = "Đơn đặt hàng mới",
-                            content = "Bạn có đơn đặt hàng mới cần báo giá",
+                            content = "Bạn có đơn đặt hàng "+order.name+ " mới cần báo giá!",
                             type = NotificationType.Order,
                             orderId = order.id
                         };
@@ -886,7 +886,7 @@ namespace Sevices.Core.OrderService
                             {
                                 userId = order.createdById,
                                 title = "Báo giá đơn đặt hàng",
-                                content = "Bạn vừa nhận được báo giá đơn hàng",
+                                content = "Bạn vừa nhận được báo giá đơn hàng" + order.name+ " !",
                                 type = NotificationType.Order,
                                 orderId = order.id
                             };
