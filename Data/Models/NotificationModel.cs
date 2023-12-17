@@ -27,14 +27,13 @@ namespace Data.Models
         public OrderModel? Order { get; set; }
 
         public Guid? reportId { get; set; }
-        public Report Report { get; set; } = null!;
+        public ReportModel? Report { get; set; }
 
-        public Guid? leaderTaskId { get; set; }
-        public LeaderTask LeaderTask { get; set; } = null!;
+        public Guid? leaderTaskId {  get; set; }
+        public LeaderTaskModel? LeaderTask { get; set; }
 
         public Guid? workerTaskId { get; set; }
-        public WorkerTask WorkerTask { get; set; } = null!;
-
+        public WorkerTaskModel? WorkerTask { get; set; }
     }
 
     public class NotificationCreateModel

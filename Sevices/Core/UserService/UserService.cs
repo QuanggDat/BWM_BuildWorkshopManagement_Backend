@@ -1057,7 +1057,7 @@ namespace Sevices.Core.UserService
             return result;
         }
 
-        public ResultModel GetByLeaderRole(string? search, int pageIndex, int pageSize)
+        public ResultModel GetByLeaderRole(string? search)
         {
             var result = new ResultModel();
             try
@@ -1069,14 +1069,7 @@ namespace Sevices.Core.UserService
                 {
                     listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
                 }
-
-                var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-                result.Data = new PagingModel()
-                {
-                    Data = _mapper.Map<List<UserModel>>(listUser),
-                    Total = listUser.Count
-                };
+                result.Data = _mapper.Map<List<UserModel>>(listUser);
                 result.Succeed = true;
             }
             catch (Exception ex)
