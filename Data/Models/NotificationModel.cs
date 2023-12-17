@@ -28,6 +28,12 @@ namespace Data.Models
 
         public Guid? reportId { get; set; }
         public ReportModel? Report { get; set; }
+
+        public Guid? leaderTaskId {  get; set; }
+        public LeaderTaskModel? LeaderTask { get; set; }
+
+        public Guid? workerTaskId { get; set; }
+        public WorkerTaskModel? WorkerTask { get; set; }
     }
 
     public class NotificationCreateModel
