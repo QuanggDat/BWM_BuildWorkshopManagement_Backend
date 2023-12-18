@@ -25,7 +25,7 @@ namespace Sevices.Core.DashboardService
 
             try
             {
-                var listStatusLeaderTask = _dbContext.LeaderTask.Select(x => x.status).Distinct().ToList();
+                var listStatusLeaderTask = _dbContext.LeaderTask.Where(x => x.status != ETaskStatus.Acceptance).Select(x => x.status).Distinct().ToList();
 
                 var list = new List<TaskDashboardModel>();
                 foreach (var item in listStatusLeaderTask)
