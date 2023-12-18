@@ -48,6 +48,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]/{leaderId}")/*, Authorize(Roles = "Admin,Foreman")*/]
+        public IActionResult LeaderTaskDashboardByLeaderId(Guid leaderId)
+        {
+            var result = _dashboardService.LeaderTaskDashboardByLeaderId(leaderId);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("[action]")/*, Authorize(Roles = "Admin,Foreman")*/]
         public IActionResult WorkerTaskDashboard()
         {

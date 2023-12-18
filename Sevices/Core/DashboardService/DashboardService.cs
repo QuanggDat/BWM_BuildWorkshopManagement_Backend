@@ -80,7 +80,37 @@ namespace Sevices.Core.DashboardService
             }
             return result;
         }
-        
+
+        public ResultModel LeaderTaskDashboardByLeaderId(Guid leaderId)
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listStatusLeaderTask = _dbContext.LeaderTask.Where(x => x.status != ETaskStatus.Acceptance).Select(x => x.status).Distinct().ToList();
+
+                var list = new List<TaskDashboardModel>();
+                foreach (var item in listStatusLeaderTask)
+                {
+                    var listLeaderTask = _dbContext.LeaderTask.Where(x => x.status == item && x.isDeleted == false && x.leaderId == leaderId).ToList();
+
+                    var tmp = new TaskDashboardModel
+                    {
+                        taskStatus = item,
+                        total = listLeaderTask.Count,
+                    };
+                    list.Add(tmp);
+                }
+                result.Data = result.Data = list;
+                result.Succeed = true;
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel OrderByMonthDashboard(int year)
         {
             ResultModel result = new ResultModel();
@@ -235,6 +265,6 @@ namespace Sevices.Core.DashboardService
                 result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
             }
             return result;
-        }
+        }       
     }
 }

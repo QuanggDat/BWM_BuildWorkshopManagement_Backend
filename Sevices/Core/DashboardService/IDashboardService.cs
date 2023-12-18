@@ -16,5 +16,6 @@ namespace Sevices.Core.DashboardService
         ResultModel WorkerTaskDashboard();
         ResultModel OrderAssignDashboardByForemanId(Guid foremanId); 
         ResultModel WorkerTaskDashboardByLeaderId(Guid leaderId);
+        ResultModel LeaderTaskDashboardByLeaderId(Guid leaderId);
     }
 }
