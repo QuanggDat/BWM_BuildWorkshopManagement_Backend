@@ -89,8 +89,8 @@ namespace Sevices.Core.OrderReportService
                                 userId = order.createdById,
                                 reportId = report.id,
                                 title = "Báo cáo đơn hàng",
-                                content = "Bạn vừa nhận được 1 báo cáo đơn hàng mới!",
-                                type = NotificationType.TaskReport
+                                content = "Bạn vừa nhận được 1 báo cáo từ " +user.fullName +" đơn hàng về đơn hàng "+ order.name+" !",
+                                type = NotificationType.OrderReport
                             });
 
                             result.Data = report.id;

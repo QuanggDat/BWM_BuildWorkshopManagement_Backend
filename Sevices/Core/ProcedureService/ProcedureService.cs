@@ -213,6 +213,43 @@ namespace Sevices.Core.ProcedureService
             return result;
         }
 
+        public ResultModel GetAllWithoutPaging()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listProcedure = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
+                    .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
+
+                var list = new List<ProcedureModel>();
+                foreach (var item in listProcedure)
+                {
+                    var tmp = new ProcedureModel
+                    {
+                        id = item.id,
+                        name = item.name,
+                        listStep = item.ProcedureSteps.Select(x => new ProcedureStepModel
+                        {
+                            stepId = x.stepId,
+                            stepName = x.Step.name,
+                            priority = x.priority,
+                        }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = list;
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
         public ResultModel GetById(Guid id)
         {
             ResultModel result = new ResultModel();

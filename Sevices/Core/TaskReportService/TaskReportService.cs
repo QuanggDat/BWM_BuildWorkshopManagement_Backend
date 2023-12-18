@@ -107,7 +107,7 @@ namespace Sevices.Core.ReportService
                                     userId = leaderTask.createById.Value,
                                     reportId = report.id,
                                     title = "Báo cáo nghiệm thu",
-                                    content = "Bạn vừa nhận được 1 báo cáo nghiệm thu mới!",
+                                    content = "Bạn vừa nhận được 1 báo cáo nghiệm thu từ "+user.fullName+" về công việc "+leaderTask.name+" !",
                                     type = NotificationType.TaskReport
                                 });
                             }
@@ -196,7 +196,7 @@ namespace Sevices.Core.ReportService
                                     userId = leaderTask.createById.Value,
                                     reportId = report.id,
                                     title = "Báo cáo tiến độ",
-                                    content = "Bạn vừa nhận được 1 báo cáo tiến độ mới!",
+                                    content = "Bạn vừa nhận được 1 báo cáo tiến độ từ "+user.fullName+" về công việc "+leaderTask.name+" !",
                                     type = NotificationType.TaskReport
                                 });
                             }
@@ -326,7 +326,7 @@ namespace Sevices.Core.ReportService
                                         userId = leaderTask.createById.Value,
                                         reportId = report.id,
                                         title = "Báo cáo vấn đề",
-                                        content = "Bạn vừa nhận được 1 báo cáo vấn đề mới!",
+                                        content = "Bạn vừa nhận được 1 báo cáo vấn đề từ "+user.fullName+" về công việc "+leaderTask.name+" !",
                                         type = NotificationType.TaskReport
                                     });
                                 }
@@ -668,7 +668,7 @@ namespace Sevices.Core.ReportService
             try
             {
                 var report = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Resources).Include(x => x.Supplies)
-                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).FirstOrDefault(x => x.id == id);
+                    .Include(x => x.LeaderTask).ThenInclude(x => x.CreateBy).Include(x => x.LeaderTask).ThenInclude(x=>x.Order).FirstOrDefault(x => x.id == id);
 
                 if (report == null)
                 {
@@ -685,6 +685,8 @@ namespace Sevices.Core.ReportService
                             id = report.id,
                             leaderTaskId = report.LeaderTask.id,
                             leaderTaskName = report.LeaderTask.name,
+                            orderId = report.LeaderTask.orderId,
+                            orderName = report.LeaderTask.Order.name,
                             reporterId = report.reporterId,
                             reporterName = report.Reporter.fullName,
                             responderId = report.LeaderTask.createById,
@@ -710,6 +712,8 @@ namespace Sevices.Core.ReportService
 
                             leaderTaskId = report.LeaderTask.id,
                             leaderTaskName = report.LeaderTask.name,
+                            orderId = report.LeaderTask.orderId,
+                            orderName = report.LeaderTask.Order.name,
                             reporterId = report.reporterId,
                             reporterName = report.Reporter.fullName,
                             responderId = report.LeaderTask.createById,
@@ -733,6 +737,8 @@ namespace Sevices.Core.ReportService
                             id = report.id,
                             leaderTaskId = report.LeaderTask.id,
                             leaderTaskName = report.LeaderTask.name,
+                            orderId = report.LeaderTask.orderId,
+                            orderName = report.LeaderTask.Order.name,
                             reporterId = report.reporterId,
                             reporterName = report.Reporter.fullName,
                             responderId = report.LeaderTask.createById,
@@ -868,15 +874,20 @@ namespace Sevices.Core.ReportService
             return result;
         }
 
-        public ResultModel GetReportByLeaderId(Guid leaderId, Guid leaderTaskId, int pageIndex, int pageSize)
+        public ResultModel GetReportByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             result.Succeed = false;
 
             var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo)
-                    .Where(a => a.reporterId == leaderId && a.leaderTaskId == leaderTaskId).OrderByDescending(x => x.createdDate).ToList();
+                    .Where(a => a.reporterId == leaderId).OrderByDescending(x => x.createdDate).ToList();
             try
             {
+                if (!string.IsNullOrEmpty(search))
+                {
+                    listReport = listReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                }
+
                 var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
                 var list = new List<TaskReportViewModel>();
