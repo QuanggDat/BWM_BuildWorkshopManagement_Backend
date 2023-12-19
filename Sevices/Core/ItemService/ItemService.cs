@@ -17,6 +17,7 @@ using Sevices.Core.UtilsService;
 using Microsoft.EntityFrameworkCore;
 using Data.Enums;
 using Aspose.Cells;
+using Data.Utils;
 
 namespace Sevices.Core.ItemService
 {
@@ -112,6 +113,7 @@ namespace Sevices.Core.ItemService
                                 itemId = item.id,
                                 materialId = material.materialId,
                                 quantity = material.quantity,
+                                price = _material.price,
                                 totalPrice = material.quantity * _material.price
                             });
                             item.price += material.quantity * _material.price;
@@ -272,6 +274,7 @@ namespace Sevices.Core.ItemService
                             model.image = "https://firebasestorage.googleapis.com/v0/b/capstonebwm.appspot.com/o/Picture%2Fno_photo.jpg?alt=media&token=3dee5e48-234a-44a1-affa-92c8cc4de565&_gl=1*bxxcv*_ga*NzMzMjUwODQ2LjE2OTY2NTU2NjA.*_ga_CW55HF8NVT*MTY5ODIyMjgyNC40LjEuMTY5ODIyMzIzNy41Ny4wLjA&fbclid=IwAR0aZK4I3ay2MwA-5AyI-cqz5cGAMFcbwoAiMBHYe8TEim-UTtlbREbrCS0";
                         }
 
+                        check.itemCategoryId = model.itemCategoryId;
                         check.name = model.name;
                         check.image = model.image;
                         check.length = model.length;
@@ -339,6 +342,7 @@ namespace Sevices.Core.ItemService
                                     itemId = model.id,
                                     materialId = material.materialId,
                                     quantity = material.quantity,
+                                    price = _material.price,
                                     totalPrice = material.quantity * _material!.price
                                 });
                                 check.price += material.quantity * _material.price;
@@ -435,7 +439,8 @@ namespace Sevices.Core.ItemService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listItem = listItem.Where(x => x.name.Contains(search) || x.code.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listItem = listItem.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search) || FnUtil.Remove_VN_Accents(x.code).ToUpper().Contains(search)).ToList();
                 }
 
                 var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -686,7 +691,8 @@ namespace Sevices.Core.ItemService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listItem = listItem.Where(x => x.name.Contains(search) || x.code.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listItem = listItem.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search) || FnUtil.Remove_VN_Accents(x.code).ToUpper().Contains(search)).ToList();
                     }
                     var listItemPaging = listItem.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
@@ -755,7 +761,8 @@ namespace Sevices.Core.ItemService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLog = listLog.Where(x => FnUtil.Remove_VN_Accents(x.action).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

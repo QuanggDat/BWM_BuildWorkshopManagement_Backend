@@ -12,6 +12,12 @@ namespace Data.Models
         public string name { get; set; } = null!;
         public List<ProcedureStepModel> listStep { get; set; } = null!;
     }
+
+    public class ProcedureViewModel
+    {
+        public Guid id { get; set; }
+        public string name { get; set; } = null!;
+    }
     public class CreateProcedureModel
     {
         public string name { get; set; } = null!;

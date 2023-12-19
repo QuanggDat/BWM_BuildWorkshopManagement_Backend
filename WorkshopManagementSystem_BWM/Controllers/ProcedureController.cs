@@ -43,6 +43,14 @@ namespace WorkshopManagementSystem_BWM.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("[action]")]
+        public IActionResult GetAllWithoutPagingAndStep()
+        {
+            var result = _procedureService.GetAllWithoutPagingAndStep();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("[action]/{id}")]
         public IActionResult GetById(Guid id)
         {

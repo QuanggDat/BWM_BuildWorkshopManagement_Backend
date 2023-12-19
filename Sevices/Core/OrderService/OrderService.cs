@@ -80,7 +80,8 @@ namespace Sevices.Core.OrderService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrder = listOrder.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrder = listOrder.Where(x => FnUtil.Remove_VN_Accents(x.name).Contains(search)).ToList();
                 }
 
                 var listOrderPaging = listOrder.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -272,7 +273,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.Resources).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.Resources).Include(x=>x.CreatedBy).Include(x=>x.AssignTo).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -638,7 +639,7 @@ namespace Sevices.Core.OrderService
                                 if (matchingMaterialId != null)
                                 {
                                     matchingMaterialId.materialName = material.name;
-                                    matchingMaterialId.materialSupplier = material.name;
+                                    matchingMaterialId.materialSupplier = material.supplier;
                                     matchingMaterialId.materialSku = material.sku;
                                     matchingMaterialId.materialThickness = material.thickness;
                                     matchingMaterialId.materialColor = material.color;

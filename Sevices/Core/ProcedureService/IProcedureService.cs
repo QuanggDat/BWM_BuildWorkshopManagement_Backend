@@ -12,6 +12,7 @@ namespace Sevices.Core.ProcedureService
         ResultModel Create(CreateProcedureModel model);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
         ResultModel GetAllWithoutPaging();
+        ResultModel GetAllWithoutPagingAndStep();
         ResultModel GetById(Guid id);
         ResultModel Update(UpdateProcedureModel model);
         ResultModel Delete(Guid id);

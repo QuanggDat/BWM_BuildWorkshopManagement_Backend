@@ -464,7 +464,8 @@ namespace Sevices.Core.OrderDetailService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listLog = listLog.Where(x => FnUtil.Remove_VN_Accents(x.action).Contains(search)).ToList();
                     }
 
                     var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

@@ -3,6 +3,7 @@ using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Sevices.Core.NotificationService;
 using System;
@@ -772,7 +773,8 @@ namespace Sevices.Core.ReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listTaskReport = listTaskReport.Where(x => FnUtil.Remove_VN_Accents(x.title).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
