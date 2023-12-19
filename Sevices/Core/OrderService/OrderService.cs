@@ -886,7 +886,7 @@ namespace Sevices.Core.OrderService
                             {
                                 userId = order.createdById,
                                 title = "Báo giá đơn đặt hàng",
-                                content = "Bạn vừa nhận được báo giá đơn hàng" + order.name+ " !",
+                                content = "Bạn vừa nhận được báo giá đơn hàng" + order.name+ "!",
                                 type = NotificationType.Order,
                                 orderId = order.id
                             };
@@ -901,27 +901,87 @@ namespace Sevices.Core.OrderService
 
                         // gen task
                         GenerateTaskByOrder(order, userId);
+                        
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Tiến hành sản xuất đơn hàng",
+                            content = "Đơn hàng" + order.name + " đã bước vào quy trình sản xuất!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     else if (status == OrderStatus.Completed)
                     {
                         line = "Hoàn Thành";
                         order.acceptanceTime = DateTime.Now;
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Hoàn thành đơn hàng",
+                            content = "Đơn hàng" + order.name + " đã hoàn thành!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     else if(status ==OrderStatus.Cancel)
                     {
                         line = "Hủy";
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Huỷ đơn hàng",
+                            content = "Đơn hàng" + order.name + " đã huỷ!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     else if (status == OrderStatus.Approve)
                     {
                         line = "Duyệt";
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Duyệt đờn hàng",
+                            content = "Đơn hàng" + order.name + " báo giá đã được duyệt!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     else if (status == OrderStatus.Reject)
                     {
                         line = "Từ chối";
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Từ chối đơn hàng",
+                            content = "Đơn hàng" + order.name + " báo giá đã từ chối!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     else if (status == OrderStatus.Pending)
                     {
                         line = "Chờ báo giá";
+
+                        var noti = new Notification()
+                        {
+                            userId = order.assignToId,
+                            title = "Chờ báo giá",
+                            content = "Bạn có đơn đặt hàng " + order.name + " mới cần báo giá!",
+                            type = NotificationType.Order,
+                            orderId = order.id
+                        };
+                        _notificationService.Create(noti);
                     }
                     order.status = status;
                     //order.updateTime = DateTime.Now;
