@@ -90,7 +90,7 @@ namespace Sevices.Core.OrderReportService
                                 userId = order.createdById,
                                 reportId = report.id,
                                 title = "Báo cáo đơn hàng",
-                                content = "Bạn vừa nhận được 1 báo cáo từ " +user.fullName +" đơn hàng về đơn hàng "+ order.name+" !",
+                                content = "Bạn vừa nhận được 1 báo cáo từ " +user.fullName+" về đơn hàng "+ order.name+" !",
                                 type = NotificationType.OrderReport
                             });
 
