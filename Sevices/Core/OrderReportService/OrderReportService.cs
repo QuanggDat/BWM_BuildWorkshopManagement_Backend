@@ -213,8 +213,8 @@ namespace Sevices.Core.OrderReportService
         {
             ResultModel result = new ResultModel();
 
-            var listOrderReport = _dbContext.Report.Where(x => x.reporterId == foremanId)
-                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).OrderByDescending(x=>x.createdDate).ToList();
+            var listOrderReport = _dbContext.Report.Where(x => x.reporterId == foremanId && x.reportType == ReportType.OrderReport)
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).OrderByDescending(x => x.createdDate).ToList();
 
             try
             {
