@@ -71,6 +71,7 @@ namespace Sevices.Core.ReportService
                             content = model.content,
                             reportType = ReportType.AcceptanceReport,
                             createdDate = DateTime.UtcNow.AddHours(7),
+                            status = ReportStatus.Pending,
                         };
 
                         var order = _dbContext.Order.Where(x => x.id == leaderTask.orderId).FirstOrDefault();
