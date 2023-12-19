@@ -1,6 +1,7 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -176,7 +177,8 @@ namespace Sevices.Core.ProcedureService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listProcedure = listProcedure.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listProcedure = listProcedure.Where(x => FnUtil.Remove_VN_Accents(x.name).Contains(search)).ToList();
                 }
 
                 var listProcedurePaging = listProcedure.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -235,6 +237,37 @@ namespace Sevices.Core.ProcedureService
                             stepName = x.Step.name,
                             priority = x.priority,
                         }).ToList(),
+                    };
+                    list.Add(tmp);
+                }
+
+                result.Data = list;
+                result.Succeed = true;
+
+            }
+            catch (Exception e)
+            {
+                result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+            }
+            return result;
+        }
+
+        public ResultModel GetAllWithoutPagingAndStep()
+        {
+            ResultModel result = new ResultModel();
+
+            try
+            {
+                var listProcedure = _dbContext.Procedure.Include(x => x.ProcedureSteps).ThenInclude(x => x.Step)
+                    .Where(x => x.isDeleted != true).OrderBy(x => x.name).ToList();
+
+                var list = new List<ProcedureViewModel>();
+                foreach (var item in listProcedure)
+                {
+                    var tmp = new ProcedureViewModel
+                    {
+                        id = item.id,
+                        name = item.name,
                     };
                     list.Add(tmp);
                 }

@@ -3,6 +3,7 @@ using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Sevices.Core.NotificationService;
 
@@ -219,7 +220,8 @@ namespace Sevices.Core.OrderReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -263,7 +265,8 @@ namespace Sevices.Core.OrderReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -306,7 +309,8 @@ namespace Sevices.Core.OrderReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listOrderReport = listOrderReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

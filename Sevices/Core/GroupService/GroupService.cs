@@ -3,6 +3,7 @@ using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -475,7 +476,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listGroup = listGroup.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listGroup = listGroup.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listGroupPaging = listGroup.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -566,7 +568,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x => FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(search)).ToList();
                 }
 
                 var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -597,7 +600,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x => FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(search)).ToList();
                 }
 
                 var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -628,7 +632,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x => FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(search)).ToList();
                 }
 
                 var listUserPaging = listUser.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -691,7 +696,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x => FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(search)).ToList();
                 }
 
                 result.Data = new PagingModel()
@@ -719,7 +725,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listUser = listUser.Where(x => x.fullName.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listUser = listUser.Where(x => FnUtil.Remove_VN_Accents(x.fullName).ToUpper().Contains(search)).ToList();
                 }
 
                 result.Data = new PagingModel()
@@ -802,7 +809,8 @@ namespace Sevices.Core.GroupService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLog = listLog.Where(x => FnUtil.Remove_VN_Accents(x.action).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

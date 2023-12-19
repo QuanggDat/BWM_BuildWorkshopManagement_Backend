@@ -14,6 +14,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing.Printing;
+using Data.Utils;
 
 namespace Sevices.Core.MaterialService
 {
@@ -286,7 +287,8 @@ namespace Sevices.Core.MaterialService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listMaterial = listMaterial.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search) || FnUtil.Remove_VN_Accents(x.sku).ToUpper().Contains(search)).ToList();
                 }
 
                 var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -388,7 +390,8 @@ namespace Sevices.Core.MaterialService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listMaterial = listMaterial.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                     }
 
                     var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -455,7 +458,8 @@ namespace Sevices.Core.MaterialService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listMaterial = listMaterial.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                     }
 
                     var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -506,7 +510,8 @@ namespace Sevices.Core.MaterialService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLog = listLog.Where(x => x.action.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLog = listLog.Where(x => FnUtil.Remove_VN_Accents(x.action).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLogPaging = listLog.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

@@ -1,6 +1,7 @@
 ﻿using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Data.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,7 +108,8 @@ namespace Sevices.Core.StepService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listStep = listStep.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listStep = listStep.Where(x => FnUtil.Remove_VN_Accents(x.name).Contains(search)).ToList();
                 }
 
                 var listStepPaging = listStep.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

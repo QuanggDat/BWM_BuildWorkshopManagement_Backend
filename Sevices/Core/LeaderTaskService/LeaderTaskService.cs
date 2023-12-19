@@ -4,6 +4,7 @@ using Data.DataAccess;
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Sevices.Core.NotificationService;
@@ -433,7 +434,8 @@ namespace Sevices.Core.LeaderTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLeaderTask = listLeaderTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -535,7 +537,8 @@ namespace Sevices.Core.LeaderTaskService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listMaterial = listMaterial.Where(x => x.name.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listMaterial = listMaterial.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                     }
 
                     var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -600,7 +603,8 @@ namespace Sevices.Core.LeaderTaskService
 
                     if (!string.IsNullOrEmpty(search))
                     {
-                        listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                        search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                        listLeaderTask = listLeaderTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                     }
 
                     var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -690,7 +694,8 @@ namespace Sevices.Core.LeaderTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).OrderByDescending(x=>x.startTime).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLeaderTask = listLeaderTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).OrderByDescending(x=>x.startTime).ToList();
                 }
 
                 var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -784,7 +789,8 @@ namespace Sevices.Core.LeaderTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listLeaderTask = listLeaderTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listLeaderTask = listLeaderTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLeaderTaskPaging = listLeaderTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

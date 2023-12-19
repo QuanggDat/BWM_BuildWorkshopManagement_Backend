@@ -2,6 +2,7 @@
 using Data.DataAccess;
 using Data.Entities;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -112,7 +113,8 @@ namespace Sevices.Core.ItemCategoryService
 
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listItemCategory = listItemCategory.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listItemCategory = listItemCategory.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listItemCategoryPaging = listItemCategory.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
