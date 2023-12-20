@@ -745,6 +745,8 @@ namespace Sevices.Core.ReportService
                             reporterName = report.Reporter.fullName,
                             responderId = report.LeaderTask.createById,
                             responderName = report.LeaderTask.CreateBy?.fullName ?? "",
+                            reportType = report.reportType,
+                            status = report.status,
                             title = report.title,
                             content = report.content,
                             createdDate = report.createdDate,
