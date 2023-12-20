@@ -125,7 +125,7 @@ namespace Sevices.Core.ItemService
                         itemId = item.id,
                         userId = userId,
                         modifiedTime = DateTime.UtcNow.AddHours(7),
-                        action = "Tạo sản phẩm mới :" + item.name,
+                        action = "Tạo sản phẩm mới : " + item.name ,
                     };
                     _dbContext.Log.Add(log);
 
@@ -757,7 +757,7 @@ namespace Sevices.Core.ItemService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x => x.Item).Include(x=>x.User).Where(x => x.itemId != null).OrderByDescending(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x => x.Item).ThenInclude(x=>x.ItemCategory).Include(x=>x.User).Where(x => x.itemId != null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -775,6 +775,8 @@ namespace Sevices.Core.ItemService
                         id = item.id,
                         itemId = item.materialId,
                         itemName = item.Item?.name,
+                        itemCode = item.Item?.code,
+                        itemCate = item.Item?.ItemCategory?.name,
                         userId = item.userId,
                         userName = item.User?.fullName,
                         modifiedTime = item.modifiedTime,

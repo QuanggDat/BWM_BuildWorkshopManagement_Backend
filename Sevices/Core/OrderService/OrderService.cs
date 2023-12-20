@@ -1,5 +1,4 @@
 ﻿using Aspose.Cells;
-using Aspose.Cells.Drawing;
 using Aspose.Cells.Rendering;
 using AutoMapper;
 using Data.DataAccess;
@@ -8,15 +7,9 @@ using Data.Enums;
 using Data.Models;
 using Data.Utils;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using Serilog;
 using Sevices.Core.NotificationService;
 using Sevices.Core.UtilsService;
 using SkiaSharp;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace Sevices.Core.OrderService
 {
@@ -40,7 +33,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var listOrder = _dbContext.Order.Include(x=>x.AssignTo).Include(x=>x.CreatedBy).OrderByDescending(x => x.createTime).ToList();
+                var listOrder = _dbContext.Order.Include(x => x.AssignTo).Include(x => x.CreatedBy).OrderByDescending(x => x.createTime).ToList();
 
                 if (!string.IsNullOrWhiteSpace(search))
                 {
@@ -76,7 +69,7 @@ namespace Sevices.Core.OrderService
 
             try
             {
-                var listOrder = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x=>x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).ToList();
+                var listOrder = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -98,7 +91,7 @@ namespace Sevices.Core.OrderService
                         createdById = item.createdById,
                         createTime = item.createTime,
                         description = item.description,
-                        status  = item.status,
+                        status = item.status,
                         fileContract = item.fileContract,
                         fileQuote = item.fileQuote,
                         quoteTime = item.quoteTime,
@@ -113,13 +106,13 @@ namespace Sevices.Core.OrderService
                             orderMaterial = x.OrderDetailMaterials.Select(x => new OrderMaterialView
                             {
                                 materialId = x.id,
-                                materialName =x.materialName,
+                                materialName = x.materialName,
                             }).ToList(),
                         }).ToList(),
 
                         leaderTask = item.LeaderTasks.Select(x => new LeaderTaskViewModel
                         {
-                            leaderTaskId =x.id,
+                            leaderTaskId = x.id,
                             workerTaskId = x.WorkerTasks.Select(x => x.id).ToList(),
                         }).ToList(),
                     };
@@ -147,7 +140,7 @@ namespace Sevices.Core.OrderService
 
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).FirstOrDefault(x=>x.id==id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails).ThenInclude(x => x.OrderDetailMaterials).Include(x => x.LeaderTasks).ThenInclude(x => x.WorkerTasks).FirstOrDefault(x => x.id == id);
 
                 if (order == null)
                 {
@@ -157,40 +150,40 @@ namespace Sevices.Core.OrderService
                 }
                 else
                 {
-                        var item = new ViewOrderModel
+                    var item = new ViewOrderModel
+                    {
+                        id = order.id,
+                        name = order.name,
+                        customerName = order.customerName,
+                        assignToId = order.assignToId,
+                        createdById = order.createdById,
+                        createTime = order.createTime,
+                        description = order.description,
+                        status = order.status,
+                        fileContract = order.fileContract,
+                        fileQuote = order.fileQuote,
+                        quoteTime = order.quoteTime,
+                        totalPrice = order.totalPrice,
+                        acceptanceTime = order.acceptanceTime,
+                        startTime = order.startTime,
+                        endTime = order.endTime,
+                        inProgressTime = order.inProgressTime,
+                        orderDetail = order.OrderDetails.Select(x => new OrderDetailView
                         {
-                            id = order.id,
-                            name = order.name,
-                            customerName = order.customerName,
-                            assignToId = order.assignToId,
-                            createdById = order.createdById,
-                            createTime = order.createTime,
-                            description = order.description,
-                            status = order.status,
-                            fileContract = order.fileContract,
-                            fileQuote = order.fileQuote,
-                            quoteTime = order.quoteTime,
-                            totalPrice = order.totalPrice,
-                            acceptanceTime = order.acceptanceTime,
-                            startTime = order.startTime,
-                            endTime = order.endTime,
-                            inProgressTime = order.inProgressTime,
-                            orderDetail = order.OrderDetails.Select(x => new OrderDetailView
+                            orderDetailId = x.id,
+                            orderMaterial = x.OrderDetailMaterials.Select(x => new OrderMaterialView
                             {
-                                orderDetailId = x.id,
-                                orderMaterial = x.OrderDetailMaterials.Select(x => new OrderMaterialView
-                                {
-                                    materialId = x.id,
-                                    materialName = x.materialName,
-                                }).ToList(),
+                                materialId = x.id,
+                                materialName = x.materialName,
                             }).ToList(),
+                        }).ToList(),
 
-                            leaderTask = order.LeaderTasks.Select(x => new LeaderTaskViewModel
-                            {
-                                leaderTaskId = x.id,
-                                workerTaskId = x.WorkerTasks.Select(x => x.id).ToList(),
-                            }).ToList(),
-                        };
+                        leaderTask = order.LeaderTasks.Select(x => new LeaderTaskViewModel
+                        {
+                            leaderTaskId = x.id,
+                            workerTaskId = x.WorkerTasks.Select(x => x.id).ToList(),
+                        }).ToList(),
+                    };
                     result.Data = item;
                     result.Succeed = true;
                 }
@@ -273,7 +266,7 @@ namespace Sevices.Core.OrderService
             var result = new ResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.Resources).Include(x=>x.CreatedBy).Include(x=>x.AssignTo).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.Resources).Include(x => x.CreatedBy).Include(x => x.AssignTo).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -293,7 +286,7 @@ namespace Sevices.Core.OrderService
             }
             return result;
         }
-     
+
         public async Task<ResultModel> Create(CreateOrderModel model, Guid createdById)
         {
             var result = new ResultModel();
@@ -470,7 +463,7 @@ namespace Sevices.Core.OrderService
                         {
                             userId = order.assignToId,
                             title = "Đơn đặt hàng mới",
-                            content = "Bạn có đơn đặt hàng "+order.name+ " mới cần báo giá!",
+                            content = "Bạn có đơn đặt hàng " + order.name + " mới cần báo giá!",
                             type = NotificationType.Order,
                             orderId = order.id
                         };
@@ -601,7 +594,7 @@ namespace Sevices.Core.OrderService
 
                 var order = _dbContext.Order.FirstOrDefault(x => x.id == id);
 
-                if(order?.status == OrderStatus.InProgress)
+                if (order?.status == OrderStatus.InProgress)
                 {
                     result.Code = 0;
                     result.Succeed = false;
@@ -756,9 +749,9 @@ namespace Sevices.Core.OrderService
         {
             var result = new ResultModel();
             try
-            {               
+            {
                 var checkOrder = _dbContext.Order.FirstOrDefault(x => x.id == id);
-              
+
                 if (checkOrder == null)
                 {
                     result.Code = 35;
@@ -773,7 +766,7 @@ namespace Sevices.Core.OrderService
 
                     foreach (var orderDetail in listOrderDetail)
                     {
-                        orderDetail.itemCategoryName = orderDetail.Item!.ItemCategory?.name??"";
+                        orderDetail.itemCategoryName = orderDetail.Item!.ItemCategory?.name ?? "";
                         orderDetail.itemName = orderDetail.Item.name;
                         orderDetail.itemCode = orderDetail.Item.code;
                         orderDetail.itemImage = orderDetail.Item.image;
@@ -887,7 +880,7 @@ namespace Sevices.Core.OrderService
                             {
                                 userId = order.createdById,
                                 title = "Báo giá đơn đặt hàng",
-                                content = "Bạn vừa nhận được báo giá đơn hàng " + order.name+ "!",
+                                content = "Bạn vừa nhận được báo giá đơn hàng " + order.name + "!",
                                 type = NotificationType.Order,
                                 orderId = order.id
                             };
@@ -902,7 +895,7 @@ namespace Sevices.Core.OrderService
 
                         // gen task
                         GenerateTaskByOrder(order, userId);
-                        
+
                         var noti = new Notification()
                         {
                             userId = order.assignToId,
@@ -928,7 +921,7 @@ namespace Sevices.Core.OrderService
                         };
                         _notificationService.Create(noti);
                     }
-                    else if(status ==OrderStatus.Cancel)
+                    else if (status == OrderStatus.Cancel)
                     {
                         line = "Hủy";
 
@@ -994,7 +987,7 @@ namespace Sevices.Core.OrderService
                         orderId = order.id,
                         userId = userId,
                         modifiedTime = DateTime.UtcNow.AddHours(7),
-                        action = line+ " đơn hàng :" + order.name,
+                        action = line + " đơn hàng :" + order.name,
                     };
                     _dbContext.Log.Add(log);
                     _dbContext.SaveChanges();
@@ -1132,7 +1125,7 @@ namespace Sevices.Core.OrderService
             var result = new FileResultModel();
             try
             {
-                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o => o.isDeleted!=true)).FirstOrDefault(x => x.id == id);
+                var order = _dbContext.Order.Include(x => x.OrderDetails.Where(o => o.isDeleted != true)).FirstOrDefault(x => x.id == id);
                 if (order == null)
                 {
                     result.Code = 35;
@@ -1150,8 +1143,12 @@ namespace Sevices.Core.OrderService
                     }
                     else
                     {
-                        var dictItemImage = order.OrderDetails.Where(x => x.itemId != null && x.itemId != Guid.Empty && !string.IsNullOrWhiteSpace(x.itemImage)).ToDictionary(x => x.itemId.Value, y => y.itemImage);
-
+                        var dictItemImages = order.OrderDetails.Where(x => x.itemId != null && x.itemId != Guid.Empty && !string.IsNullOrWhiteSpace(x.itemImage)).ToList();
+                        var dictItemImage = new Dictionary<Guid, string?>();
+                        foreach(var item in dictItemImages)
+                        {
+                            dictItemImage.Add((Guid)item.itemId, item.itemImage);
+                        }
                         var dictItemImgStream = await FetchListImageItem(dictItemImage);
 
                         var workbook = new Workbook(Path.Combine("Template/TemplateQuote.xlsx"));
@@ -1449,7 +1446,7 @@ namespace Sevices.Core.OrderService
         private void GenerateTaskByOrder(Order order, Guid userId)
         {
             // Chuan bi tao task
-            var listItemId = order.OrderDetails.Where(x=>x.isDeleted!=true).Select(x => x.itemId).Distinct().ToList();
+            var listItemId = order.OrderDetails.Where(x => x.isDeleted != true).Select(x => x.itemId).Distinct().ToList();
 
             var listProcedureItem = _dbContext.ProcedureItem.Include(x => x.Item).Where(x => listItemId.Contains(x.itemId)).ToList();
 
@@ -1511,7 +1508,7 @@ namespace Sevices.Core.OrderService
 
             try
             {
-                var listLog = _dbContext.Log.Include(x => x.Order).Include(x=>x.User).Where(x => x.orderId != null && x.orderDetailId==null).OrderByDescending(x => x.modifiedTime).ToList();
+                var listLog = _dbContext.Log.Include(x => x.Order).Include(x => x.User).Where(x => x.orderId != null && x.orderDetailId == null).OrderByDescending(x => x.modifiedTime).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {

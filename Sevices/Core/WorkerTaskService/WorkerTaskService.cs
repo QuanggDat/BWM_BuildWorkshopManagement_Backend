@@ -391,7 +391,7 @@ namespace Sevices.Core.WorkerTaskService
             var listWorkerTask = _dbContext.WorkerTask.Include(x => x.CreateBy)
                 .Include(x => x.LeaderTask).ThenInclude(x => x.Item)
                 .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+                .Where(x => x.isDeleted == false).OrderByDescending(x => x.startTime).ThenByDescending(x => x.priority).ToList();
 
             try
             {
@@ -455,7 +455,7 @@ namespace Sevices.Core.WorkerTaskService
             var listWorkerTask =  _dbContext.WorkerTask.Include(x => x.CreateBy)
                 .Include(x => x.LeaderTask).ThenInclude(x => x.Item)
                 .Include(x => x.WorkerTaskDetails).ThenInclude(x => x.User)
-                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+                .Where(x => x.leaderTaskId == leaderTaskId && x.isDeleted == false).OrderByDescending(x => x.startTime).ThenByDescending(x => x.priority).ToList();
 
             try
             {
