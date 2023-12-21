@@ -1196,7 +1196,7 @@ namespace Sevices.Core.OrderService
                                 cell.SetStyle(FnExcel.ApplyDefaultStyle(cell.GetStyle()));
                                 if (dictItemImgStream != null && dictItemImgStream.Count > 0 && !string.IsNullOrWhiteSpace(detail.itemImage) && detail.itemId != null && detail.itemId != Guid.Empty && dictItemImage.ContainsKey(detail.itemId.Value))
                                 {
-                                    var image = SKImage.FromEncodedData(dictItemImgStream[detail.Item.id]);
+                                    var image = SKImage.FromEncodedData(dictItemImgStream[detail.itemId.Value]);
                                     image = FnUtil.ResizeImage(image);
                                     worksheet.Cells.SetRowHeightPixel(rowData, image.Height + 10);
 

@@ -69,7 +69,7 @@ namespace Data.Models
     public class UpdateLeaderTaskModel
     {
         public Guid id { get; set; }
-        public string name { get; set; } = null!;
+        public string? name { get; set; } = null!;
         public Guid leaderId { get; set; }
         public int itemQuantity { get; set; }
         public int priority { get; set; }
