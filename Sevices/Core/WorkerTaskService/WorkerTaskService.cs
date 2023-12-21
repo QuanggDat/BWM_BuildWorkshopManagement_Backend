@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Enums;
 using Data.Models;
+using Data.Utils;
 using Microsoft.EntityFrameworkCore;
 using Sevices.Core.NotificationService;
 
@@ -397,7 +398,8 @@ namespace Sevices.Core.WorkerTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listWorkerTask = listWorkerTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -461,7 +463,8 @@ namespace Sevices.Core.WorkerTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listWorkerTask = listWorkerTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -527,7 +530,8 @@ namespace Sevices.Core.WorkerTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listWorkerTask = listWorkerTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -592,7 +596,8 @@ namespace Sevices.Core.WorkerTaskService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listWorkerTask = listWorkerTask.Where(x => x.name.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listWorkerTask = listWorkerTask.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                 }
 
                 var listWorkerTaskPaging = listWorkerTask.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

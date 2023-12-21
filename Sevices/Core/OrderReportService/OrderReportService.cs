@@ -221,7 +221,7 @@ namespace Sevices.Core.OrderReportService
                 if (!string.IsNullOrEmpty(search))
                 {
                     search = FnUtil.Remove_VN_Accents(search).ToUpper();
-                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -266,7 +266,7 @@ namespace Sevices.Core.OrderReportService
                 if (!string.IsNullOrEmpty(search))
                 {
                     search = FnUtil.Remove_VN_Accents(search).ToUpper();
-                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -303,14 +303,14 @@ namespace Sevices.Core.OrderReportService
             ResultModel result = new ResultModel();
 
             var listOrderReport = _dbContext.Report.Where(x => x.reportType == ReportType.OrderReport)
-                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).OrderByDescending(x => x.createdDate).ToList();
+                .Include(x => x.Resources).Include(x => x.Order).Include(x => x.Reporter).ToList();
 
             try
             {
                 if (!string.IsNullOrEmpty(search))
                 {
                     search = FnUtil.Remove_VN_Accents(search).ToUpper();
-                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    listOrderReport = listOrderReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).ToList();
                 }
 
                 var listOrderReportPaging = listOrderReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

@@ -775,7 +775,7 @@ namespace Sevices.Core.ReportService
             try
             {
                 if (!string.IsNullOrEmpty(search))
-                {
+                {                   
                     search = FnUtil.Remove_VN_Accents(search).ToUpper();
                     listTaskReport = listTaskReport.Where(x => FnUtil.Remove_VN_Accents(x.title).ToUpper().Contains(search)).ToList();
                 }
@@ -835,7 +835,8 @@ namespace Sevices.Core.ReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listTaskReport = listTaskReport.Where(x => FnUtil.Remove_VN_Accents(x.title).Contains(search)).ToList();
                 }
 
                 var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -890,7 +891,8 @@ namespace Sevices.Core.ReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listReport = listReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listReport = listReport.Where(x => FnUtil.Remove_VN_Accents(x.title).ToUpper().Contains(search)).ToList();
                 }
 
                 var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -955,7 +957,8 @@ namespace Sevices.Core.ReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listReport = listReport.Where(x => x.title.Contains(search)).OrderByDescending(x => x.createdDate).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listReport = listReport.Where(x => FnUtil.Remove_VN_Accents(x.title).ToUpper().Contains(search)).ToList();
                 }
                 var listReportPaging = listReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
@@ -1021,7 +1024,8 @@ namespace Sevices.Core.ReportService
             {
                 if (!string.IsNullOrEmpty(search))
                 {
-                    listTaskReport = listTaskReport.Where(x => x.title.Contains(search)).ToList();
+                    search = FnUtil.Remove_VN_Accents(search).ToUpper();
+                    listTaskReport = listTaskReport.Where(x => FnUtil.Remove_VN_Accents(x.title).ToUpper().Contains(search)).ToList();
                 }
 
                 var listLeaderTaskPaging = listTaskReport.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
