@@ -87,9 +87,9 @@ namespace WorkshopManagementSystem_BWM.Controllers
         }
 
         [HttpGet("GetMaterialByLeaderId")]
-        public IActionResult GetMaterialByLeaderId(Guid leaderId, string? search, int pageIndex = ConstPaging.Index, int pageSize = ConstPaging.Size)
+        public IActionResult GetMaterialByLeaderId(Guid leaderId, string? search)
         {
-            var result = _leaderTaskService.GetMaterialByLeaderTaskId(leaderId, search, pageIndex, pageSize);
+            var result = _leaderTaskService.GetMaterialByLeaderTaskId(leaderId, search);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
         }

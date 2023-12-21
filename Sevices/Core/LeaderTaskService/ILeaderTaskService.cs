@@ -15,7 +15,7 @@ namespace Sevices.Core.LeaderTaskService
         ResultModel GetByOrderDetailId(Guid orderDetailId, string? search, int pageIndex, int pageSize);
         ResultModel GetByLeaderId(Guid leaderId, string? search, int pageIndex, int pageSize);
         ResultModel GetAll(string? search, int pageIndex, int pageSize);
-        ResultModel GetMaterialByLeaderTaskId(Guid id, string? search, int pageIndex, int pageSize);
+        ResultModel GetMaterialByLeaderTaskId(Guid id, string? search);
         ResultModel GetByOrderIdAndItemId(Guid orderId, Guid itemId, string? search, int pageIndex, int pageSize);
         ResultModel GetById(Guid id);
         ResultModel UpdateStatus(Guid id, ETaskStatus status);

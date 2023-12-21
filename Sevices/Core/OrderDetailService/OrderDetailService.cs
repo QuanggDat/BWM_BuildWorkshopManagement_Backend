@@ -227,6 +227,7 @@ namespace Sevices.Core.OrderDetailService
                                 itemId = model.itemId,
                                 orderId = model.orderId,
                                 itemCategoryName = item.ItemCategory?.name ?? "",
+                                itemImage = item.image,
                                 itemName = item.name,
                                 itemCode = item.code,
                                 itemLength = item.length,

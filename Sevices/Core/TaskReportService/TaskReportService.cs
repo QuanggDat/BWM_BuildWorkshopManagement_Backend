@@ -885,7 +885,7 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo)
+            var listReport = _dbContext.Report.Include(x=>x.Reporter).Include(x=>x.Supplies).Include(x=>x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo).Include(x => x.Resources)
                     .Where(a => a.reporterId == leaderId).OrderByDescending(x => x.createdDate).ToList();
             try
             {
@@ -951,7 +951,7 @@ namespace Sevices.Core.ReportService
             var result = new ResultModel();
             result.Succeed = false;
 
-            var listReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Supplies).Include(x => x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo)
+            var listReport = _dbContext.Report.Include(x => x.Reporter).Include(x => x.Supplies).Include(x => x.LeaderTask).ThenInclude(x=>x.Order).ThenInclude(x=>x.AssignTo).Include(x=>x.Resources)
                     .Where(a => a.LeaderTask.Order.assignToId==foremanId).OrderByDescending(x => x.createdDate).ToList();
             try
             {

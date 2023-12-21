@@ -15,6 +15,8 @@ namespace Data.Models
         public Guid? orderDetailId { get; set; }
         public string? orderDetailName { get; set; }
         public Guid? itemId { get; set; }
+        public string? itemCode { get; set; }
+        public string? itemCate { get; set; }
         public string? itemName { get; set; }
         public Guid? userId { get; set; }
         public string? userName { get; set; }

@@ -429,7 +429,7 @@ namespace Sevices.Core.LeaderTaskService
 
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Leader).Include(x => x.Item)
                 .Include(x => x.Reports).ThenInclude(x => x.Resources).Include(x=>x.WorkerTasks).ThenInclude(x=>x.CreateBy)
-                .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ToList();
+                .Where(a => a.isDeleted == false).OrderByDescending(x => x.startTime).ThenByDescending(x=>x.priority).ToList();
 
             try
             {
@@ -516,7 +516,7 @@ namespace Sevices.Core.LeaderTaskService
             return result;
         }
 
-        public ResultModel GetMaterialByLeaderTaskId(Guid id, string? search, int pageIndex, int pageSize)
+        public ResultModel GetMaterialByLeaderTaskId(Guid id, string? search)
         {
             ResultModel result = new ResultModel();
 
@@ -542,11 +542,9 @@ namespace Sevices.Core.LeaderTaskService
                         listMaterial = listMaterial.Where(x => FnUtil.Remove_VN_Accents(x.name).ToUpper().Contains(search)).ToList();
                     }
 
-                    var listMaterialPaging = listMaterial.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
                     var list = new List<ViewMaterialInLeaderTask>();
 
-                    foreach (var item in listMaterialPaging)
+                    foreach (var item in listMaterial)
                     {
                         var tmp = new ViewMaterialInLeaderTask
                         {
@@ -566,11 +564,8 @@ namespace Sevices.Core.LeaderTaskService
                         };
                         list.Add(tmp);
                     }
-                    result.Data = new PagingModel()
-                    {
-                        Data = list,
-                        Total = listMaterial.Count
-                    };
+                    
+                    result.Data = list;
                     result.Succeed = true;
                 }
             }
@@ -689,7 +684,7 @@ namespace Sevices.Core.LeaderTaskService
             var listLeaderTask = _dbContext.LeaderTask.Include(x => x.Reports).ThenInclude(x => x.Resources)
                 .Include(x => x.Leader).Include(x => x.Order).Include(x => x.Item).Include(x=>x.WorkerTasks).Include(x=>x.CreateBy)
                     .Where(a => a.leaderId == leaderId && a.Order.status == OrderStatus.InProgress && a.isDeleted == false)
-                    .OrderByDescending(x => x.startTime).ToList();
+                    .OrderByDescending(x => x.startTime).ThenByDescending(x => x.priority).ToList();
 
             try
             {
