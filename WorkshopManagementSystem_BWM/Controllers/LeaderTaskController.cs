@@ -97,10 +97,10 @@ namespace WorkshopManagementSystem_BWM.Controllers
         [HttpPut("[action]")]
         public IActionResult Update(UpdateLeaderTaskModel model)
         {
-            if (!ValidateUpdateTask(model))
+            /*if (!ValidateUpdateTask(model))
             {
                 return BadRequest(ModelState);
-            }
+            }*/
             var result = _leaderTaskService.Update(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(new ResponeResultModel { Code = result.Code, ErrorMessage = result.ErrorMessage });
