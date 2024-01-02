@@ -778,7 +778,7 @@ namespace Sevices.Core.GroupService
             try
             {
                 var listUser = _dbContext.User.Include(x => x.Role).Include(x => x.Group)
-                    .Where(x => x.Role != null && x.Role.Name == "Leader" && x.groupId != null && x.banStatus == false).OrderBy(s => s.fullName).ToList();
+                    .Where(x => x.Role != null && x.Role.Name == "Leader" && x.groupId != null && x.banStatus == false && x.Group.isDeleted!=true).OrderBy(s => s.fullName).ToList();
 
                 if (!string.IsNullOrEmpty(search))
                 {
@@ -799,7 +799,7 @@ namespace Sevices.Core.GroupService
             return result;
         }
 
-        public ResultModel GetAllLogOnGroup(string? search, int pageIndex, int pageSize)
+        public ResultModel GetAllLogOnGroup(string? search, int pageIndex, int pageSize) 
         {
             ResultModel result = new ResultModel();
 

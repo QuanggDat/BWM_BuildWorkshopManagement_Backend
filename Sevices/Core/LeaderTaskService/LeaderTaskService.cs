@@ -278,10 +278,10 @@ namespace Sevices.Core.LeaderTaskService
                         leaderTask.name = model.name;
                         leaderTask.leaderId = model.leaderId;
                         leaderTask.priority = model.priority;
+                        leaderTask.itemQuantity = model.itemQuantity;
                         leaderTask.startTime = model.startTime;
                         leaderTask.endTime = model.endTime;
                         leaderTask.status = model.status;
-                        leaderTask.itemQuantity = model.itemQuantity;
                         leaderTask.description = model.description;
 
                         try
