@@ -26,7 +26,7 @@ namespace Sevices.Core.GroupService
 
             try
             {
-                var nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted == false);
+                var nameExists = _dbContext.Group.Any(s => s.name == model.name && !s.isDeleted);
 
                 var newLeader = _dbContext.User.Include(r => r.Role).Include(x => x.Group)
                     .FirstOrDefault(x => x.Id == model.leaderId && x.banStatus == false);
