@@ -7,7 +7,7 @@ Project to build a workshop management system for furniture design company with 
 * Reporting.
   
 # ERD Diagram
-![Uploading BWM Diagrams-ERD Diagram.drawio.png…]()
+![](![Uploading BWM Diagrams-ERD Diagram.drawio.png…]())
 
 
 ## Actors in the project :
