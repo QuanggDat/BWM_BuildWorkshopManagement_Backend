@@ -1,4 +1,5 @@
-![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)# Welcome to Capstone_BWM_BE Repository
+# Welcome to Capstone_BWM_BE
+
 Project to build a workshop management system for furniture design company with main features functions :  
 * Material management. 
 * Item management.
@@ -7,7 +8,7 @@ Project to build a workshop management system for furniture design company with 
 * Reporting.
   
 # ERD Diagram
-![](![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/05a1b481-a6f5-4857-b81a-7e1a05a3c32a))
+![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)# Welcome to Capstone_BWM_BE Repository
 
 ## Actors in the project :
 * Administrator (Admin) 
