@@ -1,4 +1,13 @@
 # Welcome to Capstone_BWM_BE Repository
+Project to build a workshop management system for furniture design company with main features functions :  
+* Material management. 
+* Item management.
+* Quotation management. 
+* Task tracking. 
+* Reporting.
+  
+# ERD Diagram
+![Uploading BWM Diagrams-ERD Diagram.drawio.png…]()
 
 ## Actors in the project :
 * Administrator (Admin) 
