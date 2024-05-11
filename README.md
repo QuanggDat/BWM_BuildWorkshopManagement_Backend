@@ -16,7 +16,7 @@ Project to build a workshop management system for furniture design company with 
 * Leader 
 * Worker 
 
-### Functions of Actors :
+### Functions of actors :
 
 #### Administrator (Admin)
 * Provide account for other users. 
