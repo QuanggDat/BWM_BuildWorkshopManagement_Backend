@@ -1,5 +1,4 @@
-# Welcome to Capstone_BWM_BE
-
+# 👋 Welcome to our Graduation Capstone Project - BWM - Buid Workshop Managemen 👋
 Project to build a workshop management system for furniture design company with main features functions :  
 * Material management. 
 * Item management.
