@@ -7,7 +7,7 @@ Project to build a workshop management system for furniture design company with 
 * Reporting.
   
 # ERD Diagram
-![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)# Welcome to Capstone_BWM_BE Repository
+![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)
 
 ## Actors in the project :
 * Administrator (Admin) 
