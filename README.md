@@ -5,9 +5,6 @@ Project to build a workshop management system for furniture design company with 
 * Quotation management. 
 * Task tracking. 
 * Reporting.
-  
-# ERD Diagram
-![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)
 
 ## Actors in the project :
 * Administrator (Admin) 
@@ -52,5 +49,8 @@ Project to build a workshop management system for furniture design company with 
 #### Worker
 * Get the list of that worker’s tasks. 
 * Comment on tasks with Leader.
+
+# ERD Diagram
+![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)
 
 © QuangDat | https://www.facebook.com/datmaphihi
