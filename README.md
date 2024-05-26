@@ -1,4 +1,4 @@
-![image](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/c263b7b7-a4db-4100-aa65-389d23668265)# Welcome to our Graduation Capstone Project 👋 - BWM - Buid Workshop Management
+# Welcome to our Graduation Capstone Project 👋 - BWM - Buid Workshop Management
 Project to build a workshop management system for furniture design company with main features functions :  
 * Material management. 
 * Item management.
