@@ -1,4 +1,4 @@
-# Welcome to our BWM Project - Build Workshop Management 👋
+# Welcome to our BWM Project - Build Workshop Management 👋👋
 Project to build a workshop management system for furniture design company with main features functions :  
 * Material management. 
 * Item management.
