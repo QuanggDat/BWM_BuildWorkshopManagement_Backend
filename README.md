@@ -51,10 +51,10 @@ Project to build a workshop management system for furniture design company with 
 * Get the list of that worker’s tasks. 
 * Comment on tasks with Leader.
   
-# Use Case Diagram
+## Use Case Diagram
 ![BWM Diagrams-Use Case Diagram](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/44363935-fa0b-47b9-b808-4eff5ce997ac)
 
-# ERD Diagram
+## ERD Diagram
 ![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)
 
 © QuangDat | https://www.facebook.com/datmaphihi
