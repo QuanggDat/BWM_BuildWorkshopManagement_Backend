@@ -1,4 +1,4 @@
-# Welcome to our Graduation Capstone Project 👋 - BWM - Buid Workshop Management
+# Welcome to our BWM Project - Build Workshop Management 👋👋👋👋👋 
 Project to build a workshop management system for furniture design company with main features functions :  
 * Material management. 
 * Item management.
@@ -50,6 +50,9 @@ Project to build a workshop management system for furniture design company with 
 #### Worker
 * Get the list of that worker’s tasks. 
 * Comment on tasks with Leader.
+  
+# Use Case Diagram
+![Uploading BWM Diagrams-Use Case Diagram.drawio.png…]()
 
 # ERD Diagram
 ![BWM Diagrams-ERD Diagram drawio](https://github.com/QuanggDat/Capstone_BWM_BE/assets/108293525/97b1c1e9-7784-4495-993b-20ac45374d2d)
